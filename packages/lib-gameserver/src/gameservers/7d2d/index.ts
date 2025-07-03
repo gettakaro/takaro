@@ -3,11 +3,13 @@ import { IGamePlayer, IPosition } from '@takaro/modules';
 import {
   BanDTO,
   CommandOutput,
+  IEntityDTO,
   IGameServer,
   IItemDTO,
   IMessageOptsDTO,
   IPlayerReferenceDTO,
   TestReachabilityOutputDTO,
+  ILocationDTO,
 } from '../../interfaces/GameServer.js';
 import { SevenDaysToDieEmitter } from './emitter.js';
 import { SdtdApiClient } from './sdtdAPIClient.js';
@@ -56,7 +58,6 @@ export class SevenDaysToDie implements IGameServer {
           ip: p.ip,
           name: p.name,
           epicOnlineServicesId: p.crossplatformid.replace('EOS_', ''),
-          platformId: p.steamid.replace('Steam_', ''),
           ping: p.ping,
         };
 
@@ -76,6 +77,7 @@ export class SevenDaysToDie implements IGameServer {
   }
 
   async steamIdOrXboxToGameId(id: string): Promise<IGamePlayer | undefined> {
+    if (!id) return undefined;
     if (id.startsWith('Steam_')) id = id.replace('Steam_', '');
     if (id.startsWith('XBL_')) id = id.replace('XBL_', '');
     const players = await this.getPlayers();
@@ -91,21 +93,22 @@ export class SevenDaysToDie implements IGameServer {
       return null;
     }
 
-    return {
+    return new IPosition({
       x: playerLocation.position.x,
       y: playerLocation.position.y,
       z: playerLocation.position.z,
-    };
+    });
   }
 
-  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number = 1, quality?: number): Promise<void> {
+  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number = 1, quality?: string): Promise<void> {
     const command = this.connectionInfo.useCPM
-      ? `giveplus EOS_${player.gameId} ${item} ${amount} ${quality ?? ''}`
+      ? `giveplus EOS_${player.gameId} ${item} ${amount} ${quality ? quality + ' 0' : ''}`
       : `give EOS_${player.gameId} ${item} ${amount} ${quality ?? ''}`;
     const res = await this.executeConsoleCommand(command);
 
     if (this.connectionInfo.useCPM && !res.rawResult.includes('Item(s) given')) {
-      throw new errors.GameServerError('Failed to give item');
+      this.logger.error('Failed to give item', { player, item, amount, quality, rawResult: res.rawResult });
+      throw new errors.BadRequestError(`Failed to give item. Result: "${res.rawResult}"`);
     }
   }
 
@@ -151,9 +154,9 @@ export class SevenDaysToDie implements IGameServer {
 
   async executeConsoleCommand(rawCommand: string) {
     const encodedCommand = encodeURIComponent(rawCommand);
-    this.logger.debug(`Executing command: "${rawCommand}"`);
     const result = await this.apiClient.executeConsoleCommand(encodedCommand);
 
+    this.logger.debug(`Executed command: "${rawCommand}"`, { rawCommand, result: result.data.result.slice(0, 1000) });
     return new CommandOutput({
       rawResult: result.data.result,
       success: true,
@@ -161,7 +164,6 @@ export class SevenDaysToDie implements IGameServer {
   }
 
   async sendMessage(message: string, opts?: IMessageOptsDTO) {
-    // eslint-disable-next-line quotes
     const escapedMessage = message.replaceAll(/"/g, "'");
 
     let command = `say "${escapedMessage}"`;
@@ -182,7 +184,8 @@ export class SevenDaysToDie implements IGameServer {
     await this.executeConsoleCommand(command);
   }
 
-  async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
+  async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number, _dimension?: string) {
+    // 7D2D doesn't support dimensions, so we ignore the dimension parameter
     const command = `teleportplayer EOS_${player.gameId} ${x} ${y} ${z}`;
     await this.executeConsoleCommand(command);
   }
@@ -194,7 +197,7 @@ export class SevenDaysToDie implements IGameServer {
 
   async banPlayer(options: BanDTO) {
     // If no expiresAt is provided, assume 'permanent'. 500 years is pretty long ;)
-    const expiresAt = options.expiresAt ?? '2521-01-01 00:00:00';
+    const expiresAt = options.expiresAt ?? '2521-01-01T00:00:00.000';
 
     const expiresAtDate = DateTime.fromISO(expiresAt);
     const now = DateTime.local();
@@ -257,10 +260,13 @@ export class SevenDaysToDie implements IGameServer {
       if (match) {
         const [, date, gameId, _displayName, reason] = match;
         const expiresAt = date.replace(' ', 'T') + '.000Z'; // Keep the time in its original form
+        // If the saved ban isn't saved with EOS, we cannot resolve to gameId, so skip these.
+        if (!gameId.includes('EOS_')) continue;
         bans.push(
           new BanDTO({
-            player: new IPlayerReferenceDTO({
-              gameId,
+            player: new IGamePlayer({
+              gameId: gameId.replace('EOS_', ''),
+              epicOnlineServicesId: gameId.replace('EOS_', ''),
             }),
             reason,
             expiresAt,
@@ -335,5 +341,21 @@ export class SevenDaysToDie implements IGameServer {
     } else {
       await this.executeConsoleCommand('shutdown');
     }
+  }
+
+  async getMapInfo() {
+    return this.apiClient.getMapInfo();
+  }
+
+  async getMapTile(x: number, y: number, z: number) {
+    return this.apiClient.getMapTile(x, y, z);
+  }
+
+  async listEntities(): Promise<IEntityDTO[]> {
+    throw new errors.NotImplementedError();
+  }
+
+  async listLocations(): Promise<ILocationDTO[]> {
+    throw new errors.NotImplementedError();
   }
 }

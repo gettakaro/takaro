@@ -58,7 +58,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   private recentMessages: Set<string> = new Set(); // To track recent messages
   private checkInterval: NodeJS.Timeout;
   private lastMessageTimestamp = Date.now();
-  private keepAliveTimeout = ms('30s');
+  private keepAliveTimeout = ms('5minutes');
 
   constructor(private config: SdtdConnectionInfo) {
     super();
@@ -66,10 +66,10 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
 
   get url() {
-    if (this.config.useV1) {
-      return `${this.config.useTls ? 'https' : 'http'}://${this.config.host}/sse/?events=log`;
+    if (this.config.useLegacy) {
+      return `${this.config.useTls ? 'https' : 'http'}://${this.config.host}/sse/log`;
     }
-    return `${this.config.useTls ? 'https' : 'http'}://${this.config.host}/sse/log`;
+    return `${this.config.useTls ? 'https' : 'http'}://${this.config.host}/sse/?events=log`;
   }
 
   async start(): Promise<void> {

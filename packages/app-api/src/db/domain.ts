@@ -17,6 +17,15 @@ export class DomainModel extends NOT_DOMAIN_SCOPED_TakaroModel {
   name!: string;
   state!: DOMAIN_STATES;
 
+  maxGameservers: number;
+  maxUsers: number;
+  eventRetentionDays: number;
+  maxVariables: number;
+  maxModules: number;
+  maxFunctionsInModule: number;
+
+  serverRegistrationToken?: string;
+
   rateLimitPoints: number;
   rateLimitDuration: number;
 

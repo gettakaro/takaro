@@ -1,5 +1,5 @@
 import { BaseObject, BaseProperty, InputType } from '.';
-import { countryCodes } from 'components/selects/CountrySelect/countryCodes';
+import { countryCodes } from '../../../../../../components/selects/CountrySelectField/countryCodes';
 
 export interface CountryInput extends BaseObject {
   type: InputType.country;

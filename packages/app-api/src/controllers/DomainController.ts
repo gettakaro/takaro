@@ -17,7 +17,8 @@ import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Request, Response } from 'express';
 import { TokenOutputDTO, TokenInputDTO, AuthService } from '../service/AuthService.js';
 import { adminAuthMiddleware } from '../middlewares/adminAuth.js';
-import { AllowedFilters } from './shared.js';
+import { TakaroDTO } from '@takaro/util';
+import { AllowedFilters, AllowedSearch } from './shared.js';
 
 export class DomainCreateOutputDTOAPI extends APIOutput<DomainCreateOutputDTO> {
   @Type(() => DomainCreateOutputDTO)
@@ -55,19 +56,33 @@ export class DomainSearchInputAllowedFilters extends AllowedFilters {
   externalReference!: string[];
 }
 
+export class DomainSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name!: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  externalReference!: string[];
+}
+
 export class DomainSearchInputDTO extends ITakaroQuery<DomainOutputDTO> {
   @ValidateNested()
   @Type(() => DomainSearchInputAllowedFilters)
   declare filters: DomainSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => DomainSearchInputAllowedFilters)
-  declare search: DomainSearchInputAllowedFilters;
+  @Type(() => DomainSearchInputAllowedSearch)
+  declare search: DomainSearchInputAllowedSearch;
 }
 export class TokenOutputDTOAPI extends APIOutput<TokenOutputDTO> {
   @Type(() => TokenOutputDTO)
   @ValidateNested()
   declare data: TokenOutputDTO;
+}
+
+class ResolveRegistrationTokenInputDTO extends TakaroDTO<ResolveRegistrationTokenInputDTO> {
+  @IsString()
+  registrationToken: string;
 }
 
 @OpenAPI({
@@ -125,5 +140,12 @@ export class DomainController {
   async getToken(@Body() body: TokenInputDTO) {
     const authService = new AuthService(body.domainId);
     return apiResponse(await authService.getAgentToken());
+  }
+
+  @Post('/resolve-registration-token')
+  @ResponseSchema(DomainOutputDTOAPI)
+  async resolveRegistrationToken(@Body() body: ResolveRegistrationTokenInputDTO) {
+    const service = new DomainService();
+    return apiResponse(await service.resolveByRegistrationToken(body.registrationToken));
   }
 }

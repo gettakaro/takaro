@@ -1,5 +1,5 @@
 import { Dropdown, styled, getInitials } from '@takaro/lib-components';
-import { useAuth } from 'hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 import {
   AiOutlineUser as ProfileIcon,
   AiOutlineLogout as LogoutIcon,
@@ -8,7 +8,8 @@ import {
 import { IoSwapHorizontal as SwitchDomainIcon } from 'react-icons/io5';
 import { useNavigate } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
-import { userMeQueryOptions } from 'queries/user';
+import { userMeQueryOptions } from '../../queries/user';
+import { setLastUsedDomainId } from '../../util/lastUsedDomain';
 
 const User = styled.div`
   display: grid;
@@ -48,7 +49,6 @@ const Name = styled.div`
     color: ${({ theme }) => theme.colors.text};
     font-weight: 600;
     margin-bottom: ${({ theme }) => theme.spacing['0_25']};
-    text-transform: capitalize;
   }
   p {
     opacity: 0.8;
@@ -79,12 +79,18 @@ export const UserDropdown = () => {
       </Dropdown.Trigger>
       <Dropdown.Menu>
         <Dropdown.Menu.Item
-          onClick={() => navigate({ to: '/account/profile', search: { flowId: '' } })}
+          onClick={() => navigate({ to: '/account/profile' })}
           label="Profile"
           icon={<ProfileIcon />}
         />
         <Dropdown.Menu.Item
-          onClick={() => navigate({ to: '/domain/select' })}
+          onClick={() => {
+            // Save current domain as last used before switching
+            if (data.domain) {
+              setLastUsedDomainId(data.domain);
+            }
+            navigate({ to: '/domain/select' });
+          }}
           label="Switch domain"
           disabled={!hasMultipleDomains}
           icon={<SwitchDomainIcon />}

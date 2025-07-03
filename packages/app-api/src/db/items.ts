@@ -40,9 +40,31 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
       query: model.query().modify('domainScoped', this.domainId),
     };
   }
+
+  async translateItemCodesToIds(gameserverId: string, codes: string[]): Promise<ItemsOutputDTO[]> {
+    const { query } = await this.getModel();
+    const data = await query.whereIn('code', codes).andWhere('gameserverId', gameserverId);
+
+    if (!data) {
+      throw new errors.NotFoundError();
+    }
+
+    return Promise.all(data.map((item) => new ItemsOutputDTO(item)));
+  }
+
   async find(filters: ITakaroQuery<ItemsOutputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<ItemsModel, ItemsOutputDTO>(filters).build(query);
+
+    if (!filters.sortBy) {
+      // Add a sort by length of `code` so that short codes are up front
+      // This provides much better search results for users. Eg the difference between `resourceWood` vs `awningWoodShapes:woodDebris07`
+      query.orderByRaw('LENGTH("code") ASC');
+    }
+
+    const qry = new QueryBuilder<ItemsModel, ItemsOutputDTO>(filters).build(query);
+
+    const result = await qry;
+
     return {
       total: result.total,
       results: await Promise.all(result.results.map((item) => new ItemsOutputDTO(item))),

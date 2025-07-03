@@ -41,7 +41,17 @@
                 "id": "e916d79e-71d7-44f5-a441-ac81515367ac",
                 "roleId": "cf85e41d-8b5b-4cdf-8c3d-c69e5712ff4f",
                 "count": 0,
-                "permissionId": "3b7f6e7e-14fa-48b2-9b62-2aff6575350f"
+                "permissionId": "3b7f6e7e-14fa-48b2-9b62-2aff6575350f",
+                "permission": {
+                  "createdAt": "2025-01-26T18:01:45.299Z",
+                  "updatedAt": "2025-01-26T18:01:45.299Z",
+                  "id": "f6ca94b8-e33c-4579-8e18-23ea816d1d31",
+                  "permission": "MANAGE_GAMESERVERS",
+                  "description": "Can create, update, and delete game servers",
+                  "friendlyName": "Manage Game Servers",
+                  "canHaveCount": false,
+                  "moduleVersionId": null
+                }
               }
             ]
           }
@@ -74,7 +84,8 @@
       "roleId",
       "gameServerId",
       "epicOnlineServicesId",
-      "xboxLiveId"
+      "xboxLiveId",
+      "platformId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

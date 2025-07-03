@@ -1,27 +1,24 @@
 import 'reflect-metadata';
 
-import { HTTP } from '@takaro/http';
-import { ctx, errors, logger } from '@takaro/util';
+import { randomUUID } from 'crypto';
+import { getBullBoard, queueService } from '@takaro/queues';
+import { getAdminBasicAuth, HTTP } from '@takaro/http';
+import { errors, logger } from '@takaro/util';
 import { DomainController } from './controllers/DomainController.js';
 import { Server as HttpServer } from 'http';
 import { config } from './config.js';
 import { UserController } from './controllers/UserController.js';
 import { RoleController } from './controllers/Rolecontroller.js';
 import { GameServerController } from './controllers/GameServerController.js';
-import { DomainOutputDTO, DomainService } from './service/DomainService.js';
-import { GameServerService } from './service/GameServerService.js';
 import { FunctionController } from './controllers/FunctionController.js';
 import { CronJobController } from './controllers/CronJobController.js';
-import { ModuleController } from './controllers/ModuleController.js';
 import { EventsWorker } from './workers/eventWorker.js';
 import { getSocketServer } from './lib/socketServer.js';
 import { HookController } from './controllers/HookController.js';
 import { PlayerController } from './controllers/PlayerController.js';
 import { SettingsController } from './controllers/SettingsController.js';
 import { CommandController } from './controllers/CommandController.js';
-import { ModuleService } from './service/ModuleService.js';
 import { VariableController } from './controllers/VariableController.js';
-import { CronJobService } from './service/CronJobService.js';
 import { ExternalAuthController } from './controllers/ExternalAuthController.js';
 import { AuthService } from './service/AuthService.js';
 import { DiscordController } from './controllers/DiscordController.js';
@@ -32,11 +29,9 @@ import { CronJobWorker } from './workers/cronjobWorker.js';
 import { CommandWorker } from './workers/commandWorker.js';
 import { PlayerOnGameServerController } from './controllers/PlayerOnGameserverController.js';
 import { ItemController } from './controllers/ItemController.js';
-import { ItemsSyncWorker } from './workers/ItemsSyncWorker.js';
+import { EntityController } from './controllers/EntityController.js';
 import { PlayerSyncWorker } from './workers/playerSyncWorker.js';
 import { CSMMImportWorker } from './workers/csmmImportWorker.js';
-import { SteamSyncWorker } from './workers/steamSyncWorker.js';
-import { BansSyncWorker } from './workers/bansSyncWorker.js';
 import { AxiosError } from 'axios';
 import { StatsController } from './controllers/StatsController.js';
 import { KPIWorker } from './workers/kpiWorker.js';
@@ -44,6 +39,10 @@ import { ShopOrderController } from './controllers/Shop/Order.js';
 import { ShopListingController } from './controllers/Shop/Listing.js';
 import { SystemWorker } from './workers/systemWorker.js';
 import { BanController } from './controllers/BanController.js';
+import { ModuleController } from './controllers/Module/modules.js';
+import { ModuleVersionController } from './controllers/Module/versions.js';
+import { ModuleInstallationsController } from './controllers/Module/installations.js';
+import { TrackingController } from './controllers/TrackingController.js';
 
 export const server = new HTTP(
   {
@@ -55,6 +54,8 @@ export const server = new HTTP(
       FunctionController,
       CronJobController,
       ModuleController,
+      ModuleVersionController,
+      ModuleInstallationsController,
       HookController,
       PlayerController,
       SettingsController,
@@ -65,10 +66,12 @@ export const server = new HTTP(
       EventController,
       PlayerOnGameServerController,
       ItemController,
+      EntityController,
       StatsController,
       ShopListingController,
       ShopOrderController,
       BanController,
+      TrackingController,
     ],
   },
   {
@@ -109,17 +112,8 @@ async function main() {
     new HookWorker(config.get('queues.hooks.concurrency'));
     log.info('👷 Hook worker started');
 
-    new ItemsSyncWorker();
-    log.info('👷 Items sync worker started');
-
     new PlayerSyncWorker();
     log.info('👷 playerSync worker started');
-
-    new BansSyncWorker();
-    log.info('👷 bansSync worker started');
-
-    new SteamSyncWorker();
-    log.info('👷 steamSync worker started');
 
     new CSMMImportWorker();
     log.info('👷 csmmImport worker started');
@@ -132,48 +126,16 @@ async function main() {
   }
 
   await getSocketServer(server.server as HttpServer);
+  server.expressInstance.use('/queues', getAdminBasicAuth(config.get('adminClientSecret')), getBullBoard());
+
   await server.start();
 
   log.info('🚀 Server started');
 
   await discordBot.start();
-
-  const domainService = new DomainService();
-  const domains = await domainService.find({});
-
-  const results = await Promise.allSettled(domains.results.map(ctx.wrap('domainInit', domainInit)));
-  const rejected = results.map((r) => (r.status === 'rejected' ? r.reason : null)).filter(Boolean);
-  if (rejected.length) {
-    log.error('Failed to initialize some domains', { errors: rejected });
-  }
 }
 
 main();
-
-async function domainInit(domain: DomainOutputDTO) {
-  ctx.addData({ domain: domain.id });
-  log.info('🌱 Seeding database with builtin modules');
-  const moduleService = new ModuleService(domain.id);
-  await moduleService.seedBuiltinModules();
-
-  log.info('🔌 Starting all game servers');
-  const gameServerService = new GameServerService(domain.id);
-  const cronjobService = new CronJobService(domain.id);
-  const gameServers = await gameServerService.find({});
-
-  await Promise.all(
-    gameServers.results.map(async (gameserver) => {
-      const installedModules = await gameServerService.getInstalledModules({
-        gameserverId: gameserver.id,
-      });
-      await Promise.all(
-        installedModules.map(async (mod) => {
-          await cronjobService.syncModuleCronjobs(mod);
-        }),
-      );
-    }),
-  );
-}
 
 process.on('unhandledRejection', (reason) => {
   if (reason instanceof AxiosError) {
@@ -190,4 +152,14 @@ process.on('unhandledRejection', (reason) => {
 
 process.on('uncaughtException', (error: Error) => {
   log.error(`Caught exception: ${error}\n Exception origin: ${error.stack}`);
+});
+
+/**
+ * Nodemon sends a SIGUSR2 signal when it restarts the process
+ * So we know we're in localdev -> so reload the modules
+ */
+process.on('SIGUSR2', async () => {
+  console.log('Adding job to reload modules');
+  await queueService.queues.system.queue.add({ domainId: 'all' }, { jobId: randomUUID(), delay: 1000 });
+  process.exit(0);
 });

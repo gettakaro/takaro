@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { itemsQueryOptions } from 'queries/item';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { itemsQueryOptions } from '../../../queries/item';
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table';
 
 import { ItemsOutputDTO, ItemSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
@@ -32,10 +32,8 @@ export function Component() {
         gameserverId: columnFilters.columnFiltersState.find((filter) => filter.id === 'gameserverId')?.value,
       },
       search: {
-        id: columnSearch.columnSearchState.find((search) => search.id === 'id')?.value,
         code: columnSearch.columnSearchState.find((search) => search.id === 'code')?.value,
         name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value,
-        gameserverId: columnSearch.columnSearchState.find((search) => search.id === 'gameserverId')?.value,
       },
     }),
   });

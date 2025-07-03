@@ -1,0 +1,21 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Should render <Empty /> 1`] = `
+<div>
+  <div
+    class="sc-aXZVg csqXIR"
+  >
+    <h2>
+      this is the header
+    </h2>
+    <p
+      class="sc-eqUAAy flGMfW"
+    >
+      this is the description
+    </p>
+    <div
+      class="sc-gEvEer eufunr"
+    />
+  </div>
+</div>
+`;

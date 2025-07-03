@@ -26,7 +26,7 @@ export const Default = () => {
   return (
     <Container>
       <JsonSchemaForm schema={schema} initialData={{}} uiSchema={{}}>
-        <Button type="submit" text="Submit" />
+        <Button type="submit">Submit</Button>
       </JsonSchemaForm>
     </Container>
   );
@@ -50,7 +50,7 @@ export const MultiSelect = () => {
   return (
     <Container>
       <JsonSchemaForm schema={schema} initialData={{}} uiSchema={{}}>
-        <Button type="submit" text="Submit" />
+        <Button type="submit">Submit</Button>
       </JsonSchemaForm>
     </Container>
   );

@@ -1,12 +1,15 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { CommandOutputDTOAPI, CommandCreateDTO, CommandArgumentCreateDTO } from '@takaro/apiclient';
+import { describe } from 'node:test';
+import { randomUUID } from 'crypto';
 
 const group = 'CommandController';
 
-const mockCommand = (moduleId: string, name = 'Test command'): CommandCreateDTO => ({
+const mockCommand = (versionId: string, name = 'Test command'): CommandCreateDTO => ({
   name,
+  description: 'Cool description',
   trigger: 'test',
-  moduleId,
+  versionId,
 });
 
 const mockArgument = (commandId: string, name = 'Test argument'): CommandArgumentCreateDTO => ({
@@ -16,13 +19,14 @@ const mockArgument = (commandId: string, name = 'Test argument'): CommandArgumen
   position: 0,
 });
 
-async function setupModuleAndCommand(): Promise<CommandOutputDTOAPI> {
+async function setupModuleAndCommand(this: IntegrationTest<any>): Promise<CommandOutputDTOAPI> {
   const mod = (
     await this.client.module.moduleControllerCreate({
       name: 'Test module',
     })
   ).data.data;
-  return (await this.client.command.commandControllerCreate(mockCommand(mod.id))).data;
+
+  return (await this.client.command.commandControllerCreate(mockCommand(mod.latestVersion.id))).data;
 }
 
 const tests = [
@@ -46,7 +50,7 @@ const tests = [
           name: 'Test module',
         })
       ).data.data;
-      return this.client.command.commandControllerCreate(mockCommand(module.id));
+      return this.client.command.commandControllerCreate(mockCommand(module.latestVersion.id));
     },
     filteredFields: ['moduleId', 'functionId'],
   }),
@@ -58,6 +62,7 @@ const tests = [
     test: async function () {
       return this.client.command.commandControllerUpdate(this.setupData.data.id, {
         name: 'Updated command',
+        description: 'Updated description',
       });
     },
     filteredFields: ['moduleId', 'functionId'],
@@ -117,7 +122,7 @@ const tests = [
 
       // Creating an argument with the same name in a different command should work
       const newCommand = await this.client.command.commandControllerCreate(
-        mockCommand(this.setupData.data.moduleId, 'command 2'),
+        mockCommand(this.setupData.data.versionId, 'command 2'),
       );
 
       const arg2res = await this.client.command.commandControllerCreateArgument(
@@ -131,6 +136,36 @@ const tests = [
     },
     filteredFields: ['moduleId', 'functionId', 'commandId'],
     expectedStatus: 409,
+  }),
+  new IntegrationTest<CommandOutputDTOAPI>({
+    group,
+    snapshot: true,
+    name: 'Can search by moduleId',
+    setup: setupModuleAndCommand,
+    test: async function () {
+      const versionRes = await this.client.module.moduleVersionControllerGetModuleVersion(
+        this.setupData.data.versionId,
+      );
+
+      const res = await this.client.command.commandControllerSearch({
+        filters: {
+          moduleId: [versionRes.data.data.moduleId],
+        },
+      });
+
+      expect(res.data.data).to.have.length(1);
+
+      const badFilterRes = await this.client.command.commandControllerSearch({
+        filters: {
+          moduleId: [randomUUID()],
+        },
+      });
+
+      expect(badFilterRes.data.data).to.have.length(0);
+
+      return res;
+    },
+    filteredFields: ['moduleId', 'functionId', 'commandId'],
   }),
 ];
 

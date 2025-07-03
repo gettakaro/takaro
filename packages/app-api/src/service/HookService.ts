@@ -1,5 +1,6 @@
 import { TakaroService } from './Base.js';
 import { IHookJobData, queueService } from '@takaro/queues';
+import { Redis } from '@takaro/db';
 
 import { HookModel, HookRepo } from '../db/hook.js';
 import {
@@ -20,11 +21,11 @@ import safeRegex from 'safe-regex';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
-import { GameServerService, ModuleInstallDTO } from './GameServerService.js';
 import { HookEvents, isDiscordMessageEvent, EventPayload, EventTypes, EventMapping } from '@takaro/modules';
 import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
-import { PlayerService } from './PlayerService.js';
-import { ModuleService } from './ModuleService.js';
+import { PlayerService } from './Player/index.js';
+import { ModuleService } from './Module/index.js';
+import { InstallModuleDTO } from './Module/dto.js';
 
 interface IHandleHookOptions {
   eventType: EventTypes;
@@ -42,46 +43,42 @@ export class IsSafeRegex implements ValidatorConstraintInterface {
 export class HookOutputDTO extends TakaroModelDTO<HookOutputDTO> {
   @IsString()
   name: string;
-
+  @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
   @IsString()
   regex: string;
-
   @Type(() => FunctionOutputDTO)
   @ValidateNested()
   function: FunctionOutputDTO;
-
   @IsEnum(HookEvents)
-  eventType!: EventTypes;
-
+  eventType: EventTypes;
   @IsUUID()
-  moduleId: string;
+  versionId: string;
 }
 
 export class HookCreateDTO extends TakaroDTO<HookCreateDTO> {
   @IsString()
   @Length(1, 50)
   name: string;
-
+  @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
   @Validate(IsSafeRegex, {
     message:
       'Regex did not pass validation (see the underlying package for more details: https://www.npmjs.com/package/safe-regex)',
   })
   @IsString()
   regex: string;
-
   @IsUUID()
-  moduleId: string;
-
+  versionId: string;
   @IsEnum(HookEvents)
   eventType!: EventTypes;
-
   @IsOptional()
   @IsString()
   function?: string;
-
-  @IsOptional()
-  @IsString()
-  discordChannelId?: string;
 }
 
 export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
@@ -89,7 +86,10 @@ export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
   @IsString()
   @IsOptional()
   name: string;
-
+  @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
   @Validate(IsSafeRegex, {
     message:
       'Regex did not pass validation (see the underlying package for more details: https://www.npmjs.com/package/safe-regex)',
@@ -97,41 +97,32 @@ export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
   @IsString()
   @IsOptional()
   regex: string;
-
   @IsEnum(HookEvents)
   @IsOptional()
-  eventType!: EventTypes;
-
+  eventType: EventTypes;
   @IsOptional()
   @IsString()
   function?: string;
-
-  @IsOptional()
-  @IsString()
-  discordChannelId?: string;
 }
 
 export class HookTriggerDTO extends TakaroDTO<HookTriggerDTO> {
   @IsUUID()
   gameServerId: string;
-
   @IsOptional()
   @IsUUID()
   playerId?: string;
-
   @IsOptional()
   @IsUUID()
   moduleId?: string;
-
   @IsEnum(HookEvents)
   eventType!: EventTypes;
-
   @IsObject()
   eventMeta: EventPayload;
 }
 
 @traceableClass('service:hook')
 export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCreateDTO, HookUpdateDTO> {
+  private moduleService = new ModuleService(this.domainId);
   get repo() {
     return new HookRepo(this.domainId);
   }
@@ -161,10 +152,7 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
     }
 
     const created = await this.repo.create(new HookCreateDTO({ ...item, function: fnIdToAdd }));
-
-    const moduleService = new ModuleService(this.domainId);
-    await moduleService.refreshInstallations(item.moduleId);
-
+    await this.moduleService.refreshInstallations(created.versionId);
     return created;
   }
   async update(id: string, item: HookUpdateDTO) {
@@ -191,18 +179,17 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
 
     const updated = await this.repo.update(id, item);
 
-    const gameServerService = new GameServerService(this.domainId);
-    const installations = await gameServerService.getInstalledModules({ moduleId: updated.moduleId });
+    const installations = await this.moduleService.getInstalledModules({ versionId: updated.versionId });
     await Promise.all(
       installations.map((i) => {
         const newSystemConfig = i.systemConfig;
         const cmdCfg = newSystemConfig.hooks[existing.name];
         delete newSystemConfig.hooks[existing.name];
         newSystemConfig.hooks[updated.name] = cmdCfg;
-        return gameServerService.installModule(
-          i.gameserverId,
-          i.moduleId,
-          new ModuleInstallDTO({
+        return this.moduleService.installModule(
+          new InstallModuleDTO({
+            gameServerId: i.gameserverId,
+            versionId: i.versionId,
             userConfig: JSON.stringify(i.userConfig),
             systemConfig: JSON.stringify(newSystemConfig),
           }),
@@ -220,9 +207,19 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
 
   async handleEvent(opts: IHandleHookOptions) {
     const { eventData, eventType, gameServerId, playerId } = opts;
-    const gameServerService = new GameServerService(this.domainId);
+    this.log.debug('handleEvent: Processing event for hooks', {
+      eventType,
+      gameServerId,
+      hasPlayer: !!playerId,
+    });
+
+    const redis = await Redis.getClient('service:hook');
 
     const triggeredHooks = await this.repo.getTriggeredHooks(eventType, gameServerId);
+    this.log.debug('handleEvent: Found triggered hooks', {
+      eventType,
+      hookCount: triggeredHooks.length,
+    });
 
     const hooksAfterFilters = triggeredHooks
       // Regex checks
@@ -236,6 +233,10 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
 
     if (hooksAfterFilters.length) {
       this.log.info(`Found ${hooksAfterFilters.length} hooks that match the event`);
+      this.log.debug('handleEvent: Hooks after regex filtering', {
+        originalCount: triggeredHooks.length,
+        filteredCount: hooksAfterFilters.length,
+      });
       const hookData: Partial<IHookJobData> = {
         eventData: eventData,
         domainId: this.domainId,
@@ -256,27 +257,74 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
         hookData.player = globalPlayer;
       }
 
-      await Promise.all(
-        hooksAfterFilters.map(async (hook) => {
-          // This is to solve a pass-by-reference issue
-          const copiedHookData = { ...hookData };
+      for (const hook of hooksAfterFilters) {
+        // This is to solve a pass-by-reference issue
+        const copiedHookData = { ...hookData };
 
-          const moduleInstallation = await gameServerService.getModuleInstallation(gameServerId, hook.moduleId);
-          if (!moduleInstallation.systemConfig.enabled) return;
-          if (!moduleInstallation.systemConfig.hooks[hook.name].enabled) return;
+        const moduleInstallations = await this.moduleService.getInstalledModules({
+          gameserverId: gameServerId,
+          versionId: hook.versionId,
+        });
+
+        for (const installation of moduleInstallations) {
+          if (!installation.systemConfig.enabled) continue;
+          const hookConfig = installation.systemConfig.hooks[hook.name];
+          if (!hookConfig.enabled) continue;
 
           if (isDiscordMessageEvent(eventData)) {
-            const configuredChannel = moduleInstallation.systemConfig.hooks[hook.name].discordChannelId;
-            if (eventData.channel.id !== configuredChannel) return;
+            const configuredChannel = hookConfig.discordChannelId;
+            if (eventData.channel.id !== configuredChannel) continue;
           }
 
           copiedHookData.functionId = hook.function.id;
           copiedHookData.itemId = hook.id;
-          copiedHookData.module = await gameServerService.getModuleInstallation(gameServerId, hook.moduleId);
+          copiedHookData.module = installation;
 
-          return queueService.queues.hooks.queue.add(copiedHookData as IHookJobData);
-        }),
-      );
+          if (hookConfig.cooldown) {
+            const cooldownType = hookConfig.cooldownType;
+            let cooldownKey = `${this.domainId}:hook:${hook.id}:cooldown`;
+
+            switch (cooldownType) {
+              case 'player':
+                // If no player is attached to this event, we'll assume it's a server cooldown
+                if (!playerId) {
+                  cooldownKey += `:${gameServerId}`;
+                  break;
+                }
+                cooldownKey += `:${playerId}`;
+                break;
+              case 'server':
+                cooldownKey += `:${gameServerId}`;
+                break;
+              default:
+                break;
+            }
+
+            const cooldown = await redis.get(cooldownKey);
+            if (cooldown) {
+              this.log.debug(`Hook ${hook.id} is on cooldown`);
+              continue;
+            }
+            await redis.set(cooldownKey, '1', {
+              EX: hookConfig.cooldown,
+            });
+          }
+
+          this.log.debug('handleEvent: Adding hook job to queue', {
+            hookId: hook.id,
+            hookName: hook.name,
+            delay: (hookConfig.delay || 0) * 1000,
+            cooldown: hookConfig.cooldown,
+            cooldownType: hookConfig.cooldownType,
+          });
+
+          await queueService.queues.hooks.queue.add(copiedHookData as IHookJobData, {
+            delay: (hookConfig.delay || 0) * 1000,
+          });
+
+          this.log.debug('handleEvent: Hook job added to queue successfully');
+        }
+      }
     }
   }
 

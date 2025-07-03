@@ -7,21 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Container, StyledForm, InputsContainer, QuickSelectGrid, TenseGrid } from './style';
 
 export type timeDirection = 'past' | 'future' | 'pastAndFuture';
-
-export enum Tense {
-  Last = 'Last',
-  Next = 'Next',
-}
-
-export enum Unit {
-  Seconds = 'Seconds',
-  Minutes = 'Minutes',
-  Hours = 'Hours',
-  Days = 'Days',
-  Weeks = 'Weeks',
-  Months = 'Months',
-  Years = 'Years',
-}
+import { Tense, Unit } from '../../types';
 
 interface RelativePickerProps {
   onChange: (value: DateTime, friendlyName?: string) => void;
@@ -99,7 +85,6 @@ export const RelativePicker: FC<RelativePickerProps> = ({ onChange, id, timeDire
         <StyledForm onSubmit={handleSubmit(handleChange)}>
           <InputsContainer>
             <SelectField
-              inPortal
               control={control}
               readOnly={timeDirection !== 'pastAndFuture'}
               name="tense"
@@ -121,7 +106,6 @@ export const RelativePicker: FC<RelativePickerProps> = ({ onChange, id, timeDire
             </SelectField>
             <TextField control={control} type="number" name="step" />
             <SelectField
-              inPortal
               control={control}
               name="unit"
               render={(selectedItems) => (
@@ -141,7 +125,7 @@ export const RelativePicker: FC<RelativePickerProps> = ({ onChange, id, timeDire
               </SelectField.OptionGroup>
             </SelectField>
           </InputsContainer>
-          <Button type="submit" text="Apply" />
+          <Button type="submit">Apply</Button>
         </StyledForm>
 
         <Divider fullWidth />

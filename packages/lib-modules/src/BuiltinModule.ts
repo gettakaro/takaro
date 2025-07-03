@@ -28,6 +28,9 @@ export class ICommand extends TakaroDTO<ICommand> {
   @IsString()
   name: string;
   @IsString()
+  @IsOptional()
+  description?: string;
+  @IsString()
   function: string;
   @IsString()
   trigger: string;
@@ -44,14 +47,23 @@ export class IHook extends TakaroDTO<IHook> {
   @IsString()
   name: string;
   @IsString()
+  @IsOptional()
+  description?: string;
+  @IsString()
   function: string;
   @IsEnum(Object.values(HookEvents))
   eventType: EventTypes;
+  @IsString()
+  @IsOptional()
+  regex?: string;
 }
 
 export class ICronJob extends TakaroDTO<ICronJob> {
   @IsString()
   name: string;
+  @IsString()
+  @IsOptional()
+  description?: string;
   @IsString()
   function: string;
   @IsString()
@@ -61,6 +73,9 @@ export class ICronJob extends TakaroDTO<ICronJob> {
 export class IFunction extends TakaroDTO<IFunction> {
   @IsString()
   name: string;
+  @IsString()
+  @IsOptional()
+  description?: string;
   @IsString()
   function: string;
 }
@@ -77,40 +92,48 @@ export class IPermission extends TakaroDTO<IPermission> {
   canHaveCount?: boolean;
 }
 
-export class BuiltinModule<T> extends TakaroDTO<T> {
-  constructor(name: string, description: string, configSchema: string, uiSchema: string = JSON.stringify({})) {
-    super();
-    this.name = name;
-    this.description = description;
-    this.configSchema = configSchema;
-    this.uiSchema = uiSchema;
-  }
-
+export class ModuleTransferVersionDTO<T> extends TakaroDTO<T> {
   @IsString()
-  public name: string;
+  public tag: string;
   @IsString()
   public description: string;
   @IsString()
   public configSchema: string;
   @IsString()
   public uiSchema: string;
-
   @ValidateNested({ each: true })
   @Type(() => ICommand)
-  public commands: Array<ICommand> = [];
+  @IsOptional()
+  public commands?: Array<ICommand>;
   @ValidateNested({ each: true })
   @Type(() => IHook)
-  public hooks: Array<IHook> = [];
+  @IsOptional()
+  public hooks?: Array<IHook>;
   @ValidateNested({ each: true })
   @Type(() => ICronJob)
-  public cronJobs: Array<ICronJob> = [];
+  @IsOptional()
+  public cronJobs?: Array<ICronJob>;
   @ValidateNested({ each: true })
   @Type(() => IFunction)
-  public functions: Array<IFunction> = [];
+  @IsOptional()
+  public functions?: Array<IFunction>;
   @IsArray()
   @Type(() => IPermission)
   @ValidateNested({ each: true })
-  public permissions: IPermission[] = [];
+  @IsOptional()
+  public permissions?: IPermission[];
+}
+
+export class ModuleTransferDTO<T> extends TakaroDTO<T> {
+  @IsString()
+  public name: string;
+  @IsString()
+  @IsOptional()
+  takaroVersion = process.env.TAKARO_VERSION;
+
+  @ValidateNested({ each: true })
+  @Type(() => ModuleTransferVersionDTO)
+  versions: ModuleTransferVersionDTO<T>[];
 
   protected loadFn(type: 'commands' | 'hooks' | 'cronJobs' | 'functions', name: string) {
     const folderPath = path.join(__dirname, 'modules', this.name, type);

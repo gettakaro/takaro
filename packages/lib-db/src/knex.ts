@@ -10,9 +10,10 @@ const { knex: createKnex } = knexPkg;
 type KnexClient = knexPkg.Knex<TakaroModel, unknown[]>;
 
 export function getKnexOptions(extra: Record<string, unknown> = {}) {
-  const opts = {
+  const opts: knexPkg.Knex.Config = {
     client: 'pg',
     connection: {
+      connectionString: config.get('postgres.connectionString'),
       host: config.get('postgres.host'),
       port: config.get('postgres.port'),
       user: config.get('postgres.user'),

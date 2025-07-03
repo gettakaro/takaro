@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { SelectField, TextField, Button, Alert } from '@takaro/lib-components';
+import { SelectField, TextField, Button, Alert, TextAreaField } from '@takaro/lib-components';
 import { HookCreateDTOEventTypeEnum, HookOutputDTO, HookUpdateDTO } from '@takaro/apiclient';
-import { hookQueryOptions, useHookUpdate } from 'queries/module';
+import { hookQueryOptions, useHookUpdate } from '../../../../../queries/module';
 import { FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
@@ -11,26 +11,29 @@ import { useQuery } from '@tanstack/react-query';
 const validationSchema = z.object({
   regex: z.string(),
   eventType: z.string(),
+  description: z.string().optional(),
 });
 type FormInputs = z.infer<typeof validationSchema>;
 
 interface HookConfigProps {
   itemId: string;
   readOnly?: boolean;
+  moduleId: string;
 }
-export const HookConfig: FC<HookConfigProps> = ({ itemId, readOnly }) => {
+export const HookConfig: FC<HookConfigProps> = ({ itemId, readOnly, moduleId }) => {
   const { data: hook, isPending, isError } = useQuery(hookQueryOptions(itemId));
   if (isPending) return <ConfigLoading />;
   if (isError) return <Alert variant="error" text="Failed to load hook config" />;
-  return <HookConfigForm hook={hook} readOnly={readOnly} />;
+  return <HookConfigForm hook={hook} readOnly={readOnly} moduleId={moduleId} />;
 };
 
 interface HookConfigFormProps {
   hook: HookOutputDTO;
   readOnly?: boolean;
+  moduleId: string;
 }
 
-export const HookConfigForm: FC<HookConfigFormProps> = ({ readOnly = false, hook }) => {
+export const HookConfigForm: FC<HookConfigFormProps> = ({ readOnly = false, hook, moduleId }) => {
   const { mutateAsync, isPending } = useHookUpdate();
 
   const { control, handleSubmit, formState } = useForm<FormInputs>({
@@ -39,6 +42,7 @@ export const HookConfigForm: FC<HookConfigFormProps> = ({ readOnly = false, hook
     values: {
       regex: hook.regex,
       eventType: hook.eventType,
+      description: hook.description,
     },
   });
 
@@ -46,11 +50,20 @@ export const HookConfigForm: FC<HookConfigFormProps> = ({ readOnly = false, hook
     await mutateAsync({
       hookId: hook.id,
       hook: data as HookUpdateDTO,
+      moduleId,
+      versionId: hook.versionId,
     });
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <TextAreaField
+        control={control}
+        name="description"
+        label="Description"
+        description="A description of what this hook does"
+        readOnly={readOnly}
+      />
       <TextField control={control} name="regex" label="Regex" readOnly={readOnly} />
       <SelectField
         control={control}
@@ -75,7 +88,9 @@ export const HookConfigForm: FC<HookConfigFormProps> = ({ readOnly = false, hook
         </SelectField.OptionGroup>
       </SelectField>
       {!readOnly && (
-        <Button disabled={!formState.isDirty} isLoading={isPending} fullWidth type="submit" text="Save hook config" />
+        <Button disabled={!formState.isDirty} isLoading={isPending} fullWidth type="submit">
+          Save hook config
+        </Button>
       )}
     </form>
   );

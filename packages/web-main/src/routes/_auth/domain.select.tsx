@@ -1,34 +1,37 @@
-import { Card, Chip, Company, styled } from '@takaro/lib-components';
-import { DomainOutputDTO } from '@takaro/apiclient';
+import { Card, Chip, Company, styled, Tooltip } from '@takaro/lib-components';
+import { DomainOutputDTO, DomainOutputDTOStateEnum } from '@takaro/apiclient';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useUserSetSelectedDomain, userMeQueryOptions } from 'queries/user';
+import { useUserSetSelectedDomain, userMeQueryOptions } from '../../queries/user';
 import { MdDomain as DomainIcon } from 'react-icons/md';
 import { AiOutlineArrowRight as ArrowRightIcon } from 'react-icons/ai';
-import { useQueryClient } from '@tanstack/react-query';
-
-export const TAKARO_DOMAIN_COOKIE_REGEX = /(?:(?:^|.*;\s*)takaro-domain\s*=\s*([^;]*).*$)|^.*$/;
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { TAKARO_DOMAIN_COOKIE_REGEX } from '../../util/domainCookieRegex';
+import { getLastUsedDomainId, setLastUsedDomainId } from '../../util/lastUsedDomain';
+import { useEffect } from 'react';
 
 const Container = styled.div`
   padding: ${({ theme }) => theme.spacing[4]};
-  height: 100vh;
+  min-height: 100vh;
 `;
 
 const DomainCardList = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   margin: auto;
-  width: 450px;
   gap: ${({ theme }) => theme.spacing[2]};
-  height: 85vh;
+  width: 100%;
+  max-width: 1000px;
+  margin: ${({ theme }) => theme.spacing[2]} auto auto auto;
+
+  @media (max-width: 1500px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
-export const CardBody = styled.div`
+const InnerBody = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 500px;
   height: 100px;
 `;
 
@@ -40,17 +43,41 @@ export const Route = createFileRoute('/_auth/domain/select')({
 });
 
 function Component() {
-  const me = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
   const currentDomain = document.cookie.replace(TAKARO_DOMAIN_COOKIE_REGEX, '$1');
+  const { data: me } = useQuery({ ...userMeQueryOptions(), initialData: loaderData });
+  const navigate = useNavigate();
+  const { mutate } = useUserSetSelectedDomain();
+  const queryClient = useQueryClient();
 
-  // Keep current domain at the top
+  // Get last used domain on component mount
+  const lastUsedDomainId = getLastUsedDomainId();
+
+  // Auto-select last used domain if available and different from current
+  useEffect(() => {
+    if (
+      lastUsedDomainId &&
+      lastUsedDomainId !== currentDomain &&
+      me.domains.some((d) => d.id === lastUsedDomainId && d.state === DomainOutputDTOStateEnum.Active)
+    ) {
+      mutate(
+        { domainId: lastUsedDomainId },
+        {
+          onSuccess: () => {
+            queryClient.clear();
+            navigate({ to: '/' });
+          },
+        },
+      );
+    }
+  }, [lastUsedDomainId, currentDomain, me.domains, mutate, navigate, queryClient]);
+
+  // Sort domains: current domain first, then last used domain, then others
   me.domains.sort((a, b) => {
-    if (a.id === currentDomain) {
-      return -1;
-    }
-    if (b.id === currentDomain) {
-      return 1;
-    }
+    if (a.id === currentDomain) return -1;
+    if (b.id === currentDomain) return 1;
+    if (a.id === lastUsedDomainId) return -1;
+    if (b.id === lastUsedDomainId) return 1;
     return 0;
   });
 
@@ -58,11 +85,8 @@ function Component() {
     <Container>
       <Company />
       <DomainCardList>
-        <h2>Select a domain:</h2>
         {me.domains.map((domain) => (
-          <>
-            <DomainCard domain={domain} isCurrentDomain={currentDomain === domain.id} />
-          </>
+          <DomainCard key={domain.id} domain={domain} isCurrentDomain={currentDomain === domain.id} />
         ))}
       </DomainCardList>
     </Container>
@@ -78,31 +102,78 @@ function DomainCard({ domain, isCurrentDomain }: DomainCardProps) {
   const navigate = useNavigate();
   const { mutate, isSuccess } = useUserSetSelectedDomain();
   const queryClient = useQueryClient();
+  const isDisabled = domain.state === DomainOutputDTOStateEnum.Disabled;
 
   const handleDomainSelectedClick = () => {
+    // Logging into a disabled domain is going to error out
+    if (isDisabled) return;
+
     if (isCurrentDomain === false) {
+      // Save as last used domain when selecting
+      setLastUsedDomainId(domain.id);
       mutate({ domainId: domain.id });
+    } else {
+      navigate({ to: '/' });
     }
   };
 
   if (isSuccess) {
     queryClient.clear();
-    navigate({ to: '/dashboard' });
+    navigate({ to: '/' });
+  }
+
+  function getDomainChip() {
+    switch (domain.state) {
+      case DomainOutputDTOStateEnum.Disabled: {
+        return (
+          <Tooltip>
+            <Tooltip.Trigger>
+              <Chip variant="outline" color="error" label="Disabled" />
+            </Tooltip.Trigger>
+            <Tooltip.Content>Domain disabled - this is likely due to an expired plan.</Tooltip.Content>
+          </Tooltip>
+        );
+      }
+      case DomainOutputDTOStateEnum.Active: {
+        return <Chip variant="outline" color="success" label="Active" />;
+      }
+      case DomainOutputDTOStateEnum.Maintenance: {
+        return (
+          <Tooltip>
+            <Tooltip.Trigger>
+              <Chip variant="outline" color="warning" label="Disabled" />
+            </Tooltip.Trigger>
+            <Tooltip.Content>
+              Domain in maintenance mode - We're likely upgrading our system, and everything should be back up shortly.
+              If not, reach out to us on Discord!
+            </Tooltip.Content>
+          </Tooltip>
+        );
+      }
+    }
   }
 
   return (
-    <Card role="link" onClick={handleDomainSelectedClick}>
-      <CardBody>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <DomainIcon size={30} />
-          {isCurrentDomain && <Chip variant="outline" color="primary" label="current domain" />}
-        </div>
-        <h2 style={{ display: 'flex', alignItems: 'center' }}>
-          {domain.name}
-          <ArrowRightIcon size={18} style={{ marginLeft: '10px' }} />
-        </h2>
-        <div></div>
-      </CardBody>
+    <Card
+      role="link"
+      onClick={domain.state === DomainOutputDTOStateEnum.Active ? handleDomainSelectedClick : undefined}
+    >
+      <Card.Body>
+        <InnerBody>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <DomainIcon size={30} />
+            <div style={{ display: 'flex', gap: '10px' }}>
+              {isCurrentDomain && <Chip variant="outline" color="primary" label="current domain" />}
+              {getDomainChip()}
+            </div>
+          </div>
+          <h2 style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ marginRight: '10px' }}>{domain.name}</div>
+            <Chip variant="outline" color="primary" label={domain.id} />
+            <ArrowRightIcon size={18} style={{ marginLeft: '10px' }} />
+          </h2>
+        </InnerBody>
+      </Card.Body>
     </Card>
   );
 }

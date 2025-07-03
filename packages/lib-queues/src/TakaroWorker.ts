@@ -27,9 +27,21 @@ export abstract class TakaroWorker<T> {
     this.bullWorker = new Worker(name, instrumentedProcessor as Processor, {
       connection: getRedisConnectionOptions(),
       concurrency,
-      removeOnComplete: { count: 100 },
-      removeOnFail: { count: 5000 },
+      removeOnComplete: { count: 10 },
+      removeOnFail: { count: 10 },
       ...extraBullOpts,
+    });
+
+    this.bullWorker.on('failed', (job, err) => {
+      if (job) {
+        this.log.error(`Job ${job.id} failed: ${err.message}`);
+      } else {
+        this.log.error(`Job failed: ${err.message}`);
+      }
+    });
+
+    this.bullWorker.on('completed', (job) => {
+      this.log.debug(`Job ${job.id} completed`);
     });
   }
 }

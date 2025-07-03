@@ -42,6 +42,9 @@ export const TakaroEvents = {
   SHOP_ORDER_CREATED: 'shop-order-created',
   SHOP_ORDER_STATUS_CHANGED: 'shop-order-status-changed',
   PLAYER_LINKED: 'player-linked',
+  GAMESERVER_CREATED: 'gameserver-created',
+  GAMESERVER_UPDATED: 'gameserver-updated',
+  GAMESERVER_DELETED: 'gameserver-deleted',
 } as const;
 
 export class BaseTakaroEvent<T> extends BaseEvent<T> {
@@ -314,6 +317,30 @@ export class TakaroEventShopOrderCreated extends BaseEvent<TakaroEventShopOrderC
   type = TakaroEvents.SHOP_ORDER_CREATED;
   @IsUUID()
   id: string;
+  @IsString()
+  listingName: string;
+  @IsNumber()
+  price: number;
+  @IsNumber()
+  amount: number;
+  @IsNumber()
+  totalPrice: number;
+  @ValidateNested({ each: true })
+  @Type(() => TakaroEventShopItem)
+  @IsOptional()
+  items?: TakaroEventShopItem[];
+}
+
+export class TakaroEventShopItem extends TakaroDTO<TakaroEventShopItem> {
+  @IsString()
+  name: string;
+  @IsString()
+  code: string;
+  @IsNumber()
+  amount: number;
+  @IsString()
+  @IsOptional()
+  quality?: string;
 }
 
 export class TakaroEventShopOrderStatusChanged extends BaseEvent<TakaroEventShopOrderStatusChanged> {
@@ -328,6 +355,21 @@ export class TakaroEventShopOrderStatusChanged extends BaseEvent<TakaroEventShop
 export class TakaroEventPlayerLinked extends BaseEvent<TakaroEventPlayerLinked> {
   @IsString()
   type = TakaroEvents.PLAYER_LINKED;
+}
+
+export class TakaroEventGameserverCreated extends BaseEvent<TakaroEventGameserverCreated> {
+  @IsString()
+  type = TakaroEvents.GAMESERVER_CREATED;
+}
+
+export class TakaroEventGameserverUpdated extends BaseEvent<TakaroEventGameserverUpdated> {
+  @IsString()
+  type = TakaroEvents.GAMESERVER_UPDATED;
+}
+
+export class TakaroEventGameserverDeleted extends BaseEvent<TakaroEventGameserverDeleted> {
+  @IsString()
+  type = TakaroEvents.GAMESERVER_DELETED;
 }
 
 export const TakaroEventsMapping = {
@@ -356,4 +398,7 @@ export const TakaroEventsMapping = {
   [TakaroEvents.SHOP_ORDER_CREATED]: TakaroEventShopOrderCreated,
   [TakaroEvents.SHOP_ORDER_STATUS_CHANGED]: TakaroEventShopOrderStatusChanged,
   [TakaroEvents.PLAYER_LINKED]: TakaroEventPlayerLinked,
+  [TakaroEvents.GAMESERVER_CREATED]: TakaroEventGameserverCreated,
+  [TakaroEvents.GAMESERVER_UPDATED]: TakaroEventGameserverUpdated,
+  [TakaroEvents.GAMESERVER_DELETED]: TakaroEventGameserverDeleted,
 } as const;

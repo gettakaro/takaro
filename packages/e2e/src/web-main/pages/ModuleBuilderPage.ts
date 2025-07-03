@@ -15,11 +15,11 @@ export class ModuleBuilderPage extends BasePage {
 
   async goto() {
     expect(this.mod.id).toBeTruthy();
-    await this.page.goto(`module-builder/${this.mod.id}`);
+    await this.page.goto(`module-builder/${this.mod.id}/latest`);
   }
 
   async getTreeFile(name: string): Promise<Locator> {
-    return this.page.getByRole('button', { name });
+    return this.page.getByRole('button', { name }).first();
   }
   async getTreeDir(name: 'hooks' | 'commands' | 'cronjobs' | 'functions'): Promise<Locator> {
     return this.page.getByRole('button', { name });
@@ -33,7 +33,7 @@ export class ModuleBuilderPage extends BasePage {
   }
 
   async openFile(name: string): Promise<void> {
-    await this.page.getByRole('button', { name, exact: true }).click();
+    await this.page.getByRole('button', { name, exact: true }).first().click();
   }
 
   async deleteFile(name: string): Promise<void> {

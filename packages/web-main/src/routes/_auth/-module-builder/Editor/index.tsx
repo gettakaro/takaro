@@ -4,7 +4,7 @@ import * as mon from 'monaco-editor';
 import { FileTabs } from './FileTabs';
 import { FunctionType, setExtraLibs } from './customTypes';
 import { defineTheme } from './theme';
-import { useFunctionUpdate } from 'queries/module';
+import { useFunctionUpdate } from '../../../../queries/module';
 import { useSnackbar } from 'notistack';
 import { Button, Tooltip, styled } from '@takaro/lib-components';
 import { AiFillSave as SaveIcon } from 'react-icons/ai';
@@ -38,6 +38,8 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const monacoRef = useRef<typeof mon | null>(null);
   const fileMap = useModuleBuilderContext((s) => s.fileMap);
+  const moduleId = useModuleBuilderContext((s) => s.moduleId);
+  const versionId = useModuleBuilderContext((s) => s.versionId);
 
   const activeFile = useModuleBuilderContext((s) => s.activeFile);
   if (!activeFile) {
@@ -73,6 +75,8 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
         }*/
 
         await updateFunction({
+          moduleId,
+          versionId,
           functionId: fileMap[activeFile].functionId,
           fn: { code: model.getValue() },
         });
@@ -98,7 +102,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
       <div style={{ width: '100%', height: '100%', position: 'relative' }}>
         <MonacoEditor
           width="100%"
-          height="100%"
+          height="99%"
           language="typescript"
           theme="takaro"
           path={activeFile}
@@ -200,7 +204,6 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
           onChange={(value) => {
             if (readOnly) return;
 
-            // update the code in the sandpack
             updateCode(value || '');
 
             if (modelVersionId !== editorInstance.current?.getModel()?.getAlternativeVersionId()) {
@@ -294,16 +297,17 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
           }}
         />
         {dirtyFiles.has(activeFile) && (
-          <div style={{ position: 'fixed', bottom: '20px', right: '40px' }}>
+          <div style={{ position: 'fixed', bottom: '20px', right: '40px', zIndex: 10000 }}>
             <Tooltip>
               <Tooltip.Trigger asChild>
                 <Button
                   icon={<SaveIcon />}
-                  text="Save file"
                   onClick={() => {
                     editorInstance.current?.getAction('save')?.run();
                   }}
-                />
+                >
+                  Save file
+                </Button>
               </Tooltip.Trigger>
               <Tooltip.Content>
                 You can also save with <strong>CTRL+S</strong>

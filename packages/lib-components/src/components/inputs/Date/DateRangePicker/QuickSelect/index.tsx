@@ -6,21 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useDateRangePickerDispatchContext, useDateRangePickerContext } from '../Context';
 import { DateTime, DateTimeUnit } from 'luxon';
 import { Container, StyledForm, InputsContainer, CommonlyUsedGrid } from './style';
-
-export enum Tense {
-  Last = 'Last',
-  Next = 'Next',
-}
-
-export enum Unit {
-  Seconds = 'Seconds',
-  Minutes = 'Minutes',
-  Hours = 'Hours',
-  Days = 'Days',
-  Weeks = 'Weeks',
-  Months = 'Months',
-  Years = 'Years',
-}
+import { Tense, Unit } from '../../types';
 
 interface FormInputs {
   tense: string;
@@ -99,7 +85,6 @@ export const QuickSelect: FC<QuickSelectProps> = ({ id }) => {
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
         <InputsContainer>
           <SelectField
-            inPortal
             control={control}
             name="tense"
             render={(selectedItems) => (
@@ -120,7 +105,6 @@ export const QuickSelect: FC<QuickSelectProps> = ({ id }) => {
           <TextField control={control} type="number" name="step" />
 
           <SelectField
-            inPortal
             control={control}
             name="unit"
             render={(selectedItems) => (
@@ -140,7 +124,7 @@ export const QuickSelect: FC<QuickSelectProps> = ({ id }) => {
             </SelectField.OptionGroup>
           </SelectField>
         </InputsContainer>
-        <Button type="submit" text="Apply" />
+        <Button type="submit">Apply</Button>
       </StyledForm>
 
       <Divider fullWidth />

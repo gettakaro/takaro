@@ -1,6 +1,6 @@
 import { GuildOutputDTO } from '@takaro/apiclient';
 import { Card, styled, UnControlledSwitch, Avatar } from '@takaro/lib-components';
-import { useDiscordGuildUpdate } from 'queries/discord';
+import { useDiscordGuildUpdate } from '../../../../../queries/discord';
 import { FC, useEffect, useState } from 'react';
 import { FaDiscord } from 'react-icons/fa';
 import { useSnackbar } from 'notistack';

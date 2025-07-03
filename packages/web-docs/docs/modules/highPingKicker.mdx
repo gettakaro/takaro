@@ -1,0 +1,141 @@
+---
+description: undefined
+---
+
+{/* AUTO-GENERATED CONTENT () */}
+
+import { Commands, Config, CronJobs, Hooks } from './helpers';
+
+# highPingKicker
+
+export function Module() {
+  const mod = {
+  "name": "highPingKicker",
+  "versions": [
+    {
+      "tag": "0.0.2",
+      "description": "Automatically kick players with high ping, with warnings and configurable thresholds.",
+      "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"pingThreshold\":{\"type\":\"number\",\"title\":\"Ping threshold\",\"description\":\"A ping value that is deemed too high and prompts a warning.\",\"default\":200,\"minimum\":0},\"warningsBeforeKick\":{\"type\":\"number\",\"title\":\"Kick warnings\",\"description\":\"Number of warnings before a player is kicked.\",\"default\":3,\"minimum\":0}},\"required\":[]}",
+      "cronJobs": [
+        {
+          "name": "Ping check",
+          "temporalValue": "*/5 * * * *",
+          "function": "import { takaro, data } from '@takaro/helpers';\nconst VARIABLE_KEY = 'highPingKicker:warnings';\nasync function main() {\n    const currentPlayers = await takaro.gameserver.gameServerControllerGetPlayers(data.gameServerId);\n    await Promise.all(currentPlayers.data.data.map(async (player) => {\n        if (player.ping > data.module.userConfig.pingThreshold) {\n            const takaroPlayerRes = await takaro.player.playerControllerSearch({\n                filters: {\n                    steamId: [player.steamId],\n                },\n            });\n            const takaroPlayer = takaroPlayerRes.data.data[0];\n            const currentWarningsRes = await takaro.variable.variableControllerSearch({\n                filters: {\n                    playerId: [takaroPlayer.id],\n                    key: [VARIABLE_KEY],\n                },\n            });\n            const currentWarningsRecords = currentWarningsRes.data.data;\n            let currentWarnings = 1;\n            if (!currentWarningsRecords.length) {\n                await takaro.variable.variableControllerCreate({\n                    playerId: takaroPlayer.id,\n                    key: VARIABLE_KEY,\n                    value: '1',\n                });\n            }\n            else {\n                currentWarnings = parseInt(currentWarningsRecords[0].value, 10) + 1;\n                await takaro.variable.variableControllerUpdate(currentWarningsRecords[0].id, {\n                    value: currentWarnings.toString(),\n                });\n            }\n            // Check if player should be kicked before sending warning\n            if (currentWarnings >= data.module.userConfig.warningsBeforeKick) {\n                await takaro.gameserver.gameServerControllerKickPlayer(data.gameServerId, takaroPlayer.id, {\n                    reason: `Your ping (${player.ping}) is too high, please try again later.`,\n                });\n                // Delete the warning record after kicking\n                if (currentWarningsRecords.length > 0) {\n                    await takaro.variable.variableControllerDelete(currentWarningsRecords[0].id);\n                }\n            }\n            else {\n                // Only send warning if player won't be kicked\n                await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n                    message: `Your ping (${player.ping}) is too high. Warning ${currentWarnings}/${data.module.userConfig.warningsBeforeKick}`,\n                    opts: {\n                        recipient: {\n                            gameId: player.gameId,\n                        },\n                    },\n                });\n            }\n        }\n    }));\n}\nawait main();\n//# sourceMappingURL=Ping%20check.js.map"
+        }
+      ]
+    }
+  ]
+};
+
+  return (
+    <div>
+      <p>{mod.versions[0].description}</p>
+      <Commands commands={mod.versions[0].commands} />
+      <CronJobs cronJobs={mod.versions[0].cronJobs} />
+      <Hooks hooks={mod.versions[0].hooks} />
+      <Config configSchema={mod.versions[0].configSchema} />
+    </div>
+  )
+}
+
+<Module />
+
+{/* END AUTO-GENERATED CONTENT */}
+
+## Key Features
+
+- Automatic ping monitoring
+- Configurable ping thresholds
+- Warning system before kicks
+- Customizable number of warnings
+- Player immunity options through permissions
+
+## Configuration Options
+
+### 1. Ping Threshold
+
+- Default value: 200ms
+- Purpose: Defines the maximum acceptable ping value
+- When a player's ping exceeds this threshold, they begin receiving warnings
+- Can be adjusted based on your server's requirements and geographical location
+
+### 2. Warnings Before Kick
+
+- Default value: 3 warnings
+- Purpose: Determines how many warnings a player receives before being kicked
+- Provides players with opportunities to resolve connection issues
+- Each warning is tracked individually per player
+
+## How It Works
+
+The module operates on a 5-minute cycle (configured via cron job: `*/5 * * * *`) and performs the following steps:
+
+1. **Monitoring**: Checks all online players' ping values
+2. **Warning System**:
+    - If a player's ping exceeds the threshold, they receive a warning
+    - Warnings are tracked using Takaro's variable system
+    - Each subsequent high ping check increments the warning count
+3. **Kick Action**:
+    - When warnings reach the configured limit, the player is kicked
+    - Kick message includes their ping value for reference
+    - Warning count is reset after a kick
+
+Example warning message:
+`Server is shutting down in 5 minutes for daily maintenance. We'll be back online in ~10 minutes. Please find a safe spot!`
+
+## Implementation Details
+
+The module uses Takaro's variable system to track warnings with the key `highPingKicker:warnings`. This ensures persistence across server restarts and allows for accurate warning tracking.
+
+### Warning Process:
+
+1. First high ping detection: Creates warning variable
+2. Subsequent detections: Increments warning count
+3. Final warning: Executes kick and resets counter
+
+### Permissions
+
+The module includes one permission:
+
+- `GEOBLOCK_IMMUNITY`: Players with this permission will not be kicked regardless of their ping
+    - Useful for administrators or trusted players
+    - Can be assigned through Takaro's role system
+
+### Installation
+
+1. Navigate to your server's Modules section
+2. Select "Install New Module"
+3. Find and select "highPingKicker"
+4. Configure the desired ping threshold and warning count
+5. Save and activate the module
+
+## Best Practices
+
+1. **Initial Setup**:
+    - Start with default values (200ms ping threshold, 3 warnings)
+    - Monitor player feedback and server logs
+    - Adjust values based on your community's needs
+2. **Threshold Configuration**:
+    - Consider your server's geographical location
+    - Account for typical ping ranges in your target regions
+    - Set thresholds that balance performance with accessibility
+3. **Warning Management**:
+    - Use enough warnings to allow for temporary connection issues
+    - Keep warning count reasonable to maintain server performance
+    - Consider time between checks (default 5 minutes)
+
+## Troubleshooting
+
+Common issues and solutions:
+
+1. **Too Many Kicks**:
+    - Increase ping threshold
+    - Add more warnings before kick
+    - Review server performance metrics
+2. **Ineffective Management**:
+    - Decrease ping threshold
+    - Reduce warning count
+    - Decrease check interval
+3. **False Positives**:
+    - Grant immunity to affected players
+    - Adjust threshold based on time of day

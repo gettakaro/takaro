@@ -1,4 +1,4 @@
-import { BuiltinModule, IHook, IPermission } from '../../BuiltinModule.js';
+import { ModuleTransferDTO, IHook, IPermission, ModuleTransferVersionDTO } from '../../BuiltinModule.js';
 import { HookEvents } from '../../dto/index.js';
 import { Duration } from 'luxon';
 
@@ -57,7 +57,6 @@ export const countryCodes = [
   { code: 'CD', name: 'Congo, Democratic Republic' },
   { code: 'CK', name: 'Cook Islands' },
   { code: 'CR', name: 'Costa Rica' },
-  // eslint-disable-next-line quotes
   { code: 'CI', name: "Cote D'Ivoire" },
   { code: 'HR', name: 'Croatia' },
   { code: 'CU', name: 'Cuba' },
@@ -123,7 +122,6 @@ export const countryCodes = [
   { code: 'KR', name: 'Korea' },
   { code: 'KW', name: 'Kuwait' },
   { code: 'KG', name: 'Kyrgyzstan' },
-  // eslint-disable-next-line quotes
   { code: 'LA', name: "Lao People's Democratic Republic" },
   { code: 'LV', name: 'Latvia' },
   { code: 'LB', name: 'Lebanon' },
@@ -252,79 +250,81 @@ export const countryCodes = [
   { code: 'ZW', name: 'Zimbabwe' },
 ];
 
-export class GeoBlock extends BuiltinModule<GeoBlock> {
+export class GeoBlock extends ModuleTransferDTO<GeoBlock> {
   constructor() {
-    super(
-      'geoBlock',
-      'Block players from certain countries from joining the server.',
-      JSON.stringify({
-        $schema: 'http://json-schema.org/draft-07/schema#',
-        type: 'object',
-        properties: {
-          mode: {
-            title: 'Mode',
-            type: 'string',
-            description:
-              'If set to allow, only players from the specified countries will be allowed to join. If set to deny, players from the specified countries will be banned from the server.',
-            enum: ['allow', 'deny'],
-            default: 'deny',
-          },
-          countries: {
-            title: 'Countries',
-            description: 'List of countries',
-            type: 'array',
-            uniqueItems: true,
-            'x-component': 'country',
-            items: {
+    super();
+
+    this.name = 'geoBlock';
+    this.versions = [
+      new ModuleTransferVersionDTO({
+        tag: '0.0.1',
+        description: 'Block players from certain countries from joining the server.',
+        configSchema: JSON.stringify({
+          $schema: 'http://json-schema.org/draft-07/schema#',
+          type: 'object',
+          properties: {
+            mode: {
+              title: 'Mode',
               type: 'string',
-              anyOf: countryCodes.map(({ code, name }) => ({ const: code, title: name })),
+              description:
+                'If set to allow, only players from the specified countries will be allowed to join. If set to deny, players from the specified countries will be banned from the server.',
+              enum: ['allow', 'deny'],
+              default: 'deny',
+            },
+            countries: {
+              title: 'Countries',
+              description: 'List of countries',
+              type: 'array',
+              uniqueItems: true,
+              'x-component': 'country',
+              items: {
+                type: 'string',
+                anyOf: countryCodes.map(({ code, name }) => ({ const: code, title: name })),
+              },
+            },
+            ban: {
+              title: 'Ban',
+              description:
+                'Ban players from the server when they are detected. When false, players will be kicked instead.',
+              type: 'boolean',
+              default: true,
+            },
+            banDuration: {
+              title: 'Ban duration',
+              description: 'Duration of the ban.',
+              'x-component': 'duration',
+              type: 'number',
+              minimum: 0,
+              default: Duration.fromObject({ days: 1 }).as('milliseconds'),
+            },
+            message: {
+              title: 'Message',
+              type: 'string',
+              description: 'Message to send to the player when they are kicked or banned.',
+              default: 'Your IP address is banned.',
             },
           },
-          ban: {
-            title: 'Ban',
-            description:
-              'Ban players from the server when they are detected. When false, players will be kicked instead.',
-            type: 'boolean',
-            default: true,
-          },
-          banDuration: {
-            title: 'Ban duration',
-            description: 'Duration of the ban.',
-            'x-component': 'duration',
-            type: 'number',
-            minimum: 0,
-            default: Duration.fromObject({ days: 1 }).as('milliseconds'),
-          },
-          message: {
-            title: 'Message',
-            type: 'string',
-            description: 'Message to send to the player when they are kicked or banned.',
-            default: 'Your IP address is banned.',
-          },
-        },
-        required: ['countries'],
-        additionalProperties: false,
-      }),
-      JSON.stringify({
-        banDuration: { 'ui:widget': 'duration' },
-      }),
-    );
-
-    this.permissions = [
-      new IPermission({
-        permission: 'GEOBLOCK_IMMUNITY',
-        friendlyName: 'GeoBlock immunity',
-        description: 'Players with this permission will not be kicked or banned by GeoBlock.',
-        canHaveCount: false,
-      }),
-    ];
-
-    this.commands = [];
-    this.hooks = [
-      new IHook({
-        eventType: HookEvents.PLAYER_NEW_IP_DETECTED,
-        name: 'IPDetected',
-        function: this.loadFn('hooks', 'IPDetected'),
+          required: ['countries'],
+          additionalProperties: false,
+        }),
+        uiSchema: JSON.stringify({
+          banDuration: { 'ui:widget': 'duration' },
+        }),
+        permissions: [
+          new IPermission({
+            permission: 'GEOBLOCK_IMMUNITY',
+            friendlyName: 'GeoBlock immunity',
+            description: 'Players with this permission will not be kicked or banned by GeoBlock.',
+            canHaveCount: false,
+          }),
+        ],
+        hooks: [
+          new IHook({
+            eventType: HookEvents.PLAYER_NEW_IP_DETECTED,
+            name: 'IPDetected',
+            function: this.loadFn('hooks', 'IPDetected'),
+          }),
+        ],
       }),
     ];
   }

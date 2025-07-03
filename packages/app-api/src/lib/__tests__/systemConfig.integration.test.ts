@@ -3,6 +3,7 @@ import { IntegrationTest, expect } from '@takaro/test';
 import { getModules } from '@takaro/modules';
 import { getSystemConfigSchema } from '../systemConfig.js';
 import _Ajv from 'ajv';
+import { describe } from 'node:test';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
@@ -32,7 +33,7 @@ const testsForBuiltinModules = bultinModules.map((mod) => {
         },
       });
 
-      ajv.compile(JSON.parse(getSystemConfigSchema(modRes.data.data[0])));
+      ajv.compile(JSON.parse(getSystemConfigSchema(modRes.data.data[0].latestVersion)));
     },
   });
 });
@@ -46,7 +47,7 @@ const tests = [
     setup,
     test: async function () {
       const modRes = await this.client.module.moduleControllerGetOne(this.setupData.id);
-      const systemConfigStr = getSystemConfigSchema(modRes.data.data);
+      const systemConfigStr = getSystemConfigSchema(modRes.data.data.latestVersion);
       const systemConfig = JSON.parse(systemConfigStr);
 
       // Should be a valid schema which compiles
@@ -69,12 +70,12 @@ const tests = [
     test: async function () {
       await this.client.command.commandControllerCreate({
         name: 'Test command',
-        moduleId: this.setupData.id,
+        versionId: this.setupData.latestVersion.id,
         trigger: 'test',
       });
 
       const modRes = await this.client.module.moduleControllerGetOne(this.setupData.id);
-      const systemConfigStr = getSystemConfigSchema(modRes.data.data);
+      const systemConfigStr = getSystemConfigSchema(modRes.data.data.latestVersion);
       const systemConfig = JSON.parse(systemConfigStr);
 
       // Should be a valid schema which compiles
@@ -89,12 +90,12 @@ const tests = [
     test: async function () {
       await this.client.cronjob.cronJobControllerCreate({
         name: 'Test cronJob',
-        moduleId: this.setupData.id,
+        versionId: this.setupData.latestVersion.id,
         temporalValue: '* * * * *',
       });
 
       const modRes = await this.client.module.moduleControllerGetOne(this.setupData.id);
-      const systemConfigStr = getSystemConfigSchema(modRes.data.data);
+      const systemConfigStr = getSystemConfigSchema(modRes.data.data.latestVersion);
       const systemConfig = JSON.parse(systemConfigStr);
 
       ajv.compile(systemConfig);
@@ -110,17 +111,17 @@ const tests = [
     test: async function () {
       await this.client.cronjob.cronJobControllerCreate({
         name: 'Test cronJob 1',
-        moduleId: this.setupData.id,
+        versionId: this.setupData.latestVersion.id,
         temporalValue: '* * * * *',
       });
       await this.client.cronjob.cronJobControllerCreate({
         name: 'Test cronJob 2',
-        moduleId: this.setupData.id,
+        versionId: this.setupData.latestVersion.id,
         temporalValue: '* * * * *',
       });
 
       const modRes = await this.client.module.moduleControllerGetOne(this.setupData.id);
-      const systemConfigStr = getSystemConfigSchema(modRes.data.data);
+      const systemConfigStr = getSystemConfigSchema(modRes.data.data.latestVersion);
       const systemConfig = JSON.parse(systemConfigStr);
 
       ajv.compile(systemConfig);
@@ -137,13 +138,13 @@ const tests = [
     test: async function () {
       await this.client.hook.hookControllerCreate({
         name: 'Test hook',
-        moduleId: this.setupData.id,
+        versionId: this.setupData.latestVersion.id,
         eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
         regex: '.*',
       });
 
       const modRes = await this.client.module.moduleControllerGetOne(this.setupData.id);
-      const systemConfigStr = getSystemConfigSchema(modRes.data.data);
+      const systemConfigStr = getSystemConfigSchema(modRes.data.data.latestVersion);
       const systemConfig = JSON.parse(systemConfigStr);
 
       ajv.compile(systemConfig);
@@ -160,19 +161,19 @@ const tests = [
     test: async function () {
       await this.client.hook.hookControllerCreate({
         name: 'Test hook 1',
-        moduleId: this.setupData.id,
+        versionId: this.setupData.latestVersion.id,
         eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
         regex: '.*',
       });
       await this.client.hook.hookControllerCreate({
         name: 'Test hook 2',
-        moduleId: this.setupData.id,
+        versionId: this.setupData.latestVersion.id,
         eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
         regex: '.*',
       });
 
       const modRes = await this.client.module.moduleControllerGetOne(this.setupData.id);
-      const systemConfigStr = getSystemConfigSchema(modRes.data.data);
+      const systemConfigStr = getSystemConfigSchema(modRes.data.data.latestVersion);
       const systemConfig = JSON.parse(systemConfigStr);
 
       ajv.compile(systemConfig);
@@ -189,13 +190,13 @@ const tests = [
     test: async function () {
       await this.client.hook.hookControllerCreate({
         name: 'Test non-discord hook',
-        moduleId: this.setupData.id,
+        versionId: this.setupData.latestVersion.id,
         eventType: HookCreateDTOEventTypeEnum.ChatMessage,
         regex: '.*',
       });
 
       const modRes = await this.client.module.moduleControllerGetOne(this.setupData.id);
-      const systemConfigStr = getSystemConfigSchema(modRes.data.data);
+      const systemConfigStr = getSystemConfigSchema(modRes.data.data.latestVersion);
       const systemConfig = JSON.parse(systemConfigStr);
 
       ajv.compile(systemConfig);

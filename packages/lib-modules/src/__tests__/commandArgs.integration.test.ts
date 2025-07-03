@@ -1,6 +1,7 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/gameEvents.js';
 import { CommandArgumentCreateDTO } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'Command args';
 
@@ -14,7 +15,7 @@ const createSetup = (commandArgs: CommandArgumentCreateDTO[]) => {
     await this.client.command.commandControllerCreate({
       name: 'test',
       trigger: 'test',
-      moduleId: moduleRes.data.data.id,
+      versionId: moduleRes.data.data.latestVersion.id,
       arguments: commandArgs,
       function: `import { getTakaro, getData } from '@takaro/helpers';
 
@@ -28,7 +29,10 @@ const createSetup = (commandArgs: CommandArgumentCreateDTO[]) => {
       await main();`,
     });
 
-    await this.client.gameserver.gameServerControllerInstallModule(setupRes.gameserver.id, moduleRes.data.data.id);
+    await this.client.module.moduleInstallationsControllerInstallModule({
+      gameServerId: setupRes.gameserver.id,
+      versionId: moduleRes.data.data.latestVersion.id,
+    });
 
     return setupRes;
   };
@@ -43,7 +47,7 @@ const playerArgSetup = async function (this: IntegrationTest<IModuleTestsSetupDa
   await this.client.command.commandControllerCreate({
     name: 'test',
     trigger: 'test',
-    moduleId: moduleRes.data.data.id,
+    versionId: moduleRes.data.data.latestVersion.id,
     arguments: [{ name: 'name', type: 'player', position: 0 }],
     function: `import { getTakaro, getData } from '@takaro/helpers';
 
@@ -58,7 +62,10 @@ const playerArgSetup = async function (this: IntegrationTest<IModuleTestsSetupDa
     await main();`,
   });
 
-  await this.client.gameserver.gameServerControllerInstallModule(setupRes.gameserver.id, moduleRes.data.data.id);
+  await this.client.module.moduleInstallationsControllerInstallModule({
+    gameServerId: setupRes.gameserver.id,
+    versionId: moduleRes.data.data.latestVersion.id,
+  });
 
   return setupRes;
 };
@@ -162,8 +169,6 @@ const tests = [
     snapshot: false,
     setup: playerArgSetup,
     test: async function () {
-      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
-
       const pogRes = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
         filters: {
           playerId: [this.setupData.players[0].id],
@@ -171,6 +176,8 @@ const tests = [
         },
       });
       const pog = pogRes.data.data[0];
+
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/test ${this.setupData.players[0].name.substring(0, 3)}`,

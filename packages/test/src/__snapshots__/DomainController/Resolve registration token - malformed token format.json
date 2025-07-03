@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "NotFoundError",
+        "message": "Not found"
+      }
+    },
+    "data": {}
+  },
+  "status": 404,
+  "test": {
+    "group": "DomainController",
+    "snapshot": true,
+    "name": "Resolve registration token - malformed token format",
+    "expectedStatus": 404,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

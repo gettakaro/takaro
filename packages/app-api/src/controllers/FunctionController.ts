@@ -14,8 +14,8 @@ import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
-import { AllowedFilters } from './shared.js';
+import { moduleProtectionMiddleware } from '../middlewares/moduleProtectionMiddleware.js';
+import { AllowedFilters, AllowedSearch } from './shared.js';
 
 @OpenAPI({
   security: [{ domainAuth: [] }],
@@ -37,6 +37,15 @@ class FunctionSearchInputAllowedFilters extends AllowedFilters {
   @IsUUID(4, { each: true })
   moduleId: string[];
   @IsOptional()
+  @IsUUID(4, { each: true })
+  versionId!: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  name: string[];
+}
+
+class FunctionSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
   @IsString({ each: true })
   name: string[];
 }
@@ -47,8 +56,8 @@ class FunctionSearchInputDTO extends ITakaroQuery<FunctionOutputDTO> {
   declare filters: FunctionSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => FunctionSearchInputAllowedFilters)
-  declare search: FunctionSearchInputAllowedFilters;
+  @Type(() => FunctionSearchInputAllowedSearch)
+  declare search: FunctionSearchInputAllowedSearch;
 }
 
 @OpenAPI({
@@ -81,7 +90,7 @@ export class FunctionController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), moduleProtectionMiddleware)
   @ResponseSchema(FunctionOutputDTOAPI)
   @Post('/function')
   async create(@Req() req: AuthenticatedRequest, @Body() data: FunctionCreateDTO) {
@@ -89,7 +98,7 @@ export class FunctionController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), moduleProtectionMiddleware)
   @ResponseSchema(FunctionOutputDTOAPI)
   @Put('/function/:id')
   async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: FunctionUpdateDTO) {
@@ -97,7 +106,7 @@ export class FunctionController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), moduleProtectionMiddleware)
   @ResponseSchema(APIOutput)
   @Delete('/function/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {

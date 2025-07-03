@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { gameServerSettingQueryOptions } from 'queries/setting';
-import { gameServerQueryOptions } from 'queries/gameserver';
+import { gameServerSettingQueryOptions } from '../../../queries/setting';
+import { gameServerQueryOptions } from '../../../queries/gameserver';
 import { ShopView } from './-components/shop/ShopView';
-import { userMeQueryOptions } from 'queries/user';
-import { useQuery } from '@tanstack/react-query';
+import { userMeQueryOptions } from '../../../queries/user';
+import { useQueries } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/')({
   loader: async ({ context, params }) => {
@@ -14,7 +14,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/')({
     ]);
 
     return {
-      currencyName: currencyName.value,
+      currencyName: currencyName,
       gameServer,
       session,
     };
@@ -24,15 +24,22 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/')({
 
 function Component() {
   const loaderData = Route.useLoaderData();
-  const session = useQuery({ ...userMeQueryOptions(), initialData: loaderData.session });
-  const pog = session.data.pogs.find((pog) => pog.gameServerId == loaderData.gameServer.id);
   const { gameServerId } = Route.useParams();
 
+  const [{ data: session }, { data: gameServer }, { data: currencyName }] = useQueries({
+    queries: [
+      { ...userMeQueryOptions(), initialData: loaderData.session },
+      { ...gameServerQueryOptions(gameServerId), initialData: loaderData.gameServer },
+      { ...gameServerSettingQueryOptions('currencyName', gameServerId), initialData: loaderData.currencyName },
+    ],
+  });
+
+  const pog = session.pogs.find((pog) => pog.gameServerId == loaderData.gameServer.id);
   return (
     <ShopView
-      gameServerType={loaderData.gameServer.type}
+      gameServerType={gameServer.type}
       gameServerId={gameServerId}
-      currencyName={loaderData.currencyName}
+      currencyName={currencyName.value}
       currency={pog?.currency}
     />
   );

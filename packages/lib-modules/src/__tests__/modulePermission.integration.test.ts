@@ -1,17 +1,18 @@
-import {
-  IntegrationTest,
-  expect,
-  integrationConfig,
-  IModuleTestsSetupData,
-  modulesTestSetup,
-  EventsAwaiter,
-} from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
+import { describe } from 'node:test';
+import { randomUUID } from 'crypto';
+import { getMockServer } from '@takaro/mock-gameserver';
 
 const group = 'Module permissions role assignments';
 
 async function cleanRoleSetup(this: IntegrationTest<IModuleTestsSetupData>) {
   const defaultSetup = await modulesTestSetup.bind(this)();
+
+  await this.client.module.moduleInstallationsControllerInstallModule({
+    gameServerId: defaultSetup.gameserver.id,
+    versionId: defaultSetup.teleportsModule.latestVersion.id,
+  });
 
   const playersRes = await this.client.player.playerControllerSearch();
 
@@ -22,10 +23,10 @@ async function cleanRoleSetup(this: IntegrationTest<IModuleTestsSetupData>) {
     permissions,
   });
 
-  await this.client.gameserver.gameServerControllerInstallModule(
-    defaultSetup.gameserver.id,
-    defaultSetup.teleportsModule.id,
-  );
+  await this.client.module.moduleInstallationsControllerInstallModule({
+    gameServerId: defaultSetup.gameserver.id,
+    versionId: defaultSetup.teleportsModule.latestVersion.id,
+  });
 
   await Promise.all(
     playersRes.data.data.map(async (player) => {
@@ -70,16 +71,20 @@ const tests = [
     setup: cleanRoleSetup,
     name: 'Player has role on other gameserver -> command denied',
     test: async function () {
-      const newGameServer = await this.client.gameserver.gameServerControllerCreate({
-        name: 'newServer',
-        connectionInfo: JSON.stringify({
-          host: integrationConfig.get('mockGameserver.host'),
-        }),
-        type: 'MOCK',
+      if (!this.domainRegistrationToken) throw new Error('Domain registration token not set');
+      const identityToken = randomUUID();
+      const mockserver = await getMockServer({
+        mockserver: { registrationToken: this.domainRegistrationToken, identityToken },
       });
+      this.setupData.mockservers.push(mockserver);
+      const gameserverRes = await this.client.gameserver.gameServerControllerSearch({
+        filters: { identityToken: [identityToken] },
+      });
+      const newGameServer = gameserverRes.data.data[0];
+      if (!newGameServer) throw new Error('Game server not found');
 
       await this.client.player.playerControllerAssignRole(this.setupData.players[0].id, this.setupData.role.id, {
-        gameServerId: newGameServer.data.data.id,
+        gameServerId: newGameServer.id,
       });
 
       const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
@@ -128,15 +133,13 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Uses system roles',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-        {
-          userConfig: JSON.stringify({
-            timeout: 0,
-          }),
-        },
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          timeout: 0,
+        }),
+      });
 
       await Promise.all(
         this.setupData.players.map(async (player) => {

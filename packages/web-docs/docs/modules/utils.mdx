@@ -1,0 +1,106 @@
+---
+description: undefined
+---
+
+{/* AUTO-GENERATED CONTENT () */}
+
+import { Commands, Config, CronJobs, Hooks } from './helpers';
+
+# utils
+
+export function Module() {
+  const mod = {
+  "name": "utils",
+  "versions": [
+    {
+      "tag": "0.0.1",
+      "description": "A collection of useful commands",
+      "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"additionalProperties\":false}",
+      "commands": [
+        {
+          "function": "import { data } from '@takaro/helpers';\nasync function main() {\n    await data.player.pm('Pong!');\n}\nawait main();\n//# sourceMappingURL=ping.js.map",
+          "name": "ping",
+          "trigger": "ping",
+          "helpText": "Replies with pong, useful for testing if the connection works.",
+          "arguments": []
+        },
+        {
+          "function": "import { data, takaro, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const enabledModules = await takaro.module.moduleInstallationsControllerGetInstalledModules({\n        filters: { gameserverId: [data.gameServerId] },\n    });\n    const moduleCommands = await Promise.all(enabledModules.data.data.map(async (mod) => {\n        const installedVersion = await takaro.module.moduleVersionControllerGetModuleVersion(mod.versionId);\n        return installedVersion.data.data.commands;\n    }));\n    const allCommandsFlat = moduleCommands.flat();\n    if (data.arguments.command === 'all') {\n        await data.player.pm('Available commands:');\n        await Promise.all(allCommandsFlat.map(async (command) => {\n            await data.player.pm(`${command.name}: ${command.helpText}`);\n        }));\n    }\n    else {\n        const requestedCommand = allCommandsFlat.find((c) => {\n            return c.name === data.arguments.command;\n        });\n        if (!requestedCommand) {\n            throw new TakaroUserError(`Unknown command \"${data.arguments.command}\", use this command without arguments to see all available commands.`);\n        }\n        else {\n            await data.player.pm(`${requestedCommand.name}: ${requestedCommand.helpText}`);\n        }\n    }\n}\nawait main();\n//# sourceMappingURL=help.js.map",
+          "name": "help",
+          "trigger": "help",
+          "helpText": "The text you are reading right now, displays information about commands.",
+          "arguments": [
+            {
+              "name": "command",
+              "type": "string",
+              "defaultValue": "all",
+              "helpText": "The command to get help for",
+              "position": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+  return (
+    <div>
+      <p>{mod.versions[0].description}</p>
+      <Commands commands={mod.versions[0].commands} />
+      <CronJobs cronJobs={mod.versions[0].cronJobs} />
+      <Hooks hooks={mod.versions[0].hooks} />
+      <Config configSchema={mod.versions[0].configSchema} />
+    </div>
+  )
+}
+
+<Module />
+
+{/* END AUTO-GENERATED CONTENT */}
+
+## Features
+
+### Commands
+
+## 1. Ping Command
+
+- **Trigger**: `/ping`
+- **Description**: A simple command that replies with "Pong!". This command is useful for:
+    - Testing if the server connection is working
+    - Verifying command functionality
+    - Checking player permissions
+    - Basic latency testing
+
+## 2. Help Command
+
+- **Trigger**: `/help [command]`
+- **Description**: Provides information about available commands and their usage
+- **Arguments**:
+    - `command` (optional): The specific command to get help for
+    - Default: Shows all available commands if no specific command is specified
+
+### Usage Examples
+
+
+`/ping > Response: "Pong!" /help > Response: Lists all available commands`
+`/help ping > Response: Shows detailed help for the ping command`
+
+## Technical Details
+
+### Module Configuration
+
+The Utils module has a minimal configuration schema with no required settings, making it simple to deploy and maintain.
+
+### Permissions
+
+The Utils module's commands are typically available to all players by default, as they provide essential functionality for server interaction.
+
+## Best Practices
+
+1. **Server Setup**
+    - Install the Utils module first when setting up a new server
+    - Keep it enabled to ensure players can always access basic commands
+3. **Troubleshooting**
+    - Use the ping command as a first step in diagnosing connection issues
+    - Refer players to the help command when they're unsure about command usage

@@ -136,7 +136,6 @@ export const GenericDurationField = forwardRef<HTMLDivElement, GenericDurationFi
                 />
                 <SelectField
                   key={`${name}-${index}-unit`}
-                  inPortal
                   control={control}
                   name={`durations.${index}.unit`}
                   multiple={false}
@@ -182,12 +181,13 @@ export const GenericDurationField = forwardRef<HTMLDivElement, GenericDurationFi
                 form={formId}
                 type="submit"
                 fullWidth
-                text="Apply"
                 onClick={(e) => {
                   e.preventDefault();
                   handleSubmit(onSubmit)();
                 }}
-              />
+              >
+                Apply
+              </Button>
             </ButtonContainer>
           </form>
         </InnerContent>

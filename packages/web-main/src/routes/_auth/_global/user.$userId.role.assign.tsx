@@ -8,15 +8,15 @@ import {
   DrawerSkeleton,
   styled,
 } from '@takaro/lib-components';
-import { userMeQueryOptions, useUserAssignRole } from 'queries/user';
+import { userMeQueryOptions, useUserAssignRole } from '../../../queries/user';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { DateTime, Settings } from 'luxon';
-import { RoleSelect } from 'components/selects';
-import { createFileRoute, redirect, useRouter } from '@tanstack/react-router';
+import { RoleSelectQueryField } from '../../../components/selects';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { z } from 'zod';
-import { hasPermission } from 'hooks/useHasPermission';
+import { hasPermission } from '../../../hooks/useHasPermission';
 
 Settings.throwOnInvalid = true;
 
@@ -47,17 +47,18 @@ export const Route = createFileRoute('/_auth/_global/user/$userId/role/assign')(
 
 function Component() {
   const [open, setOpen] = useState(true);
-  const router = useRouter();
   const { userId } = Route.useParams();
   const { mutate, isPending, error } = useUserAssignRole();
+  const navigate = Route.useNavigate();
+  const params = Route.useParams();
 
   useEffect(() => {
     if (!open) {
-      router.history.go(-1);
+      navigate({ to: '/user/$userId', params });
     }
   }, [open]);
 
-  const { control, handleSubmit } = useForm<IFormInputs>({
+  const { control, handleSubmit, formState } = useForm<IFormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(roleAssignValidationSchema),
     defaultValues: {
@@ -66,11 +67,16 @@ function Component() {
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = ({ id, roleId, expiresAt }) => {
-    mutate({ userId: id, roleId, expiresAt });
+    try {
+      mutate({ userId: id, roleId, expiresAt });
+      setOpen(false);
+    } catch {
+      // do nothing
+    }
   };
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>Assign role</Drawer.Heading>
         <Drawer.Body>
@@ -78,7 +84,7 @@ function Component() {
             <form onSubmit={handleSubmit(onSubmit)} id="assign-user-role-form">
               <CollapseList.Item title="General">
                 <TextField readOnly control={control} name="id" label="User" />
-                <RoleSelect control={control} name="roleId" label="Role" />
+                <RoleSelectQueryField control={control} name="roleId" label="Role" />
                 <DatePicker
                   mode="absolute"
                   control={control}
@@ -86,7 +92,7 @@ function Component() {
                   name={'expiresAt'}
                   required={false}
                   loading={isPending}
-                  description={'The role will be automatically removed after this date'}
+                  description={'The role will be automatically removed after this date.'}
                   popOverPlacement={'bottom'}
                   timePickerOptions={{ interval: 30 }}
                   allowPastDates={false}
@@ -99,8 +105,12 @@ function Component() {
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
-            <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-            <Button fullWidth text="Assign role" isLoading={isPending} type="submit" form="assign-user-role-form" />
+            <Button onClick={() => setOpen(false)} color="background">
+              Cancel
+            </Button>
+            <Button fullWidth isLoading={isPending} type="submit" form="assign-user-role-form">
+              Assign role
+            </Button>
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

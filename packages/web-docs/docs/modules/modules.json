@@ -1,0 +1,663 @@
+[
+  {
+    "name": "utils",
+    "versions": [
+      {
+        "tag": "0.0.1",
+        "description": "A collection of useful commands",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"additionalProperties\":false}",
+        "commands": [
+          {
+            "function": "import { data } from '@takaro/helpers';\nasync function main() {\n    await data.player.pm('Pong!');\n}\nawait main();\n//# sourceMappingURL=ping.js.map",
+            "name": "ping",
+            "trigger": "ping",
+            "helpText": "Replies with pong, useful for testing if the connection works.",
+            "arguments": []
+          },
+          {
+            "function": "import { data, takaro, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const enabledModules = await takaro.module.moduleInstallationsControllerGetInstalledModules({\n        filters: { gameserverId: [data.gameServerId] },\n    });\n    const moduleCommands = await Promise.all(enabledModules.data.data.map(async (mod) => {\n        const installedVersion = await takaro.module.moduleVersionControllerGetModuleVersion(mod.versionId);\n        return installedVersion.data.data.commands;\n    }));\n    const allCommandsFlat = moduleCommands.flat();\n    if (data.arguments.command === 'all') {\n        await data.player.pm('Available commands:');\n        await Promise.all(allCommandsFlat.map(async (command) => {\n            await data.player.pm(`${command.name}: ${command.helpText}`);\n        }));\n    }\n    else {\n        const requestedCommand = allCommandsFlat.find((c) => {\n            return c.name === data.arguments.command;\n        });\n        if (!requestedCommand) {\n            throw new TakaroUserError(`Unknown command \"${data.arguments.command}\", use this command without arguments to see all available commands.`);\n        }\n        else {\n            await data.player.pm(`${requestedCommand.name}: ${requestedCommand.helpText}`);\n        }\n    }\n}\nawait main();\n//# sourceMappingURL=help.js.map",
+            "name": "help",
+            "trigger": "help",
+            "helpText": "The text you are reading right now, displays information about commands.",
+            "arguments": [
+              {
+                "name": "command",
+                "type": "string",
+                "defaultValue": "all",
+                "helpText": "The command to get help for",
+                "position": 0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "teleports",
+    "versions": [
+      {
+        "tag": "0.0.3",
+        "description": "A set of commands to allow players to set their own teleport points and teleport to them.",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"timeout\":{\"title\":\"Timeout\",\"description\":\"The time one has to wait before teleporting again.\",\"x-component\":\"duration\",\"type\":\"number\",\"minimum\":0,\"default\":1000},\"allowPublicTeleports\":{\"type\":\"boolean\",\"description\":\"Players can create public teleports.\",\"default\":false}},\"required\":[],\"additionalProperties\":false}",
+        "uiSchema": "{\"timeout\":{\"ui:widget\":\"duration\"}}",
+        "functions": [
+          {
+            "name": "utils",
+            "function": "import { takaro, data } from '@takaro/helpers';\nexport function getVariableKey(tpName, pub = false) {\n    if (pub && tpName)\n        return `pubtp_${tpName}`;\n    if (pub && !tpName)\n        return 'pubtp_';\n    if (tpName)\n        return `tp_${tpName}`;\n    return 'tp_';\n}\nexport async function findTp(tpName, playerId, pub = false) {\n    const { gameServerId, module: mod } = data;\n    if (pub) {\n        return takaro.variable.variableControllerSearch({\n            filters: {\n                key: [getVariableKey(tpName, true)],\n                gameServerId: [gameServerId],\n                playerId: [playerId].filter(Boolean),\n                moduleId: [mod.moduleId],\n            },\n            sortBy: 'key',\n            sortDirection: 'asc',\n        });\n    }\n    return takaro.variable.variableControllerSearch({\n        filters: {\n            key: [getVariableKey(tpName)],\n            gameServerId: [gameServerId],\n            playerId: [playerId].filter(Boolean),\n            moduleId: [mod.moduleId],\n        },\n        sortBy: 'key',\n        sortDirection: 'asc',\n    });\n}\nexport async function ensureWaypointsModule() {\n    const { gameServerId } = data;\n    let waypointsDefinition = (await takaro.module.moduleControllerSearch({\n        filters: {\n            name: ['Waypoints'],\n        },\n    })).data.data[0];\n    if (!waypointsDefinition) {\n        console.log('Waypoints module definition not found, creating it.');\n        waypointsDefinition = (await takaro.module.moduleControllerCreate({\n            name: 'Waypoints',\n        })).data.data;\n    }\n    let waypointsInstallation = (await takaro.module.moduleInstallationsControllerGetInstalledModules({\n        filters: { gameserverId: [gameServerId] },\n    })).data.data.find((module) => module.module.name === 'Waypoints');\n    if (!waypointsInstallation) {\n        console.log('Waypoints installation not found, installing it.');\n        waypointsInstallation = (await takaro.module.moduleInstallationsControllerInstallModule({\n            gameServerId,\n            versionId: waypointsDefinition.latestVersion.id,\n        })).data.data;\n    }\n    return { waypointsInstallation, waypointsDefinition };\n}\nexport function getWaypointName(name) {\n    return `waypoint ${name}`;\n}\nexport function getWaypointId(varName) {\n    const split = varName.split(' ')[1];\n    if (split)\n        return split;\n    return varName;\n}\n/**\n * This function is responsible to read all the configured waypoints (vars)\n * and then ensuring that the waypoints module has the correct config\n */\nexport async function waypointReconciler() {\n    console.log('Reconciling waypoints');\n    const { waypointsInstallation, waypointsDefinition } = await ensureWaypointsModule();\n    const { gameServerId, module: mod } = data;\n    // Get all the installed waypoints\n    const waypointVars = (await takaro.variable.variableControllerSearch({\n        filters: {\n            moduleId: [mod.moduleId],\n            gameServerId: [gameServerId],\n        },\n        search: {\n            key: [getWaypointName('')],\n        },\n    })).data.data;\n    const waypointsInModule = waypointsDefinition.latestVersion.commands;\n    // Check if any waypoints are missing in module\n    const missingWaypoints = waypointVars.filter((waypointVar) => {\n        const existingWaypointsForServer = waypointsInModule.filter((waypoint) => waypoint.name.includes(gameServerId));\n        return !existingWaypointsForServer.some((waypoint) => waypoint.trigger === getWaypointId(waypointVar.key));\n    });\n    // Check if there are waypoints too many in module compared to our vars\n    const toDeleteWaypoints = waypointsInModule.filter((waypoint) => {\n        // We ignore any commands that are not for this game server\n        if (!waypoint.name.includes(gameServerId))\n            return false;\n        return !waypointVars.some((waypointVar) => getWaypointId(waypointVar.key) === waypoint.trigger);\n    });\n    if (!missingWaypoints.length && !toDeleteWaypoints.length) {\n        // No changes in waypoints, exit\n        return;\n    }\n    console.log('Missing waypoints:', missingWaypoints.map((waypoint) => waypoint.key));\n    console.log('To delete waypoints:', toDeleteWaypoints.map((waypoint) => waypoint.trigger));\n    // Fetch the teleporting code template\n    const teleportCommand = await takaro.command.commandControllerSearch({\n        filters: {\n            moduleId: [mod.moduleId],\n            name: ['teleportwaypoint'],\n        },\n    });\n    // Edit the module accordingly\n    await Promise.all([\n        ...missingWaypoints.map((waypoint) => {\n            return takaro.command.commandControllerCreate({\n                name: `waypoint ${getWaypointId(waypoint.key)} server ${gameServerId}`,\n                trigger: getWaypointId(waypoint.key),\n                helpText: `Teleport to waypoint ${getWaypointId(waypoint.key)}.`,\n                function: teleportCommand.data.data[0].function.code,\n                versionId: waypointsInstallation.versionId,\n            });\n        }),\n        ...toDeleteWaypoints.map((waypointVar) => {\n            return takaro.command.commandControllerRemove(waypointVar.id);\n        }),\n    ]);\n    // Update permissions\n    const existingPermissions = waypointsDefinition.latestVersion.permissions || [];\n    const permissionInputDTOs = existingPermissions.map((permission) => ({\n        permission: permission.permission,\n        description: permission.description,\n        friendlyName: permission.friendlyName,\n        canHaveCount: permission.canHaveCount,\n    }));\n    // We need to filter out the permissions we deleted in the above lines\n    const filteredPermissionsInputs = permissionInputDTOs.filter((permission) => {\n        return !toDeleteWaypoints.some((waypoint) => permission.permission === `WAYPOINTS_USE_${waypoint.trigger.toUpperCase()}_${gameServerId}`);\n    });\n    const gameServer = (await takaro.gameserver.gameServerControllerGetOne(gameServerId)).data.data;\n    await takaro.module.moduleControllerUpdate(waypointsInstallation.moduleId, {\n        latestVersion: {\n            permissions: [\n                ...filteredPermissionsInputs,\n                ...missingWaypoints.map((waypoint) => ({\n                    permission: `WAYPOINTS_USE_${getWaypointId(waypoint.key).toUpperCase()}_${gameServerId}`,\n                    description: `Use the waypoint ${getWaypointId(waypoint.key)} on ${gameServer.name}.`,\n                    friendlyName: `Use waypoint ${getWaypointId(waypoint.key)} on ${gameServer.name}`,\n                    canHaveCount: false,\n                })),\n            ],\n        },\n    });\n}\n//# sourceMappingURL=utils.js.map"
+          }
+        ],
+        "permissions": [
+          {
+            "permission": "TELEPORTS_CREATE_PUBLIC",
+            "friendlyName": "Create Public Teleports",
+            "description": "Allows the player to create public teleports.",
+            "canHaveCount": true
+          },
+          {
+            "permission": "TELEPORTS_USE",
+            "friendlyName": "Use Teleports",
+            "description": "Allows the player to use teleports modules.",
+            "canHaveCount": true
+          },
+          {
+            "permission": "TELEPORTS_MANAGE_WAYPOINTS",
+            "friendlyName": "Manage waypoints",
+            "description": "Allows creating, deleting, and managing waypoints.",
+            "canHaveCount": false
+          }
+        ],
+        "commands": [
+          {
+            "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nimport { findTp } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, arguments: args, module: mod } = data;\n    if (!checkPermission(pog, 'TELEPORTS_USE')) {\n        throw new TakaroUserError('You do not have permission to use teleports.');\n    }\n    const ownedTeleportRes = await findTp(args.tp, pog.playerId);\n    let teleports = ownedTeleportRes.data.data;\n    if (mod.userConfig.allowPublicTeleports) {\n        const publicTeleportRes = await findTp(args.tp, null, true);\n        teleports = teleports.concat(publicTeleportRes.data.data);\n    }\n    if (teleports.length === 0) {\n        throw new TakaroUserError(`Teleport ${args.tp} does not exist.`);\n    }\n    const timeout = mod.userConfig.timeout;\n    if (timeout > 0) {\n        const lastExecuted = await takaro.variable.variableControllerSearch({\n            filters: {\n                key: ['lastExecuted'],\n                gameServerId: [gameServerId],\n                playerId: [pog.playerId],\n                moduleId: [mod.moduleId],\n            },\n        });\n        let lastExecutedRecord = lastExecuted.data.data[0];\n        if (!lastExecutedRecord) {\n            const createRes = await takaro.variable.variableControllerCreate({\n                key: 'lastExecuted',\n                gameServerId,\n                playerId: pog.playerId,\n                moduleId: mod.moduleId,\n                value: new Date().toISOString(),\n            });\n            lastExecutedRecord = createRes.data.data;\n        }\n        else {\n            const lastExecutedTime = new Date(lastExecutedRecord.value);\n            const now = new Date();\n            const diff = now.getTime() - lastExecutedTime.getTime();\n            if (diff < timeout) {\n                throw new TakaroUserError('You cannot teleport yet. Please wait before trying again.');\n            }\n        }\n        const teleport = JSON.parse(teleports[0].value);\n        await takaro.gameserver.gameServerControllerTeleportPlayer(gameServerId, pog.playerId, {\n            x: teleport.x,\n            y: teleport.y,\n            z: teleport.z,\n            dimension: teleport.dimension,\n        });\n        await data.player.pm(`Teleported to ${teleport.name}.`);\n        if (timeout !== 0 && lastExecutedRecord) {\n            await takaro.variable.variableControllerUpdate(lastExecutedRecord.id, {\n                value: new Date().toISOString(),\n            });\n        }\n        return;\n    }\n    const teleport = JSON.parse(teleports[0].value);\n    await takaro.gameserver.gameServerControllerTeleportPlayer(gameServerId, pog.playerId, {\n        x: teleport.x,\n        y: teleport.y,\n        z: teleport.z,\n        dimension: teleport.dimension,\n    });\n    await data.player.pm(`Teleported to ${teleport.name}.`);\n}\nawait main();\n//# sourceMappingURL=teleport.js.map",
+            "name": "teleport",
+            "trigger": "tp",
+            "helpText": "Teleports to one of your set locations.",
+            "arguments": [
+              {
+                "name": "tp",
+                "type": "string",
+                "defaultValue": null,
+                "helpText": "The location to teleport to.",
+                "position": 0
+              }
+            ]
+          },
+          {
+            "function": "import { takaro, data } from '@takaro/helpers';\nimport { getVariableKey } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, module: mod } = data;\n    const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;\n    const ownedTeleports = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [pog.playerId],\n            moduleId: [mod.moduleId],\n        },\n        search: {\n            key: [getVariableKey(undefined, false)],\n        },\n        sortBy: 'key',\n        sortDirection: 'asc',\n    })).data.data;\n    const publicTeleports = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            moduleId: [mod.moduleId],\n        },\n        search: {\n            key: [getVariableKey(undefined, true)],\n        },\n        sortBy: 'key',\n        sortDirection: 'asc',\n    })).data.data\n        // Filter out public teleports that are owned by the player\n        // Since we'll be showing them in the owned teleports list\n        .filter((teleport) => {\n        return teleport.playerId !== pog.playerId;\n    });\n    const teleports = [...ownedTeleports, ...publicTeleports];\n    if (teleports.length === 0) {\n        await data.player.pm(`You have no teleports available, use ${prefix}settp <name> to set one.`);\n        return;\n    }\n    await data.player.pm(`You have ${teleports.length} teleport${teleports.length === 1 ? '' : 's'} available`);\n    for (const rawTeleport of teleports) {\n        const teleport = JSON.parse(rawTeleport.value);\n        await data.player.pm(`${teleport.name}: (${teleport.x},${teleport.y},${teleport.z}) ${rawTeleport.key.startsWith('pub') ? '(public)' : ''}`);\n    }\n}\nawait main();\n//# sourceMappingURL=tplist.js.map",
+            "name": "tplist",
+            "trigger": "tplist",
+            "helpText": "Lists all your set locations.",
+            "arguments": []
+          },
+          {
+            "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nimport { getVariableKey, findTp } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, module: mod, arguments: args } = data;\n    const hasPermission = checkPermission(pog, 'TELEPORTS_USE');\n    if (!hasPermission) {\n        throw new TakaroUserError('You do not have permission to use teleports.');\n    }\n    const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;\n    const existingVariable = await findTp(args.tp, pog.playerId);\n    if (existingVariable.data.data.length > 0) {\n        throw new TakaroUserError(`Teleport ${args.tp} already exists, use ${prefix}deletetp ${args.tp} to delete it.`);\n    }\n    const allPlayerTeleports = await takaro.variable.variableControllerSearch({\n        search: {\n            key: [getVariableKey(undefined), getVariableKey(undefined, true)],\n        },\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [pog.playerId],\n            moduleId: [mod.moduleId],\n        },\n    });\n    if (allPlayerTeleports.data.data.length >= hasPermission.count) {\n        throw new TakaroUserError(`You have reached the maximum number of teleports for your role, maximum allowed is ${hasPermission.count}`);\n    }\n    await takaro.variable.variableControllerCreate({\n        key: getVariableKey(args.tp),\n        value: JSON.stringify({\n            name: args.tp,\n            x: data.pog.positionX,\n            y: data.pog.positionY,\n            z: data.pog.positionZ,\n            dimension: data.pog.dimension,\n        }),\n        gameServerId,\n        moduleId: mod.moduleId,\n        playerId: pog.playerId,\n    });\n    await data.player.pm(`Teleport ${args.tp} set.`);\n}\nawait main();\n//# sourceMappingURL=settp.js.map",
+            "name": "settp",
+            "trigger": "settp",
+            "helpText": "Sets a location to teleport to.",
+            "arguments": [
+              {
+                "name": "tp",
+                "type": "string",
+                "defaultValue": null,
+                "helpText": "The location name.",
+                "position": 0
+              }
+            ]
+          },
+          {
+            "function": "import { takaro, data, TakaroUserError } from '@takaro/helpers';\nimport { getVariableKey } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, arguments: args, module: mod } = data;\n    const existingVariable = await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [getVariableKey(args.tp), getVariableKey(args.tp, true)],\n            gameServerId: [gameServerId],\n            playerId: [pog.playerId],\n            moduleId: [mod.moduleId],\n        },\n    });\n    if (existingVariable.data.data.length === 0) {\n        throw new TakaroUserError(`Teleport ${args.tp} does not exist.`);\n    }\n    await takaro.variable.variableControllerDelete(existingVariable.data.data[0].id);\n    await data.player.pm(`Teleport ${args.tp} deleted.`);\n}\nawait main();\n//# sourceMappingURL=deletetp.js.map",
+            "name": "deletetp",
+            "trigger": "deletetp",
+            "helpText": "Deletes a location.",
+            "arguments": [
+              {
+                "name": "tp",
+                "type": "string",
+                "defaultValue": null,
+                "helpText": "The location name.",
+                "position": 0
+              }
+            ]
+          },
+          {
+            "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nimport { getVariableKey } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, module: mod, arguments: args } = data;\n    const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;\n    if (!mod.userConfig.allowPublicTeleports) {\n        throw new TakaroUserError('Public teleports are disabled.');\n    }\n    const hasPermission = checkPermission(pog, 'TELEPORTS_CREATE_PUBLIC');\n    if (!hasPermission) {\n        throw new TakaroUserError('You do not have permission to create public teleports.');\n    }\n    const existingPublicTeleportsForPlayerRes = await takaro.variable.variableControllerSearch({\n        search: {\n            key: ['pubtp_'],\n        },\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [pog.playerId],\n            moduleId: [mod.moduleId],\n        },\n    });\n    if (existingPublicTeleportsForPlayerRes.data.data.length >= hasPermission.count) {\n        throw new TakaroUserError(`You have reached the maximum number of public teleports for your role, maximum allowed is ${hasPermission.count}`);\n    }\n    const teleports = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [pog.playerId],\n            moduleId: [mod.moduleId],\n            key: [getVariableKey(args.tp)],\n        },\n        sortBy: 'key',\n        sortDirection: 'asc',\n    })).data.data;\n    if (teleports.length === 0) {\n        throw new TakaroUserError(`No teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`);\n    }\n    const teleportRecord = teleports[0];\n    const teleport = JSON.parse(teleportRecord.value);\n    await takaro.variable.variableControllerUpdate(teleportRecord.id, {\n        key: getVariableKey(args.tp, true),\n        value: JSON.stringify(teleport),\n    });\n    await data.player.pm(`Teleport ${args.tp} is now public.`);\n}\nawait main();\n//# sourceMappingURL=setpublic.js.map",
+            "name": "setpublic",
+            "trigger": "setpublic",
+            "helpText": "Sets a teleport to be public, allowing other players to teleport to it.",
+            "arguments": [
+              {
+                "name": "tp",
+                "type": "string",
+                "defaultValue": null,
+                "helpText": "The location name.",
+                "position": 0
+              }
+            ]
+          },
+          {
+            "function": "import { takaro, data, TakaroUserError } from '@takaro/helpers';\nimport { getVariableKey } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, arguments: args, module: mod } = data;\n    const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;\n    const teleportRes = await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [pog.playerId],\n            key: [getVariableKey(args.tp, true)],\n            moduleId: [mod.moduleId],\n        },\n        sortBy: 'key',\n        sortDirection: 'asc',\n    });\n    const teleports = teleportRes.data.data;\n    if (teleports.length === 0) {\n        throw new TakaroUserError(`No public teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`);\n    }\n    const teleportRecord = teleports[0];\n    const teleport = JSON.parse(teleportRecord.value);\n    await takaro.variable.variableControllerUpdate(teleportRecord.id, {\n        key: getVariableKey(args.tp),\n        value: JSON.stringify(teleport),\n    });\n    await data.player.pm(`Teleport ${args.tp} is now private.`);\n}\nawait main();\n//# sourceMappingURL=setprivate.js.map",
+            "name": "setprivate",
+            "trigger": "setprivate",
+            "helpText": "Sets a teleport to be private, only the teleport owner can teleport to it.",
+            "arguments": [
+              {
+                "name": "tp",
+                "type": "string",
+                "defaultValue": null,
+                "helpText": "The location name.",
+                "position": 0
+              }
+            ]
+          },
+          {
+            "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nimport { getWaypointName, waypointReconciler } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, arguments: args, module: mod } = data;\n    if (!checkPermission(pog, 'TELEPORTS_MANAGE_WAYPOINTS')) {\n        throw new TakaroUserError('You do not have permission to manage waypoints.');\n    }\n    try {\n        await takaro.variable.variableControllerCreate({\n            moduleId: mod.moduleId,\n            gameServerId,\n            key: getWaypointName(args.waypoint),\n            value: JSON.stringify({\n                x: pog.positionX,\n                y: pog.positionY,\n                z: pog.positionZ,\n                dimension: pog.dimension,\n            }),\n        });\n    }\n    catch (error) {\n        if (error.message === 'Request failed with status code 409') {\n            throw new TakaroUserError(`Waypoint ${args.waypoint} already exists.`);\n        }\n        throw error;\n    }\n    await waypointReconciler();\n    await pog.pm(`Waypoint ${args.waypoint} set.`);\n}\nawait main();\n//# sourceMappingURL=setwaypoint.js.map",
+            "name": "setwaypoint",
+            "trigger": "setwaypoint",
+            "helpText": "Creates a new waypoint.",
+            "arguments": [
+              {
+                "name": "waypoint",
+                "type": "string",
+                "defaultValue": null,
+                "helpText": "The location name.",
+                "position": 0
+              }
+            ]
+          },
+          {
+            "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nimport { getWaypointName, waypointReconciler } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, arguments: args, module: mod } = data;\n    if (!checkPermission(pog, 'TELEPORTS_MANAGE_WAYPOINTS')) {\n        throw new TakaroUserError('You do not have permission to manage waypoints.');\n    }\n    const variable = await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [getWaypointName(args.waypoint)],\n            gameServerId: [gameServerId],\n            moduleId: [mod.moduleId],\n        },\n    });\n    if (!variable.data.data.length) {\n        throw new TakaroUserError(`Waypoint ${args.waypoint} doesn't exist.`);\n    }\n    await takaro.variable.variableControllerDelete(variable.data.data[0].id);\n    await waypointReconciler();\n    await pog.pm(`Waypoint ${args.waypoint} deleted.`);\n}\nawait main();\n//# sourceMappingURL=deletewaypoint.js.map",
+            "name": "deletewaypoint",
+            "trigger": "deletewaypoint",
+            "helpText": "Deletes a waypoint.",
+            "arguments": [
+              {
+                "name": "waypoint",
+                "type": "string",
+                "defaultValue": null,
+                "helpText": "The location name.",
+                "position": 0
+              }
+            ]
+          },
+          {
+            "function": "import { data, checkPermission } from '@takaro/helpers';\nimport { ensureWaypointsModule } from './utils.js';\nasync function main() {\n    const { pog, gameServerId } = data;\n    const { waypointsDefinition } = await ensureWaypointsModule();\n    const allWaypoints = waypointsDefinition.latestVersion.commands;\n    const waypointsWithPermission = allWaypoints\n        .filter((waypoint) => checkPermission(pog, `WAYPOINTS_USE_${waypoint.trigger.toUpperCase()}_${gameServerId}`))\n        .sort((a, b) => a.trigger.localeCompare(b.trigger));\n    if (!waypointsWithPermission.length) {\n        await pog.pm('There are no waypoints available.');\n        return;\n    }\n    await pog.pm(`Available waypoints: ${waypointsWithPermission.map((waypoint) => waypoint.trigger).join(', ')}`);\n}\nawait main();\n//# sourceMappingURL=listwaypoints.js.map",
+            "name": "listwaypoints",
+            "trigger": "waypoints",
+            "helpText": "Lists all waypoints.",
+            "arguments": []
+          },
+          {
+            "function": "import { takaro, data, TakaroUserError, checkPermission } from '@takaro/helpers';\nfunction getWaypointName(name) {\n    return `waypoint ${name}`;\n}\nasync function main() {\n    const { pog, gameServerId, trigger, module, itemId } = data;\n    const triggeredCommand = module.version.commands.find((command) => command.id === itemId);\n    if (!triggeredCommand) {\n        throw new Error('Waypoint not found.');\n    }\n    if (!triggeredCommand.name.includes(`server ${gameServerId}`)) {\n        console.log(`Waypoint ${trigger} is not for this server.`);\n        return;\n    }\n    if (!checkPermission(pog, `WAYPOINTS_USE_${trigger.toUpperCase()}_${gameServerId}`)) {\n        throw new TakaroUserError(`You are not allowed to use the waypoint ${trigger}.`);\n    }\n    const teleportsModule = (await takaro.module.moduleControllerSearch({\n        filters: {\n            builtin: ['teleports'],\n        },\n    })).data.data[0];\n    const variable = await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [getWaypointName(trigger)],\n            gameServerId: [gameServerId],\n            moduleId: [teleportsModule.id],\n        },\n    });\n    if (variable.data.data.length === 0) {\n        throw new TakaroUserError(`Waypoint ${trigger} does not exist.`);\n    }\n    const waypoint = JSON.parse(variable.data.data[0].value);\n    await takaro.gameserver.gameServerControllerTeleportPlayer(gameServerId, pog.playerId, {\n        x: waypoint.x,\n        y: waypoint.y,\n        z: waypoint.z,\n        dimension: waypoint.dimension,\n    });\n    await pog.pm(`Teleported to waypoint ${trigger}.`);\n}\nawait main();\n//# sourceMappingURL=teleportwaypoint.js.map",
+            "name": "teleportwaypoint",
+            "trigger": "teleportwaypoint",
+            "arguments": [],
+            "helpText": "Placeholder command, this will not be used directly. The module will install aliases for this command corresponding to the waypoint names."
+          }
+        ],
+        "cronJobs": [
+          {
+            "name": "Waypoint reconciler",
+            "temporalValue": "*/30 * * * *",
+            "function": "import { waypointReconciler } from './utils.js';\nasync function main() {\n    await waypointReconciler();\n}\nawait main();\n//# sourceMappingURL=Waypoint%20reconciler.js.map"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "playerOnboarding",
+    "versions": [
+      {
+        "tag": "0.0.3",
+        "description": "Collection of functions that are executed when a player joins the server. Helps with onboarding new players, like sending a welcome message. Fixed issue with starterkit item identifiers.",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"message\":{\"title\":\"Message\",\"description\":\"The message to send to the player when they join the server.\",\"type\":\"string\",\"minLength\":1,\"maxLength\":256,\"default\":\"Welcome {player} to the server!\"},\"starterKitItems\":{\"type\":\"array\",\"title\":\"Starter kit items\",\"x-component\":\"item\",\"description\":\"List of items a player will receive when they execute the starterkit command for the first time.\",\"uniqueItems\":true,\"items\":{\"type\":\"object\",\"title\":\"Item\",\"properties\":{\"item\":{\"type\":\"string\",\"title\":\"Item\"},\"amount\":{\"type\":\"number\",\"title\":\"Amount\"},\"quality\":{\"type\":\"string\",\"title\":\"Quality\"}}}}},\"required\":[],\"additionalProperties\":false}",
+        "uiSchema": "{\"starterKitItems\":{\"items\":{\"item\":{\"ui:widget\":\"item\"}}}}",
+        "hooks": [
+          {
+            "eventType": "player-connected",
+            "name": "playerConnected",
+            "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    const { player } = data;\n    const rawMessage = data.module.userConfig.message;\n    const message = rawMessage.replace('{player}', player.name);\n    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n        message,\n    });\n}\nawait main();\n//# sourceMappingURL=playerConnected.js.map"
+          }
+        ],
+        "commands": [
+          {
+            "name": "starterkit",
+            "function": "import { takaro, data, TakaroUserError } from '@takaro/helpers';\nconst VARIABLE_KEY = 't_starterkit_lock';\nasync function main() {\n    const items = data.module.userConfig.starterKitItems;\n    if (!items || items.length === 0) {\n        throw new TakaroUserError('No starter kit items configured. Please ask your server administrator to configure this.');\n    }\n    const starterKitLockRes = await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [VARIABLE_KEY],\n            gameServerId: [data.gameServerId],\n            playerId: [data.player.id],\n        },\n    });\n    if (starterKitLockRes.data.data.length > 0) {\n        throw new TakaroUserError('You already used starterkit on this server');\n    }\n    await data.player.pm('You are about to receive your starter kit...');\n    const itemRecords = (await takaro.item.itemControllerSearch({ filters: { id: items.map((_) => _.item) } })).data.data;\n    const fullItems = items.map((item) => {\n        const itemRecord = itemRecords.find((record) => record.id === item.item);\n        if (!itemRecord) {\n            throw new TakaroUserError(`Item with ID ${item.item} not found.`);\n        }\n        return {\n            id: itemRecord.id,\n            quality: item.quality,\n            amount: item.amount,\n        };\n    });\n    await Promise.all(fullItems.map(async (item) => {\n        return takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.id, {\n            name: item.id,\n            quality: item.quality ?? '',\n            amount: item.amount,\n        });\n    }));\n    await takaro.variable.variableControllerCreate({\n        key: VARIABLE_KEY,\n        value: '1',\n        gameServerId: data.gameServerId,\n        playerId: data.player.id,\n    });\n    await data.player.pm(`Gave ${items.length} items, enjoy!`);\n}\nawait main();\n//# sourceMappingURL=starterkit.js.map",
+            "trigger": "starterkit",
+            "helpText": "Get a starter kit, you can only execute this once on a server!",
+            "arguments": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "serverMessages",
+    "versions": [
+      {
+        "tag": "0.0.1",
+        "description": "Send automated, rotated, configurable messages to players on the server.",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"messages\":{\"type\":\"array\",\"title\":\"Messages\",\"description\":\"List of messages that will be sent to players on the server.\",\"default\":[\"This is an automated message, don't forget to read the server rules!\"],\"items\":{\"type\":\"string\",\"minLength\":5,\"maxLength\":1024},\"minItems\":1}},\"required\":[\"messages\"]}",
+        "cronJobs": [
+          {
+            "name": "Automated message",
+            "temporalValue": "*/30 * * * *",
+            "function": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const { module: mod, gameServerId } = data;\n    // Check what the last message we sent was\n    const lastMessageVar = (await takaro.variable.variableControllerSearch({\n        filters: {\n            key: ['lastMessage'],\n            moduleId: [mod.moduleId],\n            gameServerId: [gameServerId],\n        },\n    })).data.data[0];\n    // If we haven't sent any messages yet, start with the first one\n    const lastMessage = lastMessageVar ? parseInt(lastMessageVar.value, 10) : -1;\n    // The next message we should send is the next in the array\n    // However, if we're at the end of the array, we should start over\n    const nextMessage = data.module.userConfig.messages[lastMessage + 1] ? lastMessage + 1 : 0;\n    // The actual text of the message we're going to send\n    const messageToSend = data.module.userConfig.messages[nextMessage];\n    // Send the message to the game server\n    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n        message: messageToSend,\n    });\n    // Update the last message variable so the next time this cron job runs, we know what to send\n    if (lastMessageVar) {\n        // The variable already exists, update it\n        await takaro.variable.variableControllerUpdate(lastMessageVar.id, {\n            value: nextMessage.toString(),\n        });\n    }\n    else {\n        // The variable doesn't exist, create it\n        await takaro.variable.variableControllerCreate({\n            key: 'lastMessage',\n            value: nextMessage.toString(),\n            moduleId: mod.moduleId,\n            gameServerId: gameServerId,\n        });\n    }\n}\nawait main();\n//# sourceMappingURL=Automated%20message.js.map"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "chatBridge",
+    "versions": [
+      {
+        "tag": "0.0.1",
+        "description": "Connect chat to other services like Discord.",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"sendPlayerConnected\":{\"title\":\"Send player connected\",\"type\":\"boolean\",\"description\":\"Send a message when a player connects.\",\"default\":true},\"sendPlayerDisconnected\":{\"title\":\"Send player disconnected\",\"type\":\"boolean\",\"description\":\"Send a message when a player disconnects.\",\"default\":true},\"onlyGlobalChat\":{\"title\":\"Only global chat\",\"type\":\"boolean\",\"default\":true,\"description\":\"Only relay messages from global chat. (no team chat or private messages)\"}},\"additionalProperties\":false}",
+        "hooks": [
+          {
+            "eventType": "discord-message",
+            "name": "DiscordToGame",
+            "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    try {\n        if (data.eventData.author.isBot)\n            return;\n        await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n            message: `[D] ${data.eventData.author.displayName}:  ${data.eventData.msg}`,\n        });\n    }\n    catch (error) {\n        console.error(error);\n        await takaro.discordControllerSendMessage(data.discordChannelId, {\n            message: 'Failed to forward your message to the game. Please try again later.',\n        });\n    }\n}\nawait main();\n//# sourceMappingURL=DiscordToGame.js.map"
+          },
+          {
+            "eventType": "chat-message",
+            "name": "GameToDiscord",
+            "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    const onlyGlobal = data.module.userConfig.onlyGlobalChat;\n    if (onlyGlobal && data.eventData.channel !== 'global')\n        return;\n    const discordChannel = data.module.systemConfig.hooks['DiscordToGame'].discordChannelId;\n    const sender = data.player ? data.player.name : 'Non-player';\n    const message = `**${sender}**: ${data.eventData.msg}`;\n    await takaro.discord.discordControllerSendMessage(discordChannel, {\n        message: message,\n    });\n}\nawait main();\n//# sourceMappingURL=GameToDiscord.js.map"
+          },
+          {
+            "eventType": "player-connected",
+            "name": "PlayerConnected",
+            "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    const discordChannel = data.module.systemConfig.hooks['DiscordToGame'].discordChannelId;\n    await takaro.discord.discordControllerSendMessage(discordChannel, {\n        message: `[⚡ Connected]: ${data.player.name}`,\n    });\n}\nawait main();\n//# sourceMappingURL=PlayerConnected.js.map"
+          },
+          {
+            "eventType": "player-disconnected",
+            "name": "PlayerDisconnected",
+            "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    const discordChannel = data.module.systemConfig.hooks['DiscordToGame'].discordChannelId;\n    await takaro.discord.discordControllerSendMessage(discordChannel, {\n        message: `[👋 Disconnected]: ${data.player.name}`,\n    });\n}\nawait main();\n//# sourceMappingURL=PlayerDisconnected.js.map"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "gimme",
+    "versions": [
+      {
+        "tag": "0.0.3",
+        "description": "Randomly selects item from a list of items and entities. Fixed issue with item identifiers.",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"items\":{\"x-component\":\"item\",\"type\":\"array\",\"title\":\"Items\",\"description\":\"List of items that a player can receive.\",\"uniqueItems\":true,\"items\":{\"type\":\"object\",\"title\":\"Item\",\"properties\":{\"item\":{\"type\":\"string\",\"title\":\"Item\"},\"amount\":{\"type\":\"number\",\"title\":\"Amount\"},\"quality\":{\"type\":\"string\",\"title\":\"Quality\"}}}},\"commands\":{\"title\":\"Commands\",\"type\":\"array\",\"default\":[\"say hello from gimme\"],\"items\":{\"type\":\"string\"}}},\"required\":[\"items\"],\"additionalProperties\":false}",
+        "uiSchema": "{\"items\":{\"items\":{\"item\":{\"ui:widget\":\"item\"}}}}",
+        "commands": [
+          {
+            "function": "import { takaro, data, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const items = data.module.userConfig.items;\n    const commands = data.module.userConfig.commands;\n    if (items.length + commands.length === 0) {\n        throw new TakaroUserError('No items or commands configured, please ask your server administrator to configure this module.');\n    }\n    // pick a random item between 0 and the length of both the items and commands arrays\n    const randomIndex = Math.floor(Math.random() * (items.length + commands.length));\n    const randomOption = items.concat(commands)[randomIndex];\n    if (randomIndex < items.length) {\n        const item = (await takaro.item.itemControllerFindOne(randomOption.item)).data.data;\n        await takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.id, {\n            name: randomOption.item,\n            amount: randomOption.amount,\n            quality: randomOption.quality ?? '',\n        });\n        await data.player.pm(`You received ${randomOption.amount}x ${item.name}!`);\n    }\n    else {\n        await takaro.gameserver.gameServerControllerExecuteCommand(data.gameServerId, { command: randomOption });\n    }\n}\nawait main();\n//# sourceMappingURL=gimme.js.map",
+            "name": "gimme",
+            "trigger": "gimme",
+            "helpText": "Randomly selects item from a list of items and entities.",
+            "arguments": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "highPingKicker",
+    "versions": [
+      {
+        "tag": "0.0.2",
+        "description": "Automatically kick players with high ping, with warnings and configurable thresholds.",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"pingThreshold\":{\"type\":\"number\",\"title\":\"Ping threshold\",\"description\":\"A ping value that is deemed too high and prompts a warning.\",\"default\":200,\"minimum\":0},\"warningsBeforeKick\":{\"type\":\"number\",\"title\":\"Kick warnings\",\"description\":\"Number of warnings before a player is kicked.\",\"default\":3,\"minimum\":0}},\"required\":[]}",
+        "cronJobs": [
+          {
+            "name": "Ping check",
+            "temporalValue": "*/5 * * * *",
+            "function": "import { takaro, data } from '@takaro/helpers';\nconst VARIABLE_KEY = 'highPingKicker:warnings';\nasync function main() {\n    const currentPlayers = await takaro.gameserver.gameServerControllerGetPlayers(data.gameServerId);\n    await Promise.all(currentPlayers.data.data.map(async (player) => {\n        if (player.ping > data.module.userConfig.pingThreshold) {\n            const takaroPlayerRes = await takaro.player.playerControllerSearch({\n                filters: {\n                    steamId: [player.steamId],\n                },\n            });\n            const takaroPlayer = takaroPlayerRes.data.data[0];\n            const currentWarningsRes = await takaro.variable.variableControllerSearch({\n                filters: {\n                    playerId: [takaroPlayer.id],\n                    key: [VARIABLE_KEY],\n                },\n            });\n            const currentWarningsRecords = currentWarningsRes.data.data;\n            let currentWarnings = 1;\n            if (!currentWarningsRecords.length) {\n                await takaro.variable.variableControllerCreate({\n                    playerId: takaroPlayer.id,\n                    key: VARIABLE_KEY,\n                    value: '1',\n                });\n            }\n            else {\n                currentWarnings = parseInt(currentWarningsRecords[0].value, 10) + 1;\n                await takaro.variable.variableControllerUpdate(currentWarningsRecords[0].id, {\n                    value: currentWarnings.toString(),\n                });\n            }\n            // Check if player should be kicked before sending warning\n            if (currentWarnings >= data.module.userConfig.warningsBeforeKick) {\n                await takaro.gameserver.gameServerControllerKickPlayer(data.gameServerId, takaroPlayer.id, {\n                    reason: `Your ping (${player.ping}) is too high, please try again later.`,\n                });\n                // Delete the warning record after kicking\n                if (currentWarningsRecords.length > 0) {\n                    await takaro.variable.variableControllerDelete(currentWarningsRecords[0].id);\n                }\n            }\n            else {\n                // Only send warning if player won't be kicked\n                await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n                    message: `Your ping (${player.ping}) is too high. Warning ${currentWarnings}/${data.module.userConfig.warningsBeforeKick}`,\n                    opts: {\n                        recipient: {\n                            gameId: player.gameId,\n                        },\n                    },\n                });\n            }\n        }\n    }));\n}\nawait main();\n//# sourceMappingURL=Ping%20check.js.map"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "economyUtils",
+    "versions": [
+      {
+        "tag": "0.0.1",
+        "description": "A set of commands to allow players to manage their currency.",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"pendingAmount\":{\"title\":\"Pending amount\",\"type\":\"number\",\"description\":\"When a player transfers money, they must confirm the transfer when the amount is equal or above this value. Set to 0 to disable.\",\"default\":0},\"zombieKillReward\":{\"title\":\"Zombie kill reward\",\"type\":\"number\",\"description\":\"The default amount of currency a player receives for killing a zombie. This can be overridden by roles.\",\"default\":1}},\"required\":[],\"additionalProperties\":false}",
+        "permissions": [
+          {
+            "permission": "ECONOMY_UTILS_MANAGE_CURRENCY",
+            "friendlyName": "Manage currency",
+            "description": "Allows players to manage currency of other players. This includes granting and revoking currency.",
+            "canHaveCount": false
+          },
+          {
+            "permission": "ZOMBIE_KILL_REWARD_OVERRIDE",
+            "friendlyName": "Zombie kill reward override",
+            "description": "Allows a role to override the amount of currency a player receives for killing a entity.",
+            "canHaveCount": true
+          }
+        ],
+        "cronJobs": [
+          {
+            "function": "import { data, takaro, checkPermission } from '@takaro/helpers';\nconst VARIABLE_KEY = 'lastZombieKillReward';\nasync function main() {\n    const { gameServerId, module: mod } = data;\n    const lastRunRes = (await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [VARIABLE_KEY],\n            gameServerId: [gameServerId],\n            moduleId: [mod.moduleId],\n        },\n    })).data.data;\n    // We last ran the rewards script at this time\n    // If this is the first time we run it, just get the last 5 minutes\n    const lastRun = lastRunRes.length ? new Date(JSON.parse(lastRunRes[0].value)) : new Date(Date.now() - 5 * 60 * 1000);\n    // Fetch all the kill events since the last time we gave out rewards\n    const killEvents = (await takaro.event.eventControllerSearch({\n        filters: { eventName: ['entity-killed'], gameserverId: [gameServerId] },\n        greaterThan: { createdAt: lastRun.toISOString() },\n        limit: 1000,\n    })).data.data;\n    console.log(`Found ${killEvents.length} kill events since ${lastRun.toISOString()}`);\n    // Group the events by player\n    const playerKills = {};\n    for (const killEvent of killEvents) {\n        if (!playerKills[killEvent.playerId]) {\n            playerKills[killEvent.playerId] = [];\n        }\n        playerKills[killEvent.playerId].push(killEvent);\n    }\n    // Give each player their reward\n    // We use Promise.allSettled to run this concurrently\n    const results = await Promise.allSettled(Object.entries(playerKills).map(async ([playerId, kills]) => {\n        const pog = (await takaro.playerOnGameserver.playerOnGameServerControllerGetOne(gameServerId, playerId)).data\n            .data;\n        const hasPermission = checkPermission(pog, 'ZOMBIE_KILL_REWARD_OVERRIDE');\n        const defaultReward = mod.userConfig.zombieKillReward;\n        const reward = hasPermission && hasPermission.count != null ? hasPermission.count : defaultReward;\n        const totalReward = reward * kills.length;\n        return takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(gameServerId, playerId, {\n            currency: totalReward,\n        });\n    }));\n    // Log any errors\n    for (const result of results) {\n        if (result.status === 'rejected') {\n            console.error(result.reason);\n            throw new Error(`Failed to give rewards: ${result.reason}`);\n        }\n    }\n    // Update the last run time\n    if (lastRunRes.length) {\n        await takaro.variable.variableControllerUpdate(lastRunRes[0].id, {\n            value: JSON.stringify(new Date()),\n        });\n    }\n    else {\n        await takaro.variable.variableControllerCreate({\n            key: VARIABLE_KEY,\n            value: JSON.stringify(new Date()),\n            moduleId: mod.moduleId,\n            gameServerId,\n        });\n    }\n}\nawait main();\n//# sourceMappingURL=zombieKillReward.js.map",
+            "name": "zombieKillReward",
+            "temporalValue": "*/5 * * * *"
+          }
+        ],
+        "commands": [
+          {
+            "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', data.gameServerId)).data.data;\n    await data.player.pm(`balance: ${data.pog.currency} ${currencyName.value}`);\n}\nawait main();\n//# sourceMappingURL=balance.js.map",
+            "name": "balance",
+            "trigger": "balance",
+            "helpText": "Check your balance.",
+            "arguments": []
+          },
+          {
+            "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    const richest = (await takaro.playerOnGameserver.playerOnGameServerControllerSearch({\n        limit: 10,\n        sortBy: 'currency',\n        sortDirection: 'desc',\n        extend: ['player'],\n    })).data.data;\n    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', data.gameServerId)).data.data\n        .value;\n    // TODO: change this to name when it become available in playerOnGameServer\n    const richestStrings = richest.map(async (pog, index) => {\n        const playerName = (await takaro.player.playerControllerGetOne(pog.playerId)).data.data.name;\n        return `${index + 1}. ${playerName} - ${pog.currency} ${currencyName}`;\n    });\n    await data.player.pm('Richest players:');\n    for (const string of richestStrings) {\n        await data.player.pm(await string);\n    }\n}\nawait main();\n//# sourceMappingURL=topCurrency.js.map",
+            "name": "topCurrency",
+            "trigger": "topcurrency",
+            "helpText": "List of the 10 players with the highest balance.",
+            "arguments": []
+          },
+          {
+            "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const { pog: granter, arguments: args, gameServerId } = data;\n    // args.receiver has an argument type of \"player\". Arguments of this type are automatically resolved to the player's id.\n    // If the player doesn't exist or multiple players with the same name where found, it will have thrown an error before this command is executed.\n    const receiver = args.receiver;\n    if (!checkPermission(granter, 'ECONOMY_UTILS_MANAGE_CURRENCY')) {\n        throw new TakaroUserError('You do not have permission to use grant currency command.');\n    }\n    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;\n    const granterName = (await takaro.player.playerControllerGetOne(granter.playerId)).data.data.name;\n    const receiverName = (await takaro.player.playerControllerGetOne(receiver.playerId)).data.data.name;\n    await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(receiver.gameServerId, receiver.playerId, {\n        currency: args.amount,\n    });\n    const messageToReceiver = takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n        message: `Granted ${args.amount} ${currencyName} by ${granterName}`,\n        opts: {\n            recipient: {\n                gameId: receiver.gameId,\n            },\n        },\n    });\n    await Promise.all([\n        granter.pm(`You successfully granted ${args.amount} ${currencyName} to ${receiverName}`),\n        messageToReceiver,\n    ]);\n    return;\n}\nawait main();\n//# sourceMappingURL=grantCurrency.js.map",
+            "name": "grantCurrency",
+            "trigger": "grantcurrency",
+            "helpText": "Grant money to a player. The money is not taken from your own balance but is new currency.",
+            "arguments": [
+              {
+                "name": "receiver",
+                "type": "player",
+                "helpText": "The player to grant currency to.",
+                "position": 0,
+                "defaultValue": null
+              },
+              {
+                "name": "amount",
+                "type": "number",
+                "helpText": "The amount of money.",
+                "position": 1,
+                "defaultValue": null
+              }
+            ]
+          },
+          {
+            "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const { pog: revoker, arguments: args, gameServerId } = data;\n    // args.receiver has an argument type of \"player\". Arguments of this type are automatically resolved to the player's id.\n    // If the player doesn't exist or multiple players with the same name where found, it will have thrown an error before this command is executed.\n    const receiver = args.receiver;\n    if (!checkPermission(revoker, 'ECONOMY_UTILS_MANAGE_CURRENCY')) {\n        throw new TakaroUserError('You do not have permission to use revoke currency command.');\n    }\n    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;\n    const revokerName = (await takaro.player.playerControllerGetOne(revoker.playerId)).data.data.name;\n    const receiverName = (await takaro.player.playerControllerGetOne(receiver.playerId)).data.data.name;\n    await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(receiver.gameServerId, receiver.playerId, {\n        currency: args.amount,\n    });\n    const messageToReceiver = takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n        message: `${args.amount} ${currencyName} were revoked by ${revokerName}`,\n        opts: {\n            recipient: {\n                gameId: receiver.gameId,\n            },\n        },\n    });\n    await Promise.all([\n        revoker.pm(`You successfully revoked ${args.amount} ${currencyName} of ${receiverName}'s balance`),\n        messageToReceiver,\n    ]);\n    return;\n}\nawait main();\n//# sourceMappingURL=revokeCurrency.js.map",
+            "name": "revokeCurrency",
+            "trigger": "revokecurrency",
+            "helpText": "Revokes money from a player. The money disappears.",
+            "arguments": [
+              {
+                "name": "receiver",
+                "type": "player",
+                "helpText": "The player to revoke currency from.",
+                "position": 0,
+                "defaultValue": null
+              },
+              {
+                "name": "amount",
+                "type": "number",
+                "helpText": "The amount of money.",
+                "position": 1,
+                "defaultValue": null
+              }
+            ]
+          },
+          {
+            "function": "import { takaro, data, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const { gameServerId, pog: sender, module: mod } = data;\n    // try to find a variable with key \"confirmTransfer\"\n    const variables = (await takaro.variable.variableControllerSearch({\n        filters: {\n            key: 'confirmTransfer',\n            gameServerId,\n            moduleId: mod.moduleId,\n            playerId: sender.playerId,\n        },\n    })).data.data;\n    if (variables.length === 0) {\n        throw new TakaroUserError('You have no pending transfer.');\n    }\n    // Remove the variable before potentially executing the transaction.\n    await takaro.variable.variableControllerDelete(variables[0].id);\n    const pendingTransfer = JSON.parse(variables[0].value);\n    await takaro.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(sender.gameServerId, sender.id, pendingTransfer.receiver.id, {\n        currency: pendingTransfer.amount,\n    });\n    const receiverName = (await takaro.player.playerControllerGetOne(pendingTransfer.receiver.playerId)).data.data.name;\n    const senderName = (await takaro.player.playerControllerGetOne(sender.playerId)).data.data.name;\n    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;\n    const messageToSender = sender.pm(`You successfully transferred ${pendingTransfer.amount} ${currencyName} to ${receiverName}`);\n    const messageToReceiver = takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n        message: `You received ${pendingTransfer.amount} ${currencyName} from ${senderName}`,\n        opts: {\n            recipient: {\n                gameId: pendingTransfer.receiver.gameId,\n            },\n        },\n    });\n    await Promise.all([messageToSender, messageToReceiver]);\n    return;\n}\nawait main();\n//# sourceMappingURL=confirmTransfer.js.map",
+            "name": "confirmTransfer",
+            "trigger": "confirmtransfer",
+            "helpText": "Confirms a pending transfer.",
+            "arguments": []
+          },
+          {
+            "function": "import { takaro, data, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const { pog: sender, arguments: args, gameServerId, module: mod } = data;\n    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;\n    const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;\n    // args.receiver has an argument type of \"player\". Arguments of this type are automatically resolved to the player's id.\n    // If the player doesn't exist or multiple players with the same name where found, it will have thrown an error before this command is executed.\n    const receiver = args.receiver;\n    const senderName = (await takaro.player.playerControllerGetOne(sender.playerId)).data.data.name;\n    const receiverName = (await takaro.player.playerControllerGetOne(receiver.playerId)).data.data.name;\n    if (mod.userConfig.pendingAmount !== 0 && args.amount >= mod.userConfig.pendingAmount) {\n        // create a variable to store confirmation requirement\n        // TODO: in the future, we should probably add an expiration date to this variable.\n        await takaro.variable.variableControllerCreate({\n            key: 'confirmTransfer',\n            value: JSON.stringify({\n                amount: args.amount,\n                receiver: {\n                    id: receiver.id,\n                    gameId: receiver.gameId,\n                    playerId: receiver.playerId,\n                },\n            }),\n            moduleId: mod.moduleId,\n            playerId: sender.playerId,\n            gameServerId,\n        });\n        // NOTE: we should maybe check if the player has enough balance to send the amount since this is only checked when the transaction is executed.\n        await sender.pm(`You are about to send ${args.amount} ${currencyName} to ${receiverName}. (Please confirm by typing ${prefix}confirmtransfer)`);\n        return;\n    }\n    try {\n        await takaro.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(sender.gameServerId, sender.id, receiver.id, {\n            currency: args.amount,\n        });\n    }\n    catch {\n        throw new TakaroUserError(`Failed to transfer ${args.amount} ${currencyName} to ${receiverName}. Are you sure you have enough balance?`);\n    }\n    const messageToReceiver = takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n        message: `You received ${args.amount} ${currencyName} from ${senderName}`,\n        opts: {\n            recipient: {\n                gameId: receiver.gameId,\n            },\n        },\n    });\n    await Promise.all([\n        sender.pm(`You successfully transferred ${args.amount} ${currencyName} to ${receiverName}`),\n        messageToReceiver,\n    ]);\n    return;\n}\nawait main();\n//# sourceMappingURL=transfer.js.map",
+            "name": "transfer",
+            "trigger": "transfer",
+            "helpText": "Transfer money to another player.",
+            "arguments": [
+              {
+                "name": "receiver",
+                "type": "player",
+                "helpText": "The player to transfer money to.",
+                "position": 0,
+                "defaultValue": null
+              },
+              {
+                "name": "amount",
+                "type": "number",
+                "helpText": "The amount of money to transfer.",
+                "position": 1,
+                "defaultValue": null
+              }
+            ]
+          },
+          {
+            "function": "import { takaro, data, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const { user, player, arguments: args, _gameServerId } = data;\n    if (!user)\n        throw new TakaroUserError('You must link your account to Takaro to use this command.');\n    const pendingOrdersRes = await takaro.shopOrder.shopOrderControllerSearch({\n        filters: {\n            userId: [user.id],\n            status: ['PAID'],\n        },\n        sortBy: 'createdAt',\n        sortDirection: 'asc',\n    });\n    if (pendingOrdersRes.data.data.length === 0) {\n        await player.pm('You have no pending orders.');\n        return;\n    }\n    let ordersToClaim = [];\n    if (args.all) {\n        ordersToClaim = pendingOrdersRes.data.data;\n    }\n    else {\n        ordersToClaim.push(pendingOrdersRes.data.data[0]);\n    }\n    for (const order of ordersToClaim) {\n        await takaro.shopOrder.shopOrderControllerClaim(order.id);\n    }\n}\nawait main();\n//# sourceMappingURL=claim.js.map",
+            "name": "claim",
+            "trigger": "claim",
+            "helpText": "Claim your pending shop orders.",
+            "arguments": [
+              {
+                "name": "all",
+                "type": "boolean",
+                "helpText": "If true, claim ALL pending orders. If false, claim only the first one.",
+                "position": 0,
+                "defaultValue": "false"
+              }
+            ]
+          },
+          {
+            "function": "import { takaro, data, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const { arguments: args, player, gameServerId } = data;\n    const { page, item, action } = args;\n    const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;\n    // If command is called without any arguments\n    const messageWithoutPrefix = data.chatMessage.msg.slice(prefix.length).trim();\n    if (!messageWithoutPrefix.includes(' ')) {\n        await player.pm('This command allows you to browse the shop and view available items.');\n        await player.pm(`Usage: ${prefix}shop [page] [item] [action]`);\n        await player.pm(`${prefix}shop 2 - View the second page of shop items`);\n        await player.pm(`${prefix}shop 1 3 - View details about the third item on the first page`);\n        await player.pm(`${prefix}shop 1 3 buy - Purchase the third item on the first page`);\n        return;\n    }\n    const shopItems = await takaro.shopListing.shopListingControllerSearch({\n        limit: 5,\n        page: page - 1,\n        sortBy: 'name',\n        sortDirection: 'asc',\n        filters: {\n            gameServerId: [gameServerId],\n            draft: false,\n        },\n    });\n    if (shopItems.data.data.length === 0) {\n        await player.pm('No items found.');\n        return;\n    }\n    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', data.gameServerId)).data.data;\n    if (!item) {\n        // List the shop items with index\n        let index = 1;\n        for (const listing of shopItems.data.data) {\n            const items = listing.items.slice(0, 3).map((item) => {\n                return `${item.amount}x ${item.item.name}`;\n            });\n            await player.pm(`${index} - ${listing.name} - ${listing.price} ${currencyName.value}. ${items.join(', ')}`);\n            index++;\n        }\n        return;\n    }\n    const selectedItem = shopItems.data.data[item - 1];\n    if (!selectedItem)\n        throw new TakaroUserError(`Item not found. Please select an item from the list, valid options are 1-${shopItems.data.data.length}.`);\n    if (action === 'none') {\n        // Display more info about the item\n        await player.pm(`Listing ${selectedItem.name} - ${selectedItem.price} ${currencyName.value}`);\n        await Promise.all(selectedItem.items.map((item) => {\n            const quality = item.quality ? `Quality: ${item.quality}` : '';\n            const description = (item.item.description ? `Description: ${item.item.description}` : '').replaceAll('\\\\n', ' ');\n            return player.pm(`- ${item.amount}x ${item.item.name}. ${quality} ${description}`);\n        }));\n        return;\n    }\n    if (action === 'buy') {\n        const orderRes = await takaro.shopOrder.shopOrderControllerCreate({\n            amount: 1,\n            listingId: selectedItem.id,\n            playerId: player.id,\n        });\n        await player.pm(`You have purchased ${selectedItem.name} for ${selectedItem.price} ${currencyName.value}.`);\n        await takaro.shopOrder.shopOrderControllerClaim(orderRes.data.data.id);\n        return;\n    }\n    throw new TakaroUserError('Invalid action. Valid actions are \"buy\".');\n}\nawait main();\n//# sourceMappingURL=shop.js.map",
+            "name": "shop",
+            "trigger": "shop",
+            "helpText": "Browse the shop and view available items.",
+            "arguments": [
+              {
+                "name": "page",
+                "type": "number",
+                "helpText": "Display more items from the shop by specifying a page number.",
+                "position": 0,
+                "defaultValue": "1"
+              },
+              {
+                "name": "item",
+                "type": "number",
+                "helpText": "Select a specific item to view more details.",
+                "position": 1,
+                "defaultValue": "0"
+              },
+              {
+                "name": "action",
+                "type": "string",
+                "helpText": "Perform an action on the selected item. Currently only \"buy\" is supported.",
+                "position": 2,
+                "defaultValue": "none"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "lottery",
+    "versions": [
+      {
+        "tag": "0.0.1",
+        "description": "Players can buy tickets for a lottery, and the winner is chosen at random.",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"profitMargin\":{\"type\":\"number\",\"maximum\":1,\"minimum\":0,\"description\":\"The profit margin the server takes from the lottery.\",\"default\":0.1}},\"required\":[],\"additionalProperties\":false}",
+        "permissions": [
+          {
+            "permission": "LOTTERY_BUY",
+            "friendlyName": "Buy Lottery Tickets",
+            "canHaveCount": false,
+            "description": "Allows the player to buy lottery tickets."
+          },
+          {
+            "permission": "LOTTERY_VIEW_TICKETS",
+            "friendlyName": "View Lottery Tickets",
+            "description": "Allows the player to view his lottery tickets.",
+            "canHaveCount": false
+          }
+        ],
+        "cronJobs": [
+          {
+            "name": "drawLottery",
+            "temporalValue": "0 0 * * *",
+            "function": "import { takaro, data } from '@takaro/helpers';\nfunction getTotalPrize(tickets, ticketPrice, profitMargin) {\n    const amount = tickets.reduce((acc, ticket) => {\n        const ticketAmount = parseInt(JSON.parse(ticket.value).amount, 10);\n        return acc + ticketAmount;\n    }, 0);\n    const rawTotal = amount * ticketPrice;\n    const profit = rawTotal * profitMargin;\n    const totalPrize = rawTotal - profit;\n    return totalPrize;\n}\nasync function drawWinner(takaro, gameServerId, tickets) {\n    const randomIndex = Math.floor(Math.random() * tickets.length);\n    const winnerTicket = tickets[randomIndex];\n    const winner = (await takaro.player.playerControllerGetOne(winnerTicket.playerId)).data.data;\n    const pog = await takaro.playerOnGameserver.playerOnGameServerControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [winner.id],\n        },\n    });\n    return {\n        name: winner.name,\n        playerId: pog.data.data[0].playerId,\n    };\n}\nasync function refundPlayer(takaro, gameServerId, playerId, amount, currencyName) {\n    const pog = (await takaro.playerOnGameserver.playerOnGameServerControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [playerId],\n        },\n    })).data.data[0];\n    await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(gameServerId, pog.playerId, {\n        currency: amount,\n    });\n    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n        message: `You have been refunded ${amount} ${currencyName} because the lottery has been cancelled.`,\n        opts: {\n            recipient: {\n                gameId: pog.gameId,\n            },\n        },\n    });\n}\nasync function cleanUp(takaro, tickets) {\n    const deleteTasks = tickets.map((ticket) => takaro.variable.variableControllerDelete(ticket.id));\n    await Promise.allSettled(deleteTasks);\n}\nasync function main() {\n    const { gameServerId, module: mod } = data;\n    let tickets = [];\n    try {\n        const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;\n        const ticketCost = mod.systemConfig.commands.buyTicket.cost;\n        tickets = (await takaro.variable.variableControllerSearch({\n            filters: {\n                gameServerId: [gameServerId],\n                moduleId: [mod.moduleId],\n                key: ['lottery_tickets_bought'],\n            },\n        })).data.data;\n        if (tickets.length === 0) {\n            await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n                message: 'No one has bought any tickets. The lottery has been cancelled.',\n            });\n            return;\n        }\n        if (tickets.length === 1) {\n            await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n                message: 'Only one person has bought a ticket. The lottery has been cancelled.',\n            });\n            const amount = parseInt(JSON.parse(tickets[0].value).amount, 10) * ticketCost;\n            await refundPlayer(takaro, gameServerId, tickets[0].playerId, amount, currencyName);\n            return;\n        }\n        const totalPrize = getTotalPrize(tickets, ticketCost, mod.userConfig.profitMargin);\n        const { name: winnerName, playerId } = await drawWinner(takaro, gameServerId, tickets);\n        await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n            message: 'The lottery raffle is about to start!',\n        });\n        await takaro.gameserver.gameServerControllerSendMessage(gameServerId, { message: 'drumrolls please...' });\n        await takaro.gameserver.gameServerControllerSendMessage(gameServerId, { message: 'The winner is...' });\n        await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(gameServerId, playerId, {\n            currency: totalPrize,\n        });\n        await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n            message: `${winnerName}! Congratulations! You have won ${totalPrize} ${currencyName}!`,\n        });\n    }\n    finally {\n        await cleanUp(takaro, tickets);\n    }\n}\nawait main();\n//# sourceMappingURL=drawLottery.js.map"
+          }
+        ],
+        "commands": [
+          {
+            "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const { pog, gameServerId, arguments: args, module: mod } = data;\n    const varKey = 'lottery_tickets_bought';\n    if (!checkPermission(pog, 'LOTTERY_BUY')) {\n        throw new TakaroUserError('You do not have permission to buy lottery tickets.');\n    }\n    if (args.amount < 1) {\n        throw new TakaroUserError('You must buy at least 1 ticket.');\n    }\n    const tickets = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            key: [varKey],\n            moduleId: [mod.moduleId],\n            playerId: [pog.playerId],\n        },\n    })).data.data;\n    // Player already has some tickets bought\n    if (tickets.length > 0) {\n        const ticketsBought = tickets[0];\n        const ticketsBoughtAmount = parseInt(JSON.parse(ticketsBought.value).amount, 10);\n        await takaro.variable.variableControllerUpdate(ticketsBought.id, {\n            key: varKey,\n            playerId: pog.playerId,\n            moduleId: mod.moduleId,\n            gameServerId,\n            value: JSON.stringify({ amount: ticketsBoughtAmount + args.amount }),\n        });\n    }\n    // Player has no tickets bought\n    else {\n        await takaro.variable.variableControllerCreate({\n            key: varKey,\n            value: JSON.stringify({\n                amount: args.amount,\n            }),\n            gameServerId,\n            moduleId: mod.moduleId,\n            playerId: pog.playerId,\n        });\n    }\n    const ticketPrice = args.amount * mod.systemConfig.commands.buyTicket.cost;\n    // The price of the first ticket is deducted by the command execution itself.\n    if (args.amount > 1) {\n        await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(gameServerId, pog.playerId, {\n            currency: ticketPrice - 1,\n        });\n    }\n    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;\n    await pog.pm(`You have successfully bought ${args.amount} tickets for ${ticketPrice} ${currencyName}. Good luck!`);\n}\nawait main();\n//# sourceMappingURL=buyTicket.js.map",
+            "name": "buyTicket",
+            "trigger": "buyTicket",
+            "helpText": "Buy a lottery ticket.",
+            "arguments": [
+              {
+                "name": "amount",
+                "type": "number",
+                "helpText": "The amount of tickets to buy.",
+                "position": 0,
+                "defaultValue": null
+              }
+            ]
+          },
+          {
+            "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const { pog, gameServerId, module: mod } = data;\n    const varKey = 'lottery_tickets_bought';\n    if (!checkPermission(pog, 'LOTTERY_VIEW_TICKETS')) {\n        throw new TakaroUserError('You do not have permission to view lottery tickets.');\n    }\n    const tickets = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId,\n            key: varKey,\n            moduleId: mod.id,\n            playerId: pog.playerId,\n        },\n    })).data.data;\n    let ticketsBought = 0;\n    if (tickets.length === 1) {\n        ticketsBought = parseInt(JSON.parse(tickets[0].value).amount, 10);\n    }\n    await pog.pm(`You have bought ${ticketsBought} tickets.`);\n}\nawait main();\n//# sourceMappingURL=viewTickets.js.map",
+            "name": "viewTickets",
+            "trigger": "viewTickets",
+            "helpText": "View your lottery tickets.",
+            "arguments": []
+          },
+          {
+            "function": "import { nextCronJobRun, data } from '@takaro/helpers';\nfunction formatTimeToReach(cronJob) {\n    const targetDate = nextCronJobRun(cronJob);\n    // Get the current date and time\n    const currentDate = new Date();\n    // Calculate the time difference in milliseconds\n    const delta = targetDate - currentDate;\n    // Calculate days, hours, minutes, and seconds\n    const days = Math.floor(delta / (1000 * 60 * 60 * 24));\n    const hours = Math.floor((delta % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));\n    const minutes = Math.floor((delta % (1000 * 60 * 60)) / (1000 * 60));\n    const seconds = Math.floor((delta % (1000 * 60)) / 1000);\n    // Build the formatted string\n    let formattedString = '';\n    if (days > 0) {\n        formattedString += `${days} day${days > 1 ? 's' : ''} `;\n    }\n    if (hours > 0) {\n        formattedString += `${hours} hour${hours > 1 ? 's' : ''} `;\n    }\n    if (minutes > 0) {\n        formattedString += `${minutes} minute${minutes > 1 ? 's' : ''} `;\n    }\n    if (seconds > 0) {\n        formattedString += `${seconds} second${seconds > 1 ? 's' : ''} `;\n    }\n    return formattedString.trim();\n}\nasync function main() {\n    const { player, module: mod } = data;\n    await player.pm(`The next lottery draw is in about ${formatTimeToReach(mod.systemConfig.cronJobs.drawLottery.temporalValue)}`);\n}\nawait main();\n//# sourceMappingURL=nextDraw.js.map",
+            "name": "nextDraw",
+            "trigger": "nextDraw",
+            "helpText": "View when the next draw is.",
+            "arguments": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "geoBlock",
+    "versions": [
+      {
+        "tag": "0.0.1",
+        "description": "Block players from certain countries from joining the server.",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"mode\":{\"title\":\"Mode\",\"type\":\"string\",\"description\":\"If set to allow, only players from the specified countries will be allowed to join. If set to deny, players from the specified countries will be banned from the server.\",\"enum\":[\"allow\",\"deny\"],\"default\":\"deny\"},\"countries\":{\"title\":\"Countries\",\"description\":\"List of countries\",\"type\":\"array\",\"uniqueItems\":true,\"x-component\":\"country\",\"items\":{\"type\":\"string\",\"anyOf\":[{\"const\":\"AF\",\"title\":\"Afghanistan\"},{\"const\":\"AX\",\"title\":\"Aland Islands\"},{\"const\":\"AL\",\"title\":\"Albania\"},{\"const\":\"DZ\",\"title\":\"Algeria\"},{\"const\":\"AS\",\"title\":\"American Samoa\"},{\"const\":\"AD\",\"title\":\"Andorra\"},{\"const\":\"AO\",\"title\":\"Angola\"},{\"const\":\"AI\",\"title\":\"Anguilla\"},{\"const\":\"AQ\",\"title\":\"Antarctica\"},{\"const\":\"AG\",\"title\":\"Antigua And Barbuda\"},{\"const\":\"AR\",\"title\":\"Argentina\"},{\"const\":\"AM\",\"title\":\"Armenia\"},{\"const\":\"AW\",\"title\":\"Aruba\"},{\"const\":\"AU\",\"title\":\"Australia\"},{\"const\":\"AT\",\"title\":\"Austria\"},{\"const\":\"AZ\",\"title\":\"Azerbaijan\"},{\"const\":\"BS\",\"title\":\"Bahamas\"},{\"const\":\"BH\",\"title\":\"Bahrain\"},{\"const\":\"BD\",\"title\":\"Bangladesh\"},{\"const\":\"BB\",\"title\":\"Barbados\"},{\"const\":\"BY\",\"title\":\"Belarus\"},{\"const\":\"BE\",\"title\":\"Belgium\"},{\"const\":\"BZ\",\"title\":\"Belize\"},{\"const\":\"BJ\",\"title\":\"Benin\"},{\"const\":\"BM\",\"title\":\"Bermuda\"},{\"const\":\"BT\",\"title\":\"Bhutan\"},{\"const\":\"BO\",\"title\":\"Bolivia\"},{\"const\":\"BA\",\"title\":\"Bosnia And Herzegovina\"},{\"const\":\"BW\",\"title\":\"Botswana\"},{\"const\":\"BV\",\"title\":\"Bouvet Island\"},{\"const\":\"BR\",\"title\":\"Brazil\"},{\"const\":\"IO\",\"title\":\"British Indian Ocean Territory\"},{\"const\":\"BN\",\"title\":\"Brunei Darussalam\"},{\"const\":\"BG\",\"title\":\"Bulgaria\"},{\"const\":\"BF\",\"title\":\"Burkina Faso\"},{\"const\":\"BI\",\"title\":\"Burundi\"},{\"const\":\"KH\",\"title\":\"Cambodia\"},{\"const\":\"CM\",\"title\":\"Cameroon\"},{\"const\":\"CA\",\"title\":\"Canada\"},{\"const\":\"CV\",\"title\":\"Cape Verde\"},{\"const\":\"KY\",\"title\":\"Cayman Islands\"},{\"const\":\"CF\",\"title\":\"Central African Republic\"},{\"const\":\"TD\",\"title\":\"Chad\"},{\"const\":\"CL\",\"title\":\"Chile\"},{\"const\":\"CN\",\"title\":\"China\"},{\"const\":\"CX\",\"title\":\"Christmas Island\"},{\"const\":\"CC\",\"title\":\"Cocos (Keeling) Islands\"},{\"const\":\"CO\",\"title\":\"Colombia\"},{\"const\":\"KM\",\"title\":\"Comoros\"},{\"const\":\"CG\",\"title\":\"Congo\"},{\"const\":\"CD\",\"title\":\"Congo, Democratic Republic\"},{\"const\":\"CK\",\"title\":\"Cook Islands\"},{\"const\":\"CR\",\"title\":\"Costa Rica\"},{\"const\":\"CI\",\"title\":\"Cote D'Ivoire\"},{\"const\":\"HR\",\"title\":\"Croatia\"},{\"const\":\"CU\",\"title\":\"Cuba\"},{\"const\":\"CY\",\"title\":\"Cyprus\"},{\"const\":\"CZ\",\"title\":\"Czech Republic\"},{\"const\":\"DK\",\"title\":\"Denmark\"},{\"const\":\"DJ\",\"title\":\"Djibouti\"},{\"const\":\"DM\",\"title\":\"Dominica\"},{\"const\":\"DO\",\"title\":\"Dominican Republic\"},{\"const\":\"EC\",\"title\":\"Ecuador\"},{\"const\":\"EG\",\"title\":\"Egypt\"},{\"const\":\"SV\",\"title\":\"El Salvador\"},{\"const\":\"GQ\",\"title\":\"Equatorial Guinea\"},{\"const\":\"ER\",\"title\":\"Eritrea\"},{\"const\":\"EE\",\"title\":\"Estonia\"},{\"const\":\"ET\",\"title\":\"Ethiopia\"},{\"const\":\"FK\",\"title\":\"Falkland Islands (Malvinas)\"},{\"const\":\"FO\",\"title\":\"Faroe Islands\"},{\"const\":\"FJ\",\"title\":\"Fiji\"},{\"const\":\"FI\",\"title\":\"Finland\"},{\"const\":\"FR\",\"title\":\"France\"},{\"const\":\"GF\",\"title\":\"French Guiana\"},{\"const\":\"PF\",\"title\":\"French Polynesia\"},{\"const\":\"TF\",\"title\":\"French Southern Territories\"},{\"const\":\"GA\",\"title\":\"Gabon\"},{\"const\":\"GM\",\"title\":\"Gambia\"},{\"const\":\"GE\",\"title\":\"Georgia\"},{\"const\":\"DE\",\"title\":\"Germany\"},{\"const\":\"GH\",\"title\":\"Ghana\"},{\"const\":\"GI\",\"title\":\"Gibraltar\"},{\"const\":\"GR\",\"title\":\"Greece\"},{\"const\":\"GL\",\"title\":\"Greenland\"},{\"const\":\"GD\",\"title\":\"Grenada\"},{\"const\":\"GP\",\"title\":\"Guadeloupe\"},{\"const\":\"GU\",\"title\":\"Guam\"},{\"const\":\"GT\",\"title\":\"Guatemala\"},{\"const\":\"GG\",\"title\":\"Guernsey\"},{\"const\":\"GN\",\"title\":\"Guinea\"},{\"const\":\"GW\",\"title\":\"Guinea-Bissau\"},{\"const\":\"GY\",\"title\":\"Guyana\"},{\"const\":\"HT\",\"title\":\"Haiti\"},{\"const\":\"VA\",\"title\":\"Holy See (Vatican City State)\"},{\"const\":\"HN\",\"title\":\"Honduras\"},{\"const\":\"HK\",\"title\":\"Hong Kong\"},{\"const\":\"HU\",\"title\":\"Hungary\"},{\"const\":\"IS\",\"title\":\"Iceland\"},{\"const\":\"IN\",\"title\":\"India\"},{\"const\":\"ID\",\"title\":\"Indonesia\"},{\"const\":\"IR\",\"title\":\"Iran, Islamic Republic Of\"},{\"const\":\"IQ\",\"title\":\"Iraq\"},{\"const\":\"IE\",\"title\":\"Ireland\"},{\"const\":\"IM\",\"title\":\"Isle Of Man\"},{\"const\":\"IL\",\"title\":\"Israel\"},{\"const\":\"IT\",\"title\":\"Italy\"},{\"const\":\"JM\",\"title\":\"Jamaica\"},{\"const\":\"JP\",\"title\":\"Japan\"},{\"const\":\"JE\",\"title\":\"Jersey\"},{\"const\":\"JO\",\"title\":\"Jordan\"},{\"const\":\"KZ\",\"title\":\"Kazakhstan\"},{\"const\":\"KE\",\"title\":\"Kenya\"},{\"const\":\"KI\",\"title\":\"Kiribati\"},{\"const\":\"KR\",\"title\":\"Korea\"},{\"const\":\"KW\",\"title\":\"Kuwait\"},{\"const\":\"KG\",\"title\":\"Kyrgyzstan\"},{\"const\":\"LA\",\"title\":\"Lao People's Democratic Republic\"},{\"const\":\"LV\",\"title\":\"Latvia\"},{\"const\":\"LB\",\"title\":\"Lebanon\"},{\"const\":\"LS\",\"title\":\"Lesotho\"},{\"const\":\"LR\",\"title\":\"Liberia\"},{\"const\":\"LY\",\"title\":\"Libyan Arab Jamahiriya\"},{\"const\":\"LI\",\"title\":\"Liechtenstein\"},{\"const\":\"LT\",\"title\":\"Lithuania\"},{\"const\":\"LU\",\"title\":\"Luxembourg\"},{\"const\":\"MO\",\"title\":\"Macao\"},{\"const\":\"MK\",\"title\":\"Macedonia\"},{\"const\":\"MG\",\"title\":\"Madagascar\"},{\"const\":\"MW\",\"title\":\"Malawi\"},{\"const\":\"MY\",\"title\":\"Malaysia\"},{\"const\":\"MV\",\"title\":\"Maldives\"},{\"const\":\"ML\",\"title\":\"Mali\"},{\"const\":\"MT\",\"title\":\"Malta\"},{\"const\":\"MH\",\"title\":\"Marshall Islands\"},{\"const\":\"MQ\",\"title\":\"Martinique\"},{\"const\":\"MR\",\"title\":\"Mauritania\"},{\"const\":\"MU\",\"title\":\"Mauritius\"},{\"const\":\"YT\",\"title\":\"Mayotte\"},{\"const\":\"MX\",\"title\":\"Mexico\"},{\"const\":\"FM\",\"title\":\"Micronesia, Federated States Of\"},{\"const\":\"MD\",\"title\":\"Moldova\"},{\"const\":\"MC\",\"title\":\"Monaco\"},{\"const\":\"MN\",\"title\":\"Mongolia\"},{\"const\":\"ME\",\"title\":\"Montenegro\"},{\"const\":\"MS\",\"title\":\"Montserrat\"},{\"const\":\"MA\",\"title\":\"Morocco\"},{\"const\":\"MZ\",\"title\":\"Mozambique\"},{\"const\":\"MM\",\"title\":\"Myanmar\"},{\"const\":\"NA\",\"title\":\"Namibia\"},{\"const\":\"NR\",\"title\":\"Nauru\"},{\"const\":\"NP\",\"title\":\"Nepal\"},{\"const\":\"NL\",\"title\":\"Netherlands\"},{\"const\":\"NC\",\"title\":\"New Caledonia\"},{\"const\":\"NZ\",\"title\":\"New Zealand\"},{\"const\":\"NI\",\"title\":\"Nicaragua\"},{\"const\":\"NE\",\"title\":\"Niger\"},{\"const\":\"NG\",\"title\":\"Nigeria\"},{\"const\":\"NU\",\"title\":\"Niue\"},{\"const\":\"NF\",\"title\":\"Norfolk Island\"},{\"const\":\"MP\",\"title\":\"Northern Mariana Islands\"},{\"const\":\"NO\",\"title\":\"Norway\"},{\"const\":\"OM\",\"title\":\"Oman\"},{\"const\":\"PK\",\"title\":\"Pakistan\"},{\"const\":\"PW\",\"title\":\"Palau\"},{\"const\":\"PS\",\"title\":\"Palestinian Territory, Occupied\"},{\"const\":\"PA\",\"title\":\"Panama\"},{\"const\":\"PG\",\"title\":\"Papua New Guinea\"},{\"const\":\"PY\",\"title\":\"Paraguay\"},{\"const\":\"PE\",\"title\":\"Peru\"},{\"const\":\"PH\",\"title\":\"Philippines\"},{\"const\":\"PN\",\"title\":\"Pitcairn\"},{\"const\":\"PL\",\"title\":\"Poland\"},{\"const\":\"PT\",\"title\":\"Portugal\"},{\"const\":\"PR\",\"title\":\"Puerto Rico\"},{\"const\":\"QA\",\"title\":\"Qatar\"},{\"const\":\"RE\",\"title\":\"Reunion\"},{\"const\":\"RO\",\"title\":\"Romania\"},{\"const\":\"RU\",\"title\":\"Russian Federation\"},{\"const\":\"RW\",\"title\":\"Rwanda\"},{\"const\":\"BL\",\"title\":\"Saint Barthelemy\"},{\"const\":\"SH\",\"title\":\"Saint Helena\"},{\"const\":\"KN\",\"title\":\"Saint Kitts And Nevis\"},{\"const\":\"LC\",\"title\":\"Saint Lucia\"},{\"const\":\"MF\",\"title\":\"Saint Martin\"},{\"const\":\"PM\",\"title\":\"Saint Pierre And Miquelon\"},{\"const\":\"VC\",\"title\":\"Saint Vincent And Grenadines\"},{\"const\":\"WS\",\"title\":\"Samoa\"},{\"const\":\"SM\",\"title\":\"San Marino\"},{\"const\":\"ST\",\"title\":\"Sao Tome And Principe\"},{\"const\":\"SA\",\"title\":\"Saudi Arabia\"},{\"const\":\"SN\",\"title\":\"Senegal\"},{\"const\":\"RS\",\"title\":\"Serbia\"},{\"const\":\"SC\",\"title\":\"Seychelles\"},{\"const\":\"SL\",\"title\":\"Sierra Leone\"},{\"const\":\"SG\",\"title\":\"Singapore\"},{\"const\":\"SK\",\"title\":\"Slovakia\"},{\"const\":\"SI\",\"title\":\"Slovenia\"},{\"const\":\"SB\",\"title\":\"Solomon Islands\"},{\"const\":\"SO\",\"title\":\"Somalia\"},{\"const\":\"ZA\",\"title\":\"South Africa\"},{\"const\":\"ES\",\"title\":\"Spain\"},{\"const\":\"LK\",\"title\":\"Sri Lanka\"},{\"const\":\"SD\",\"title\":\"Sudan\"},{\"const\":\"SR\",\"title\":\"Suriname\"},{\"const\":\"SZ\",\"title\":\"Swaziland\"},{\"const\":\"SE\",\"title\":\"Sweden\"},{\"const\":\"CH\",\"title\":\"Switzerland\"},{\"const\":\"SY\",\"title\":\"Syrian Arab Republic\"},{\"const\":\"TW\",\"title\":\"Taiwan\"},{\"const\":\"TJ\",\"title\":\"Tajikistan\"},{\"const\":\"TZ\",\"title\":\"Tanzania\"},{\"const\":\"TH\",\"title\":\"Thailand\"},{\"const\":\"TL\",\"title\":\"Timor-Leste\"},{\"const\":\"TG\",\"title\":\"Togo\"},{\"const\":\"TK\",\"title\":\"Tokelau\"},{\"const\":\"TO\",\"title\":\"Tonga\"},{\"const\":\"TT\",\"title\":\"Trinidad And Tobago\"},{\"const\":\"TN\",\"title\":\"Tunisia\"},{\"const\":\"TR\",\"title\":\"Turkey\"},{\"const\":\"TM\",\"title\":\"Turkmenistan\"},{\"const\":\"TV\",\"title\":\"Tuvalu\"},{\"const\":\"UG\",\"title\":\"Uganda\"},{\"const\":\"UA\",\"title\":\"Ukraine\"},{\"const\":\"AE\",\"title\":\"United Arab Emirates\"},{\"const\":\"GB\",\"title\":\"United Kingdom\"},{\"const\":\"US\",\"title\":\"United States\"},{\"const\":\"UY\",\"title\":\"Uruguay\"},{\"const\":\"UZ\",\"title\":\"Uzbekistan\"},{\"const\":\"VU\",\"title\":\"Vanuatu\"},{\"const\":\"VE\",\"title\":\"Venezuela\"},{\"const\":\"VN\",\"title\":\"Vietnam\"},{\"const\":\"EH\",\"title\":\"Western Sahara\"},{\"const\":\"YE\",\"title\":\"Yemen\"},{\"const\":\"ZM\",\"title\":\"Zambia\"},{\"const\":\"ZW\",\"title\":\"Zimbabwe\"}]}},\"ban\":{\"title\":\"Ban\",\"description\":\"Ban players from the server when they are detected. When false, players will be kicked instead.\",\"type\":\"boolean\",\"default\":true},\"banDuration\":{\"title\":\"Ban duration\",\"description\":\"Duration of the ban.\",\"x-component\":\"duration\",\"type\":\"number\",\"minimum\":0,\"default\":86400000},\"message\":{\"title\":\"Message\",\"type\":\"string\",\"description\":\"Message to send to the player when they are kicked or banned.\",\"default\":\"Your IP address is banned.\"}},\"required\":[\"countries\"],\"additionalProperties\":false}",
+        "uiSchema": "{\"banDuration\":{\"ui:widget\":\"duration\"}}",
+        "permissions": [
+          {
+            "permission": "GEOBLOCK_IMMUNITY",
+            "friendlyName": "GeoBlock immunity",
+            "description": "Players with this permission will not be kicked or banned by GeoBlock.",
+            "canHaveCount": false
+          }
+        ],
+        "hooks": [
+          {
+            "eventType": "player-new-ip-detected",
+            "name": "IPDetected",
+            "function": "import { takaro, data, checkPermission } from '@takaro/helpers';\nasync function main() {\n    const { gameServerId, player, pog } = data;\n    const { country } = data.eventData;\n    const { ban, banDuration, countries, message, mode } = data.module.userConfig;\n    async function handleAction() {\n        if (ban) {\n            const now = new Date();\n            const expiresAt = new Date(now.getTime() + banDuration * 1000);\n            await takaro.player.banControllerCreate({\n                gameServerId,\n                playerId: player.id,\n                until: expiresAt,\n                reason: message,\n            });\n        }\n        else {\n            await takaro.gameserver.gameServerControllerKickPlayer(gameServerId, player.id, {\n                reason: message,\n            });\n        }\n    }\n    const isImmune = checkPermission(pog, 'GEOBLOCK_IMMUNITY');\n    if (isImmune) {\n        console.log('Player has immunity, no action');\n        return;\n    }\n    if (mode === 'allow') {\n        if (countries.includes(country)) {\n            console.log('Allowed country detected, no action');\n            return;\n        }\n        console.log('Blocked country detected, performing actions');\n        await handleAction();\n        return;\n    }\n    if (mode === 'deny') {\n        if (countries.includes(country)) {\n            console.log('Blocked country detected, performing actions');\n            await handleAction();\n            return;\n        }\n        else {\n            console.log('Allowed country detected, no action');\n            return;\n        }\n    }\n}\nawait main();\n//# sourceMappingURL=IPDetected.js.map"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "timedShutdown",
+    "versions": [
+      {
+        "tag": "0.0.1",
+        "description": "Automatically shut down the server at a specific time.",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"warningMessage\":{\"type\":\"string\",\"title\":\"Warning message\",\"description\":\"Message to send to players before the server shuts down.\",\"default\":\"Server is shutting down in 5 minutes!\",\"minLength\":1,\"maxLength\":1024}},\"required\":[\"warningMessage\"]}",
+        "cronJobs": [
+          {
+            "name": "Shutdown",
+            "temporalValue": "30 3 * * *",
+            "function": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const { gameServerId } = data;\n    await takaro.gameserver.gameServerControllerShutdown(gameServerId);\n}\nawait main();\n//# sourceMappingURL=Shutdown.js.map"
+          },
+          {
+            "name": "warning",
+            "temporalValue": "25 3 * * *",
+            "function": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const { gameServerId } = data;\n    const msg = data.module.userConfig.warningMessage;\n    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n        message: msg,\n    });\n}\nawait main();\n//# sourceMappingURL=warning.js.map"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "dailyRewards",
+    "versions": [
+      {
+        "description": "Provides daily login rewards with streak tracking",
+        "tag": "0.0.1",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"baseReward\":{\"type\":\"number\",\"title\":\"Base Reward\",\"description\":\"Base amount of currency given for daily rewards. This is multiplied by streak level.\",\"default\":100,\"minimum\":1},\"maxStreak\":{\"type\":\"number\",\"title\":\"Maximum Streak\",\"description\":\"Maximum streak level a player can reach\",\"default\":365,\"minimum\":1},\"milestoneRewards\":{\"type\":\"array\",\"title\":\"Milestone Rewards\",\"description\":\"Additional rewards for reaching certain streak milestones\",\"items\":{\"type\":\"object\",\"properties\":{\"days\":{\"type\":\"number\",\"description\":\"Days needed to reach milestone\",\"minimum\":1},\"reward\":{\"type\":\"number\",\"description\":\"Bonus reward amount\"},\"message\":{\"type\":\"string\",\"description\":\"Message to show when milestone is reached\"}}},\"default\":[{\"days\":7,\"reward\":1000,\"message\":\"You did it! 7 days in a row!\"},{\"days\":30,\"reward\":5000,\"message\":\"A whole month! You're on fire!\"},{\"days\":90,\"reward\":20000,\"message\":\"90 days! You're unstoppable!\"},{\"days\":180,\"reward\":50000,\"message\":\"Half a year! You're a legend!\"},{\"days\":365,\"reward\":150000,\"message\":\"365 days! You're a true champion!\"}]}},\"required\":[\"baseReward\",\"maxStreak\",\"milestoneRewards\"],\"additionalProperties\":false}",
+        "functions": [
+          {
+            "name": "utils",
+            "function": "import { takaro, checkPermission } from '@takaro/helpers';\nexport const DAILY_KEY = 'daily_timestamp';\nexport const STREAK_KEY = 'daily_streak';\nexport async function getMultiplier(pog) {\n    const perm = checkPermission(pog, 'DAILY_REWARD_MULTIPLIER');\n    if (perm)\n        return perm.count;\n    return 1;\n}\nexport async function getPlayerStreak(gameServerId, playerId, moduleId) {\n    const streakRes = await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [STREAK_KEY],\n            gameServerId: [gameServerId],\n            playerId: [playerId],\n            moduleId: [moduleId],\n        },\n    });\n    return streakRes.data.data.length ? parseInt(JSON.parse(streakRes.data.data[0].value)) : 0;\n}\nexport async function getLastClaim(gameServerId, playerId, moduleId) {\n    const lastClaimRes = await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [DAILY_KEY],\n            gameServerId: [gameServerId],\n            playerId: [playerId],\n            moduleId: [moduleId],\n        },\n    });\n    return lastClaimRes.data.data.length ? new Date(JSON.parse(lastClaimRes.data.data[0].value)) : null;\n}\n//# sourceMappingURL=utils.js.map"
+          }
+        ],
+        "permissions": [
+          {
+            "permission": "DAILY_CLAIM",
+            "friendlyName": "Claim Daily Rewards",
+            "description": "Allows the player to claim daily rewards",
+            "canHaveCount": false
+          },
+          {
+            "permission": "DAILY_REWARD_MULTIPLIER",
+            "friendlyName": "Multiplier",
+            "description": "Control the multiplier per role. This is useful to give your donors a little extra. Count is an integer multiplier.",
+            "canHaveCount": true
+          }
+        ],
+        "commands": [
+          {
+            "function": "import { takaro, data, TakaroUserError, checkPermission } from '@takaro/helpers';\nimport { DAILY_KEY, STREAK_KEY, getMultiplier } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, module: mod } = data;\n    if (!checkPermission(pog, 'DAILY_CLAIM')) {\n        throw new TakaroUserError('You do not have permission to claim daily rewards.');\n    }\n    // Get last claim time\n    const lastClaimRes = await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [DAILY_KEY],\n            gameServerId: [gameServerId],\n            playerId: [pog.playerId],\n            moduleId: [mod.moduleId],\n        },\n    });\n    const now = new Date();\n    let streak = 1;\n    if (lastClaimRes.data.data.length > 0) {\n        const lastClaim = new Date(JSON.parse(lastClaimRes.data.data[0].value));\n        const hoursSinceLastClaim = (now - lastClaim) / (1000 * 60 * 60);\n        // Check if 24 hours have passed\n        if (hoursSinceLastClaim < 24) {\n            const nextClaimTime = new Date(lastClaim.getTime() + 24 * 60 * 60 * 1000);\n            throw new TakaroUserError(`You can claim your next reward at ${nextClaimTime.toLocaleString()}`);\n        }\n        // Get current streak\n        const streakRes = await takaro.variable.variableControllerSearch({\n            filters: {\n                key: [STREAK_KEY],\n                gameServerId: [gameServerId],\n                playerId: [pog.playerId],\n                moduleId: [mod.moduleId],\n            },\n        });\n        if (streakRes.data.data.length > 0) {\n            // If claimed within 48 hours, increment streak\n            if (hoursSinceLastClaim < 48) {\n                streak = Math.min(JSON.parse(streakRes.data.data[0].value) + 1, mod.userConfig.maxStreak);\n                await takaro.variable.variableControllerUpdate(streakRes.data.data[0].id, {\n                    value: JSON.stringify(streak),\n                });\n            }\n            else {\n                // Reset streak if more than 48 hours\n                await takaro.variable.variableControllerUpdate(streakRes.data.data[0].id, {\n                    value: JSON.stringify(1),\n                });\n            }\n        }\n        else {\n            // Create new streak record\n            await takaro.variable.variableControllerCreate({\n                key: STREAK_KEY,\n                value: JSON.stringify(1),\n                gameServerId,\n                playerId: pog.playerId,\n                moduleId: mod.moduleId,\n            });\n        }\n        // Update last claim time\n        await takaro.variable.variableControllerUpdate(lastClaimRes.data.data[0].id, {\n            value: JSON.stringify(now),\n        });\n    }\n    else {\n        // First time claim\n        await takaro.variable.variableControllerCreate({\n            key: DAILY_KEY,\n            value: JSON.stringify(now),\n            gameServerId,\n            playerId: pog.playerId,\n            moduleId: mod.moduleId,\n        });\n        await takaro.variable.variableControllerCreate({\n            key: STREAK_KEY,\n            value: JSON.stringify(1),\n            gameServerId,\n            playerId: pog.playerId,\n            moduleId: mod.moduleId,\n        });\n    }\n    const multiplier = await getMultiplier(pog);\n    const baseReward = mod.userConfig.baseReward * streak * multiplier;\n    let bonusReward = 0;\n    let milestoneMessage = '';\n    // Check for milestones\n    for (const milestone of mod.userConfig.milestoneRewards) {\n        if (streak === milestone.days) {\n            bonusReward = milestone.reward;\n            milestoneMessage = `\\n${milestone.message}`;\n            break;\n        }\n    }\n    // Award total rewards\n    const totalReward = baseReward + bonusReward;\n    await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(gameServerId, pog.playerId, {\n        currency: totalReward,\n    });\n    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;\n    await pog.pm(`Daily reward claimed! You received ${totalReward} ${currencyName}\\n` +\n        `Current streak: ${streak} days${multiplier > 1 ? ` (${multiplier}x bonus!)` : ''}` +\n        milestoneMessage);\n}\nawait main();\n//# sourceMappingURL=daily.js.map",
+            "name": "daily",
+            "trigger": "daily",
+            "helpText": "Claim your daily reward",
+            "arguments": []
+          },
+          {
+            "function": "import { data, takaro } from '@takaro/helpers';\nimport { getPlayerStreak, getLastClaim, getMultiplier } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, module: mod } = data;\n    const streak = await getPlayerStreak(gameServerId, pog.playerId, mod.moduleId);\n    const lastClaim = await getLastClaim(gameServerId, pog.playerId, mod.moduleId);\n    const multiplier = await getMultiplier(pog);\n    const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;\n    if (!streak || !lastClaim) {\n        await pog.pm(`You haven't claimed any daily rewards yet! Use ${prefix}daily to get started.`);\n        return;\n    }\n    const nextClaimTime = new Date(lastClaim.getTime() + 24 * 60 * 60 * 1000);\n    const now = new Date();\n    const canClaim = now >= nextClaimTime;\n    // Find next milestone\n    let nextMilestone = null;\n    for (const milestone of mod.userConfig.milestoneRewards) {\n        if (milestone.days > streak) {\n            nextMilestone = milestone;\n            break;\n        }\n    }\n    let message = `Current streak: ${streak} days${multiplier > 1 ? ` (${multiplier}x donor bonus!)` : ''}\\n`;\n    message += canClaim\n        ? `Your daily reward is available! Use ${prefix}daily to claim it!\\n`\n        : `Next reward available at: ${nextClaimTime.toLocaleString()}\\n`;\n    if (nextMilestone) {\n        message += `\\n🎯 Next milestone: ${nextMilestone.days} days (${nextMilestone.days - streak} days to go!)`;\n    }\n    await pog.pm(message);\n}\nawait main();\n//# sourceMappingURL=streak.js.map",
+            "name": "streak",
+            "trigger": "streak",
+            "helpText": "Check your current daily reward streak and next claim time",
+            "arguments": []
+          },
+          {
+            "function": "import { takaro, data } from '@takaro/helpers';\nimport { STREAK_KEY } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, module: mod, arguments: args } = data;\n    // Limit count to reasonable number\n    const count = Math.min(Math.max(1, args.count), 50);\n    // Get all streaks\n    const streaksRes = await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [STREAK_KEY],\n            gameServerId: [gameServerId],\n            moduleId: [mod.moduleId],\n        },\n        limit: 1000, // Get all possible streaks\n    });\n    if (streaksRes.data.data.length === 0) {\n        await pog.pm('No players have started their daily streak yet!');\n        return;\n    }\n    // Sort by streak value\n    const sortedStreaks = streaksRes.data.data\n        .map((record) => ({\n        playerId: record.playerId,\n        streak: JSON.parse(record.value),\n    }))\n        .sort((a, b) => b.streak - a.streak)\n        .slice(0, count);\n    // Get player names\n    const playerDetails = await Promise.all(sortedStreaks.map(async (record) => {\n        const player = (await takaro.player.playerControllerGetOne(record.playerId)).data.data;\n        return {\n            name: player.name,\n            streak: record.streak,\n        };\n    }));\n    // Build message\n    let message = `Top ${count} Daily Streaks:\\n\\n`;\n    playerDetails.forEach((player, index) => {\n        message += `${index + 1}. ${player.name}: ${player.streak} days\\n`;\n    });\n    await pog.pm(message);\n}\nawait main();\n//# sourceMappingURL=topstreak.js.map",
+            "name": "topstreak",
+            "trigger": "topstreak",
+            "helpText": "Shows the players with highest daily reward streaks",
+            "arguments": [
+              {
+                "name": "count",
+                "type": "number",
+                "defaultValue": "5",
+                "helpText": "Number of players to show (max 25)",
+                "position": 0
+              }
+            ]
+          }
+        ],
+        "hooks": [
+          {
+            "eventType": "player-connected",
+            "name": "dailyLoginCheck",
+            "function": "import { data, takaro } from '@takaro/helpers';\nimport { getLastClaim } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, module: mod } = data;\n    const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;\n    const lastClaim = await getLastClaim(gameServerId, pog.playerId, mod.moduleId);\n    // First time player\n    if (!lastClaim) {\n        await pog.pm(`Welcome! Use ${prefix}daily to claim your first daily reward and start your streak!`);\n        return;\n    }\n    const now = new Date();\n    const nextClaimTime = new Date(lastClaim.getTime() + 24 * 60 * 60 * 1000);\n    if (now >= nextClaimTime) {\n        await pog.pm(`Your daily reward is ready! Use ${prefix}daily to claim it!`);\n    }\n}\nawait main();\n//# sourceMappingURL=dailyLoginCheck.js.map"
+          }
+        ]
+      }
+    ]
+  }
+]

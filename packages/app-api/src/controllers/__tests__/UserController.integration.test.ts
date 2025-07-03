@@ -2,22 +2,32 @@ import { IntegrationTest, expect, integrationConfig, SetupGameServerPlayers } fr
 import { PERMISSIONS } from '@takaro/auth';
 import { Client, UserOutputDTO } from '@takaro/apiclient';
 import { faker } from '@faker-js/faker';
-import { AxiosError } from 'axios';
+import { AxiosError, isAxiosError } from 'axios';
+import { randomUUID } from 'crypto';
+import { describe } from 'node:test';
 
 const group = 'UserController';
 
 interface IUserSetup {
   user: UserOutputDTO;
+  userClient: Client;
 }
 
 const userSetup = async function (this: IntegrationTest<IUserSetup>) {
+  const password = faker.internet.password();
   const user = await this.client.user.userControllerCreate({
     name: 'Test user',
-    idpId: 'test',
-    email: 'testUser@example.com',
-    password: 'test',
+    email: `test-${faker.internet.email()}`,
+    password,
   });
-  return { user: user.data.data };
+
+  const userClient = new Client({
+    auth: { username: user.data.data.email, password },
+    url: integrationConfig.get('host'),
+  });
+  await userClient.login();
+
+  return { user: user.data.data, userClient };
 };
 
 async function multiRolesSetup(client: Client) {
@@ -99,7 +109,7 @@ const tests = [
 
       return userRes;
     },
-    filteredFields: ['idpId', 'roleId', 'userId', 'lastSeen'],
+    filteredFields: ['idpId', 'roleId', 'userId', 'lastSeen', 'email'],
   }),
   // Repro for https://github.com/gettakaro/takaro/issues/1013
   new IntegrationTest<IUserSetup>({
@@ -134,6 +144,7 @@ const tests = [
 
       const domain2 = await this.adminClient.domain.domainControllerCreate({
         name: 'integration-test-domain-2',
+        maxUsers: 5,
       });
 
       const client2 = new Client({
@@ -244,6 +255,129 @@ const tests = [
         } else {
           throw error;
         }
+      }
+    },
+  }),
+  new IntegrationTest<IUserSetup>({
+    group,
+    snapshot: true,
+    name: 'Can delete a user',
+    setup: userSetup,
+    test: async function () {
+      // This is a bug repro, when you delete a user that has events, a FK constraint error is thrown
+      const role = (await this.client.role.roleControllerSearch({ filters: { name: ['root'] } })).data.data[0];
+      await this.client.user.userControllerAssignRole(this.setupData.user.id, role.id);
+      await this.setupData.userClient.module.moduleControllerCreate({
+        name: 'blabla',
+        latestVersion: { description: 'blabla' },
+      });
+      // So, let's ensure there's an event for this user
+      const events = await this.client.event.eventControllerSearch({
+        filters: { actingUserId: [this.setupData.user.id] },
+      });
+      expect(events.data.data.length).to.be.greaterThan(0, 'No events found for user');
+
+      // Then delete the user
+      const res = await this.client.user.userControllerRemove(this.setupData.user.id);
+      return res;
+    },
+  }),
+  new IntegrationTest<IUserSetup>({
+    group,
+    snapshot: false,
+    name: 'Cannot create more dashboard users than allowed',
+    setup: userSetup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('No standard domain id set');
+      const domain = await this.adminClient.domain.domainControllerGetOne(this.standardDomainId);
+
+      const maxUsers = domain.data.data.maxUsers;
+
+      const currentDashboardUsers = await this.client.user.userControllerSearch({
+        filters: { isDashboardUser: [true] },
+      });
+      const currentDashboardUsersCount = currentDashboardUsers.data.meta.total;
+      if (currentDashboardUsersCount == undefined) throw new Error('Could not get current dashboard users count');
+
+      // Create the maximum number of dashboard users
+      await Promise.all(
+        Array.from({ length: maxUsers - currentDashboardUsersCount }).map(async () => {
+          const email = faker.internet.email();
+          return this.client.user.userControllerCreate({
+            email,
+            isDashboardUser: true,
+            name: randomUUID(),
+            password: randomUUID(),
+          });
+        }),
+      );
+
+      // Try to create one more
+      try {
+        await this.client.user.userControllerCreate({
+          email: faker.internet.email(),
+          isDashboardUser: true,
+          name: randomUUID(),
+          password: randomUUID(),
+        });
+        throw new Error('Should have thrown');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.data.meta.error.message).to.be.eq('Max users (5) limit reached');
+      }
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'me endpoint returns the current user',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const meRes = await this.client.user.userControllerMe();
+      expect(meRes.data.data.user).to.not.be.undefined;
+      expect(meRes.data.data.domain).to.not.be.undefined;
+      expect(meRes.data.data.domains).to.be.an('array');
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'me endpoint returns registration token only if user has required permissions',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const fakePassword = randomUUID();
+      const fakeEmail = faker.internet.email();
+      await this.client.user.userControllerCreate({
+        email: fakeEmail,
+        password: fakePassword,
+        name: faker.internet.userName(),
+      });
+
+      const userClient = new Client({
+        auth: {
+          username: fakeEmail,
+          password: fakePassword,
+        },
+        url: integrationConfig.get('host'),
+      });
+
+      await userClient.login();
+
+      const meRes = await userClient.user.userControllerMe();
+      for (const domain of meRes.data.data.domains) {
+        expect(domain.serverRegistrationToken).to.be.undefined;
+      }
+
+      // Assign the user the required permissions
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.MANAGE_GAMESERVERS]);
+      const role = await this.client.role.roleControllerCreate({
+        name: 'Test role',
+        permissions,
+      });
+      await this.client.user.userControllerAssignRole(meRes.data.data.user.id, role.data.data.id);
+      const meRes2 = await userClient.user.userControllerMe();
+      for (const domain of meRes2.data.data.domains) {
+        expect(domain.serverRegistrationToken).to.not.be.undefined;
       }
     },
   }),

@@ -9,9 +9,26 @@ import { Type } from 'class-transformer';
 import { ParamId } from '../../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
-import { ShopListingOutputDTO, ShopListingUpdateDTO, ShopListingCreateDTO } from '../../service/Shop/dto.js';
+import { AllowedFilters, AllowedSearch, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
+import {
+  ShopListingOutputDTO,
+  ShopListingUpdateDTO,
+  ShopListingCreateDTO,
+  ShopImportOptions,
+  ShopListingItemMetaOutputDTO,
+  ShopListingItemMetaInputDTO,
+} from '../../service/Shop/dto.js';
+import multer from 'multer';
 
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage,
+  limits: {
+    // 25MB
+    fileSize: 25 * 1024 * 1024,
+    fieldSize: 25 * 1024 * 1024,
+  },
+});
 class ShopListingOutputDTOAPI extends APIOutput<ShopListingOutputDTO> {
   @Type(() => ShopListingOutputDTO)
   @ValidateNested()
@@ -42,6 +59,12 @@ class ShopListingSearchInputAllowedFilters extends AllowedFilters {
   draft: boolean;
 }
 
+class ShopListingSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name: string[];
+}
+
 class ShopSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
   @IsOptional()
   @IsNumber()
@@ -57,8 +80,8 @@ class ShopListingSearchInputDTO extends ITakaroQuery<ShopListingSearchInputAllow
   declare filters: ShopListingSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => ShopListingSearchInputAllowedFilters)
-  declare search: ShopListingSearchInputAllowedFilters;
+  @Type(() => ShopListingSearchInputAllowedSearch)
+  declare search: ShopListingSearchInputAllowedSearch;
 
   @ValidateNested()
   @Type(() => ShopSearchInputAllowedRangeFilter)
@@ -123,6 +146,44 @@ export class ShopListingController {
   async delete(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new ShopListingService(req.domainId);
     await service.delete(params.id);
+    return apiResponse();
+  }
+
+  @UseBefore(
+    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_SHOP_LISTINGS]),
+    upload.fields([
+      { name: 'import', maxCount: 1 },
+      { name: 'options', maxCount: 1 },
+    ]),
+  )
+  @ResponseSchema(APIOutput)
+  @Post('/import')
+  async importListings(@Req() req: AuthenticatedRequest) {
+    const service = new ShopListingService(req.domainId);
+
+    const rawImportData = JSON.parse(req.body.import);
+    const rawOptions = JSON.parse(req.body.options);
+
+    const importData: ShopListingCreateDTO[] = rawImportData.map(
+      (listing: any) =>
+        new ShopListingCreateDTO({
+          ...listing,
+          items: listing.items.map(
+            (item: ShopListingItemMetaOutputDTO) =>
+              new ShopListingItemMetaInputDTO({
+                amount: item.amount,
+                quality: item.quality,
+                code: item.item.code,
+              }),
+          ),
+        }),
+    );
+    const options = new ShopImportOptions(rawOptions);
+
+    await Promise.all(importData.map((item) => item.validate()));
+    await options.validate();
+
+    await service.import(importData, options);
     return apiResponse();
   }
 }

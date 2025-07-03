@@ -1,0 +1,18 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Should render <Button/> 1`] = `
+<div>
+  <button
+    class="sc-cKXybt hgqaEX"
+    color="primary"
+    tabindex="0"
+    type="button"
+  >
+     
+    <span>
+      button text
+    </span>
+     
+  </button>
+</div>
+`;

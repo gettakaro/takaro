@@ -6,7 +6,7 @@
       "updatedAt": "2024-06-29T14:53:17.705Z",
       "id": "442ad80b-d1d7-4936-a648-60499fa41040",
       "listingId": "5be9a599-ce4c-4311-9631-4849e0a12ed3",
-      "userId": "abf72504-7cb9-4050-a4b2-723de566fe81",
+      "playerId": "abf72504-7cb9-4050-a4b2-723de566fe81",
       "amount": 1,
       "status": "PAID"
     }
@@ -18,7 +18,7 @@
     "name": "Get order by ID",
     "filteredFields": [
       "listingId",
-      "userId"
+      "playerId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

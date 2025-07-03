@@ -1,7 +1,7 @@
 import { FC, PropsWithChildren, ReactElement, useState } from 'react';
 import { styled } from '../../../styled';
 import { IoMdArrowDropup as ArrowUp } from 'react-icons/io';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useTheme } from '../../../hooks';
 
 const StyledList = styled.div`
@@ -78,36 +78,31 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({ collapsed = false, title, chil
         <ArrowUp size={18} />
       </Header>
       {description && <p>{description}</p>}
-      <AnimatePresence>
-        {!isCollapsed && (
-          <motion.div
-            style={{ maxHeight: '100%', overflowY: 'hidden' }}
-            key={`collapse-item-${title}`}
-            variants={{
-              open: { opacity: 1, height: 'auto', flexGrow: 1, minHeight: 0, overflowY: 'auto' },
-              collapsed: { opacity: 0, height: 0 },
-            }}
-            initial="collapsed"
-            animate="open"
-            exit="collapsed"
-            transition={{ duration: 0.125, ease: 'linear' }}
-          >
-            <motion.div
-              variants={{
-                open: { y: 0 },
-                collapsed: { y: -6 },
-              }}
-              transition={{ duration: 0.125, ease: 'linear' }}
-              style={{
-                transformOrigin: 'top center',
-                padding: `${theme.spacing['0_75']} ${theme.spacing['0_5']} ${theme.spacing['1_5']} ${theme.spacing['1']}`,
-              }}
-            >
-              {children}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <motion.div
+        style={{ maxHeight: '100%', overflowY: 'hidden' }}
+        key={`collapse-item-${title}`}
+        variants={{
+          open: { opacity: 1, height: 'auto', flexGrow: 1, minHeight: 0, overflowY: 'unset', visibility: 'visible' },
+          collapsed: { opacity: 0, height: 0, visibility: 'hidden' },
+        }}
+        initial="collapsed"
+        animate={isCollapsed ? 'collapsed' : 'open'}
+        transition={{ duration: 0.125, ease: 'linear' }}
+      >
+        <motion.div
+          variants={{
+            open: { y: 0 },
+            collapsed: { y: -6 },
+          }}
+          transition={{ duration: 0.125, ease: 'linear' }}
+          style={{
+            transformOrigin: 'top center',
+            padding: `${theme.spacing['0_75']} ${theme.spacing['0_5']} ${theme.spacing['1_5']} ${theme.spacing['1']}`,
+          }}
+        >
+          {children}
+        </motion.div>
+      </motion.div>
     </div>
   );
 };

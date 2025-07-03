@@ -5,6 +5,7 @@
       "id": "59f2cdbf-ef7d-495f-be9e-531d4fd6ee29",
       "createdAt": "2023-12-24T15:22:57.559Z",
       "updatedAt": "2023-12-24T15:22:57.559Z",
+      "deletedAt": null,
       "name": "Test gameserver",
       "enabled": true,
       "connectionInfo": {
@@ -20,7 +21,8 @@
     "snapshot": true,
     "name": "Create",
     "filteredFields": [
-      "connectionInfo"
+      "connectionInfo",
+      "identityToken"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

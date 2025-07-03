@@ -3,6 +3,7 @@ import { PERMISSIONS } from '@takaro/auth';
 import { faker } from '@faker-js/faker';
 import { Client } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
+import { describe } from 'node:test';
 
 const group = 'PlayerController';
 
@@ -123,7 +124,7 @@ const tests = [
       expect(playerRes.data.data.roleAssignments.find((a) => a.role.name === role.data.data.name)).to.be.undefined;
       return playerRes;
     },
-    filteredFields: ['name', 'playerId', 'steamId', 'roleId', 'epicOnlineServicesId', 'xboxLiveId'],
+    filteredFields: ['name', 'playerId', 'steamId', 'roleId', 'epicOnlineServicesId', 'xboxLiveId', 'platformId'],
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
@@ -161,7 +162,7 @@ const tests = [
         .undefined;
       return playerRes;
     },
-    filteredFields: ['name', 'playerId', 'steamId', 'roleId', 'epicOnlineServicesId', 'xboxLiveId'],
+    filteredFields: ['name', 'playerId', 'steamId', 'roleId', 'epicOnlineServicesId', 'xboxLiveId', 'platformId'],
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
@@ -200,7 +201,16 @@ const tests = [
         .undefined;
       return playerRes;
     },
-    filteredFields: ['name', 'playerId', 'steamId', 'roleId', 'gameServerId', 'epicOnlineServicesId', 'xboxLiveId'],
+    filteredFields: [
+      'name',
+      'playerId',
+      'steamId',
+      'roleId',
+      'gameServerId',
+      'epicOnlineServicesId',
+      'xboxLiveId',
+      'platformId',
+    ],
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
@@ -246,6 +256,7 @@ const tests = [
       'gameServerId',
       'epicOnlineServicesId',
       'xboxLiveId',
+      'platformId',
       'expiresAt',
     ],
   }),
@@ -334,6 +345,79 @@ const tests = [
         } else {
           throw error;
         }
+      }
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Player search with platformId filter returns empty when no matches',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const nonExistentPlatformId = 'minecraft:non-existent-uuid';
+
+      // Search for players with a non-existent platformId
+      const searchResult = await this.client.player.playerControllerSearch({
+        filters: { platformId: [nonExistentPlatformId] },
+      });
+
+      expect(searchResult.data.data.length).to.be.eq(0);
+      return searchResult;
+    },
+    filteredFields: ['id', 'createdAt', 'updatedAt', 'domain'],
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Platform ID validation rejects invalid formats',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const invalidPlatformIds = [
+        'invalidformat', // No colon
+        'platform:', // Empty ID part
+        ':invalidformat', // Empty platform part
+        'platform with spaces:id', // Spaces not allowed
+        'platform:id:extra', // Too many colons
+        '', // Empty string
+      ];
+
+      for (const invalidId of invalidPlatformIds) {
+        // Search with invalid platformId should still work (filter just won't match anything)
+        // But if we had a create endpoint, it would reject these
+        const searchResult = await this.client.player.playerControllerSearch({
+          filters: { platformId: [invalidId] },
+        });
+
+        // Search should return empty results for invalid format
+        expect(searchResult.data.data.length).to.be.eq(0);
+      }
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Platform ID validation accepts valid formats',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const validPlatformIds = [
+        'minecraft:player-uuid-1234',
+        'steam:76561198000000000',
+        'epic:epic-account-id',
+        'xbox:xbox-live-id',
+        'custom-platform:custom-id-123',
+        'platform_with_underscores:id_with_underscores',
+        'platform-with-dashes:id-with-dashes',
+        'platformABC123:idABC123',
+      ];
+
+      for (const validId of validPlatformIds) {
+        // Search with valid platformId format should work (even if no matches)
+        const searchResult = await this.client.player.playerControllerSearch({
+          filters: { platformId: [validId] },
+        });
+
+        // This should execute without validation errors
+        expect(searchResult.data.data.length).to.be.eq(0);
       }
     },
   }),

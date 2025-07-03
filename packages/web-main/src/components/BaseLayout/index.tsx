@@ -1,13 +1,13 @@
 import { FC, PropsWithChildren } from 'react';
 import { motion } from 'framer-motion';
-import { Navbar } from 'components/Navbar';
-import { ErrorBoundary } from 'components/ErrorBoundary';
+import { Navbar } from '../../components/Navbar';
+import { ErrorBoundary } from '../../components/ErrorBoundary';
 import { styled, getTransition } from '@takaro/lib-components';
 import { Outlet } from '@tanstack/react-router';
 
 const Page = styled(motion.div)`
   height: 100%;
-  padding: 5rem;
+  padding: ${({ theme }) => theme.spacing['2_5']};
 `;
 
 const animations = {

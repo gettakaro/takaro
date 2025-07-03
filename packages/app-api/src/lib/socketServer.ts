@@ -2,13 +2,14 @@ import { Server, Socket } from 'socket.io';
 import { IncomingMessage, Server as HttpServer, ServerResponse } from 'http';
 import { config } from '../config.js';
 import { ctx, errors, logger } from '@takaro/util';
-import { EventPayload, EventTypes } from '@takaro/modules';
+import { EventPayload, EventTypes, HookEvents } from '@takaro/modules';
 import { instrument } from '@socket.io/admin-ui';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import { NextFunction, Response } from 'express';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { Redis } from '@takaro/db';
 import { EventOutputDTO } from '../service/EventService.js';
+import { GameServerService } from '../service/GameServerService.js';
 
 interface ServerToClientEvents {
   gameEvent: (gameserverId: string, type: EventTypes, data: EventPayload) => void;
@@ -22,6 +23,7 @@ interface ClientToServerEvents {
 
 interface InterServerEvents {
   ping: () => void;
+  event: (event: EventOutputDTO) => void;
 }
 
 interface SocketData {
@@ -76,6 +78,22 @@ class SocketServer {
       });
     });
 
+    this.io.on('event', (event: EventOutputDTO) => {
+      const eventsToRefreshServerCache: EventTypes[] = [
+        HookEvents.GAMESERVER_CREATED,
+        HookEvents.GAMESERVER_DELETED,
+        HookEvents.GAMESERVER_UPDATED,
+      ];
+
+      if (eventsToRefreshServerCache.includes(event.eventName)) {
+        this.log.info(
+          `Received event from other node that indicates we need to refresh cache for gameserver ${event.gameserverId}`,
+        );
+        const gameserverService = new GameServerService(event.domain);
+        gameserverService.refreshGameInstance(event.gameserverId);
+      }
+    });
+
     this.log.info('Socket server started');
   }
 
@@ -92,6 +110,9 @@ class SocketServer {
     data: Parameters<ServerToClientEvents[keyof ServerToClientEvents]> = [],
   ) {
     this.io.to(domainId).emit(event, ...data);
+    if (event === 'event') {
+      this.io.serverSideEmit(event, data[0] as unknown as EventOutputDTO);
+    }
   }
 
   private async routerMiddleware(

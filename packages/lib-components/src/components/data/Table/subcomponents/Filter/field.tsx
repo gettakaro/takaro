@@ -1,9 +1,10 @@
 import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
 import { SelectField, TextField } from '../../../../../components';
-import { Operators, FilterInputType, IFormInputs } from '.';
+import { IFormInputs } from '.';
 import { Column } from '@tanstack/react-table';
 import { useLayoutEffect } from 'react';
 import { camelCaseToSpaces } from '../../../../../helpers';
+import { FilterInputType, Operators } from './types';
 
 interface FilterFieldProps<DataType> {
   index: number;
@@ -70,7 +71,6 @@ export function FilterRow<DataType extends object>({
         control={control}
         name={`filters.${index}.column`}
         label="Column"
-        inPortal
         render={(selectedItems) => {
           if (selectedItems.length === 0) {
             return 'Select a column';
@@ -95,7 +95,6 @@ export function FilterRow<DataType extends object>({
         control={control}
         name={`filters.${index}.operator`}
         label="Condition"
-        inPortal
         render={() => {
           const operator = currentOperator?.toString();
 

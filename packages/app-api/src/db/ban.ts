@@ -82,8 +82,23 @@ export class BanRepo extends ITakaroRepo<BanModel, BanOutputDTO, BanCreateDTO, B
     const { query } = await this.getModel();
     const data = item.toJSON();
     if (!data.takaroManaged) data.takaroManaged = false;
-    const record = await query.insert({ ...data, domain: this.domainId });
-    return this.findOne(record.id);
+    try {
+      const record = await query.insert({ ...data, domain: this.domainId });
+      return this.findOne(record.id);
+    } catch (error) {
+      if (error instanceof Error) {
+        if (
+          error.name === 'CheckViolationError' &&
+          'constraint' in error &&
+          error.constraint === 'bans_global_gameserver_check'
+        ) {
+          throw new errors.BadRequestError(
+            'When creating a global ban, gameServerId must be null. When creating a non-global ban, gameServerId must be set.',
+          );
+        }
+      }
+      throw error;
+    }
   }
 
   async delete(id: string): Promise<boolean> {
@@ -94,8 +109,23 @@ export class BanRepo extends ITakaroRepo<BanModel, BanOutputDTO, BanCreateDTO, B
 
   async update(id: string, _data: BanUpdateDTO): Promise<BanOutputDTO> {
     const { query } = await this.getModel();
-    await query.patch(_data.toJSON());
-    return this.findOne(id);
+    try {
+      await query.patch(_data.toJSON());
+      return this.findOne(id);
+    } catch (error) {
+      if (error instanceof Error) {
+        if (
+          error.name === 'CheckViolationError' &&
+          'constraint' in error &&
+          error.constraint === 'bans_global_gameserver_check'
+        ) {
+          throw new errors.BadRequestError(
+            'When creating a global ban, gameServerId must be null. When creating a non-global ban, gameServerId must be set.',
+          );
+        }
+      }
+      throw error;
+    }
   }
 
   async syncBans(gameServerId: string, bans: BanCreateDTO[]) {

@@ -5,6 +5,7 @@ import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import reactPlugin from 'eslint-plugin-react';
 import storybookPlugin from 'eslint-plugin-storybook';
+import prettierConfig from 'eslint-config-prettier';
 
 import { FlatCompat } from '@eslint/eslintrc';
 
@@ -35,7 +36,6 @@ export default tseslint.config(
       '**/migrations/**',
       '**/*.d.ts',
       '**/jest.config.js',
-      '**/mocharc.js',
       '**/.storybook/**',
       '**/.docusaurus/**',
       '**/reports/**'
@@ -45,6 +45,7 @@ export default tseslint.config(
   // extends
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
+  prettierConfig,
 
   //
   // base config
@@ -58,7 +59,7 @@ export default tseslint.config(
           // In the rare case that we do - just manually restart IDE
           glob: 'infinity',
         },
-        project: ['tsconfig.json', 'tsconfig.esm.json', 'tsconfig.react.json', 'packages/*/tsconfig.json'],
+        project: ['tsconfig.json', 'tsconfig.react.json', 'packages/*/tsconfig.json'],
         tsconfigRootDir: __dirname,
         warnOnUnsupportedTypeScriptVersion: true,
       },
@@ -66,7 +67,6 @@ export default tseslint.config(
     rules: {
 
       'no-console': 'off',
-      quotes: ['error', 'single'],
       semi: ['error', 'always'],
       'logical-assignment-operators': 'error',
       'no-else-return': 'off',

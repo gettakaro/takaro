@@ -1,5 +1,6 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
+import { describe } from 'node:test';
 
 const group = 'Aliases';
 
@@ -10,20 +11,18 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Can install and use aliases',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-        {
-          systemConfig: JSON.stringify({
-            commands: {
-              teleport: {
-                delay: 0,
-                aliases: ['tp', 'tellyport'],
-              },
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+        systemConfig: JSON.stringify({
+          commands: {
+            teleport: {
+              delay: 0,
+              aliases: ['tp', 'tellyport'],
             },
-          }),
-        },
-      );
+          },
+        }),
+      });
 
       const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -50,20 +49,18 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Aliases are case insensitive',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-        {
-          systemConfig: JSON.stringify({
-            commands: {
-              teleport: {
-                delay: 0,
-                aliases: ['tp', 'tellyport'],
-              },
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+        systemConfig: JSON.stringify({
+          commands: {
+            teleport: {
+              delay: 0,
+              aliases: ['tp', 'tellyport'],
             },
-          }),
-        },
-      );
+          },
+        }),
+      });
 
       const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {

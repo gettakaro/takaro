@@ -11,7 +11,7 @@
         "updatedAt": "2024-06-29T14:53:28.503Z",
         "id": "2ad2e8f1-6054-4425-bebe-9fbf16e1e785",
         "listingId": "11866293-c092-4b38-98cc-820c17e8043a",
-        "userId": "40d1bdf1-95bb-494c-b97f-c8748e5c11ba",
+        "playerId": "40d1bdf1-95bb-494c-b97f-c8748e5c11ba",
         "amount": 1,
         "status": "PAID"
       }
@@ -24,7 +24,7 @@
     "name": "Search orders",
     "filteredFields": [
       "listingId",
-      "userId"
+      "playerId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

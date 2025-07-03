@@ -5,13 +5,11 @@
       "id": "4218a6e4-001a-4175-a346-f9b8a920c3f4",
       "createdAt": "2023-12-24T15:22:57.938Z",
       "updatedAt": "2023-12-24T15:22:58.000Z",
+      "deletedAt": null,
       "name": "Test gameserver 2",
       "enabled": true,
-      "connectionInfo": {
-        "host": "somewhere.else",
-        "port": 9876
-      },
-      "type": "MOCK",
+      "connectionInfo": {},
+      "type": "GENERIC",
       "reachable": true
     }
   },
@@ -21,7 +19,9 @@
     "snapshot": true,
     "name": "Update",
     "expectedStatus": 200,
-    "filteredFields": [],
+    "filteredFields": [
+      "identityToken"
+    ],
     "standardEnvironment": true
   }
 }

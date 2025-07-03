@@ -1,15 +1,17 @@
 import { Fragment, useMemo, ReactElement } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Button, Switch, TextField, camelCaseToSpaces } from '@takaro/lib-components';
-import { Settings, PERMISSIONS } from '@takaro/apiclient';
-import { useSetGlobalSetting, globalGameServerSettingsQueryOptions } from 'queries/setting';
+import { Settings, PERMISSIONS, SettingsControllerGetKeysEnum } from '@takaro/apiclient';
+import { useSetGlobalSetting, globalGameServerSettingsQueryOptions } from '../../../../queries/setting';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../../../hooks/useDocumentTitle';
 import { useSnackbar } from 'notistack';
-import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
+import { hasPermission, useHasPermission } from '../../../../hooks/useHasPermission';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { userMeQueryOptions } from 'queries/user';
+import { userMeQueryOptions } from '../../../../queries/user';
+import { useQuery } from '@tanstack/react-query';
+import { booleanFields } from '../../../../util/settings';
 
 export const Route = createFileRoute('/_auth/_global/settings/gameservers')({
   beforeLoad: async ({ context }) => {
@@ -33,20 +35,12 @@ function dirtyValues(dirtyFields: object | boolean, allValues: object): object {
   );
 }
 
-interface IFormInputs {
-  commandPrefix: string;
-  serverChatName: string;
-  economyEnabled: boolean;
-  currencyName: string;
-  developerMode: boolean;
-}
+type SettingsKeys = (typeof SettingsControllerGetKeysEnum)[keyof typeof SettingsControllerGetKeysEnum];
+type IFormInputs = {
+  [K in SettingsKeys]: K extends 'economyEnabled' | 'developerMode' ? boolean : string;
+};
 
-export const booleanFields = ['economyEnabled', 'developerMode'];
-
-export function mapSettings<T extends Promise<unknown>>(
-  data: Settings,
-  fn: (key: keyof IFormInputs, value?: string) => T,
-) {
+function mapSettings<T extends Promise<unknown>>(data: Settings, fn: (key: keyof IFormInputs, value?: string) => T) {
   const promises: Promise<unknown>[] = [];
   for (const key in data) {
     const settingsKey = key as keyof IFormInputs;
@@ -68,7 +62,7 @@ function Component() {
   const { mutateAsync: setGlobalSetting, isPending } = useSetGlobalSetting();
   const hasPermission = useHasPermission([PERMISSIONS.ManageSettings]);
   const readOnly = !hasPermission;
-  const data = Route.useLoaderData();
+  const { data } = useQuery({ ...globalGameServerSettingsQueryOptions(), initialData: Route.useLoaderData() });
 
   const validationSchema = useMemo(() => {
     if (data) {
@@ -124,7 +118,7 @@ function Component() {
           settingsComponents.push(
             <TextField readOnly={readOnly} control={control} label={camelCaseToSpaces(key)} name={key} key={key} />,
           );
-          if (value) setValue(key, value);
+          if (value !== undefined && value !== null) setValue(key, value);
         }
       });
     }
@@ -138,13 +132,9 @@ function Component() {
         <Fragment>
           {settings}
           {!readOnly && (
-            <Button
-              disabled={!formState.isDirty}
-              isLoading={isPending}
-              text="Save settings"
-              type="submit"
-              variant="default"
-            />
+            <Button disabled={!formState.isDirty} isLoading={isPending} type="submit" variant="default">
+              Save settings
+            </Button>
           )}
         </Fragment>
       </form>

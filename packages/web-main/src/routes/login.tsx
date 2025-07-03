@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Button, TextField, styled, Company, FormError } from '@takaro/lib-components';
+import { Alert, Button, TextField, styled, Company, FormError } from '@takaro/lib-components';
 import { AiFillMail as Mail } from 'react-icons/ai';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { createFileRoute, Link, useNavigate, useRouter, useSearch } from '@tanstack/react-router';
@@ -7,15 +7,18 @@ import { LoginFlow } from '@ory/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { isAxiosError } from 'axios';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { useOry } from 'hooks/useOry';
-import { getApiClient } from 'util/getApiClient';
-import { useAuth } from 'hooks/useAuth';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { useOry } from '../hooks/useOry';
+import { getApiClient } from '../util/getApiClient';
+import { useAuth } from '../hooks/useAuth';
+import { zodValidator } from '@tanstack/zod-adapter';
 
 export const Route = createFileRoute('/login')({
-  validateSearch: z.object({
-    redirect: z.string().optional().catch('/'),
-  }),
+  validateSearch: zodValidator(
+    z.object({
+      redirect: z.string().optional(),
+    }),
+  ),
   component: Component,
 });
 
@@ -99,7 +102,6 @@ function Component() {
         method: 'password',
       },
     });
-    await apiClient.user.userControllerDeleteSelectedDomainCookie();
     const res = await apiClient.user.userControllerMe({
       headers: {
         'Cache-Control': 'no-cache',
@@ -159,6 +161,11 @@ function Component() {
     <>
       <Container>
         <Company size="huge" />
+        <Alert
+          variant="info"
+          title="Takaro is Invite Only"
+          text='Are you a player? Use the "link" command in-game to get an invite link. Are you a server admin? Join our Discord and ask for an invite!'
+        />
         {/* 
           <Button
             color="primary"
@@ -183,19 +190,12 @@ function Component() {
             <TextField control={control} label="Password" loading={loading} name="password" required type="password" />
           </LessMargin>
           <LinkContainer>
-            <Link to="/account/recovery" search={{ flowId: '' }}>
-              Forgot your password?
-            </Link>
+            <Link to="/account/recovery">Forgot your password?</Link>
           </LinkContainer>
           {error && <FormError error={error} />}
-          <Button
-            icon={<Mail />}
-            isLoading={loading}
-            fullWidth
-            text="Log in with Email"
-            type="submit"
-            variant="default"
-          />
+          <Button icon={<Mail />} isLoading={loading} fullWidth type="submit" variant="default">
+            Log in
+          </Button>
         </form>
       </Container>
     </>

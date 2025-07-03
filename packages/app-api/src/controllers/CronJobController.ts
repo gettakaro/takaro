@@ -27,10 +27,10 @@ import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
+import { moduleProtectionMiddleware } from '../middlewares/moduleProtectionMiddleware.js';
 import { EventService, EVENT_TYPES } from '../service/EventService.js';
 import { EventOutputArrayDTOAPI, EventSearchInputDTO } from './EventController.js';
-import { AllowedFilters } from './shared.js';
+import { AllowedFilters, AllowedSearch } from './shared.js';
 
 export class CronJobOutputDTOAPI extends APIOutput<CronJobOutputDTO> {
   @Type(() => CronJobOutputDTO)
@@ -48,20 +48,28 @@ class CronJobSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsUUID(4, { each: true })
   moduleId!: string[];
-
+  @IsOptional()
+  @IsUUID(4, { each: true })
+  versionId!: string[];
   @IsOptional()
   @IsString({ each: true })
   name!: string[];
 }
 
-class CronJobSearchInputDTO extends ITakaroQuery<CronJobSearchInputAllowedFilters> {
+class CronJobSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name!: string[];
+}
+
+export class CronJobSearchInputDTO extends ITakaroQuery<CronJobSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => CronJobSearchInputAllowedFilters)
   declare filters: CronJobSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => CronJobSearchInputAllowedFilters)
-  declare search: CronJobSearchInputAllowedFilters;
+  @Type(() => CronJobSearchInputAllowedSearch)
+  declare search: CronJobSearchInputAllowedSearch;
 }
 
 @OpenAPI({
@@ -94,7 +102,7 @@ export class CronJobController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), moduleProtectionMiddleware)
   @ResponseSchema(CronJobOutputDTOAPI)
   @Post('/cronjob')
   async create(@Req() req: AuthenticatedRequest, @Body() data: CronJobCreateDTO) {
@@ -102,7 +110,7 @@ export class CronJobController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), moduleProtectionMiddleware)
   @ResponseSchema(CronJobOutputDTOAPI)
   @Put('/cronjob/:id')
   async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: CronJobUpdateDTO) {
@@ -110,7 +118,7 @@ export class CronJobController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), moduleProtectionMiddleware)
   @ResponseSchema(APIOutput)
   @Delete('/cronjob/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {

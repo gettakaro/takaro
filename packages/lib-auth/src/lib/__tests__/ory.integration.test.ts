@@ -1,6 +1,7 @@
 import { ory } from '../ory.js';
 import { faker } from '@faker-js/faker';
 import { expect } from '@takaro/test';
+import { describe, it } from 'node:test';
 
 describe('Ory', () => {
   it('Create and delete identities', async () => {

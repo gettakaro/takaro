@@ -1,11 +1,9 @@
-import { EventOutputDTO } from '@takaro/apiclient';
-import { Skeleton, styled } from '@takaro/lib-components';
-import { Player } from 'components/Player';
-import { useSocket } from 'hooks/useSocket';
-import { playersQueryOptions } from 'queries/player';
-import { playersOnGameServersQueryOptions } from 'queries/pog';
+import { EventOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
+import { Card, Skeleton, styled } from '@takaro/lib-components';
+import { Player } from '../../../../components/Player';
+import { useSocket } from '../../../../hooks/useSocket';
+import { playersOnGameServersQueryOptions } from '../../../../queries/pog';
 import { FC, useEffect } from 'react';
-import { StyledCard } from './style';
 import { useQuery } from '@tanstack/react-query';
 import { getRouteApi } from '@tanstack/react-router';
 
@@ -27,21 +25,13 @@ export const OnlinePlayersCard: FC = () => {
   const { gameServerId } = getRouteApi('/_auth/gameserver/$gameServerId/dashboard/overview').useParams();
   const { socket } = useSocket();
 
-  const { data, isLoading, refetch } = useQuery(
+  const { data, isPending, refetch } = useQuery(
     playersOnGameServersQueryOptions({
       filters: {
         online: [true],
         gameServerId: [gameServerId],
       },
       extend: ['player'],
-    }),
-  );
-
-  const { data: players, isLoading: isLoadingPlayers } = useQuery(
-    playersQueryOptions({
-      filters: {
-        id: data?.data.map((playerOnGameServer) => playerOnGameServer.playerId),
-      },
     }),
   );
 
@@ -56,28 +46,33 @@ export const OnlinePlayersCard: FC = () => {
     };
   }, []);
 
-  if (isLoading || isLoadingPlayers) return <Skeleton variant="rectangular" width="100%" height="100%" />;
+  if (isPending) return <Skeleton variant="rectangular" width="100%" height="100%" />;
+
+  const players = data?.data.map((pog) => pog['player'] as PlayerOutputDTO) ?? [];
 
   return (
-    <StyledCard variant="outline">
+    <Card variant="outline">
       <Container>
-        <h2>{data?.data.length} Players Online</h2>
-        <Players>
-          {data?.data.map((playerOnGameServer) => {
-            const player = players?.data.find((player) => player.id === playerOnGameServer.playerId);
-            if (!player) return null;
-            return (
-              <Player
-                key={player.id}
-                playerId={player.id}
-                name={player.name}
-                showAvatar={true}
-                avatarUrl={player.steamAvatar}
-              />
-            );
-          })}
-        </Players>
+        <Card.Title label={`${data?.data.length} Players Online`} />
+        <Card.Body>
+          <Players>
+            {data?.data.map((playerOnGameServer) => {
+              const player = players.find((player) => player.id === playerOnGameServer.playerId);
+              if (!player) return null;
+              return (
+                <Player
+                  key={player.id}
+                  playerId={player.id}
+                  name={player.name}
+                  showAvatar={true}
+                  avatarUrl={player.steamAvatar}
+                  gameServerId={gameServerId}
+                />
+              );
+            })}
+          </Players>
+        </Card.Body>
       </Container>
-    </StyledCard>
+    </Card>
   );
 };

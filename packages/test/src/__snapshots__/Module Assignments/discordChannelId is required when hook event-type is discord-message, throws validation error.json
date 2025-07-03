@@ -2,8 +2,19 @@
   "body": {
     "meta": {
       "error": {
-        "code": "BadRequestError",
-        "message": "Invalid config: /hooks/Test hook must have required property 'discordChannelId'"
+        "code": "ValidationError",
+        "message": "Invalid config: /hooks/Test hook must have required property 'discordChannelId'",
+        "details": [
+          {
+            "instancePath": "/hooks/Test hook",
+            "schemaPath": "#/properties/hooks/properties/Test%20hook/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "discordChannelId"
+            },
+            "message": "must have required property 'discordChannelId'"
+          }
+        ]
       }
     },
     "data": {}

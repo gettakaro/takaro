@@ -1,14 +1,14 @@
 import { PERMISSIONS } from '@takaro/apiclient';
 import { ErrorPage } from '@takaro/lib-components';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { getUserPermissions, hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
+import { getUserPermissions, hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
 
 export const Route = createFileRoute('/_auth/_global/')({
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (hasPermission(session, [PERMISSIONS.ReadEvents])) {
-      throw redirect({ to: '/dashboard' });
+      throw redirect({ to: '/dashboard', replace: true });
     }
 
     /* if user has no permissions at all, so can't see any page, redirect to forbidden */

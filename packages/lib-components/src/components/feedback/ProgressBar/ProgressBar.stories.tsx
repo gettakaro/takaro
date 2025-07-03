@@ -1,3 +1,4 @@
+import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { useState } from 'react';
 import { ProgressBar, ProgressBarProps } from '.';
@@ -28,7 +29,7 @@ export const Determinate: StoryFn<ProgressBarProps> = () => {
 
   return (
     <>
-      <ProgressBar mode="determinate" showValue value={value} />
+      <ProgressBar mode="determinate" showPercentage value={value} />
       <ButtonContainer>
         <button onClick={() => setValue(value + 5)}>+5</button>
         <button onClick={() => setValue(value + 10)}>+10</button>

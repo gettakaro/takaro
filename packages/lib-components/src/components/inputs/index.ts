@@ -1,3 +1,10 @@
+export interface PaginationProps {
+  isFetching: boolean;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+  fetchNextPage: () => void;
+}
+
 export { ControlledCheckBox as CheckBox } from './CheckBox';
 export type { ControlledCheckBoxProps as CheckBoxProps } from './CheckBox';
 export { GenericCheckBox as UnControlledCheckBox } from './CheckBox/Generic';
@@ -9,6 +16,7 @@ export { GenericSelectField as UnControlledSelectField } from './selects/SelectF
 export { ControlledSelectQueryField as SelectQueryField } from './selects/SelectQueryField';
 export type { ControlledSelectQueryFieldProps as SelectQueryFieldProps } from './selects/SelectQueryField';
 export { GenericSelectQueryField as UnControlledSelectQueryField } from './selects/SelectQueryField/Generic';
+export type { SelectQueryFieldProps as UnControlledSelectQueryFieldProps } from './selects/SelectQueryField/Generic';
 
 export { ControlledSwitch as Switch } from './Switch';
 export type { ControlledSwitchProps as SwitchProps } from './Switch';

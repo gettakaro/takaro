@@ -9,7 +9,7 @@ import {
   PlayerOutputDTO,
   PlayerOutputWithRolesDTO,
   PlayerUpdateDTO,
-} from '../service/PlayerService.js';
+} from '../service/Player/dto.js';
 import { ROLE_TABLE_NAME, RoleModel } from './role.js';
 import { PLAYER_ON_GAMESERVER_TABLE_NAME, PlayerOnGameServerModel } from './playerOnGameserver.js';
 import { config } from '../config.js';
@@ -65,6 +65,7 @@ export class PlayerModel extends TakaroModel {
   steamId?: string;
   xboxLiveId?: string;
   epicOnlineServicesId?: string;
+  platformId?: string;
 
   steamLastFetch: Date;
   steamAvatar: string;
@@ -173,7 +174,7 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     const extend = filters.extend || [];
     const qry = new QueryBuilder<PlayerModel, PlayerOutputWithRolesDTO>({
       ...filters,
-      extend: ['roleAssignments.role.permissions', ...extend],
+      extend: ['roleAssignments.role.permissions.permission', ...extend],
     }).build(query);
 
     if (filters.filters?.roleId) {
@@ -192,7 +193,7 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
 
   async findOne(id: string): Promise<PlayerOutputWithRolesDTO> {
     const { query } = await this.getModel();
-    const res = await query.findById(id).withGraphFetched('roleAssignments.role.permissions');
+    const res = await query.findById(id).withGraphFetched('roleAssignments.role.permissions.permission');
     const { query: ipQuery } = await this.getIPHistoryModel();
 
     if (!res) {
@@ -420,5 +421,71 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
       wau,
       mau,
     };
+  }
+
+  async findByPlatformIds(platformIds: {
+    steamId?: string;
+    epicOnlineServicesId?: string;
+    xboxLiveId?: string;
+    platformId?: string;
+  }): Promise<PlayerOutputWithRolesDTO[]> {
+    const { query } = await this.getModel();
+
+    let qb = query;
+
+    // Use OR conditions to find players matching any of the platform IDs
+    qb = qb.where((builder) => {
+      if (platformIds.steamId) {
+        builder.orWhere('steamId', platformIds.steamId);
+      }
+      if (platformIds.epicOnlineServicesId) {
+        builder.orWhere('epicOnlineServicesId', platformIds.epicOnlineServicesId);
+      }
+      if (platformIds.xboxLiveId) {
+        builder.orWhere('xboxLiveId', platformIds.xboxLiveId);
+      }
+      if (platformIds.platformId) {
+        builder.orWhere('platformId', platformIds.platformId);
+      }
+    });
+
+    const result = await qb.withGraphFetched('roleAssignments.role.permissions.permission');
+
+    if (!result.length) {
+      return [];
+    }
+
+    return Promise.all(result.map(async (player) => new PlayerOutputWithRolesDTO(player)));
+  }
+
+  async batchRemoveRoles(
+    expiredRoles: Array<{
+      playerId: string;
+      roleId: string;
+      gameServerId?: string;
+    }>,
+  ): Promise<void> {
+    if (expiredRoles.length === 0) return;
+
+    const knex = await this.getKnex();
+    const roleOnPlayerModel = RoleOnPlayerModel.bindKnex(knex);
+
+    // Build a query to delete all expired roles in one operation
+    const query = roleOnPlayerModel.query().delete();
+
+    // Use OR conditions to match all the expired role assignments
+    query.where((builder) => {
+      expiredRoles.forEach((expiredRole) => {
+        const whereClause: Record<string, string | null> = {
+          playerId: expiredRole.playerId,
+          roleId: expiredRole.roleId,
+          gameServerId: expiredRole.gameServerId || null,
+        };
+        builder.orWhere(whereClause);
+      });
+    });
+
+    const deletedCount = await query;
+    this.log.info('Batch removed expired roles', { requestedCount: expiredRoles.length, deletedCount });
   }
 }

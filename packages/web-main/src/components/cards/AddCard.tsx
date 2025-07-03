@@ -1,9 +1,9 @@
 import { Card, styled } from '@takaro/lib-components';
-import { CardBody } from './style';
+import { InnerBody } from './style';
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import { FC } from 'react';
 
-const AddCardBody = styled(CardBody)`
+const AddCardInnerBody = styled(InnerBody)`
   flex-direction: row;
   align-items: center;
   justify-content: center;
@@ -13,15 +13,18 @@ const AddCardBody = styled(CardBody)`
 interface AddCardProps {
   onClick: () => void;
   title: string;
+  disabled?: boolean;
 }
 
-export const AddCard: FC<AddCardProps> = ({ onClick, title }) => {
+export const AddCard: FC<AddCardProps> = ({ onClick, title, disabled }) => {
   return (
-    <Card role="link" onClick={onClick} variant="outline">
-      <AddCardBody>
-        <PlusIcon size={24} />
-        <h3>{title}</h3>
-      </AddCardBody>
+    <Card role="link" onClick={onClick} variant="outline" disabled={disabled}>
+      <Card.Body>
+        <AddCardInnerBody>
+          <PlusIcon size={24} />
+          <h3>{title}</h3>
+        </AddCardInnerBody>
+      </Card.Body>
     </Card>
   );
 };

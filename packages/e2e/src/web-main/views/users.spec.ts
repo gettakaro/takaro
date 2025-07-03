@@ -49,7 +49,7 @@ test.describe('Role assignment', () => {
       .getByRole('row', { name: 'Moderator Never player-actions' })
       .getByRole('button', { name: 'player-actions' })
       .click();
-    await page.getByRole('menuitem', { name: 'Unassign role' }).click();
+    await page.getByRole('menuitem', { name: 'Remove role' }).click();
 
     await expect(page.getByRole('cell', { name: 'Moderator', exact: true })).not.toBeVisible();
   });

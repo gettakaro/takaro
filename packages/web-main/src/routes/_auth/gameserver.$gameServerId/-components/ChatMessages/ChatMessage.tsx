@@ -1,6 +1,6 @@
 import { EventChatMessage, EventOutputDTO, EventOutputDTOEventNameEnum as EventName } from '@takaro/apiclient';
 import { Avatar, useTheme } from '@takaro/lib-components';
-import { Player } from 'components/Player';
+import { Player } from '../../../../../components/Player';
 import { DateTime } from 'luxon';
 import { FC } from 'react';
 import { EventMessage, Message, TimeStamp } from './style';

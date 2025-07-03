@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Section } from './-style';
-import { GameServerSelect } from 'components/selects';
+import { GameServerSelectQueryField } from '../../../../components/selects';
 import { useForm } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
-import { playerOnGameServerQueryOptions } from 'queries/pog';
+import { playerOnGameServerQueryOptions } from '../../../../queries/pog';
 import { PlayerInventoryTable } from './-PlayerInventoryTable';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/inventory')({
@@ -24,7 +24,7 @@ function Component() {
 
   return (
     <Section style={{ minHeight: '250px' }}>
-      <GameServerSelect name="gameServerId" control={control} />
+      <GameServerSelectQueryField name="gameServerId" control={control} />
       {pog && <PlayerInventoryTable pog={pog} />}
     </Section>
   );

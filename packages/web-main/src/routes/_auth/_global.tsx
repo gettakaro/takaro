@@ -1,8 +1,8 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { BaseLayout } from 'components/BaseLayout';
-import { hasPermission } from 'hooks/useHasPermission';
-import { gameServersQueryOptions } from 'queries/gameserver';
-import { userMeQueryOptions } from 'queries/user';
+import { BaseLayout } from '../../components/BaseLayout';
+import { hasPermission } from '../../hooks/useHasPermission';
+import { gameServersQueryOptions } from '../../queries/gameserver';
+import { userMeQueryOptions } from '../../queries/user';
 
 export const Route = createFileRoute('/_auth/_global')({
   beforeLoad: async ({ context, location }) => {
@@ -13,8 +13,12 @@ export const Route = createFileRoute('/_auth/_global')({
     const canManageGameServers = hasPermission(session, ['MANAGE_GAMESERVERS']);
     if (location.pathname == '/' && !canManageGameServers) {
       const gameservers = await context.queryClient.ensureQueryData(gameServersQueryOptions());
-      if (gameservers.length > 0) {
-        throw redirect({ to: '/gameserver/$gameServerId/shop', params: { gameServerId: gameservers[0].id } });
+      if (gameservers.data.length > 0) {
+        throw redirect({
+          to: '/gameserver/$gameServerId/shop',
+          params: { gameServerId: gameservers.data[0].id },
+          replace: true,
+        });
       }
     }
   },

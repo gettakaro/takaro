@@ -4,8 +4,8 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { Button, Card, Empty, Skeleton, styled, useTheme, InfiniteScroll } from '@takaro/lib-components';
 import { LoginDiscordCard } from './-discord/LoginDiscordCard';
 import { GuildCard } from './-discord/GuildCard';
-import { CardList } from 'components/cards';
-import { discordGuildInfiniteQueryOptions, discordInviteQueryOptions } from 'queries/discord';
+import { CardList } from '../../../../components/cards';
+import { discordGuildInfiniteQueryOptions, discordInviteQueryOptions } from '../../../../queries/discord';
 
 export const Route = createFileRoute('/_auth/_global/settings/discord')({
   loader: async ({ context }) => {
@@ -77,11 +77,13 @@ function Component() {
       <Flex>
         <LoginDiscordCard />
         <Card>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '50px' }}>
-            <a href={loaderData.invites?.botInvite} target="_blank" rel="noreferrer">
-              <Button text="Invite Discord bot" />
-            </a>
-          </div>
+          <Card.Body>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '50px' }}>
+              <a href={loaderData.invites?.botInvite} target="_blank" rel="noreferrer">
+                <Button>Invite Discord bot</Button>
+              </a>
+            </div>
+          </Card.Body>
         </Card>
       </Flex>
       <h1> Guilds</h1>

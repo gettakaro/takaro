@@ -24,7 +24,8 @@
           "userId": "beaa174d-5dea-4cf3-9355-09953e15cb6d"
         }
       ],
-      "email": "testUser@example.com"
+      "email": "testUser@example.com",
+      "isDashboardUser": false
     }
   },
   "status": 200,
@@ -36,7 +37,8 @@
       "idpId",
       "roleId",
       "userId",
-      "lastSeen"
+      "lastSeen",
+      "email"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

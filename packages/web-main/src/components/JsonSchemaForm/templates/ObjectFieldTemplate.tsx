@@ -12,8 +12,11 @@ import {
 
 import { Collapsible, styled } from '@takaro/lib-components';
 
-const Container = styled.div`
-  padding-left: ${({ theme }) => theme.spacing['0_5']};
+const ItemContainer = styled.div<{ isTopLevel: boolean }>`
+  margin-bottom: 10px;
+  border: 2px solid ${({ theme, isTopLevel }) => (isTopLevel ? theme.colors.backgroundAlt : 'none')};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  padding: ${({ isTopLevel, theme }) => (isTopLevel ? theme.spacing[1] : '0px')};
 `;
 
 /** The `ObjectFieldTemplate` is the template to use to render all the inner properties of an object along with the
@@ -62,8 +65,12 @@ export function ObjectFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSc
     return false;
   }
 
+  function isTopLevelObject(idSchema: any): boolean {
+    return idSchema['$id'] === 'root';
+  }
+
   return (
-    <Container>
+    <div>
       {/* if parent title is commands/cronjobs/hooks then dont render */}
       {title && isParentCommandHookCronjob() && (
         <TitleFieldTemplate
@@ -87,9 +94,6 @@ export function ObjectFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSc
       <div>
         {properties.map((element, index) => {
           if (title === 'commands' || title === 'hooks' || title === 'cronJobs') {
-            {
-              console.log(element.content);
-            }
             return (
               <Collapsible key={`element-${title}-${index}`}>
                 <Collapsible.Trigger>{element.name}</Collapsible.Trigger>
@@ -98,18 +102,15 @@ export function ObjectFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSc
             );
           }
 
-          return (
-            // Remove the <Grid> if the inner element is hidden as the <Grid>
-            // itself would otherwise still take up space.
-            element.hidden ? (
-              element.content
-            ) : (
-              <div key={`element-${title}-${index}`} style={{ marginBottom: '10px' }}>
-                {element.content}
-              </div>
-            )
+          return element.hidden ? (
+            element.content
+          ) : (
+            <ItemContainer key={`element-${title}-${index}`} isTopLevel={isTopLevelObject(idSchema)}>
+              {element.content}
+            </ItemContainer>
           );
         })}
+
         {canExpand<T, S, F>(schema, uiSchema, formData) && (
           <div>
             <div>
@@ -123,6 +124,6 @@ export function ObjectFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSc
           </div>
         )}
       </div>
-    </Container>
+    </div>
   );
 }

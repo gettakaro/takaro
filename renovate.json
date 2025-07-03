@@ -10,6 +10,10 @@
   "addLabels": [
     "renovate"
   ],
+  "timezone": "Europe/Brussels",
+  "schedule": [
+    "before 6am"
+  ],
   "packageRules": [
     {
       "matchPackageNames": [
@@ -59,8 +63,11 @@
         "prettier",
         "@types",
         "chai",
-        "mocha"
+        "sinon",
+        "mocha",
+        "@playwright"
       ],
+      "groupName": "devDependencies",
       "automerge": true
     },
     {

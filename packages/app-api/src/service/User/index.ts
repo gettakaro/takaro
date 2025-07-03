@@ -11,6 +11,8 @@ import { HookEvents, TakaroEventPlayerLinked, TakaroEventRoleAssigned, TakaroEve
 import { AuthenticatedRequest } from '../AuthService.js';
 import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO, UserUpdateAuthDTO } from './dto.js';
 import { UserSearchInputDTO } from '../../controllers/UserController.js';
+import { DomainService } from '../DomainService.js';
+import { PlayerService } from '../Player/index.js';
 
 export * from './dto.js';
 
@@ -64,9 +66,21 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
       }
     }
     const result = await this.repo.find(filters);
+
+    const withPlayers = await Promise.all(
+      result.results.map(async (item) => {
+        if (item.playerId) {
+          const player = await new PlayerService(this.domainId).findOne(item.playerId);
+          return new UserOutputWithRolesDTO({ ...item, player });
+        } else {
+          return new UserOutputWithRolesDTO(item);
+        }
+      }),
+    );
+
     const extendedWithOry = {
       ...result,
-      results: await Promise.all(result.results.map(this.extend.bind(this))),
+      results: await Promise.all(withPlayers.map(this.extend.bind(this))),
     };
 
     return extendedWithOry;
@@ -78,6 +92,16 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
   }
 
   async create(user: UserCreateInputDTO): Promise<UserOutputDTO> {
+    if (user.isDashboardUser) {
+      const domain = await new DomainService().findOne(this.domainId);
+      if (!domain) throw new errors.NotFoundError(`Domain ${this.domainId} not found`);
+
+      const maxUsers = domain.maxUsers;
+      const existingDashboardUsers = await this.repo.find({ filters: { isDashboardUser: [true] } });
+      if (existingDashboardUsers.total >= maxUsers) {
+        throw new errors.BadRequestError(`Max users (${maxUsers}) limit reached`);
+      }
+    }
     const idpUser = await ory.createIdentity(user.email, user.password);
     user.idpId = idpUser.id;
     const createdUser = await this.repo.create(user);
@@ -132,10 +156,12 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     );
   }
 
-  async inviteUser(email: string): Promise<UserOutputDTO> {
+  async inviteUser(email: string, opts = { isDashboardUser: true }): Promise<UserOutputDTO> {
     const existingIdpProfile = await ory.getIdentityByEmail(email);
 
-    const user = await this.create(new UserCreateInputDTO({ email, name: email }));
+    const user = await this.create(
+      new UserCreateInputDTO({ email, name: email, isDashboardUser: opts.isDashboardUser }),
+    );
     if (!existingIdpProfile) {
       const recoveryFlow = await ory.getRecoveryFlow(user.idpId);
 
@@ -157,8 +183,8 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     code: string,
   ): Promise<{ user: UserOutputDTO; domainId: string }> {
     const redis = await Redis.getClient('playerLink');
-    const resolvedPlayerId = await redis.get(code);
-    const resolvedDomainId = await redis.get(`${code}-domain`);
+    const resolvedPlayerId = await redis.get(`playerLink:${code}`);
+    const resolvedDomainId = await redis.get(`playerLink:${code}-domain`);
 
     if (!resolvedPlayerId) {
       this.log.warn('Player link code not found', { code });
@@ -192,11 +218,12 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     if (existingIdpProfile) {
       const maybeUser = await userService.find({ filters: { idpId: [existingIdpProfile.id] } });
       if (maybeUser.results.length === 0) {
-        throw new errors.InternalServerError();
+        user = await userService.inviteUser(email, { isDashboardUser: false });
+      } else {
+        user = maybeUser.results[0];
       }
-      user = maybeUser.results[0];
     } else {
-      user = await userService.inviteUser(email);
+      user = await userService.inviteUser(email, { isDashboardUser: false });
     }
 
     await userService.repo.linkPlayer(user.id, resolvedPlayerId);

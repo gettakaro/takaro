@@ -24,9 +24,9 @@
             "createdAt": "2024-07-18T15:25:48.096Z",
             "updatedAt": "2024-07-18T15:25:48.096Z",
             "gameserverId": "becf27be-f2db-4a53-a2d4-56608001e5bb",
-            "name": "Stone",
-            "code": "stone",
-            "description": "Stone can get you stoned",
+            "name": "Wood",
+            "code": "wood",
+            "description": "Wood is good",
             "icon": null
           }
         }

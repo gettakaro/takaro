@@ -1,6 +1,6 @@
 import { Job } from 'bullmq';
 import { TakaroWorker, ICSMMImportData, queueService } from '@takaro/queues';
-import { ctx, logger } from '@takaro/util';
+import { ctx, errors, logger } from '@takaro/util';
 import { config } from '../config.js';
 import {
   GameServerCreateDTO,
@@ -10,12 +10,12 @@ import {
 } from '../service/GameServerService.js';
 import { GAME_SERVER_TYPE } from '@takaro/gameserver';
 import { RoleCreateInputDTO, RoleService } from '../service/RoleService.js';
-import { PlayerService } from '../service/PlayerService.js';
+import { PlayerService } from '../service/Player/index.js';
 import { PlayerOnGameServerService } from '../service/PlayerOnGameserverService.js';
 import { IGamePlayer } from '@takaro/modules';
 import { ShopListingService } from '../service/Shop/index.js';
-import { ItemsService } from '../service/ItemsService.js';
 import { ShopListingCreateDTO, ShopListingItemMetaInputDTO } from '../service/Shop/dto.js';
+import { SystemTaskType } from './systemWorkerDefinitions.js';
 
 const log = logger('worker:csmmImport');
 
@@ -80,7 +80,6 @@ async function process(job: Job<ICSMMImportData>) {
   const playerService = new PlayerService(job.data.domainId);
   const pogService = new PlayerOnGameServerService(job.data.domainId);
   const shopListingService = new ShopListingService(job.data.domainId);
-  const itemService = new ItemsService(job.data.domainId);
 
   let server: GameServerOutputDTO | null;
 
@@ -192,32 +191,42 @@ async function process(job: Job<ICSMMImportData>) {
     }
   }
 
-  const isReachable = await gameserverService.testReachability(server.id);
-
-  if (isReachable) {
-    const res = await gameserverService.executeCommand(server.id, 'version');
-    if (res.rawResult.includes('1CSMM_Patrons')) {
-      await gameserverService.update(
-        server.id,
-        new GameServerUpdateDTO({
-          connectionInfo: JSON.stringify({
-            host: `${data.server.ip}:${data.server.webPort.toString()}`,
-            adminUser: data.server.authName,
-            adminToken: data.server.authToken,
-            useTls: data.server.webPort === 443,
-            useCPM: true,
+  try {
+    const isReachable = await gameserverService.testReachability(server.id);
+    if (isReachable) {
+      const res = await gameserverService.executeCommand(server.id, 'version');
+      if (res.rawResult.includes('1CSMM_Patrons')) {
+        await gameserverService.update(
+          server.id,
+          new GameServerUpdateDTO({
+            connectionInfo: JSON.stringify({
+              host: `${data.server.ip}:${data.server.webPort.toString()}`,
+              adminUser: data.server.authName,
+              adminToken: data.server.authToken,
+              useTls: data.server.webPort === 443,
+              useCPM: true,
+            }),
           }),
-        }),
-      );
+        );
+      }
     }
+  } catch (error) {
+    log.warn('Error while determining CPM compatiblity', error);
   }
 
+  // Schedule the item sync job
+  let itemSyncJob: Job<Record<string, unknown>, any, string> | undefined = await queueService.queues.system.queue.add({
+    domainId: job.data.domainId,
+    taskType: SystemTaskType.SYNC_ITEMS,
+    gameServerId: server.id,
+  });
+
+  if (!itemSyncJob || !itemSyncJob.id) throw new errors.BadRequestError('Item sync job not found');
   // Poll the item sync job until it's done
   let isFinished = false;
   while (!isFinished) {
-    const itemSyncJob = await queueService.queues.itemsSync.queue.bullQueue.getJob(
-      `itemsSync-${job.data.domainId}-${server.id}-init`,
-    );
+    itemSyncJob = await queueService.queues.system.queue.bullQueue.getJob(itemSyncJob.id!);
+
     if (!itemSyncJob) {
       log.warn('Item sync job not found, skipping');
       break;
@@ -230,7 +239,9 @@ async function process(job: Job<ICSMMImportData>) {
   // Import shop listings
   if (job.data.options.shop) {
     for (const listing of data.shopListings) {
-      const item = await itemService.find({ filters: { code: [listing.name] } });
+      // CSMM stores quality null as 0...
+      const quality = listing.quality.toString() === '0' ? null : listing.quality;
+
       await shopListingService.create(
         new ShopListingCreateDTO({
           gameServerId: server.id,
@@ -239,8 +250,8 @@ async function process(job: Job<ICSMMImportData>) {
           items: [
             new ShopListingItemMetaInputDTO({
               amount: listing.amount,
-              itemId: item.results[0].id,
-              quality: listing.quality,
+              code: listing.name,
+              quality: quality,
             }),
           ],
         }),

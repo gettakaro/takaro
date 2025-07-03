@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { extendedTest } from '../fixtures/index.js';
 import { navigateTo } from '../helpers.js';
+import { integrationConfig } from '@takaro/test';
 
 extendedTest('Can view variables', async ({ page, extended, takaro }) => {
   await takaro.rootClient.variable.variableControllerCreate({
@@ -44,6 +45,7 @@ extendedTest('Can create variable', async ({ page, takaro, extended }) => {
   await page.getByRole('option', { name: takaro.builtinModule.name, exact: true }).click();
 
   await page.getByRole('button', { name: 'Save variable' }).click();
+  await page.waitForURL(`${integrationConfig.get('frontendHost')}/variables`);
   await expect(page.getByText(variableName)).toBeVisible();
   await expect(page.getByText(variableValue)).toBeVisible();
 });
@@ -94,11 +96,11 @@ extendedTest('Can delete multiple variables at once', async ({ page, takaro }) =
 
   await page.locator('#select-all-header-0').click();
   await page.getByRole('button', { name: 'Delete variables (2)', exact: false }).click();
-  await page.getByRole('button', { name: 'Delete variables', exact: false }).click();
+  await page.getByRole('button', { name: 'Delete variables', exact: true }).click();
 
   await expect(page.getByRole('cell', { name: variable1Key })).not.toBeVisible();
   await expect(page.getByRole('cell', { name: variable2Key })).not.toBeVisible();
-  await expect(page.getByText('Items will appear here. Add your first item to begin!')).toBeVisible();
+  await expect(page.getByText('Data will appear here.')).toBeVisible();
 });
 
 extendedTest('Should show error when variable with same key exists', async ({ page, takaro }) => {

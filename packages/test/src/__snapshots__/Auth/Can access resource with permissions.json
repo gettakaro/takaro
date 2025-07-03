@@ -33,7 +33,7 @@
               "friendlyName": "Read Roles",
               "description": "Can view role details",
               "canHaveCount": false,
-              "moduleId": null
+              "moduleVersionId": null
             },
             "count": 0,
             "roleId": "65c30eee-bbeb-4f00-ac73-bd5111d12e34"
@@ -60,7 +60,7 @@
               "friendlyName": "Root Access",
               "description": "Full access to all systems and resources",
               "canHaveCount": false,
-              "moduleId": null
+              "moduleVersionId": null
             },
             "count": 0,
             "roleId": "01f71346-099d-456f-aaf5-c3de62879b35"
@@ -95,7 +95,7 @@
               "friendlyName": "Read Players",
               "description": "Can view player details",
               "canHaveCount": false,
-              "moduleId": null
+              "moduleVersionId": null
             },
             "count": 0,
             "roleId": "9f1faab3-eae9-466e-a193-96b274746d7f"
@@ -113,7 +113,7 @@
               "friendlyName": "Read Settings",
               "description": "Can view settings",
               "canHaveCount": false,
-              "moduleId": null
+              "moduleVersionId": null
             },
             "count": 0,
             "roleId": "9f1faab3-eae9-466e-a193-96b274746d7f"
@@ -140,7 +140,7 @@
               "friendlyName": "Root Access",
               "description": "Full access to all systems and resources",
               "canHaveCount": false,
-              "moduleId": null
+              "moduleVersionId": null
             },
             "count": 0,
             "roleId": "3db8f3d6-4511-4570-8b73-9515e6a47285"

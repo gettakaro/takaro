@@ -1,7 +1,16 @@
 import { TakaroEmitter } from '../TakaroEmitter.js';
 import { IGamePlayer, IPosition } from '@takaro/modules';
 import { TakaroDTO } from '@takaro/util';
-import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsISO8601,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CommandOutput extends TakaroDTO<CommandOutput> {
@@ -72,6 +81,69 @@ export class BanDTO extends TakaroDTO<BanDTO> {
   expiresAt: string | null;
 }
 
+export class MapInfoDTO extends TakaroDTO<MapInfoDTO> {
+  @IsBoolean()
+  enabled: boolean;
+  @IsNumber()
+  mapBlockSize: number;
+  @IsNumber()
+  maxZoom: number;
+  @IsNumber()
+  mapSizeX: number;
+  @IsNumber()
+  mapSizeY: number;
+  @IsNumber()
+  mapSizeZ: number;
+}
+
+export enum EntityType {
+  HOSTILE = 'hostile',
+  FRIENDLY = 'friendly',
+  NEUTRAL = 'neutral',
+}
+
+export class IEntityDTO extends TakaroDTO<IEntityDTO> {
+  @IsString()
+  code: string;
+  @IsString()
+  name: string;
+  @IsString()
+  @IsOptional()
+  description: string;
+  @IsEnum(Object.values(EntityType))
+  @IsOptional()
+  type: EntityType;
+  @IsObject()
+  @IsOptional()
+  metadata?: Record<string, unknown>;
+}
+
+export class ILocationDTO extends TakaroDTO<ILocationDTO> {
+  @ValidateNested()
+  @Type(() => IPosition)
+  position: IPosition;
+  @IsNumber()
+  @IsOptional()
+  radius?: number; // For circular areas, radius in game units
+  @IsNumber()
+  @IsOptional()
+  sizeX?: number; // For rectangular areas, X dimension
+  @IsNumber()
+  @IsOptional()
+  sizeY?: number; // For rectangular areas, Y dimension
+  @IsNumber()
+  @IsOptional()
+  sizeZ?: number; // For rectangular areas, Z dimension (height)
+  @IsString()
+  name: string;
+  @IsString()
+  @IsOptional()
+  code?: string;
+  @IsObject()
+  @IsOptional()
+  metadata?: Record<string, unknown>;
+}
+
 export interface IGameServer {
   connectionInfo: unknown;
   getEventEmitter(): TakaroEmitter;
@@ -81,12 +153,15 @@ export interface IGameServer {
   getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null>;
   getPlayerInventory(player: IPlayerReferenceDTO): Promise<IItemDTO[]>;
 
-  giveItem(player: IPlayerReferenceDTO, item: string, amount: number, quality?: number): Promise<void>;
+  giveItem(player: IPlayerReferenceDTO, item: string, amount: number, quality?: string): Promise<void>;
   listItems(): Promise<IItemDTO[]>;
+
+  listEntities(): Promise<IEntityDTO[]>;
+  listLocations(): Promise<ILocationDTO[]>;
 
   executeConsoleCommand(rawCommand: string): Promise<CommandOutput>;
   sendMessage(message: string, opts: IMessageOptsDTO): Promise<void>;
-  teleportPlayer(player: IPlayerReferenceDTO, x: number, y: number, z: number): Promise<void>;
+  teleportPlayer(player: IPlayerReferenceDTO, x: number, y: number, z: number, dimension?: string): Promise<void>;
 
   /**
    * Try and connect to the gameserver
@@ -100,4 +175,35 @@ export interface IGameServer {
   unbanPlayer(player: IPlayerReferenceDTO): Promise<void>;
   listBans(): Promise<BanDTO[]>;
   shutdown(): Promise<void>;
+
+  getMapInfo(): Promise<MapInfoDTO>;
+  // Returns a base64 encoded image of the map tile
+  getMapTile(x: number, y: number, z: number): Promise<string>;
 }
+
+// All actions that can be sent to the gameserver
+// So the IGameServer interface, but with some internal types omitted
+export type GameServerActions = keyof Omit<IGameServer, 'getEventEmitter' | 'connectionInfo'>;
+// Also create a runtime array with all the actions
+// This is used for class-validator
+export const GAME_SERVER_ACTIONS: GameServerActions[] = [
+  'getPlayer',
+  'getPlayers',
+  'getPlayerLocation',
+  'getPlayerInventory',
+  'giveItem',
+  'listItems',
+  'listEntities',
+  'listLocations',
+  'executeConsoleCommand',
+  'sendMessage',
+  'teleportPlayer',
+  'testReachability',
+  'kickPlayer',
+  'banPlayer',
+  'unbanPlayer',
+  'listBans',
+  'shutdown',
+  'getMapInfo',
+  'getMapTile',
+];

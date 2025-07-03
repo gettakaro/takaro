@@ -1,21 +1,24 @@
 import { queryOptions } from '@tanstack/react-query';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import { ActivityInputDTO, EventsCountInputDTO, StatsOutputDTO } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
 import { queryParamsToArray } from './util';
 
 type StatsOutput = { values: Array<[number, number]> };
 
-export const statsKeys = {
+const statsKeys = {
+  all: ['stats'] as const,
   ping: (playerId: string, gameServerId: string, startDate?: string, endDate?: string) =>
-    ['ping', playerId, gameServerId, startDate, endDate] as const,
-  currency: (playerId: string, gameServerId: string, startDate?: string, endDate?: string) =>
-    ['currency', playerId, gameServerId, startDate, endDate] as const,
+    [...statsKeys.all, 'ping', playerId, gameServerId, startDate, endDate] as const,
+  currency: (gameServerId: string, playerId?: string, startDate?: string, endDate?: string) =>
+    [...statsKeys.all, 'currency', playerId, gameServerId, startDate, endDate] as const,
   latency: (gameServerId: string, startDate?: string, endDate?: string) =>
-    ['latency', gameServerId, startDate, endDate] as const,
+    [...statsKeys.all, 'latency', gameServerId, startDate, endDate] as const,
   playersOnline: (gameServerId?: string, startDate?: string, endDate?: string) =>
-    ['players-online', gameServerId, startDate, endDate] as const,
-  activity: (gameServerId?: string) => ['activity', gameServerId] as const,
+    [...statsKeys.all, 'players-online', gameServerId, startDate, endDate] as const,
+  activity: (gameServerId?: string) => [...statsKeys.all, 'activity', gameServerId] as const,
+  countries: (gameServerIds: string[]) => [...statsKeys.all, 'countries', ...gameServerIds] as const,
+  countriesGlobal: () => [...statsKeys.all, 'countries', 'global'] as const,
 };
 
 export const PingStatsQueryOptions = (playerId: string, gameServerId: string, startDate?: string, endDate?: string) => {
@@ -27,13 +30,13 @@ export const PingStatsQueryOptions = (playerId: string, gameServerId: string, st
 };
 
 export const CurrencyStatsQueryOptions = (
-  playerId: string,
   gameServerId: string,
+  playerId?: string,
   startDate?: string,
   endDate?: string,
 ) => {
   return queryOptions<StatsOutputDTO, AxiosError<StatsOutputDTO>, StatsOutput>({
-    queryKey: statsKeys.currency(playerId, gameServerId, startDate, endDate),
+    queryKey: statsKeys.currency(gameServerId, playerId, startDate, endDate),
     queryFn: async () =>
       (await getApiClient().stats.statsControllerGetCurrencyStats(gameServerId, playerId, startDate, endDate)).data
         .data,
@@ -89,5 +92,14 @@ export const ActivityStatsQueryOptions = (options: ActivityInputDTO) => {
           options.endDate,
         )
       ).data.data,
+  });
+};
+
+type CountryValue = { country: string; playerCount: string };
+export const CountriesStatsQueryOptions = ({ gameServerIds = [] }: { gameServerIds?: string[] }) => {
+  return queryOptions<CountryValue[], AxiosError<CountryValue[]>, CountryValue[]>({
+    queryKey: [statsKeys.countries(gameServerIds)],
+    queryFn: async () =>
+      (await getApiClient().stats.statsControllerGetCountryStats(gameServerIds)).data.data.values as CountryValue[],
   });
 };

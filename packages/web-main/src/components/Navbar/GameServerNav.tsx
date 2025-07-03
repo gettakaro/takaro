@@ -1,5 +1,6 @@
 import { FC, useMemo } from 'react';
-import { NavbarLink, renderLink } from '.';
+import { NavbarLink } from '.';
+import { renderLink } from './renderLink';
 import { GlobalGameServerSelect } from './GlobalGameServerSelect';
 import { Button, Skeleton } from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
@@ -11,7 +12,7 @@ import {
   AiOutlinePlus as AddServerIcon,
   AiOutlineShopping as ShopIcon,
 } from 'react-icons/ai';
-import { gameServersQueryOptions } from 'queries/gameserver';
+import { gameServersQueryOptions } from '../../queries/gameserver';
 import { Nav, NoServersCallToAction } from './style';
 import { useQuery } from '@tanstack/react-query';
 
@@ -75,10 +76,10 @@ export const GameServerNav: FC = () => {
 
   return (
     <Nav data-testid="server-nav">
-      {gameServerId && gameServerId !== '' && gameservers && gameservers.length > 0 ? (
+      {gameServerId && gameServerId !== '' && gameservers && gameservers.data.length > 0 ? (
         <>
           <h3>Game Server</h3>
-          {gameservers.length > 1 && <GlobalGameServerSelect currentSelectedGameServerId={gameServerId} />}
+          {gameservers.data.length > 1 && <GlobalGameServerSelect currentSelectedGameServerId={gameServerId} />}
           {gameServerLinks.map((link) => renderLink(link))}
         </>
       ) : (
@@ -90,12 +91,9 @@ export const GameServerNav: FC = () => {
             animate={{ opacity: 1, y: 0 }}
           >
             <p>Step into the world of Takaro by adding your first server!</p>
-            <Button
-              icon={<AddServerIcon />}
-              fullWidth
-              onClick={() => navigate({ to: '/gameservers/create' })}
-              text="Add a server"
-            />
+            <Button icon={<AddServerIcon />} fullWidth onClick={() => navigate({ to: '/gameservers/create' })}>
+              Add a server
+            </Button>
           </NoServersCallToAction>
         </>
       )}

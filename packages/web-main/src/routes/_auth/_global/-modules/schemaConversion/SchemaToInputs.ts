@@ -75,11 +75,19 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
           }
           break;
 
-        case 'string':
+        case 'object':
           if (property['x-component'] === InputType.item) {
             input.type = InputType.item;
             input.multiple = false;
-          } else if (property['x-component'] === InputType.country) {
+          } else if (input['$schema'] === 'http://json-schema.org/draft-07/schema#') {
+            break;
+          } else {
+            throw new Error('Unsupported object type');
+          }
+          break;
+
+        case 'string':
+          if (property['x-component'] === InputType.country) {
             input.type = InputType.country;
             input.multiple = false;
           } else if (property.enum) {
@@ -128,7 +136,7 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
       inputs.push(input as AnyInput);
     } catch {
       errors.push({
-        message: `Error processing config field: '${name}'. Please try to recreate the field using the config details.`,
+        message: `Error processing config field: '${name}'`,
         detail: 'The following config field could not be processed.',
         data: property as object,
       });

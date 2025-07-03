@@ -1,4 +1,4 @@
-FROM node:20.17.0-bullseye
+FROM node:22.13.1-bullseye
 
 ENV NODE_ENV=development
 
@@ -10,8 +10,6 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 
 COPY nodemon.json ./
-COPY jest.config.js ./
-COPY .mocharc.js ./
 
 COPY packages/ ./packages
 COPY scripts ./scripts
@@ -31,5 +29,6 @@ ENV TAKARO_VERSION=${TAKARO_VERSION}
 ENV TAKARO_COMMIT=${TAKARO_COMMIT}
 ENV TAKARO_BUILD_DATE=${TAKARO_BUILD_DATE}
 ENV TAKARO_FULL_VERSION=${TAKARO_VERSION}-${TAKARO_COMMIT}-${TAKARO_BUILD_DATE}
+ENV VITE_TAKARO_VERSION=${TAKARO_FULL_VERSION}
 
 CMD ["npm", "run", "start:dev"]

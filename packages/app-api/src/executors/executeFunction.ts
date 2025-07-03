@@ -88,6 +88,15 @@ export async function executeFunction(
   data: IHookJobData | ICommandJobData | ICronJobData,
   domainId: string,
 ) {
+  log.debug('executeFunction: Starting function execution', {
+    functionId,
+    domainId,
+    isCommand: isCommandData(data),
+    isHook: isHookData(data),
+    isCron: isCronData(data),
+    itemId: data.itemId,
+  });
+
   const rateLimiter = await getRateLimiter(domainId);
   const token = await getJobToken(domainId);
   const redisClient = await Redis.getClient('worker:command-lock');
@@ -238,7 +247,10 @@ export async function executeFunction(
   }
 
   try {
+    log.debug('executeFunction: Checking rate limiter');
     await rateLimiter.consume(domainId, 1);
+    log.debug('executeFunction: Rate limiter check passed, executing function');
+
     let result: IFunctionResult;
     data.url = config.get('takaro.url');
     switch (config.get('functions.executionMode')) {
@@ -252,6 +264,16 @@ export async function executeFunction(
         throw new errors.ConfigError(`Invalid execution mode: ${config.get('functions.executionMode')}`);
     }
 
+    log.debug('executeFunction: Function execution completed', {
+      success: result.success,
+      logsCount: result.logs?.length || 0,
+    });
+
+    // if result.success is not defined, assume failure
+    if (result.success === undefined) {
+      result.success = false;
+    }
+
     if (!result.logs) result.logs = [];
     const cleanLogs = result.logs.map((rawLog) => {
       let cleanMsg = rawLog.msg;
@@ -260,12 +282,12 @@ export async function executeFunction(
         cleanMsg = JSON.stringify(cleanMsg);
       }
 
-      if (cleanMsg.length > 1000) {
-        cleanMsg = cleanMsg.substring(0, 1000) + '...';
+      if (cleanMsg === undefined) {
+        cleanMsg = 'undefined';
       }
 
-      if (!cleanMsg.length) {
-        cleanMsg = 'Empty log';
+      if (cleanMsg.length > 1000) {
+        cleanMsg = cleanMsg.substring(0, 1000) + '...';
       }
 
       return new TakaroEventFunctionLog({ ...rawLog, msg: cleanMsg });
@@ -321,10 +343,15 @@ export async function executeFunction(
       }
     }
 
+    log.debug('executeFunction: Creating event for execution result');
     await eventService.create(new EventCreateDTO({ ...eventData, meta }));
+    log.debug('executeFunction: Event created successfully');
   } catch (err: any) {
     if (err instanceof RateLimiterRes) {
-      log.warn('Function execution rate limited');
+      log.warn('Function execution rate limited', {
+        msBeforeNext: err.msBeforeNext,
+        remainingPoints: err.remainingPoints,
+      });
       meta.result = new TakaroEventFunctionResult({
         success: false,
         reason: 'rate limited',

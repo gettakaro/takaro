@@ -77,29 +77,9 @@ export const FileTabs: FC<FileTabsProps> = ({ closableTabs, dirtyFiles, setDirty
   const setActiveFile = useModuleBuilderContext((s) => s.setActiveFile);
   const visibleFiles = useModuleBuilderContext((s) => s.visibleFiles);
 
-  // TODO: furhter implement tab moving, but with the current implementation of sandpack, it does not really support it.
   const moveTab = (_filePath: string, _atIndex: number) => {
-    /*
-    const { tab, index } = findTab(filePath);
-    sandpack.setVisibleFiles(
-      update(sandpack.visibleFiles, {
-        $splice: [
-          [index, 1],
-          [atIndex, 0, tab],
-        ],
-      })
-    );
-    */
+    /* TODO */
   };
-
-  /*
-  const _findTab = (filePath: string) => {
-    const tab = sandpack.visibleFiles.filter((c) => `${c}` === filePath)[0];
-    return {
-      tab,
-      index: sandpack.visibleFiles.indexOf(tab),
-    };
-  };*/
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -311,13 +291,9 @@ const Tab: FC<TabProps> = ({
               Are you sure you want to continue without saving?
             </p>
             <ButtonContainer>
-              <Button
-                type="button"
-                color="error"
-                fullWidth
-                text="Discard changes"
-                onClick={() => handleDiscardAndClose(filePath)}
-              />
+              <Button type="button" color="error" fullWidth onClick={() => handleDiscardAndClose(filePath)}>
+                Discard changes
+              </Button>
             </ButtonContainer>
           </Dialog.Body>
         </Dialog.Content>

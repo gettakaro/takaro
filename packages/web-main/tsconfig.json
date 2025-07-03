@@ -3,18 +3,14 @@
   "compilerOptions": {
     "baseUrl": "src",
     "composite": true,
-    "moduleResolution": "node",
     "noImplicitAny": false,
     "jsx": "react-jsx",
-    "paths": {
-      "test-utils": [
-        "./test-utils.tsx" // <-- based on baseUrl
-      ]
-    }
+    "noEmit": true,
   },
   "include": [
-    "src/**/*",
-    "src/**/*.json"
+    "src/**/*.json",
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ],
   "references": [
     {

@@ -1,9 +1,24 @@
 import { FC } from 'react';
 import { GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
-import { Alert, Chip, ToggleButtonGroup, styled, useLocalStorage } from '@takaro/lib-components';
-import { AiOutlineTable as TableViewIcon, AiOutlineUnorderedList as ListViewIcon } from 'react-icons/ai';
+import { Alert, Button, Chip, Dropdown, styled, useLocalStorage } from '@takaro/lib-components';
+import {
+  AiOutlineMenu as MenuIcon,
+  AiOutlinePlus as CreateNewShopListingIcon,
+  AiOutlineSplitCells as ImportShopListingFromGameServerIcon,
+  AiOutlineUpload as ImportShopListingsFromFileIcon,
+  AiOutlineDownload as ExportShopListingsToFileIcon,
+  AiOutlineCheck as CheckMarkIcon,
+  AiOutlineBook as DocumentationIcon,
+} from 'react-icons/ai';
 import { ShopTableView } from './ShopTableView';
 import { ShopCardView } from './ShopCardView';
+import { DropdownMenu } from '@takaro/lib-components/src/components/actions/Dropdown/DropdownMenu';
+import { useNavigate } from '@tanstack/react-router';
+import { useSnackbar } from 'notistack';
+import { useQuery } from '@tanstack/react-query';
+import { shopListingsQueryOptions } from '../../../../../queries/shopListing';
+import { TableListToggleButton, ViewType } from '../../../../../components/TableListToggleButton';
+import { PermissionsGuard } from '../../../../../components/PermissionsGuard';
 
 const Header = styled.div`
   display: flex;
@@ -22,13 +37,62 @@ export interface ShopViewProps {
   currency?: number;
 }
 
-type ViewType = 'list' | 'table';
-
 export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyName, gameServerType }) => {
-  const { setValue: setView, storedValue: view } = useLocalStorage<ViewType>('shopview', 'list');
+  const navigate = useNavigate({ from: '/gameserver/$gameServerId/shop' });
+  const { enqueueSnackbar } = useSnackbar();
+  const { refetch } = useQuery({
+    ...shopListingsQueryOptions({ filters: { gameServerId: [gameServerId] }, limit: 200 }),
+    enabled: false,
+  });
+  const { setValue: setView, storedValue: view } = useLocalStorage<ViewType>('shop-view-selector', 'list');
 
   // 0 is falsy!
   const hasCurrency = currency !== undefined;
+
+  const onClickCreateNewShopListing = () => {
+    navigate({ to: '/gameserver/$gameServerId/shop/listing/create' });
+  };
+
+  const onClickImportShopListingsFromGameServer = () => {
+    navigate({ to: '/gameserver/$gameServerId/shop/listing/import/gameserver' });
+  };
+
+  const onClickImportShopListingsFromFile = () => {
+    navigate({ to: '/gameserver/$gameServerId/shop/listing/import/file' });
+  };
+  const onClickViewDocumentation = () => {
+    window.open('https://docs.takaro.io/economy', '_blank');
+  };
+
+  const onClickExportShopListingsToFile = async () => {
+    const { data, error } = await refetch();
+
+    if (error) {
+      enqueueSnackbar({ variant: 'default', type: 'error', message: 'Failed to export shop listings!' });
+    }
+
+    if (data) {
+      const blob = new Blob([JSON.stringify(data.data)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      enqueueSnackbar('Export ready for download', {
+        autoHideDuration: 20000, // 20s
+        anchorOrigin: { horizontal: 'right', vertical: 'bottom' },
+        variant: 'drawer',
+        children: (
+          <div>
+            <h4>ShopListings Ready</h4>
+            <p>
+              <CheckMarkIcon />{' '}
+              <a href={url} download={'shoplistings.json'}>
+                {' '}
+                Download now
+              </a>
+            </p>
+          </div>
+        ),
+      });
+    }
+  };
 
   return (
     <>
@@ -45,22 +109,52 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
           {hasCurrency ? (
             <Chip variant="outline" color="primary" label={`${currency} ${currencyName}`} />
           ) : (
-            <Alert showIcon={false} variant="error" text={<p>You are not linked to this gameserver.</p>} />
+            <Alert variant="error" text={<p>You are not linked to this game server.</p>} />
           )}
         </Header>
-        <ToggleButtonGroup
-          onChange={(val) => setView(val as ViewType)}
-          exclusive={true}
-          orientation="horizontal"
-          defaultValue={view}
-        >
-          <ToggleButtonGroup.Button value="list" tooltip="List view">
-            <ListViewIcon size={20} />
-          </ToggleButtonGroup.Button>
-          <ToggleButtonGroup.Button value="table" tooltip="Table view">
-            <TableViewIcon size={20} />
-          </ToggleButtonGroup.Button>
-        </ToggleButtonGroup>
+
+        <PermissionsGuard requiredPermissions={['MANAGE_SHOP_LISTINGS']}>
+          <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row', gap: '10px' }}>
+            <Dropdown>
+              <Dropdown.Trigger asChild>
+                <Button icon={<MenuIcon />}>Shop actions</Button>
+              </Dropdown.Trigger>
+              <Dropdown.Menu>
+                <DropdownMenu.Group divider>
+                  <DropdownMenu.Item
+                    icon={<CreateNewShopListingIcon />}
+                    label="New shop listing"
+                    onClick={onClickCreateNewShopListing}
+                  />
+
+                  <DropdownMenu.Item
+                    icon={<ExportShopListingsToFileIcon />}
+                    label="Export listings to file"
+                    onClick={onClickExportShopListingsToFile}
+                  />
+                  <DropdownMenu.Item
+                    icon={<DocumentationIcon />}
+                    label="View Economy Documentation"
+                    onClick={onClickViewDocumentation}
+                  />
+                </DropdownMenu.Group>
+                <DropdownMenu.Group label="Import methods" divider>
+                  <DropdownMenu.Item
+                    icon={<ImportShopListingFromGameServerIcon />}
+                    label="Import listings from game server"
+                    onClick={onClickImportShopListingsFromGameServer}
+                  />
+                  <DropdownMenu.Item
+                    icon={<ImportShopListingsFromFileIcon />}
+                    label="Import listings from file"
+                    onClick={onClickImportShopListingsFromFile}
+                  />
+                </DropdownMenu.Group>
+              </Dropdown.Menu>
+            </Dropdown>
+            <TableListToggleButton value={view} onChange={setView} />
+          </div>
+        </PermissionsGuard>
       </div>
 
       {view === 'table' && (

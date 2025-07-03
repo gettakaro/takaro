@@ -5,12 +5,13 @@
       "id": "2600aac2-d5b8-455d-bf6a-12a242f5ee0a",
       "createdAt": "2023-12-24T15:22:57.034Z",
       "updatedAt": "2023-12-24T15:22:57.034Z",
-      "name": "Test gameserver",
+      "deletedAt": null,
+      "name": "62bb9d8d-88b6-4daa-af97-1c9ebec00d7f",
       "enabled": true,
       "connectionInfo": {
         "host": "http://takaro:3002"
       },
-      "type": "MOCK",
+      "type": "GENERIC",
       "reachable": true
     }
   },
@@ -20,7 +21,9 @@
     "snapshot": true,
     "name": "Get by ID",
     "filteredFields": [
-      "connectionInfo"
+      "connectionInfo",
+      "identityToken",
+      "name"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

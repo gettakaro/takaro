@@ -35,11 +35,11 @@
                     "createdAt": "2023-12-08T13:02:04.025Z",
                     "updatedAt": "2023-12-08T13:02:04.025Z",
                     "id": "816593ad-054c-4e80-8d98-56ed91d06ca7",
-                    "moduleId": null,
                     "permission": "READ_USERS",
                     "description": "Can view user details",
                     "friendlyName": "Read Users",
-                    "canHaveCount": false
+                    "canHaveCount": false,
+                    "moduleVersionId": null
                   }
                 }
               ]
@@ -48,7 +48,8 @@
             "userId": "c98d6166-d168-4f1d-97a8-38cf7f13f94a"
           }
         ],
-        "email": "nopermissions@example.com"
+        "email": "nopermissions@example.com",
+        "isDashboardUser": false
       },
       {
         "createdAt": "2024-06-21T19:09:23.782Z",
@@ -85,11 +86,11 @@
                     "createdAt": "2023-12-08T13:02:04.025Z",
                     "updatedAt": "2023-12-08T13:02:04.025Z",
                     "id": "21229133-4828-4866-8dc5-8f5a9e2eac6c",
-                    "moduleId": null,
                     "permission": "ROOT",
                     "description": "Full access to all systems and resources",
                     "friendlyName": "Root Access",
-                    "canHaveCount": false
+                    "canHaveCount": false,
+                    "moduleVersionId": null
                   }
                 }
               ]
@@ -114,11 +115,11 @@
                     "createdAt": "2023-12-08T13:02:04.025Z",
                     "updatedAt": "2023-12-08T13:02:04.025Z",
                     "id": "816593ad-054c-4e80-8d98-56ed91d06ca7",
-                    "moduleId": null,
                     "permission": "READ_USERS",
                     "description": "Can view user details",
                     "friendlyName": "Read Users",
-                    "canHaveCount": false
+                    "canHaveCount": false,
+                    "moduleVersionId": null
                   }
                 }
               ]
@@ -127,7 +128,8 @@
             "userId": "3a42017c-a994-4273-aef9-90d553d4430b"
           }
         ],
-        "email": "root@green-times-fly.com"
+        "email": "root@green-times-fly.com",
+        "isDashboardUser": false
       }
     ]
   },

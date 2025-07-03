@@ -1,5 +1,11 @@
-import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
-import { hasNextPage, mutationWrapper, queryParamsToArray } from './util';
+import {
+  infiniteQueryOptions,
+  keepPreviousData,
+  queryOptions,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
+import { getNextPage, mutationWrapper, queryParamsToArray } from './util';
 import {
   APIOutput,
   ShopOrderCreateDTO,
@@ -9,7 +15,7 @@ import {
   ShopOrderUpdateDTOStatusEnum,
 } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import { pogKeys } from './pog';
 import { useSnackbar } from 'notistack';
 import { userKeys } from './user';
@@ -34,9 +40,11 @@ export const shopOrdersQueryOptions = (queryParams: ShopOrderSearchInputDTO) =>
 export const shopOrderInfiniteQueryOptions = (queryParams: ShopOrderSearchInputDTO = {}) => {
   return infiniteQueryOptions<ShopOrderOutputArrayDTOAPI, AxiosError<ShopOrderOutputArrayDTOAPI>>({
     queryKey: [...shopOrderKeys.list(), 'infinite', ...queryParamsToArray(queryParams)],
-    queryFn: async () => (await getApiClient().shopOrder.shopOrderControllerSearch(queryParams)).data,
+    queryFn: async ({ pageParam }) =>
+      (await getApiClient().shopOrder.shopOrderControllerSearch({ ...queryParams, page: pageParam as number })).data,
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
+    getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
+    placeholderData: keepPreviousData,
   });
 };
 

@@ -1,16 +1,49 @@
-import { SelectFieldProps, SelectQueryFieldProps } from '@takaro/lib-components';
+import { SelectFieldProps, SelectQueryFieldProps, UnControlledSelectQueryFieldProps } from '@takaro/lib-components';
 
-// TODO: implement multiSelect
 export type CustomSelectProps = Omit<SelectFieldProps, 'render' | 'children' | 'enableFilter'>;
-export type CustomQuerySelectProps = Omit<
+export type CustomSelectQueryProps = Omit<
   SelectQueryFieldProps,
-  'children' | 'handleInputValueChange' | 'isLoadingData' | 'debounce'
+  | 'children'
+  | 'handleInputValueChange'
+  | 'isLoadingData'
+  | 'debounce'
+  | 'isFetchingNextPage'
+  | 'isFetching'
+  | 'fetchNextPage'
+  | 'hasNextPage'
+  | 'optionCount'
+  | 'render'
 >;
 
-export { GameServerSelect } from './GameServerSelect';
-export { RoleSelect } from './RoleSelect';
-export { PlayerSelect } from './PlayerSelect';
-export { PlayerSelectQuery } from './PlayerSelectQuery';
-export { ModuleSelect } from './ModuleSelect';
-export { TimePeriodSelect } from './TimePeriodSelect';
-export { CountrySelect } from './CountrySelect';
+export type CustomUncontrolledSelectQueryFieldProps = Omit<
+  UnControlledSelectQueryFieldProps,
+  | 'hasError'
+  | 'hasDescription'
+  | 'isFetchingNextPage'
+  | 'isFetching'
+  | 'fetchNextPage'
+  | 'hasNextPage'
+  | 'render'
+  | 'isLoadingData'
+  | 'multiple'
+  | 'debounce'
+  | 'optionCount'
+> & {
+  value: string;
+  onChange: (val: string) => void;
+  name: string;
+  readOnly?: boolean;
+};
+
+export { GameServerSelectQueryField } from './GameServerSelectQueryField';
+export { RoleSelectQueryField } from './RoleSelectQueryField';
+export { PlayerSelectQueryField } from './PlayerSelectQueryField';
+export { ModuleSelectQueryField } from './ModuleSelectQueryField';
+export {
+  ModuleVersionSelectQueryField,
+  UnControlledModuleVersionSelectQueryField as UncontrolledModuleVersionSelectQueryField,
+} from './ModuleVersionSelectQueryField';
+
+export { TimePeriodSelectField } from './TimePeriodSelectField';
+export { CountrySelectField } from './CountrySelectField';
+export { EventNameSelectField } from './EventNameSelectField';

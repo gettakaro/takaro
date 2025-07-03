@@ -9,10 +9,16 @@ import {
   PermissionOutputDTO,
   APIOutput,
 } from '@takaro/apiclient';
-import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  infiniteQueryOptions,
+  keepPreviousData,
+  queryOptions,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { getApiClient } from 'util/getApiClient';
-import { hasNextPage, mutationWrapper, queryParamsToArray } from 'queries/util';
+import { getApiClient } from '../util/getApiClient';
+import { getNextPage, mutationWrapper, queryParamsToArray } from '../queries/util';
 import { userKeys } from './user';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 import { useSnackbar } from 'notistack';
@@ -44,9 +50,11 @@ export const rolesQueryOptions = (opts: RoleSearchInputDTO = {}) => {
 export const rolesInfiniteQueryOptions = (opts: RoleSearchInputDTO = {}) => {
   return infiniteQueryOptions<RoleOutputArrayDTOAPI, AxiosError<RoleOutputArrayDTOAPI>>({
     queryKey: [...roleKeys.list(), 'infinite', ...queryParamsToArray(opts)],
-    queryFn: async () => (await getApiClient().role.roleControllerSearch(opts)).data,
+    queryFn: async ({ pageParam }) =>
+      (await getApiClient().role.roleControllerSearch({ ...opts, page: pageParam as number })).data,
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
+    getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
+    placeholderData: keepPreviousData,
   });
 };
 
@@ -64,9 +72,9 @@ export const useRoleCreate = () => {
   return mutationWrapper<RoleOutputDTO, RoleCreateInputDTO>(
     useMutation<RoleOutputDTO, AxiosError<RoleOutputArrayDTOAPI>, RoleCreateInputDTO>({
       mutationFn: async (role) => (await apiClient.role.roleControllerCreate(role)).data.data,
-      onSuccess: async (newRole) => {
+      onSuccess: (newRole) => {
         enqueueSnackbar('Role created!', { variant: 'default', type: 'success' });
-        await queryClient.invalidateQueries({ queryKey: roleKeys.list() });
+        queryClient.invalidateQueries({ queryKey: roleKeys.list() });
         queryClient.setQueryData(roleKeys.detail(newRole.id), newRole);
       },
     }),
@@ -143,7 +151,7 @@ export const useUserRoleAssign = ({ userId }: { userId: string }) => {
   );
 };
 
-export const useUserRoleUnassign = () => {
+export const useUserRoleRemove = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
   return mutationWrapper<APIOutput, IUserRoleAssign>(

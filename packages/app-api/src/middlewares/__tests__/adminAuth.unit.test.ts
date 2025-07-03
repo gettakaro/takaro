@@ -4,6 +4,7 @@ import { expect } from '@takaro/test';
 import { adminAuthMiddleware } from '../adminAuth.js';
 import { Request, Response } from 'express';
 import { config } from '../../config.js';
+import { describe, before, after, it } from 'node:test';
 
 describe('adminAuth', () => {
   let http: HTTP;
@@ -25,16 +26,13 @@ describe('adminAuth', () => {
   });
 
   it('Rejects requests with no credentials', async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const response = await supertest(http.expressInstance).get('/test');
-    expect(response.status).to.be.equal(401);
+    await supertest(http.expressInstance).get('/test').expect(401);
   });
 
   it('Accepts requests with valid credentials', async () => {
     const response = await supertest(http.expressInstance)
-      // @ts-expect-error Supertest typings are wrong
       .get('/test')
+      // @ts-expect-error Supertest typings are wrong
       .set('X-Takaro-Admin-Token', config.get('adminClientSecret'));
 
     expect(response.status).to.be.equal(200);
@@ -42,8 +40,8 @@ describe('adminAuth', () => {
 
   it('Rejects requests with invalid credentials', async () => {
     const response = await supertest(http.expressInstance)
-      // @ts-expect-error Supertest typings are wrong
       .get('/test')
+      // @ts-expect-error Supertest typings are wrong
       .set('X-Takaro-Admin-Token', 'foobar');
     expect(response.status).to.be.equal(403);
   });

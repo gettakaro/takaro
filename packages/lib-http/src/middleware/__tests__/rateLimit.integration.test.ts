@@ -1,11 +1,11 @@
 import { Response, NextFunction, Request } from 'express';
 import { Redis } from '@takaro/db';
-import { expect } from '@takaro/test';
 import { Controller, UseBefore, Get } from 'routing-controllers';
 import { HTTP } from '../../main.js';
 import { createRateLimitMiddleware } from '../rateLimit.js';
 import { ctx } from '@takaro/util';
 import supertest from 'supertest';
+import { describe, beforeEach, afterEach, after, it } from 'node:test';
 
 describe('rateLimit middleware', () => {
   let http: HTTP;
@@ -112,17 +112,19 @@ describe('rateLimit middleware', () => {
     const agent = supertest(http.expressInstance);
 
     for (let i = 1; i < 5; i++) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const res = await agent.get('/low-limit').expect(200);
-      expect(res.header['x-ratelimit-remaining']).to.equal((5 - i).toString());
-      expect(res.header['x-ratelimit-limit']).to.equal('5');
-      expect(res.header['x-ratelimit-reset']).to.be.a('string');
+      await agent
+        .get('/low-limit')
+        .expect(200)
+        .expect('x-ratelimit-remaining', (5 - i).toString())
+        .expect('x-ratelimit-limit', '5')
+        .expect('x-ratelimit-reset', /\d+/);
     }
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const res = await agent.get('/low-limit').expect(429);
-    expect(res.header['x-ratelimit-remaining']).to.equal('0');
-    expect(res.header['x-ratelimit-limit']).to.equal('5');
+
+    agent
+      .get('/low-limit')
+      .expect(429)
+      .expect('x-ratelimit-remaining', '0')
+      .expect('x-ratelimit-limit', '5')
+      .expect('x-ratelimit-reset', /\d+/);
   });
 });

@@ -1,14 +1,22 @@
-import { useMutation, useQueryClient, queryOptions } from '@tanstack/react-query';
-import { getApiClient } from 'util/getApiClient';
+import {
+  useMutation,
+  useQueryClient,
+  queryOptions,
+  infiniteQueryOptions,
+  keepPreviousData,
+} from '@tanstack/react-query';
+import { getApiClient } from '../util/getApiClient';
 import {
   APIOutput,
   LinkPlayerUnauthedInputDTO,
   MeOutputDTO,
   UserOutputArrayDTOAPI,
+  UserOutputDTO,
   UserOutputWithRolesDTO,
   UserSearchInputDTO,
+  UserUpdateDTO,
 } from '@takaro/apiclient';
-import { queryParamsToArray, mutationWrapper } from './util';
+import { queryParamsToArray, mutationWrapper, getNextPage } from './util';
 import { AxiosError } from 'axios';
 import { useSnackbar } from 'notistack';
 
@@ -17,6 +25,7 @@ export const userKeys = {
   list: () => [...userKeys.all, 'list'] as const,
   detail: (id: string) => [...userKeys.all, 'detail', id] as const,
   me: () => [...userKeys.all, 'me'] as const,
+  count: () => [...userKeys.all, 'count'] as const,
 };
 
 interface RoleInput {
@@ -30,10 +39,34 @@ export const usersQueryOptions = (queryParams: UserSearchInputDTO) =>
     queryFn: async () => (await getApiClient().user.userControllerSearch(queryParams)).data,
   });
 
+export const usersInfiniteQueryOptions = (queryParams: UserSearchInputDTO) =>
+  infiniteQueryOptions<UserOutputArrayDTOAPI, AxiosError<UserOutputArrayDTOAPI>>({
+    queryKey: [...userKeys.list(), 'infinite', ...queryParamsToArray(queryParams)],
+    queryFn: async ({ pageParam }) =>
+      (await getApiClient().user.userControllerSearch({ ...queryParams, page: pageParam as number })).data,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
+    placeholderData: keepPreviousData,
+  });
+
 export const userQueryOptions = (userId: string) =>
   queryOptions<UserOutputWithRolesDTO, AxiosError<UserOutputWithRolesDTO>>({
     queryKey: userKeys.detail(userId),
     queryFn: async () => (await getApiClient().user.userControllerGetOne(userId)).data.data,
+  });
+
+export const userCountQueryOptions = () =>
+  queryOptions<number, AxiosError<number>>({
+    queryKey: userKeys.count(),
+    queryFn: async () =>
+      (
+        await getApiClient().user.userControllerSearch({
+          limit: 1,
+          filters: {
+            isDashboardUser: [true],
+          },
+        })
+      ).data.meta.total!,
   });
 
 export const userMeQueryOptions = () =>
@@ -51,6 +84,7 @@ interface IUserRoleAssign {
 export const useUserAssignRole = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<APIOutput, IUserRoleAssign>(
     useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
@@ -59,6 +93,7 @@ export const useUserAssignRole = () => {
       onSuccess: async (_, { userId }) => {
         // invalidate user because new role assignment
         queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
+        enqueueSnackbar('Role successfully assigned!', { variant: 'default', type: 'success' });
       },
     }),
     {},
@@ -107,6 +142,30 @@ export const useUserRemoveRole = ({ userId }: { userId: string }) => {
   );
 };
 
+interface UserUpdateInput extends UserUpdateDTO {
+  userId: string;
+}
+
+export const useUserUpdate = () => {
+  const queryClient = useQueryClient();
+  return mutationWrapper<UserOutputDTO, UserUpdateInput>(
+    useMutation<UserOutputDTO, AxiosError<APIOutput>, UserUpdateInput>({
+      mutationFn: async (user) =>
+        (
+          await getApiClient().user.userControllerUpdate(user.userId, {
+            name: user.name,
+            isDashboardUser: user.isDashboardUser,
+          })
+        ).data.data,
+      onSuccess: async (_, { userId }) => {
+        await queryClient.invalidateQueries({ queryKey: userKeys.list() });
+        await queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
+      },
+    }),
+    {},
+  );
+};
+
 interface InviteUserInput {
   email: string;
 }
@@ -119,6 +178,11 @@ export const useInviteUser = () => {
       mutationFn: async ({ email }) => (await apiClient.user.userControllerInvite({ email })).data,
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: userKeys.list() });
+
+        const currentUserCount = queryClient.getQueryData<number>(userKeys.count());
+        if (currentUserCount) {
+          queryClient.setQueryData<number>(userKeys.count(), currentUserCount + 1);
+        }
       },
     }),
     {},
@@ -139,6 +203,12 @@ export const useUserRemove = () => {
       onSuccess: async (_, { userId }) => {
         await queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
         await queryClient.invalidateQueries({ queryKey: userKeys.list() });
+
+        const currentUserCount = queryClient.getQueryData<number>(userKeys.count());
+        if (currentUserCount) {
+          queryClient.setQueryData<number>(userKeys.count(), currentUserCount - 1);
+        }
+
         enqueueSnackbar('User successfully deleted!', { variant: 'default' });
       },
     }),

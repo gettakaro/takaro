@@ -22,7 +22,9 @@ export async function ErrorHandler(
       // @ts-expect-error Error typing is weird in ts... but we validate during runtime so should be OK
       const validationErrors = originalError['errors'] as ValidationError[];
       parsedError = new errors.ValidationError('Validation error', validationErrors);
-      log.warn('⚠️ Validation errror', { details: validationErrors.map((e) => JSON.stringify(e.target, null, 2)) });
+      log.warn('⚠️ Validation errror', {
+        details: validationErrors.map((e) => JSON.stringify(e.constraints, null, 2)),
+      });
     }
   }
 
@@ -54,6 +56,11 @@ export async function ErrorHandler(
     parsedError = new errors.BadRequestError('Invalid data provided');
   }
 
+  if (originalError.name === 'DataError' && originalError.message.includes('invalid input syntax for type uuid')) {
+    status = 400;
+    parsedError = new errors.BadRequestError('Invalid UUID. Passed a string instead of a UUID');
+  }
+
   if ('constraint' in originalError && originalError['constraint'] === 'currency_positive') {
     status = 400;
     parsedError = new errors.BadRequestError('Not enough currency');
@@ -68,7 +75,8 @@ export async function ErrorHandler(
   if (originalError instanceof SyntaxError) {
     if (
       originalError.message.includes('Unexpected token') ||
-      originalError.message.includes('Unexpected end of JSON input')
+      originalError.message.includes('Unexpected end of JSON input') ||
+      originalError.message.includes('Expected property name or')
     ) {
       status = 400;
       parsedError = new errors.BadRequestError('Invalid JSON');
@@ -83,5 +91,5 @@ export async function ErrorHandler(
   }
 
   res.status(status).json(apiResponse({}, { error: parsedError, req, res }));
-  return res.end();
+  res.end();
 }

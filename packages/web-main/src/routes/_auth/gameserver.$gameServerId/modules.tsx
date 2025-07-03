@@ -1,13 +1,13 @@
 import { Skeleton, styled, useTheme } from '@takaro/lib-components';
 import { Outlet, redirect, createFileRoute } from '@tanstack/react-router';
 import { useQueries } from '@tanstack/react-query';
-import { ModuleInstallCard, CardList } from 'components/cards';
-import { gameServerModuleInstallationsOptions } from 'queries/gameserver';
-import { modulesQueryOptions } from 'queries/module';
-import { hasPermission } from 'hooks/useHasPermission';
+import { ModuleInstallCard, CardList } from '../../../components/cards';
+import { moduleInstallationsOptions } from '../../../queries/gameserver';
+import { modulesQueryOptions } from '../../../queries/module';
+import { hasPermission } from '../../../hooks/useHasPermission';
 import { PERMISSIONS } from '@takaro/apiclient';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { userMeQueryOptions } from 'queries/user';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { userMeQueryOptions } from '../../../queries/user';
 
 const SubHeader = styled.h2`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};
@@ -24,7 +24,11 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules')(
   loader: async ({ params, context }) => {
     const [modules, moduleInstallations] = await Promise.all([
       context.queryClient.ensureQueryData(modulesQueryOptions()),
-      context.queryClient.ensureQueryData(gameServerModuleInstallationsOptions(params.gameServerId)),
+      context.queryClient.ensureQueryData(
+        moduleInstallationsOptions({
+          filters: { gameserverId: [params.gameServerId] },
+        }),
+      ),
     ]);
 
     return { modules: modules, installations: moduleInstallations };
@@ -51,7 +55,9 @@ export function Component() {
         initialData: loaderData.modules,
       },
       {
-        ...gameServerModuleInstallationsOptions(gameServerId),
+        ...moduleInstallationsOptions({
+          filters: { gameserverId: [gameServerId] },
+        }),
         initialData: loaderData.installations,
       },
     ],
@@ -75,7 +81,7 @@ export function Component() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing[2], overflowY: 'auto' }}>
       {installedModules.length > 0 && (
         <div>
-          <SubHeader>Installed</SubHeader>
+          <SubHeader>Installed Modules</SubHeader>
           <CardList>
             {installedModules.map((mod) => (
               <ModuleInstallCard key={mod.id} mod={mod} installation={mod.installation} gameServerId={gameServerId} />
@@ -84,7 +90,7 @@ export function Component() {
         </div>
       )}
       <div>
-        <SubHeader>Available</SubHeader>
+        <SubHeader>Available Modules</SubHeader>
         <div style={{ overflowY: 'auto', height: '100%' }}>
           <CardList>
             {availableModules.map((mod) => (

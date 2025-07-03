@@ -1,6 +1,7 @@
 import { errors, logger } from '@takaro/util';
-import { createTransport } from 'nodemailer';
+import { createTransport, Transporter } from 'nodemailer';
 import { EMAIL_TEMPLATES } from './templates.js';
+import { PostmarkTransport } from 'nodemailer-postmark-transport';
 
 import { config } from './config.js';
 
@@ -11,7 +12,21 @@ export interface ISendOptions {
 }
 
 const log = logger('email:send');
-export const transporter = createTransport(config.get('mail'));
+
+let transporter: Transporter;
+if (config.get('mail.postmarkApiKey')) {
+  log.info('Using Postmark as mail transport');
+  transporter = createTransport(
+    new PostmarkTransport({
+      auth: {
+        apiKey: config.get('mail.postmarkApiKey'),
+      },
+    }),
+  );
+} else {
+  log.info('Using SMTP as mail transport');
+  transporter = createTransport(config.get('mail'));
+}
 
 export async function send(opts: ISendOptions) {
   const template = EMAIL_TEMPLATES[opts.template];

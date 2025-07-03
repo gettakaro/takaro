@@ -39,6 +39,8 @@ const config: Config = {
     ],
   ],
 
+  scripts: [{ src: 'https://plausible.io/js/script.js', defer: true, 'data-domain': 'takaro.io' }],
+
   themeConfig: {
     colorMode: {
       defaultMode: 'dark',
@@ -54,7 +56,7 @@ const config: Config = {
       },
       items: [
         {
-          href: 'https://github.com/gettakaro/takaro',
+          href: 'https://aka.takaro.io/github',
           label: 'GitHub',
           position: 'right',
         },
@@ -72,11 +74,11 @@ const config: Config = {
             },
             {
               label: 'Github',
-              href: 'https://github.com/gettakaro/takaro',
+              href: 'https://aka.takaro.io/github',
             },
             {
               label: 'Discord',
-              href: 'https://catalysm.net/discord',
+              href: 'https://aka.takaro.io/discord',
             },
           ],
         },
@@ -86,6 +88,21 @@ const config: Config = {
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
+    },
+    algolia: {
+      // The application ID provided by Algolia
+      appId: 'EGKNUF24JA',
+      // Public API key: it is safe to commit it
+      apiKey: 'c346de81a50d15e8653e738f76871c15',
+      indexName: 'takaro',
+      // Optional: see doc section below
+      contextualSearch: true,
+      // Optional: Algolia search parameters
+      searchParameters: {},
+      // Optional: path for search page that enabled by default (`false` to disable it)
+      searchPagePath: 'search',
+      // Optional: whether the insights feature is enabled or not on Docsearch (`false` by default)
+      insights: true,
     },
   } satisfies Preset.ThemeConfig,
 };

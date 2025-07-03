@@ -34,7 +34,7 @@ export const ItemCreateUpdateForm: FC<ItemFormProps> = ({ initialData, onSubmit,
   const navigate = useNavigate();
   const formId = 'item-form';
 
-  const { control, handleSubmit } = useForm<FormInputs>({
+  const { control, handleSubmit, formState } = useForm<FormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(
       z.object({
@@ -63,7 +63,7 @@ export const ItemCreateUpdateForm: FC<ItemFormProps> = ({ initialData, onSubmit,
   }, [open]);
 
   return (
-    <Drawer>
+    <Drawer promptCloseConfirmation={formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>{initialData ? 'Update item' : 'Create item'}</Drawer.Heading>
         <Drawer.Body>
@@ -76,8 +76,12 @@ export const ItemCreateUpdateForm: FC<ItemFormProps> = ({ initialData, onSubmit,
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
-            <Button text="Cancel" onClick={() => setOpen(false)} color="background" type="button" />
-            <Button type="submit" fullWidth text="Save changes" form={formId} isLoading={isLoading} />
+            <Button onClick={() => setOpen(false)} color="background" type="button">
+              Cancel
+            </Button>
+            <Button type="submit" fullWidth form={formId} isLoading={isLoading}>
+              Save changes
+            </Button>
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

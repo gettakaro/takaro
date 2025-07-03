@@ -1,5 +1,7 @@
 import { IntegrationTest, integrationConfig, expect } from '@takaro/test';
 import { DomainOutputDTOStateEnum, Client } from '@takaro/apiclient';
+import { describe } from 'node:test';
+import { randomUUID } from 'crypto';
 
 const group = 'DomainController';
 
@@ -12,7 +14,7 @@ const tests = [
       if (!this.standardDomainId) throw new Error('No domain ID');
       return this.adminClient.domain.domainControllerGetOne(this.standardDomainId);
     },
-    filteredFields: ['name'],
+    filteredFields: ['name', 'serverRegistrationToken'],
   }),
   new IntegrationTest<void>({
     group,
@@ -27,6 +29,7 @@ const tests = [
     group,
     snapshot: true,
     name: 'Update by ID',
+    filteredFields: ['serverRegistrationToken'],
     test: async function () {
       if (!this.standardDomainId) throw new Error('No domain ID');
       return this.adminClient.domain.domainControllerUpdate(this.standardDomainId, {
@@ -94,6 +97,87 @@ const tests = [
     },
     filteredFields: ['name'],
     expectedStatus: 400,
+  }),
+  new IntegrationTest<void>({
+    group,
+    snapshot: true,
+    name: 'Resolve registration token - valid token',
+    test: async function () {
+      if (!this.domainRegistrationToken) throw new Error('No domain registration token');
+      return this.adminClient.domain.domainControllerResolveRegistrationToken({
+        registrationToken: this.domainRegistrationToken,
+      });
+    },
+    filteredFields: ['name', 'serverRegistrationToken', 'externalReference'],
+  }),
+
+  new IntegrationTest<void>({
+    group,
+    snapshot: true,
+    name: 'Resolve registration token - invalid token',
+    test: async function () {
+      return this.adminClient.domain.domainControllerResolveRegistrationToken({
+        registrationToken: 'invalid-token-that-does-not-exist',
+      });
+    },
+    expectedStatus: 404,
+  }),
+
+  new IntegrationTest<void>({
+    group,
+    snapshot: true,
+    name: 'Resolve registration token - empty token',
+    test: async function () {
+      return this.adminClient.domain.domainControllerResolveRegistrationToken({
+        registrationToken: '',
+      });
+    },
+    expectedStatus: 404,
+  }),
+
+  new IntegrationTest<{ domainId: string; registrationToken: string }>({
+    group,
+    snapshot: true,
+    name: 'Resolve registration token - deleted domain token returns 404',
+    setup: async function () {
+      // Create a temporary domain to get its registration token
+      const tempDomainData = await this.adminClient.domain.domainControllerCreate({
+        name: `temp-domain-${randomUUID().slice(0, 8)}`,
+        maxGameservers: 1,
+        maxUsers: 10,
+        eventRetentionDays: 7,
+        maxVariables: 10,
+        maxModules: 5,
+        maxFunctionsInModule: 10,
+      });
+
+      const domainId = tempDomainData.data.data.createdDomain.id;
+      const registrationToken = tempDomainData.data.data.createdDomain.serverRegistrationToken!;
+
+      // Delete the domain
+      await this.adminClient.domain.domainControllerRemove(domainId);
+
+      return { domainId, registrationToken };
+    },
+    test: async function () {
+      // Try to resolve the token from the deleted domain
+      return this.adminClient.domain.domainControllerResolveRegistrationToken({
+        registrationToken: this.setupData.registrationToken,
+      });
+    },
+    expectedStatus: 404,
+  }),
+
+  new IntegrationTest<void>({
+    group,
+    snapshot: true,
+    name: 'Resolve registration token - malformed token format',
+    test: async function () {
+      return this.adminClient.domain.domainControllerResolveRegistrationToken({
+        registrationToken: 'clearly-not-a-valid-base64-token-format!!!',
+      });
+    },
+    expectedStatus: 404,
   }),
 ];
 

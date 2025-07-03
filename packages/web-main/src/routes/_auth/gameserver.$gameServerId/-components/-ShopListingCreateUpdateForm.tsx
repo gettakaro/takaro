@@ -9,15 +9,21 @@ import {
   IconButton,
   Switch,
   TextField,
+  Tooltip,
   styled,
 } from '@takaro/lib-components';
 import { useRouter } from '@tanstack/react-router';
-import { ItemSelect } from 'components/selects/ItemSelectQuery';
+import { ItemSelectQueryField } from '../../../../components/selects/ItemSelectQueryField';
 import { FC, useEffect, useState } from 'react';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 
-import { AiOutlineClose as RemoveFieldIcon, AiOutlinePlus as AddFieldIcon } from 'react-icons/ai';
+import {
+  AiOutlineClose as RemoveFieldIcon,
+  AiOutlinePlus as AddFieldIcon,
+  AiOutlineCaretUp as FieldUpIcon,
+  AiOutlineCaretDown as FieldDownIcon,
+} from 'react-icons/ai';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -72,7 +78,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
   const readOnly = onSubmit === undefined;
   const { history } = useRouter();
 
-  const { control, handleSubmit } = useForm<FormValues>({
+  const { control, handleSubmit, formState } = useForm<FormValues>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
     ...(initialData && {
@@ -95,6 +101,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
     fields,
     append: addItem,
     remove: removeItem,
+    swap: moveItem,
   } = useFieldArray({
     control: control,
     name: 'items',
@@ -108,7 +115,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
   }, [open]);
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={readOnly === false && formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>{initialData ? (readOnly ? 'View' : 'Update') : 'Create'} Shop listing</Drawer.Heading>
         <Drawer.Body>
@@ -158,20 +165,53 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
                         }}
                       >
                         <h3>Item {index + 1}</h3>
-                        <IconButton
-                          size="tiny"
-                          onClick={() => !readOnly && removeItem(index)}
-                          icon={<RemoveFieldIcon />}
-                          ariaLabel="Remove field"
-                        />
+
+                        <div>
+                          <Tooltip placement="top">
+                            <Tooltip.Trigger asChild>
+                              <IconButton
+                                disabled={readOnly || index === fields.length - 1}
+                                onClick={() => moveItem(index, index + 1)}
+                                icon={<FieldDownIcon size={16} cursor="pointer" />}
+                                ariaLabel="Move down"
+                              />
+                            </Tooltip.Trigger>
+                            <Tooltip.Content>Move down</Tooltip.Content>
+                          </Tooltip>
+
+                          <Tooltip placement="top">
+                            <Tooltip.Trigger asChild>
+                              <IconButton
+                                disabled={readOnly || index === 0}
+                                onClick={() => {
+                                  moveItem(index, index - 1);
+                                }}
+                                icon={<FieldUpIcon size={16} cursor="pointer" />}
+                                ariaLabel="Move up"
+                              />
+                            </Tooltip.Trigger>
+                            <Tooltip.Content>Move up</Tooltip.Content>
+                          </Tooltip>
+                          <Tooltip placement="top">
+                            <Tooltip.Trigger asChild>
+                              <IconButton
+                                size="tiny"
+                                onClick={() => removeItem(index)}
+                                icon={<RemoveFieldIcon />}
+                                disabled={readOnly}
+                                ariaLabel="Remove field"
+                              />
+                            </Tooltip.Trigger>
+                            <Tooltip.Content>Remove item</Tooltip.Content>
+                          </Tooltip>
+                        </div>
                       </div>
-                      <ItemSelect
+                      <ItemSelectQueryField
                         gameServerId={gameServerId}
                         control={control}
                         name={`items.${index}.itemId`}
                         loading={isLoading}
                         readOnly={readOnly}
-                        inPortal
                       />
                       <TextField
                         control={control}
@@ -204,9 +244,10 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
                       });
                     }}
                     type="button"
-                    text="Add item"
                     fullWidth
-                  />
+                  >
+                    Add item
+                  </Button>
                 )}
               </CollapseList.Item>
             </CollapseList>
@@ -216,11 +257,15 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
         </Drawer.Body>
         <Drawer.Footer>
           {readOnly ? (
-            <Button fullWidth text="Close view" />
+            <Button fullWidth>Close view</Button>
           ) : (
             <ButtonContainer>
-              <Button text="Cancel" onClick={() => setOpen(false)} color="background" type="button" />
-              <Button type="submit" fullWidth text="Save changes" form={formId} />
+              <Button onClick={() => setOpen(false)} color="background" type="button">
+                Cancel
+              </Button>
+              <Button type="submit" fullWidth form={formId}>
+                Save changes
+              </Button>
             </ButtonContainer>
           )}
         </Drawer.Footer>

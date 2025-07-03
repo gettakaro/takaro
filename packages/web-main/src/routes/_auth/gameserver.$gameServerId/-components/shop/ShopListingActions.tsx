@@ -8,7 +8,7 @@ import {
   AiOutlineDelete as DeleteIcon,
   AiOutlineEye as ViewIcon,
 } from 'react-icons/ai';
-import { useShopListingDelete } from 'queries/shopListing';
+import { useShopListingDelete } from '../../../../../queries/shopListing';
 
 interface ShopListingActions {
   shopListingId: string;
@@ -69,7 +69,9 @@ export const ShopListingActions: FC<ShopListingActions> = ({ shopListingId, game
           <Dialog.Heading>Delete shop listing</Dialog.Heading>
           <Dialog.Body size="medium">
             <p>Are you sure you want to delete '{shopListingName}' from the shop?</p>
-            <Button onClick={handleOnDeleteConfirmationClick} fullWidth text="Delete from shop" color="error" />
+            <Button onClick={handleOnDeleteConfirmationClick} fullWidth color="error">
+              Delete from shop
+            </Button>
           </Dialog.Body>
         </Dialog.Content>
       </Dialog>

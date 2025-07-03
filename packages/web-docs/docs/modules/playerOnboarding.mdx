@@ -1,0 +1,119 @@
+---
+description: undefined
+---
+
+{/* AUTO-GENERATED CONTENT () */}
+
+import { Commands, Config, CronJobs, Hooks } from './helpers';
+
+# playerOnboarding
+
+export function Module() {
+  const mod = {
+  "name": "playerOnboarding",
+  "versions": [
+    {
+      "tag": "0.0.3",
+      "description": "Collection of functions that are executed when a player joins the server. Helps with onboarding new players, like sending a welcome message. Fixed issue with starterkit item identifiers.",
+      "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"message\":{\"title\":\"Message\",\"description\":\"The message to send to the player when they join the server.\",\"type\":\"string\",\"minLength\":1,\"maxLength\":256,\"default\":\"Welcome {player} to the server!\"},\"starterKitItems\":{\"type\":\"array\",\"title\":\"Starter kit items\",\"x-component\":\"item\",\"description\":\"List of items a player will receive when they execute the starterkit command for the first time.\",\"uniqueItems\":true,\"items\":{\"type\":\"object\",\"title\":\"Item\",\"properties\":{\"item\":{\"type\":\"string\",\"title\":\"Item\"},\"amount\":{\"type\":\"number\",\"title\":\"Amount\"},\"quality\":{\"type\":\"string\",\"title\":\"Quality\"}}}}},\"required\":[],\"additionalProperties\":false}",
+      "uiSchema": "{\"starterKitItems\":{\"items\":{\"item\":{\"ui:widget\":\"item\"}}}}",
+      "hooks": [
+        {
+          "eventType": "player-connected",
+          "name": "playerConnected",
+          "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    const { player } = data;\n    const rawMessage = data.module.userConfig.message;\n    const message = rawMessage.replace('{player}', player.name);\n    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n        message,\n    });\n}\nawait main();\n//# sourceMappingURL=playerConnected.js.map"
+        }
+      ],
+      "commands": [
+        {
+          "name": "starterkit",
+          "function": "import { takaro, data, TakaroUserError } from '@takaro/helpers';\nconst VARIABLE_KEY = 't_starterkit_lock';\nasync function main() {\n    const items = data.module.userConfig.starterKitItems;\n    if (!items || items.length === 0) {\n        throw new TakaroUserError('No starter kit items configured. Please ask your server administrator to configure this.');\n    }\n    const starterKitLockRes = await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [VARIABLE_KEY],\n            gameServerId: [data.gameServerId],\n            playerId: [data.player.id],\n        },\n    });\n    if (starterKitLockRes.data.data.length > 0) {\n        throw new TakaroUserError('You already used starterkit on this server');\n    }\n    await data.player.pm('You are about to receive your starter kit...');\n    const itemRecords = (await takaro.item.itemControllerSearch({ filters: { id: items.map((_) => _.item) } })).data.data;\n    const fullItems = items.map((item) => {\n        const itemRecord = itemRecords.find((record) => record.id === item.item);\n        if (!itemRecord) {\n            throw new TakaroUserError(`Item with ID ${item.item} not found.`);\n        }\n        return {\n            id: itemRecord.id,\n            quality: item.quality,\n            amount: item.amount,\n        };\n    });\n    await Promise.all(fullItems.map(async (item) => {\n        return takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.id, {\n            name: item.id,\n            quality: item.quality ?? '',\n            amount: item.amount,\n        });\n    }));\n    await takaro.variable.variableControllerCreate({\n        key: VARIABLE_KEY,\n        value: '1',\n        gameServerId: data.gameServerId,\n        playerId: data.player.id,\n    });\n    await data.player.pm(`Gave ${items.length} items, enjoy!`);\n}\nawait main();\n//# sourceMappingURL=starterkit.js.map",
+          "trigger": "starterkit",
+          "helpText": "Get a starter kit, you can only execute this once on a server!",
+          "arguments": []
+        }
+      ]
+    }
+  ]
+};
+
+  return (
+    <div>
+      <p>{mod.versions[0].description}</p>
+      <Commands commands={mod.versions[0].commands} />
+      <CronJobs cronJobs={mod.versions[0].cronJobs} />
+      <Hooks hooks={mod.versions[0].hooks} />
+      <Config configSchema={mod.versions[0].configSchema} />
+    </div>
+  )
+}
+
+<Module />
+
+{/* END AUTO-GENERATED CONTENT */}
+
+## Features
+
+### Welcome Messages
+
+- Automatically triggers when a player connects to the server
+- Supports player name variables using player placeholder
+- Customizable message content
+- Helps create a welcoming atmosphere for new players
+
+### Starter Kit System
+
+- Players can claim a starter kit using the `/starterkit` command
+- One-time use per player per server
+- Configurable item list with support for:
+    - Item quantities
+    - Item quality levels
+    - Multiple items per kit
+
+## Configuration
+
+### Message Configuration
+
+- **Message**: Customize the welcome message that players receive when joining
+- Default message: "Welcome player to the server!"
+- Use player to include the player's name in the message
+
+### Starter Kit Configuration
+
+- **Items**: Configure a list of items to be given to players
+- Each item entry supports:
+    - Item name (must match exact game item ID)
+    - Amount
+    - Quality level (where applicable)
+    - Usage percentage
+## Commands
+
+### /starterkit
+
+- **Usage**: `/starterkit`
+- **Description**: Claims the starter kit items
+- **Limitations**:
+    - Can only be used once per player per server
+    - Requires starter kit items to be configured
+- **Response Messages**:
+    - Success: "Gave [X] items, enjoy!"
+    - Already claimed: "You already used starterkit on this server"
+    - No items configured: "No starter kit items configured. Please ask your server administrator to configure this."
+
+## Variables
+
+The module uses Takaro's variable system to track starter kit claims:
+- Creates a variable with key 't_starterkit_lock' when a player claims their kit
+- Checks this variable to prevent multiple claims
+- Variables are server-specific, allowing players to claim starter kits on different servers
+
+## Best Practices
+
+1. **Welcome Message**
+    - Keep messages concise and informative
+    - Include essential server information or rules
+    - Use the player placeholder to personalize the message
+2. **Starter Kit Items**
+    - Balance items to help new players without making them overpowered
+    - Consider your server's economy when selecting items
+

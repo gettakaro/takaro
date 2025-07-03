@@ -1,6 +1,6 @@
 {
   "name": "@takaro/gameserver",
-  "version": "0.0.13",
+  "version": "0.1.5",
   "description": "Handles abstraction between Takaro and game servers",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -8,17 +8,9 @@
   "scripts": {
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p ./tsconfig.build.json",
-    "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "mocha --config ../../.mocharc.js src/**/*.unit.test.ts",
-    "test:integration": "echo 'No tests (yet :))'"
+    "postbuild": "cp src/gameservers/7d2d/items-7d2d.json dist/gameservers/7d2d/items-7d2d.json"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "eventsource": "2.0.2"
-  },
-  "devDependencies": {
-    "@types/eventsource": "1.1.15"
-  }
+  "license": "ISC"
 }

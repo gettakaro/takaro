@@ -16,10 +16,10 @@ interface Logger {
 export class BaseApiClient<T extends IBaseApiClientConfig> {
   protected axios: AxiosInstance;
   protected log: Logger = {
-    error: console.error,
-    info: console.log,
-    warn: console.warn,
-    debug: console.log,
+    error: () => {},
+    info: () => {},
+    warn: () => {},
+    debug: () => {},
   };
 
   constructor(protected readonly config: T) {
@@ -54,9 +54,20 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
     }
 
     axios.interceptors.request.use((request) => {
+      let prettyBody = null;
+
+      if (request.data) {
+        try {
+          prettyBody = JSON.parse(request.data);
+        } catch {
+          prettyBody = 'Could not parse body';
+        }
+      }
+
       this.log.info(`➡️ ${request.method?.toUpperCase()} ${request.url}`, {
         method: request.method,
         url: request.url,
+        body: prettyBody ?? undefined,
       });
       return request;
     });

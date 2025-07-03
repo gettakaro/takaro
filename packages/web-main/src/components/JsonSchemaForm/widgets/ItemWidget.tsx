@@ -7,17 +7,19 @@ import {
   UnControlledSelectQueryField,
   getInitials,
   Skeleton,
+  ToggleButtonGroup,
 } from '@takaro/lib-components';
-import { useQuery } from '@tanstack/react-query';
-import { getRouteApi } from '@tanstack/react-router';
-import { gameServerQueryOptions } from 'queries/gameserver';
-import { itemsQueryOptions } from 'queries/item';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useParams } from '@tanstack/react-router';
+import { gameServerQueryOptions } from '../../../queries/gameserver';
+import { ItemsInfiniteQueryOptions } from '../../../queries/item';
 import { useState } from 'react';
 
 const gameServerTypeToIconFolderMap = {
   [GameServerOutputDTOTypeEnum.Mock]: 'rust',
   [GameServerOutputDTOTypeEnum.Rust]: 'rust',
   [GameServerOutputDTOTypeEnum.Sevendaystodie]: '7d2d',
+  [GameServerOutputDTOTypeEnum.Generic]: 'generic',
 };
 
 const Inner = styled.div`
@@ -26,7 +28,7 @@ const Inner = styled.div`
   justify-content: flex-start;
   width: 100%;
 
-  span {
+  & > span {
     margin-left: ${({ theme }) => theme.spacing['1']};
   }
 `;
@@ -50,37 +52,53 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
   value,
   onChange,
 }: WidgetProps<T, S, F>) {
-  const { gameServerId } = getRouteApi('/_auth/gameserver/$gameServerId/modules/$moduleId/install/').useParams();
-  const [itemName, setItemName] = useState<string>('');
-  const enabled = itemName !== '';
+  const { gameServerId } = useParams({ strict: false }) as { gameServerId: string };
+  const [filterInput, setFilterInput] = useState<string>('');
+  const enabled = filterInput !== '';
   const shouldPreviousItemsBeLoaded = shouldFilter(value, multiple as boolean);
+  const [searchFields, setSearchFields] = useState<Map<string, boolean>>(new Map());
 
   const { data: gameServer, isLoading: isLoadingGameServer } = useQuery(gameServerQueryOptions(gameServerId));
-  const { data: prev, isLoading: isLoadingPreviousItems } = useQuery(
-    itemsQueryOptions({
-      filters: { gameserverId: [gameServerId], ...(shouldPreviousItemsBeLoaded && { id: multiple ? value : [value] }) },
+
+  const { data: prev, isLoading: isLoadingPreviousItems } = useInfiniteQuery({
+    ...ItemsInfiniteQueryOptions({
+      filters: { gameserverId: [gameServerId], id: multiple ? value : [value] },
     }),
-  );
+    enabled: shouldPreviousItemsBeLoaded,
+  });
 
-  const previousItems = prev?.data ?? [];
+  const previousItems = prev?.pages.flatMap((page) => page.data) ?? [];
 
-  const { data, isLoading: isLoadingItems } = useQuery(
-    itemsQueryOptions({
-      ...(itemName !== '' && { search: { name: [itemName] } }),
+  const {
+    data,
+    isLoading: isLoadingItems,
+    isFetchingNextPage,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery(
+    ItemsInfiniteQueryOptions({
+      ...(filterInput !== '' &&
+        (searchFields.get('name') || searchFields.get('code')) && {
+          search: {
+            ...(searchFields.get('name') && { name: [filterInput] }),
+            ...(searchFields.get('code') && { code: [filterInput] }),
+          },
+        }),
       filters: { gameserverId: [gameServerId] },
     }),
   );
-  const searchedItems = data?.data ?? [];
+  const searchedItems = data?.pages.flatMap((page) => page.data) ?? [];
 
   // get rid of duplicates
-  const items = [...searchedItems, ...previousItems].filter(
+  const items = [...previousItems, ...searchedItems].filter(
     (item, index, self) => self.findIndex((i) => i.id === item.id) === index,
   );
 
   const renderIcon = (gameServer: GameServerOutputDTO, item: ItemsOutputDTO) => {
     if (item.code && gameServer && gameServerTypeToIconFolderMap[gameServer.type] !== 'Mock') {
       return (
-        <Avatar size="tiny">
+        <Avatar size="small">
           <Avatar.Image
             src={`/icons/${gameServerTypeToIconFolderMap[gameServer.type]}/${item.code}.png`}
             alt={`Item icon of ${item.name}`}
@@ -99,6 +117,25 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
     return <div>unable to show items</div>;
   }
 
+  function renderToggleButtonGroup() {
+    return (
+      <ToggleButtonGroup
+        exclusive={false}
+        orientation="horizontal"
+        canSelectNone={false}
+        defaultValue="name"
+        onChange={(changedSearchFieldMap) => setSearchFields(() => changedSearchFieldMap as Map<string, boolean>)}
+      >
+        <ToggleButtonGroup.Button value="code" tooltip="Search by item code">
+          code
+        </ToggleButtonGroup.Button>
+        <ToggleButtonGroup.Button value="name" tooltip="Search by item name">
+          name
+        </ToggleButtonGroup.Button>
+      </ToggleButtonGroup>
+    );
+  }
+
   return (
     <UnControlledSelectQueryField
       id={id}
@@ -109,30 +146,48 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
       readOnly={readonly}
       value={value}
       onChange={onChange}
-      handleInputValueChange={(value) => setItemName(value)}
+      placeholder="Search for item"
+      handleInputValueChange={(value) => setFilterInput(value)}
       isLoadingData={!enabled ? false : isLoadingItems}
       multiple={multiple}
       hasDescription={!!schema.description}
+      isFetching={isFetching}
+      hasNextPage={hasNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+      optionCount={data?.pages[0].meta.total}
+      fetchNextPage={fetchNextPage}
       render={(selectedItems) => {
-        if (selectedItems.length === 0) {
-          return <div>Select item...</div>;
-        }
-
-        // multiselect with 1 item and single select
-        if (selectedItems.length === 1) {
-          // find item in list of items
-          const item = items.find((item) => item.id === selectedItems[0].value);
-          if (!item) {
-            return <div>{selectedItems[0].label}</div>;
-          }
-          return (
-            <Inner>
-              {renderIcon(gameServer, item)} {selectedItems[0].label}
-            </Inner>
-          );
-        }
-
-        return <div>{selectedItems.map((item) => item.label).join(',')}</div>;
+        return (
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'flex-start',
+              paddingRight: '10px',
+              overflowWrap: 'break-word',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div style={{ flex: '1 1 auto', overflow: 'hidden', marginRight: '10px', textOverflow: 'ellipsis' }}>
+              {selectedItems.length === 0 && <div>Select item...</div>}
+              {selectedItems.length === 1 &&
+                // Find item in list of items
+                (() => {
+                  const item = items.find((item) => item.id === selectedItems[0].value);
+                  if (!item) {
+                    return <div>{selectedItems[0].label}</div>;
+                  }
+                  return (
+                    <Inner>
+                      {renderIcon(gameServer, item)} {selectedItems[0].label}
+                    </Inner>
+                  );
+                })()}
+              {selectedItems.length > 1 && <>{selectedItems.map((item) => item.label).join(',')}</>}
+            </div>
+            {renderToggleButtonGroup()}
+          </div>
+        );
       }}
     >
       <SelectQueryField.OptionGroup label="options">

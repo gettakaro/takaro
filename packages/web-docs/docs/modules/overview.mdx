@@ -1,0 +1,43 @@
+---
+sidebar_position: 1
+title: Overview
+description: Lists the built-in modules
+---
+
+import React from 'react';
+import modules from './modules.json';
+import comunityModules from '../community-modules.json';
+import { Commands, Config, CronJobs, Hooks } from './helpers';
+
+export function ModulesList() {
+  const mods = modules.sort((a, b) => a.name.localeCompare(b.name));
+
+return (
+
+  <div>
+    {mods.map((mod, index) => (
+      <div key={index}>
+        <h3>
+          <a href={`./${mod.name}`}>
+            <u>{mod.name}</u>
+          </a>
+        </h3>
+
+        <p>{mod.description}</p>
+      </div>
+
+))}
+
+  </div>
+);
+}
+
+# Built-in modules
+
+Takaro provides a set of built-in modules. These are created and maintained by the Takaro Team. You can configure and install these without having to write any code.
+
+You can install modules by browsing to a gameserver and clicking the "Modules" link. From there you can configure and install modules.
+
+## Core modules
+
+<ModulesList type="builtin" />

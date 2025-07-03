@@ -1,19 +1,22 @@
-import { logger, traceableClass } from '@takaro/util';
+import { errors, logger, traceableClass } from '@takaro/util';
 import WebSocket from 'ws';
 import { IGamePlayer, IPosition } from '@takaro/modules';
 import {
   BanDTO,
   CommandOutput,
+  IEntityDTO,
   IGameServer,
   IItemDTO,
+  ILocationDTO,
   IPlayerReferenceDTO,
+  MapInfoDTO,
   TestReachabilityOutputDTO,
 } from '../../interfaces/GameServer.js';
 import { RustConnectionInfo } from './connectionInfo.js';
 import { RustEmitter } from './emitter.js';
 import { Settings } from '@takaro/apiclient';
 
-const itemsJson = (await import('./items-rust.json', { assert: { type: 'json' } })).default;
+const itemsJson = (await import('./items-rust.json', { with: { type: 'json' } })).default;
 
 @traceableClass('game:rust')
 export class Rust implements IGameServer {
@@ -67,7 +70,7 @@ export class Rust implements IGameServer {
     );
   }
 
-  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number = 1, _quality?: number): Promise<void> {
+  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number = 1, _quality?: string): Promise<void> {
     await this.executeConsoleCommand(`inventory.giveid ${player.gameId} ${item} ${amount}`);
   }
 
@@ -76,7 +79,7 @@ export class Rust implements IGameServer {
     const lines = rawResponse.rawResult.split('\n');
 
     for (const line of lines) {
-      const matches = /(\d{17}) \w+\s{4}\(([-\d\.]+), ([-\d\.]+), ([-\d\.]+)\)/.exec(line);
+      const matches = /(\d{17}) \w+\s+\(([-\d\.]+), ([-\d\.]+), ([-\d\.]+)\)/.exec(line);
 
       if (matches) {
         const steamId = matches[1];
@@ -85,11 +88,11 @@ export class Rust implements IGameServer {
         const z = matches[4].replace(')', '');
 
         if (steamId === player.gameId) {
-          return {
+          return new IPosition({
             x: parseInt(x, 10),
             y: parseInt(y, 10),
             z: parseInt(z, 10),
-          };
+          });
         }
       }
     }
@@ -144,7 +147,8 @@ export class Rust implements IGameServer {
     await this.executeConsoleCommand(`say "${message}"`);
   }
 
-  async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
+  async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number, _dimension?: string) {
+    // Rust doesn't support dimensions, so we ignore the dimension parameter
     await this.executeConsoleCommand(`teleportplayer.pos ${player.gameId} ${x} ${y} ${z}`);
   }
 
@@ -175,7 +179,7 @@ export class Rust implements IGameServer {
   async listBans(): Promise<BanDTO[]> {
     const response = await this.executeConsoleCommand('banlistex');
 
-    if (!response.success || !response.rawResult) {
+    if (!response.rawResult) {
       return [];
     }
 
@@ -200,8 +204,9 @@ export class Rust implements IGameServer {
 
         const ban = new BanDTO({
           reason: match.groups.reason,
-          player: new IPlayerReferenceDTO({
+          player: new IGamePlayer({
             gameId,
+            steamId: gameId,
           }),
           expiresAt,
         });
@@ -235,5 +240,28 @@ export class Rust implements IGameServer {
 
   async shutdown(): Promise<void> {
     await this.executeConsoleCommand('quit');
+  }
+
+  async getMapInfo(): Promise<MapInfoDTO> {
+    return new MapInfoDTO({
+      enabled: false,
+      mapBlockSize: 0,
+      maxZoom: 0,
+      mapSizeX: 0,
+      mapSizeY: 0,
+      mapSizeZ: 0,
+    });
+  }
+
+  async getMapTile(_x: number, _y: number, _z: number): Promise<string> {
+    throw new Error('Not implemented');
+  }
+
+  async listEntities(): Promise<IEntityDTO[]> {
+    throw new errors.NotImplementedError();
+  }
+
+  async listLocations(): Promise<ILocationDTO[]> {
+    throw new errors.NotImplementedError();
   }
 }

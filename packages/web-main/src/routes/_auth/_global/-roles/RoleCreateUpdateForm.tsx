@@ -10,6 +10,8 @@ import {
   Switch,
   TextField,
   useTheme,
+  Chip,
+  Tooltip,
 } from '@takaro/lib-components';
 import { PermissionOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
 import { useForm, SubmitHandler, Control } from 'react-hook-form';
@@ -25,7 +27,7 @@ const ButtonContainer = styled.div`
 const PermissionContainer = styled.div<{ hasCount: boolean }>`
   ${({ hasCount, theme }) => hasCount && `border: 1px solid ${theme.colors.backgroundAccent}`};
   padding: ${({ theme }) => ` ${theme.spacing[1]} ${theme.spacing[1]} ${theme.spacing[0]} ${theme.spacing[1]}`};
-  border-radius: ${({ theme }) => theme.borderRadius.large};
+  border-r
   margin-bottom: ${({ theme }) => theme.spacing[1]};
 
   &:focus-within {
@@ -66,15 +68,16 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
 
   const systemPermissions = permissions.filter((p) => !p.module);
   const groupedModulePermissions = permissions.reduce((acc, permission) => {
-    if (permission.module) {
-      const moduleId = permission.module.id;
-      if (!acc[moduleId]) {
-        acc[moduleId] = {
+    if (permission.moduleVersionId) {
+      const versionId = permission.moduleVersionId;
+      if (!acc[versionId]) {
+        acc[versionId] = {
           module: permission.module,
+          moduleVersion: permission.version!,
           permissions: [],
         };
       }
-      acc[moduleId].permissions.push(permission);
+      acc[versionId].permissions.push(permission);
     }
     return acc;
   }, {});
@@ -85,10 +88,10 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
     }
   }, [open]);
 
-  const { control, handleSubmit } = useForm<IFormInputs>({
+  const { control, handleSubmit, formState } = useForm<IFormInputs>({
     mode: 'onChange',
     resolver: zodResolver(validationSchema),
-    defaultValues: initialData && {
+    values: initialData && {
       name: initialData.name,
       permissions: Object.values(permissions).reduce(
         (acc, permission) => ({
@@ -103,8 +106,15 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
     },
   });
 
+  const multipleVersionsOfSameModuleInstalled = (groupedModulePermissions: any, currentKey: any): boolean => {
+    const withoutCurrentKey = Object.keys(groupedModulePermissions).filter((key) => key != currentKey);
+    return withoutCurrentKey.some(
+      (key) => groupedModulePermissions[key].module.id == groupedModulePermissions[currentKey].module.id,
+    );
+  };
+
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={readOnly === false && formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>{initialData ? (readOnly ? 'View' : 'Update') : 'Create'} role</Drawer.Heading>
         <Drawer.Body>
@@ -127,21 +137,55 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
                 ))}
               </CollapseList.Item>
               <CollapseList.Item title="Module permissions">
-                {}
-                {Object.values(groupedModulePermissions).map((group: any) => (
-                  <Card key={group.module.id} variant="outline" style={{ marginBottom: theme.spacing['2'] }}>
-                    <h3 style={{ marginBottom: theme.spacing['1'], textTransform: 'capitalize' }}>
-                      {group.module.name}
-                    </h3>
-                    {}
-                    {group.permissions.map((permission: any) => (
-                      <PermissionField
-                        key={permission.id}
-                        permission={permission}
-                        control={control}
-                        readOnly={readOnly}
-                      />
-                    ))}
+                {Object.keys(groupedModulePermissions).map((key: any) => (
+                  <Card
+                    key={groupedModulePermissions[key].module.id}
+                    variant="outline"
+                    style={{ marginBottom: theme.spacing['2'] }}
+                  >
+                    <Card.Body>
+                      <h3
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          marginBottom: theme.spacing['1'],
+                        }}
+                      >
+                        <span>{groupedModulePermissions[key].module.name}</span>
+                        <div style={{ display: 'flex' }}>
+                          <Tooltip disabled={!multipleVersionsOfSameModuleInstalled(groupedModulePermissions, key)}>
+                            <Tooltip.Trigger>
+                              <Chip
+                                variant="outline"
+                                color={
+                                  multipleVersionsOfSameModuleInstalled(groupedModulePermissions, key)
+                                    ? 'warning'
+                                    : 'primary'
+                                }
+                                label={`${groupedModulePermissions[key].moduleVersion.tag}`}
+                              />
+                            </Tooltip.Trigger>
+                            <Tooltip.Content>
+                              Multiple versions of this module are be installed on your gameservers. Meaning
+                              <br />
+                              permission with the same name can exist. Make sure you are assigning the correct
+                              <br />
+                              permission to the role.
+                            </Tooltip.Content>
+                          </Tooltip>
+                        </div>
+                      </h3>
+                      {}
+                      {groupedModulePermissions[key].permissions.map((permission: any) => (
+                        <PermissionField
+                          key={permission.id}
+                          permission={permission}
+                          control={control}
+                          readOnly={readOnly}
+                        />
+                      ))}
+                    </Card.Body>
                   </Card>
                 ))}{' '}
               </CollapseList.Item>
@@ -151,16 +195,17 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
         </Drawer.Body>
         <Drawer.Footer>
           {readOnly ? (
-            <Button text="Close view" fullWidth onClick={() => setOpen(false)} color="primary" />
+            <Button fullWidth onClick={() => setOpen(false)} color="primary">
+              Close view
+            </Button>
           ) : (
             <ButtonContainer>
-              <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-              <Button
-                fullWidth
-                text={initialData ? 'Update role' : 'Create role'}
-                type="submit"
-                form="create-role-form"
-              />
+              <Button onClick={() => setOpen(false)} color="background">
+                Cancel
+              </Button>
+              <Button fullWidth type="submit" form="create-role-form">
+                {initialData ? 'Update role' : 'Create role'}
+              </Button>
             </ButtonContainer>
           )}
         </Drawer.Footer>

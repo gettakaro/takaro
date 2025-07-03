@@ -1,11 +1,12 @@
 import { SubmitHandler } from 'react-hook-form';
 import { redirect, useNavigate, createFileRoute } from '@tanstack/react-router';
-import { useGameServerCreate } from 'queries/gameserver';
+import { useGameServerCreate, useGameServerReachabilityByConfig } from '../../../queries/gameserver';
 import { CreateUpdateForm } from './-gameservers/CreateUpdateForm';
 import { IFormInputs } from './-gameservers/validationSchema';
-import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
-import { hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
+import { GameServerCreateDTOTypeEnum, GameServerTestReachabilityInputDTOTypeEnum } from '@takaro/apiclient';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
+import { useState } from 'react';
 
 export const Route = createFileRoute('/_auth/_global/gameservers/create/')({
   beforeLoad: async ({ context }) => {
@@ -19,19 +20,52 @@ export const Route = createFileRoute('/_auth/_global/gameservers/create/')({
 
 function Component() {
   const navigate = useNavigate({ from: Route.fullPath });
-  const { mutate, isPending, error: gameServerCreateError, isSuccess } = useGameServerCreate();
+  const [notReachableReason, setNotReachableReason] = useState<string>();
+  const {
+    mutate: createGameServer,
+    isPending: createGameServerIsPending,
+    error: gameServerCreateError,
+    isSuccess: createGameServerIsSuccess,
+  } = useGameServerCreate();
+  const {
+    mutateAsync: testReachability,
+    isPending: testReachabilityIsPending,
+    error: testReachabilityError,
+  } = useGameServerReachabilityByConfig();
 
-  const onSubmit: SubmitHandler<IFormInputs> = ({ type, connectionInfo, name }) => {
-    mutate({
-      type: type as GameServerCreateDTOTypeEnum,
-      name,
-      connectionInfo: JSON.stringify(connectionInfo),
-    });
+  const onSubmit: SubmitHandler<IFormInputs> = async ({ type, connectionInfo, name, enabled }) => {
+    try {
+      if (enabled) {
+        const response = await testReachability({
+          type: type as GameServerTestReachabilityInputDTOTypeEnum,
+          connectionInfo: JSON.stringify(connectionInfo),
+        });
+
+        if (response.connectable === false) {
+          setNotReachableReason(response.reason);
+          return;
+        }
+      }
+
+      createGameServer({
+        type: type as GameServerCreateDTOTypeEnum,
+        name,
+        connectionInfo: JSON.stringify(connectionInfo),
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  if (isSuccess) {
+  if (createGameServerIsSuccess) {
     navigate({ to: '/gameservers' });
   }
 
-  return <CreateUpdateForm onSubmit={onSubmit} isLoading={isPending} error={gameServerCreateError} />;
+  return (
+    <CreateUpdateForm
+      onSubmit={onSubmit}
+      isLoading={testReachabilityIsPending || createGameServerIsPending}
+      error={notReachableReason || testReachabilityError || gameServerCreateError}
+    />
+  );
 }

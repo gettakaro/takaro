@@ -8,19 +8,28 @@ import {
   Divider,
   DateFormatter,
   CopyId,
+  useTheme,
 } from '@takaro/lib-components';
 import { VariableOutputDTO, VariableSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
-import { variablesQueryOptions } from 'queries/variable';
-import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { variablesQueryOptions, variableCountQueryOptions } from '../../../queries/variable';
+import {
+  AiOutlineEdit as EditIcon,
+  AiOutlineEye as ViewIcon,
+  AiOutlineDelete as DeleteIcon,
+  AiOutlineRight as ActionIcon,
+} from 'react-icons/ai';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { VariableValueDetail } from './-variables/VariableValueDetail';
-import { VariableDeleteDialog } from './-variables/VariableDeleteDialog';
-import { VariablesDeleteDialog } from './-variables/VariablesDeleteDialog';
+import { VariableDeleteDialog } from '../../../components/dialogs/VariableDeleteDialog';
+import { VariablesDeleteDialog } from '../../../components/dialogs/VariablesDeleteDialog';
 import { Outlet, createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
-import { hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
+import { getCurrentDomain } from '../../../util/getCurrentDomain';
+import { MaxUsage } from '../../../components/MaxUsage';
+import { DocsLink } from '../../../components/DocsLink';
 
 export const Route = createFileRoute('/_auth/_global/variables')({
   beforeLoad: async ({ context }) => {
@@ -29,14 +38,31 @@ export const Route = createFileRoute('/_auth/_global/variables')({
       throw redirect({ to: '/forbidden' });
     }
   },
+  loader: async ({ context }) => {
+    return {
+      currentVariableCount: await context.queryClient.ensureQueryData(variableCountQueryOptions()),
+      me: await context.queryClient.ensureQueryData(userMeQueryOptions()),
+    };
+  },
   component: Component,
 });
 
 function Component() {
   useDocumentTitle('Variables');
+  const loaderData = Route.useLoaderData();
   const { pagination, columnFilters, sorting, columnSearch, rowSelection } = useTableActions<VariableOutputDTO>();
   const navigate = useNavigate();
   const [openVariablesDialog, setOpenVariablesDialog] = useState<boolean>(false);
+  const [quickSearchInput, setQuickSearchInput] = useState<string>('');
+  const { data: me } = useQuery({ ...userMeQueryOptions(), initialData: loaderData.me });
+  const { data: currentVariableCount } = useQuery({
+    ...variableCountQueryOptions(),
+    initialData: loaderData.currentVariableCount,
+  });
+
+  const currentDomain = getCurrentDomain(me);
+  const maxVariableCount = currentDomain.maxVariables;
+  const canCreateVariable = currentVariableCount < maxVariableCount;
 
   const { data, isLoading } = useQuery({
     ...variablesQueryOptions({
@@ -56,10 +82,7 @@ function Component() {
         moduleId: columnFilters.columnFiltersState.find((filter) => filter.id === 'moduleId')?.value,
       },
       search: {
-        key: columnSearch.columnSearchState.find((search) => search.id === 'key')?.value,
-        gameServerId: columnSearch.columnSearchState.find((search) => search.id === 'gameServerId')?.value,
-        playerId: columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value,
-        moduleId: columnSearch.columnSearchState.find((search) => search.id === 'moduleId')?.value,
+        key: [...(columnSearch.columnSearchState.find((search) => search.id === 'key')?.value ?? []), quickSearchInput],
       },
     }),
   });
@@ -185,24 +208,33 @@ function Component() {
       <Divider size="large" />
       <Table
         title="List of variables"
+        searchInputPlaceholder="Search by variable key..."
+        onSearchInputChanged={setQuickSearchInput}
         renderToolbar={() => {
           return (
-            <Button
-              text="Create variable"
-              onClick={() => {
-                navigate({ to: '/variables/create' });
-              }}
-            />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', columnGap: '1rem' }}>
+              <MaxUsage value={loaderData.currentVariableCount} total={maxVariableCount} unit="Variables" />
+              <Button
+                onClick={() => {
+                  navigate({ to: '/variables/create' });
+                }}
+                disabled={!canCreateVariable}
+              >
+                Create variable
+              </Button>
+              <DocsLink href="https://docs.takaro.io/advanced/variables" target="_blank" rel="noopener noreferrer" />
+            </div>
           );
         }}
         renderRowSelectionActions={() => {
           return (
             <Button
-              text={`Delete variables (${selectedVariableIds.length})`}
               onClick={() => {
                 setOpenVariablesDialog(true);
               }}
-            />
+            >
+              Delete variables ({selectedVariableIds.length})
+            </Button>
           );
         }}
         id="variables"
@@ -217,14 +249,15 @@ function Component() {
       <Outlet />
       <VariablesDeleteDialog
         variableIds={selectedVariableIds}
-        openDialog={openVariablesDialog}
-        setOpenDialog={setOpenVariablesDialog}
+        open={openVariablesDialog}
+        onOpenChange={setOpenVariablesDialog}
       />
     </Fragment>
   );
 }
 
 const VariableMenu: FC<{ variable: VariableOutputDTO }> = ({ variable }) => {
+  const theme = useTheme();
   const [openVariableDialog, setOpenVariableDialog] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -236,20 +269,33 @@ const VariableMenu: FC<{ variable: VariableOutputDTO }> = ({ variable }) => {
         </Dropdown.Trigger>
         <Dropdown.Menu>
           <Dropdown.Menu.Item
+            label="View variable"
+            icon={<ViewIcon />}
+            onClick={() => navigate({ to: '/variables/view/$variableId', params: { variableId: variable.id } })}
+          />
+          <Dropdown.Menu.Item
             label="Edit variable"
             icon={<EditIcon />}
             onClick={() => navigate({ to: '/variables/update/$variableId', params: { variableId: variable.id } })}
           />
           <Dropdown.Menu.Item
             label="Delete variable"
-            icon={<DeleteIcon />}
+            icon={<DeleteIcon fill={theme.colors.error} />}
             onClick={() => {
               setOpenVariableDialog(true);
             }}
           />
         </Dropdown.Menu>
       </Dropdown>
-      <VariableDeleteDialog variable={variable} openDialog={openVariableDialog} setOpenDialog={setOpenVariableDialog} />
+      <VariableDeleteDialog
+        variableId={variable.id}
+        variableKey={variable.key}
+        gameServerName={variable.gameServer?.name}
+        playerName={variable.player?.name}
+        moduleName={variable.module?.name}
+        open={openVariableDialog}
+        onOpenChange={setOpenVariableDialog}
+      />
     </>
   );
 };

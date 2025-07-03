@@ -1,5 +1,4 @@
 import { FC, CSSProperties } from 'react';
-
 import { styled } from '../../../styled';
 
 const StyledP = styled.p`
@@ -16,12 +15,11 @@ interface DescriptionProps {
 }
 
 export const Description: FC<DescriptionProps> = ({ description, inputName, style }) => {
-  const urlPattern = /(https?:\/\/[^\s]+)/g;
-
+  const urlPattern = /(https?:\/\/[^\s)]+)/g;
   return (
     <StyledP id={`${inputName}-description`} style={style}>
       {description.split(urlPattern).map((part, i) => {
-        if (part.match(urlPattern)) {
+        if (i % 2 === 1) {
           return (
             <a key={`${i}`} href={part} target="_blank" rel="noopener noreferrer" className="underline">
               {part}
@@ -32,8 +30,4 @@ export const Description: FC<DescriptionProps> = ({ description, inputName, styl
       })}
     </StyledP>
   );
-};
-
-export const setAriaDescribedBy = (name: string, hasDescription: boolean) => {
-  return hasDescription ? `${name}-description` : undefined;
 };

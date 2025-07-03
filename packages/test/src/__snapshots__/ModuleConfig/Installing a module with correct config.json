@@ -4,27 +4,36 @@
     "data": {
       "gameserverId": "12377bdc-a3bd-4594-8722-361545ce1894",
       "moduleId": "d5617ae9-efeb-47fd-99b5-05c442f1760d",
-      "module": {
-        "createdAt": "2024-07-14T14:37:19.265Z",
-        "updatedAt": "2024-07-14T14:37:19.267Z",
-        "id": "d5617ae9-efeb-47fd-99b5-05c442f1760d",
-        "name": "Test module",
-        "builtin": null,
+      "userConfig": {
+        "foo": "bar"
+      },
+      "systemConfig": {
+        "enabled": true
+      },
+      "versionId": "4817aafd-5e8c-43ab-a017-414f4b92e343",
+      "version": {
+        "createdAt": "2024-12-07T17:36:01.653Z",
+        "updatedAt": "2024-12-07T17:36:01.661Z",
+        "id": "4817aafd-5e8c-43ab-a017-414f4b92e343",
+        "moduleId": "4bf3a9ba-65a9-4bf2-9992-ac65ac2fbe27",
+        "tag": "latest",
         "description": "Test description",
         "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"foo\":{\"type\":\"string\",\"minLength\":3,\"maxLength\":10}},\"required\":[\"foo\"],\"additionalProperties\":false}",
         "uiSchema": "{}",
         "cronJobs": [],
         "hooks": [],
         "commands": [],
-        "functions": [],
         "permissions": [],
-        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}"
+        "functions": [],
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}",
+        "defaultSystemConfig": null
       },
-      "userConfig": {
-        "foo": "bar"
-      },
-      "systemConfig": {
-        "enabled": true
+      "module": {
+        "createdAt": "2024-12-15T21:32:57.746Z",
+        "updatedAt": "2024-12-15T21:32:57.746Z",
+        "id": "de6b89f6-028b-455d-9c56-abe32541ce3c",
+        "name": "Test module",
+        "builtin": null
       }
     }
   },

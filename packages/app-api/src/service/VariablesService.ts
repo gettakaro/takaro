@@ -6,8 +6,8 @@ import { ITakaroQuery } from '@takaro/db';
 import { ITakaroRepo, PaginatedOutput } from '../db/base.js';
 import { GameServerOutputDTO } from './GameServerService.js';
 import { Type } from 'class-transformer';
-import { ModuleOutputDTO } from './ModuleService.js';
-import { PlayerOutputDTO } from './PlayerService.js';
+import { ModuleOutputDTO } from './Module/dto.js';
+import { PlayerOutputDTO } from './Player/dto.js';
 
 export class VariableOutputDTO extends TakaroModelDTO<VariableOutputDTO> {
   @IsString()

@@ -1,12 +1,15 @@
-import { IntegrationTest, sandbox, expect, integrationConfig, EventsAwaiter } from '@takaro/test';
+import { IntegrationTest, sandbox, expect, EventsAwaiter } from '@takaro/test';
 import { CommandOutputDTO, GameServerOutputDTO, ModuleOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import { CommandService } from '../CommandService.js';
 import { queueService } from '@takaro/queues';
-import { Mock } from '@takaro/gameserver';
-import { IGamePlayer, EventChatMessage, HookEvents, ChatChannel } from '@takaro/modules';
+import { Generic } from '@takaro/gameserver';
+import { IGamePlayer, EventChatMessage, HookEvents, ChatChannel, IPosition } from '@takaro/modules';
 import Sinon from 'sinon';
 import { EventService } from '../EventService.js';
 import { faker } from '@faker-js/faker';
+import { describe } from 'node:test';
+import { randomUUID } from 'crypto';
+import { getMockServer } from '@takaro/mock-gameserver';
 
 export async function getMockPlayer(extra: Partial<IGamePlayer> = {}): Promise<IGamePlayer> {
   const data: Partial<IGamePlayer> = {
@@ -26,7 +29,8 @@ interface IStandardSetupData {
   service: CommandService;
   gameserver: GameServerOutputDTO;
   mod: ModuleOutputDTO;
-  assignment: ModuleInstallationOutputDTO;
+  installation: ModuleInstallationOutputDTO;
+  mockservers: Awaited<ReturnType<typeof getMockServer>>[];
 }
 
 async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStandardSetupData> {
@@ -38,7 +42,7 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
   const normalCommand = (
     await this.client.command.commandControllerCreate({
       name: 'Test command',
-      moduleId: mod.id,
+      versionId: mod.latestVersion.id,
       trigger: 'test',
     })
   ).data.data;
@@ -47,15 +51,22 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
   await eventsAwaiter.connect(this.client);
   const connectedEvents = eventsAwaiter.waitForEvents(HookEvents.PLAYER_CREATED, 5);
 
-  const gameserver = (
-    await this.client.gameserver.gameServerControllerCreate({
-      name: 'Test gameserver',
-      type: 'MOCK',
-      connectionInfo: JSON.stringify({
-        host: integrationConfig.get('mockGameserver.host'),
-      }),
+  if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
+  const identityToken = randomUUID();
+  const mockServer = await getMockServer({
+    mockserver: {
+      registrationToken: this.domainRegistrationToken,
+      identityToken,
+    },
+  });
+
+  const gameServerRes = (
+    await this.client.gameserver.gameServerControllerSearch({
+      filters: { identityToken: [identityToken] },
     })
   ).data.data;
+  const gameserver = gameServerRes.find((gs) => gs.identityToken === identityToken);
+  if (!gameserver) throw new Error('Game server not found. Did something fail when registering?');
 
   await this.client.gameserver.gameServerControllerExecuteCommand(gameserver.id, {
     command: 'connectAll',
@@ -63,7 +74,12 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
 
   await connectedEvents;
 
-  const assignment = (await this.client.gameserver.gameServerControllerInstallModule(gameserver.id, mod.id)).data.data;
+  const installation = (
+    await this.client.module.moduleInstallationsControllerInstallModule({
+      gameServerId: gameserver.id,
+      versionId: mod.latestVersion.id,
+    })
+  ).data.data;
 
   if (!this.standardDomainId) throw new Error('No standard domain id set!');
 
@@ -72,7 +88,8 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
     normalCommand,
     mod,
     gameserver,
-    assignment,
+    installation,
+    mockservers: [mockServer],
   };
 }
 
@@ -84,11 +101,13 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
-        x: 0,
-        y: 0,
-        z: 0,
-      });
+      sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
+        new IPosition({
+          x: 0,
+          y: 0,
+          z: 0,
+        }),
+      );
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({
@@ -109,11 +128,13 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
-        x: 0,
-        y: 0,
-        z: 0,
-      });
+      sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
+        new IPosition({
+          x: 0,
+          y: 0,
+          z: 0,
+        }),
+      );
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({
@@ -134,11 +155,13 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
-        x: 0,
-        y: 0,
-        z: 0,
-      });
+      sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
+        new IPosition({
+          x: 0,
+          y: 0,
+          z: 0,
+        }),
+      );
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({
@@ -169,15 +192,17 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
-        x: 0,
-        y: 0,
-        z: 0,
-      });
+      sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
+        new IPosition({
+          x: 0,
+          y: 0,
+          z: 0,
+        }),
+      );
 
-      await this.client.gameserver.gameServerControllerUninstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.mod.id,
+      await this.client.module.moduleInstallationsControllerUninstallModule(
+        this.setupData.installation.moduleId,
+        this.setupData.installation.gameserverId,
       );
 
       await this.setupData.service.handleChatMessage(
@@ -192,10 +217,10 @@ const tests = [
 
       expect(addStub).to.not.have.been.calledOnce;
 
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.mod.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.mod.latestVersion.id,
+      });
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({
@@ -215,28 +240,28 @@ const tests = [
     name: 'Adds a delayed job when delay is configured',
     setup,
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.mod.id,
-        {
-          systemConfig: JSON.stringify({
-            commands: {
-              [this.setupData.normalCommand.name]: {
-                delay: 5,
-              },
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.mod.latestVersion.id,
+        systemConfig: JSON.stringify({
+          commands: {
+            [this.setupData.normalCommand.name]: {
+              delay: 5,
             },
-          }),
-        },
-      );
+          },
+        }),
+      });
 
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
       sandbox.stub(EventService.prototype, 'create').resolves();
 
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
-        x: 0,
-        y: 0,
-        z: 0,
-      });
+      sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
+        new IPosition({
+          x: 0,
+          y: 0,
+          z: 0,
+        }),
+      );
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({
@@ -258,23 +283,25 @@ const tests = [
     name: 'Bug repro, install module -> create command -> command not active',
     setup,
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.mod.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.mod.latestVersion.id,
+      });
 
       await this.client.command.commandControllerCreate({
         name: 'Test command 2',
-        moduleId: this.setupData.mod.id,
+        versionId: this.setupData.mod.latestVersion.id,
         trigger: 'test2',
       });
 
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
-        x: 0,
-        y: 0,
-        z: 0,
-      });
+      sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
+        new IPosition({
+          x: 0,
+          y: 0,
+          z: 0,
+        }),
+      );
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({
@@ -295,25 +322,26 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
-        x: 0,
-        y: 0,
-        z: 0,
-      });
-
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.mod.id,
-        {
-          systemConfig: JSON.stringify({
-            commands: {
-              [this.setupData.normalCommand.name]: {
-                enabled: false,
-              },
-            },
-          }),
-        },
+      sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
+        new IPosition({
+          x: 0,
+          y: 0,
+          z: 0,
+        }),
       );
+
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.mod.latestVersion.id,
+
+        systemConfig: JSON.stringify({
+          commands: {
+            [this.setupData.normalCommand.name]: {
+              enabled: false,
+            },
+          },
+        }),
+      });
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({
@@ -327,10 +355,10 @@ const tests = [
 
       expect(addStub).to.not.have.been.calledOnce;
 
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.mod.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.mod.latestVersion.id,
+      });
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({

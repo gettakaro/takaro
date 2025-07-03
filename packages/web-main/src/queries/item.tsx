@@ -1,10 +1,10 @@
 import { ItemOutputArrayDTOAPI, ItemSearchInputDTO, ItemsOutputDTO } from '@takaro/apiclient';
-import { queryOptions, infiniteQueryOptions } from '@tanstack/react-query';
+import { queryOptions, infiniteQueryOptions, keepPreviousData } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { getApiClient } from 'util/getApiClient';
-import { hasNextPage, queryParamsToArray } from './util';
+import { getApiClient } from '../util/getApiClient';
+import { getNextPage, queryParamsToArray } from './util';
 
-export const itemKeys = {
+const itemKeys = {
   all: ['items'] as const,
   list: () => [...itemKeys.all] as const,
   detail: (id: string) => [...itemKeys.all, id] as const,
@@ -19,9 +19,11 @@ export const itemsQueryOptions = (queryParams: ItemSearchInputDTO) =>
 export const ItemsInfiniteQueryOptions = (queryParams: ItemSearchInputDTO = {}) => {
   return infiniteQueryOptions<ItemOutputArrayDTOAPI, AxiosError<ItemOutputArrayDTOAPI>>({
     queryKey: [...itemKeys.list(), 'infinite', ...queryParamsToArray(queryParams)],
-    queryFn: async () => (await getApiClient().item.itemControllerSearch(queryParams)).data,
+    queryFn: async ({ pageParam }) =>
+      (await getApiClient().item.itemControllerSearch({ ...queryParams, page: pageParam as number })).data,
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
+    getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
+    placeholderData: keepPreviousData,
   });
 };
 

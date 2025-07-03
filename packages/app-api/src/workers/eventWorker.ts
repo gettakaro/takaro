@@ -5,7 +5,7 @@ import { TakaroWorker, IEventQueueData } from '@takaro/queues';
 import { EventChatMessage, EventEntityKilled, EventPlayerDeath, HookEvents } from '@takaro/modules';
 import { getSocketServer } from '../lib/socketServer.js';
 import { HookService } from '../service/HookService.js';
-import { PlayerService } from '../service/PlayerService.js';
+import { PlayerService } from '../service/Player/index.js';
 import { CommandService } from '../service/CommandService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from '../service/EventService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';
@@ -33,11 +33,15 @@ async function processJob(job: Job<IEventQueueData>) {
 
   if (type === HookEvents.LOG_LINE) {
     const hooksService = new HookService(domainId);
-    await hooksService.handleEvent({
-      eventType: HookEvents.LOG_LINE,
-      eventData: event,
-      gameServerId,
-    });
+    hooksService
+      .handleEvent({
+        eventType: HookEvents.LOG_LINE,
+        eventData: event,
+        gameServerId,
+      })
+      .catch((err) => {
+        log.error('Failed to handle log line event', { error: err, event });
+      });
   }
 
   const socketServer = await getSocketServer();
@@ -53,8 +57,13 @@ async function processJob(job: Job<IEventQueueData>) {
 
     if (type === HookEvents.CHAT_MESSAGE) {
       const chatMessage = event as EventChatMessage;
+      log.debug('Received chat message event, checking for commands', {
+        player: chatMessage.player?.gameId,
+        msgPreview: chatMessage.msg.substring(0, 50),
+      });
       const commandService = new CommandService(domainId);
       await commandService.handleChatMessage(chatMessage, gameServerId);
+      log.debug('Finished handling chat message for potential commands');
 
       await eventService.create(
         new EventCreateDTO({
@@ -68,7 +77,6 @@ async function processJob(job: Job<IEventQueueData>) {
 
     if (type === EVENT_TYPES.PLAYER_CONNECTED) {
       await playerOnGameServerService.update(pog.id, new PlayerOnGameServerUpdateDTO({ online: true }));
-      if (player.steamId) await playerService.syncSingleSteamAccount(player.steamId);
 
       await eventService.create(
         new EventCreateDTO({

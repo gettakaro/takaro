@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../../../util/getApiClient';
 import { useSnackbar } from 'notistack';
-import { gameServerKeys, useGameServerCreateFromCSMMImport } from 'queries/gameserver';
+import { gameServerKeys, useGameServerCreateFromCSMMImport } from '../../../queries/gameserver';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import { hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
 import { useQueryClient } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/gameservers/create/import')({
@@ -86,7 +86,7 @@ function Component() {
     }
   }, [jobStatus]);
 
-  const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({
+  const { control, handleSubmit, formState } = useForm<z.infer<typeof validationSchema>>({
     mode: 'onChange',
     resolver: zodResolver(validationSchema),
     defaultValues: {
@@ -128,7 +128,7 @@ function Component() {
   };
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>Create Game Server</Drawer.Heading>
         <Drawer.Body>
@@ -186,7 +186,9 @@ function Component() {
           )}
         </Drawer.Body>
         <Drawer.Footer>
-          <Button fullWidth text="Import gameserver" form="import-game-server-form" type="submit" />
+          <Button fullWidth form="import-game-server-form" type="submit">
+            Import gameserver
+          </Button>
         </Drawer.Footer>
       </Drawer.Content>
     </Drawer>

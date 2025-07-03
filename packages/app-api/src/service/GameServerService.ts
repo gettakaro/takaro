@@ -1,29 +1,20 @@
 import { TakaroService } from './Base.js';
 import { GameServerModel, GameServerRepo } from '../db/gameserver.js';
-import {
-  IsBoolean,
-  IsEnum,
-  IsJSON,
-  IsObject,
-  IsOptional,
-  IsString,
-  IsUUID,
-  Length,
-  ValidateNested,
-} from 'class-validator';
+import { IsBoolean, IsEnum, IsJSON, IsObject, IsOptional, IsString, Length, isUUID } from 'class-validator';
 import {
   IMessageOptsDTO,
   IGameServer,
   IPlayerReferenceDTO,
   sdtdJsonSchema,
   rustJsonSchema,
-  mockJsonSchema,
   GAME_SERVER_TYPE,
   getGame,
   BanDTO,
+  TestReachabilityOutputDTO,
+  TakaroConnector,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO, traceableClass, TakaroDTO } from '@takaro/util';
-import { SettingsService } from './SettingsService.js';
+import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 import { queueService } from '@takaro/queues';
 import {
   HookEvents,
@@ -31,29 +22,32 @@ import {
   TakaroEventServerStatusChanged,
   GameEvents,
   EventChatMessage,
-  TakaroEventModuleInstalled,
-  TakaroEventModuleUninstalled,
   ChatChannel,
+  TakaroEventGameserverCreated,
+  TakaroEventGameserverDeleted,
+  TakaroEventGameserverUpdated,
 } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
-import type { ModuleOutputDTO as ModuleOutputDTOType } from './ModuleService.js';
-import { ModuleOutputDTO, ModuleService } from './ModuleService.js';
+import { ModuleService } from './Module/index.js';
 
 // Curse you ESM... :(
 import _Ajv from 'ajv';
-import { CronJobService } from './CronJobService.js';
-import { PlayerService } from './PlayerService.js';
+import { PlayerService } from './Player/index.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
 import { ItemCreateDTO, ItemsService } from './ItemsService.js';
+import { EntityCreateDTO, EntitiesService } from './EntitiesService.js';
 import { randomUUID } from 'crypto';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
-import { Type } from 'class-transformer';
 import { gameServerLatency } from '../lib/metrics.js';
 import { Pushgateway } from 'prom-client';
 import { config } from '../config.js';
 import { handlePlayerSync } from '../workers/playerSyncWorker.js';
+import type { GetJobInputDTO } from '../controllers/GameServerController.js';
 import { ImportInputDTO } from '../controllers/GameServerController.js';
+import { DomainService } from './DomainService.js';
+import { SystemTaskType } from '../workers/systemWorkerDefinitions.js';
+import { TrackingService } from './Tracking/index.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true });
@@ -63,6 +57,16 @@ const ajv = new Ajv({ useDefaults: true, strict: true });
 ajv.addKeyword('x-component');
 
 const gameClassCache = new Map<string, IGameServer>();
+
+export class JobStatusOutputDTO extends TakaroDTO<JobStatusOutputDTO> {
+  @IsString()
+  id!: string;
+  @IsEnum(['pending', 'completed', 'failed', 'active', 'delayed', 'prioritized', 'waiting', 'waiting-children'])
+  status: 'pending' | 'completed' | 'failed' | 'active' | 'delayed' | 'prioritized' | 'waiting' | 'waiting-children';
+  @IsOptional()
+  @IsString()
+  failedReason?: string;
+}
 
 class GameServerTypesOutputDTO extends TakaroDTO<GameServerTypesOutputDTO> {
   @IsEnum(GAME_SERVER_TYPE)
@@ -84,6 +88,9 @@ export class GameServerOutputDTO extends TakaroModelDTO<GameServerOutputDTO> {
   reachable: boolean;
   @IsBoolean()
   enabled: boolean;
+  @IsString()
+  @IsOptional()
+  identityToken?: string;
 }
 
 export class GameServerCreateDTO extends TakaroDTO<GameServerCreateDTO> {
@@ -95,6 +102,9 @@ export class GameServerCreateDTO extends TakaroDTO<GameServerCreateDTO> {
   @IsString()
   @IsEnum(GAME_SERVER_TYPE)
   type: GAME_SERVER_TYPE;
+  @IsString()
+  @IsOptional()
+  identityToken?: string;
 }
 
 export class GameServerUpdateDTO extends TakaroDTO<GameServerUpdateDTO> {
@@ -114,34 +124,6 @@ export class GameServerUpdateDTO extends TakaroDTO<GameServerUpdateDTO> {
   enabled: boolean;
 }
 
-export class ModuleInstallDTO extends TakaroDTO<ModuleInstallDTO> {
-  @IsJSON()
-  @IsOptional()
-  userConfig?: string;
-
-  @IsJSON()
-  @IsOptional()
-  systemConfig?: string;
-}
-
-export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallationOutputDTO> {
-  @IsUUID()
-  gameserverId: string;
-
-  @IsUUID()
-  moduleId: string;
-
-  @ValidateNested()
-  @Type(() => ModuleOutputDTO)
-  module: ModuleOutputDTOType;
-
-  @IsObject()
-  userConfig: Record<string, any>;
-
-  @IsObject()
-  systemConfig: Record<string, any>;
-}
-
 @traceableClass('service:gameserver')
 export class GameServerService extends TakaroService<
   GameServerModel,
@@ -151,9 +133,14 @@ export class GameServerService extends TakaroService<
 > {
   private playerService = new PlayerService(this.domainId);
   private pogService = new PlayerOnGameServerService(this.domainId);
+  private moduleService = new ModuleService(this.domainId);
 
   get repo() {
     return new GameServerRepo(this.domainId);
+  }
+
+  public refreshGameInstance(id: string) {
+    gameClassCache.delete(id);
   }
 
   find(filters: ITakaroQuery<GameServerOutputDTO>): Promise<PaginatedOutput<GameServerOutputDTO>> {
@@ -165,21 +152,71 @@ export class GameServerService extends TakaroService<
   }
 
   async create(item: GameServerCreateDTO): Promise<GameServerOutputDTO> {
-    const isReachable = await this.testReachability(undefined, JSON.parse(item.connectionInfo), item.type);
+    const domain = await new DomainService().findOne(this.domainId);
+    if (!domain) throw new errors.NotFoundError('Domain not found');
+    const currentServers = await this.find({ limit: 1 });
+    if (currentServers.total >= domain.maxGameservers) {
+      throw new errors.BadRequestError('Max game servers reached');
+    }
+    let isReachable = new TestReachabilityOutputDTO({ connectable: false, reason: 'Unknown' });
+    // Generic gameservers start the connection, so they are always reachable
+    if (item.type === GAME_SERVER_TYPE.GENERIC) {
+      isReachable = new TestReachabilityOutputDTO({
+        connectable: true,
+        reason: 'Generic gameservers initiated this connection, so they are reachable',
+      });
+      if (!item.identityToken) throw new errors.BadRequestError('Identity token is required for generic gameservers');
+    } else {
+      isReachable = await this.testReachability(undefined, JSON.parse(item.connectionInfo), item.type);
+    }
     const createdServer = await this.repo.create(item);
 
-    await queueService.queues.connector.queue.add({
-      domainId: this.domainId,
-      gameServerId: createdServer.id,
-      operation: 'create',
-      time: new Date().toISOString(),
-    });
-    await queueService.queues.itemsSync.queue.add(
-      { domainId: this.domainId, gameServerId: createdServer.id },
-      { jobId: `itemsSync-${this.domainId}-${createdServer.id}-init` },
+    const eventsService = new EventService(this.domainId);
+    await eventsService.create(
+      new EventCreateDTO({
+        eventName: EVENT_TYPES.GAMESERVER_CREATED,
+        gameserverId: createdServer.id,
+        meta: new TakaroEventGameserverCreated(),
+      }),
     );
+    if (createdServer.type !== GAME_SERVER_TYPE.GENERIC) {
+      await queueService.queues.connector.queue.add({
+        domainId: this.domainId,
+        gameServerId: createdServer.id,
+        operation: 'create',
+        time: new Date().toISOString(),
+      });
+    }
 
-    if (isReachable.connectable) {
+    // Trigger sync jobs for items, entities, and bans
+    await Promise.all([
+      queueService.queues.system.queue.add(
+        {
+          domainId: this.domainId,
+          taskType: SystemTaskType.SYNC_ITEMS,
+          gameServerId: createdServer.id,
+        },
+        { delay: 1000 },
+      ),
+      queueService.queues.system.queue.add(
+        {
+          domainId: this.domainId,
+          taskType: SystemTaskType.SYNC_ENTITIES,
+          gameServerId: createdServer.id,
+        },
+        { delay: 1000 },
+      ),
+      queueService.queues.system.queue.add(
+        {
+          domainId: this.domainId,
+          taskType: SystemTaskType.SYNC_BANS,
+          gameServerId: createdServer.id,
+        },
+        { delay: 1000 },
+      ),
+    ]);
+
+    if (isReachable.connectable && createdServer.type !== GAME_SERVER_TYPE.GENERIC) {
       await handlePlayerSync(createdServer.id, this.domainId);
     }
 
@@ -187,35 +224,71 @@ export class GameServerService extends TakaroService<
   }
 
   async delete(id: string) {
-    const installedModules = await this.getInstalledModules({
-      gameserverId: id,
+    const existing = await this.findOne(id, false);
+    if (!existing) throw new errors.NotFoundError('Game server not found');
+    const installedModules = await this.moduleService.findInstallations({
+      filters: { gameserverId: [id] },
     });
-    await Promise.all(installedModules.map((mod) => this.uninstallModule(id, mod.moduleId)));
+    await Promise.all(
+      installedModules.results.map((installation) =>
+        this.moduleService.uninstallModule(installation.gameserverId, installation.moduleId),
+      ),
+    );
 
-    gameClassCache.delete(id);
+    this.refreshGameInstance(id);
 
     const gateway = new Pushgateway(config.get('metrics.pushgatewayUrl'), {});
     gateway.delete({ jobName: 'worker', groupings: { gameserver: id } });
 
-    await queueService.queues.connector.queue.add({
-      domainId: this.domainId,
-      gameServerId: id,
-      operation: 'delete',
-      time: new Date().toISOString(),
-    });
+    if (existing.type !== GAME_SERVER_TYPE.GENERIC) {
+      await queueService.queues.connector.queue.add({
+        domainId: this.domainId,
+        gameServerId: id,
+        operation: 'delete',
+        time: new Date().toISOString(),
+      });
+    }
+
     await this.repo.delete(id);
+    const eventsService = new EventService(this.domainId);
+    await eventsService.create(
+      new EventCreateDTO({
+        eventName: EVENT_TYPES.GAMESERVER_DELETED,
+        gameserverId: id,
+        meta: new TakaroEventGameserverDeleted(),
+      }),
+    );
+    await queueService.queues.system.queue.add(
+      {
+        domainId: this.domainId,
+        taskType: SystemTaskType.DELETE_GAME_SERVERS,
+      },
+      {},
+      'gameServerDelete',
+    );
     return id;
   }
 
   async update(id: string, item: GameServerUpdateDTO): Promise<GameServerOutputDTO> {
     const updatedServer = await this.repo.update(id, item);
-    gameClassCache.delete(id);
-    await queueService.queues.connector.queue.add({
-      domainId: this.domainId,
-      gameServerId: id,
-      operation: 'update',
-      time: new Date().toISOString(),
-    });
+    this.refreshGameInstance(id);
+    const eventsService = new EventService(this.domainId);
+    await eventsService.create(
+      new EventCreateDTO({
+        eventName: EVENT_TYPES.GAMESERVER_UPDATED,
+        gameserverId: id,
+        meta: new TakaroEventGameserverUpdated(),
+      }),
+    );
+    if (updatedServer.type !== GAME_SERVER_TYPE.GENERIC) {
+      await queueService.queues.connector.queue.add({
+        domainId: this.domainId,
+        gameServerId: id,
+        operation: 'update',
+        time: new Date().toISOString(),
+      });
+    }
+
     return updatedServer;
   }
 
@@ -245,122 +318,15 @@ export class GameServerService extends TakaroService<
 
       // When a user is trying to fix their connection info, it's important we don't cache stale/wrong connection info
       if (!reachability.connectable) {
-        gameClassCache.delete(id);
+        this.refreshGameInstance(id);
       }
 
       return reachability;
     } else if (connectionInfo && type) {
-      const instance = await getGame(type, connectionInfo, {});
+      const instance = await getGame(type, connectionInfo, {}, 'unknown-id');
       return instance.testReachability();
     }
     throw new errors.BadRequestError('Missing required parameters');
-  }
-
-  async getModuleInstallation(gameserverId: string, moduleId: string) {
-    const moduleService = new ModuleService(this.domainId);
-    const mod = await moduleService.findOne(moduleId);
-    const installation = await this.repo.getModuleInstallation(gameserverId, moduleId);
-
-    return new ModuleInstallationOutputDTO({
-      gameserverId,
-      moduleId,
-      module: mod,
-      userConfig: installation.userConfig,
-      systemConfig: installation.systemConfig,
-    });
-  }
-
-  async installModule(gameserverId: string, moduleId: string, installDto?: ModuleInstallDTO) {
-    const moduleService = new ModuleService(this.domainId);
-    const cronjobService = new CronJobService(this.domainId);
-    const mod = await moduleService.findOne(moduleId);
-
-    if (!mod) {
-      throw new errors.NotFoundError('Module not found');
-    }
-
-    if (!installDto) {
-      installDto = new ModuleInstallDTO({
-        userConfig: JSON.stringify({}),
-        systemConfig: JSON.stringify({}),
-      });
-    }
-
-    const modUserConfig = JSON.parse(installDto.userConfig ?? '{}');
-    const validateUserConfig = ajv.compile(JSON.parse(mod.configSchema));
-    const isValidUserConfig = validateUserConfig(modUserConfig);
-
-    const modSystemConfig = JSON.parse(installDto.systemConfig ?? '{}');
-    const validateSystemConfig = ajv.compile(JSON.parse(mod.systemConfigSchema));
-    const isValidSystemConfig = validateSystemConfig(modSystemConfig);
-
-    if (!isValidUserConfig || !isValidSystemConfig) {
-      const allErrors = [...(validateSystemConfig.errors ?? []), ...(validateUserConfig.errors ?? [])];
-      const prettyErrors = allErrors
-        .map((e) => {
-          if (e.keyword === 'additionalProperties') {
-            return `${e.message}, invalid: ${e.params.additionalProperty}`;
-          }
-
-          return `${e.instancePath} ${e.message}`;
-        })
-        .join(', ');
-      throw new errors.BadRequestError(`Invalid config: ${prettyErrors}`);
-    }
-
-    // ajv mutates the object, so we need to stringify it again
-    installDto.userConfig = JSON.stringify(modUserConfig);
-    installDto.systemConfig = JSON.stringify(modSystemConfig);
-
-    const installation = await this.repo.installModule(gameserverId, moduleId, installDto);
-    await cronjobService.syncModuleCronjobs(installation);
-
-    const eventsService = new EventService(this.domainId);
-    await eventsService.create(
-      new EventCreateDTO({
-        eventName: EVENT_TYPES.MODULE_INSTALLED,
-        gameserverId,
-        moduleId: moduleId,
-        meta: new TakaroEventModuleInstalled({
-          systemConfig: installDto.systemConfig,
-          userConfig: installDto.userConfig,
-        }),
-      }),
-    );
-
-    return this.getModuleInstallation(gameserverId, moduleId);
-  }
-
-  async uninstallModule(gameserverId: string, moduleId: string) {
-    const installation = await this.repo.getModuleInstallation(gameserverId, moduleId);
-
-    const cronjobService = new CronJobService(this.domainId);
-    await cronjobService.uninstallCronJobs(installation);
-
-    await this.repo.uninstallModule(gameserverId, moduleId);
-
-    const eventsService = new EventService(this.domainId);
-    await eventsService.create(
-      new EventCreateDTO({
-        eventName: EVENT_TYPES.MODULE_UNINSTALLED,
-        gameserverId,
-        moduleId: moduleId,
-        meta: await new TakaroEventModuleUninstalled(),
-      }),
-    );
-
-    return new ModuleInstallationOutputDTO({
-      gameserverId,
-      moduleId,
-    });
-  }
-
-  async getInstalledModules({ gameserverId, moduleId }: { gameserverId?: string; moduleId?: string }) {
-    const installations = await this.repo.getInstalledModules({
-      gameserverId,
-      moduleId,
-    });
-    return installations;
   }
 
   async getGame(id: string): Promise<IGameServer> {
@@ -381,7 +347,7 @@ export class GameServerService extends TakaroService<
       return acc;
     }, {});
 
-    gameInstance = await getGame(gameserver.type, gameserver.connectionInfo, settings);
+    gameInstance = await getGame(gameserver.type, gameserver.connectionInfo, settings, id);
 
     gameClassCache.set(id, gameInstance);
 
@@ -400,8 +366,19 @@ export class GameServerService extends TakaroService<
           case GAME_SERVER_TYPE.RUST:
             schema = rustJsonSchema;
             break;
+          case GAME_SERVER_TYPE.GENERIC:
+            schema = {
+              type: 'object',
+              properties: {},
+              required: [],
+            };
+            break;
           case GAME_SERVER_TYPE.MOCK:
-            schema = mockJsonSchema;
+            schema = {
+              type: 'object',
+              properties: {},
+              required: [],
+            };
             break;
           default:
             throw new errors.NotImplementedError();
@@ -426,6 +403,15 @@ export class GameServerService extends TakaroService<
   }
 
   async sendMessage(gameServerId: string, message: string, opts: IMessageOptsDTO) {
+    // Get settings to check for message prefix
+    const settingsService = new SettingsService(this.domainId, gameServerId);
+    const messagePrefixSetting = await settingsService.get(SETTINGS_KEYS.messagePrefix);
+
+    // Apply prefix if it exists
+    if (messagePrefixSetting.value && messagePrefixSetting.value.trim() !== '') {
+      message = messagePrefixSetting.value + message;
+    }
+
     // Limit message length to 300 characters
     // Longer than this and gameservers start acting _weird_
     message = message.substring(0, 300);
@@ -433,10 +419,18 @@ export class GameServerService extends TakaroService<
     const gameInstance = await this.getGame(gameServerId);
     await gameInstance.sendMessage(message, opts);
 
+    // Hacky way to detect if the message is a linking message
+    if (message.includes('to complete the linking process')) {
+      // Replace the actual secret code with a xxx-xxx-xxx placeholder
+      message = message.replace(/code=(\w+-\w+-\w+)/, 'code=xxx-xxx-xxx');
+    }
+
+    const isPrivateMessage = opts && opts.recipient;
+
     const eventService = new EventService(this.domainId);
     const meta = new EventChatMessage({
       msg: message,
-      channel: ChatChannel.GLOBAL,
+      channel: isPrivateMessage ? ChatChannel.WHISPER : ChatChannel.GLOBAL,
       timestamp: new Date().toISOString(),
     });
 
@@ -454,9 +448,10 @@ export class GameServerService extends TakaroService<
 
     return gameInstance.teleportPlayer(
       await this.pogService.getPog(playerId, gameServerId),
-      position.x,
-      position.y,
-      position.z,
+      Math.round(position.x),
+      Math.round(position.y),
+      Math.round(position.z),
+      position.dimension,
     );
   }
 
@@ -491,10 +486,24 @@ export class GameServerService extends TakaroService<
     const gameInstance = await this.getGame(gameServerId);
     return gameInstance.listBans();
   }
-  async giveItem(gameServerId: string, playerId: string, item: string, amount: number, quality?: number) {
+  async giveItem(gameServerId: string, playerId: string, itemIdentifier: string, amount: number, quality?: string) {
     const gameInstance = await this.getGame(gameServerId);
     const pog = await this.pogService.getPog(playerId, gameServerId);
-    return gameInstance.giveItem(pog, item, amount, quality);
+
+    let itemCode: string;
+
+    // Check if input is a UUID (new way) or item code (old way)
+    if (isUUID(itemIdentifier)) {
+      // UUID: lookup in database to get item code
+      const itemsService = new ItemsService(this.domainId);
+      const resolvedItem = await itemsService.findOne(itemIdentifier);
+      itemCode = resolvedItem.code;
+    } else {
+      // Item code: use directly (old way)
+      itemCode = itemIdentifier;
+    }
+
+    return gameInstance.giveItem(pog, itemCode, amount, quality);
   }
 
   async shutdown(gameServerId: string) {
@@ -516,15 +525,29 @@ export class GameServerService extends TakaroService<
     if (!location) return location;
 
     const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
+    const trackingService = new TrackingService(this.domainId);
 
     await playerOnGameServerService.update(
       pog.id,
       new PlayerOnGameServerUpdateDTO({
-        positionX: location.x,
-        positionY: location.y,
-        positionZ: location.z,
+        positionX: Math.round(location.x),
+        positionY: Math.round(location.y),
+        positionZ: Math.round(location.z),
+        dimension: location.dimension,
       }),
     );
+
+    trackingService.repo
+      .observePlayerLocation(
+        pog.id,
+        Math.round(location.x),
+        Math.round(location.y),
+        Math.round(location.z),
+        location.dimension,
+      )
+      .catch((err) => {
+        this.log.error('Failed to observe player location', { error: err });
+      });
 
     return location;
   }
@@ -547,34 +570,114 @@ export class GameServerService extends TakaroService<
     await itemsService.upsertMany(toInsert);
   }
 
+  async syncEntities(gameServerId: string) {
+    const entitiesService = new EntitiesService(this.domainId);
+    const gameInstance = await this.getGame(gameServerId);
+    const entities = await gameInstance.listEntities();
+
+    const toInsert = await Promise.all(
+      entities.map((entity) => {
+        return new EntityCreateDTO({
+          name: entity.name,
+          code: entity.code,
+          description: entity.description,
+          type: entity.type,
+          metadata: entity.metadata,
+          gameserverId: gameServerId,
+        });
+      }),
+    );
+
+    await entitiesService.upsertMany(toInsert);
+  }
+
   async syncInventories(gameServerId: string) {
     const onlinePlayers = await this.getPlayers(gameServerId);
     const gameInstance = await this.getGame(gameServerId);
-    const pogService = new PlayerOnGameServerService(this.domainId);
-    const pogRepo = pogService.repo;
+    const trackingService = new TrackingService(this.domainId);
+    await trackingService.repo.ensureInventoryPartition();
 
     await Promise.all(
       onlinePlayers.map(async (p) => {
         const inventory = await gameInstance.getPlayerInventory(p);
         const { pog } = await this.playerService.resolveRef(p, gameServerId);
         if (!pog) throw new errors.NotFoundError('Player not found');
-        await pogRepo.syncInventory(pog.id, gameServerId, inventory);
+        await trackingService.repo.observePlayerInventory(pog.id, gameServerId, inventory);
       }),
     );
   }
 
-  async getImport(id: string) {
+  async getCSMMImport(id: string) {
     const job = await queueService.queues.csmmImport.queue.bullQueue.getJob(id);
 
     if (!job) {
       throw new errors.NotFoundError('Job not found');
     }
 
-    return {
-      jobId: job.id,
-      status: await job.getState(),
+    const status = await job.getState();
+    if (!status) {
+      this.log.warn('Job status is undefined');
+      throw new errors.NotFoundError('Job status is unknown');
+    }
+
+    if (status === 'unknown') throw new errors.NotFoundError('Job status is unknown');
+
+    return new JobStatusOutputDTO({
+      id,
+      status,
       failedReason: job.failedReason,
-    };
+    });
+  }
+
+  async getJob(input: GetJobInputDTO): Promise<JobStatusOutputDTO> {
+    if (input.type === 'csmmImport') {
+      return this.getCSMMImport(input.id);
+    }
+
+    const job = await queueService.queues.system.queue.bullQueue.getJob(input.id);
+    if (!job) {
+      throw new errors.NotFoundError('Job not found');
+    }
+
+    const status = await job.getState();
+    if (!status) {
+      this.log.warn('Job status is undefined');
+      throw new errors.NotFoundError('Job status is unknown');
+    }
+
+    if (status === 'unknown') throw new errors.NotFoundError('Job status is unknown');
+
+    return new JobStatusOutputDTO({
+      failedReason: job.failedReason,
+      id: job.id,
+      status,
+    });
+  }
+
+  async triggerJob(input: GetJobInputDTO): Promise<JobStatusOutputDTO> {
+    if (input.type === 'csmmImport') {
+      throw new errors.BadRequestError(
+        'CSMM import jobs cannot be triggered with this endpoint, use the dedicated endpoint for importing CSMM data',
+      );
+    }
+
+    const triggeredJob = await queueService.queues.system.queue.add({
+      domainId: this.domainId,
+      taskType: input.type,
+      gameServerId: input.id,
+      triggerId: randomUUID(),
+    });
+
+    if (!triggeredJob || !triggeredJob.id) {
+      this.log.error('Cannot find job that was just triggered');
+      this.log.error(triggeredJob);
+      throw new errors.InternalServerError();
+    }
+
+    return this.getJob({
+      type: input.type,
+      id: triggeredJob.id,
+    });
   }
 
   async import(importData: Record<string, unknown>, options: ImportInputDTO) {
@@ -588,5 +691,34 @@ export class GameServerService extends TakaroService<
     return {
       id: job.id,
     };
+  }
+
+  async getMapInfo(gameServerId: string) {
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.getMapInfo();
+  }
+
+  async getMapTile(gameServerId: string, x: number, y: number, z: number) {
+    const gameInstance = await this.getGame(gameServerId);
+    const str = await gameInstance.getMapTile(x, y, z);
+    // Convert the base64 string to a buffer
+    const buffer = Buffer.from(str, 'base64');
+    return buffer;
+  }
+
+  async regenerateRegistrationToken() {
+    const domainService = new DomainService();
+    const { query, model } = await domainService.repo.getModel();
+    await query.where({ id: this.domainId }).update({
+      serverRegistrationToken: model.raw('generate_registration_token()'),
+    });
+
+    const servers = await this.find({ filters: { type: [GAME_SERVER_TYPE.GENERIC] } });
+    const connectorClient = new TakaroConnector();
+    await Promise.all(
+      servers.results.map(async (server) => {
+        await connectorClient.resetConnection(server.id);
+      }),
+    );
   }
 }

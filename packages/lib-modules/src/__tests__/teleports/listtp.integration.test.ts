@@ -1,5 +1,6 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../../dto/index.js';
+import { describe } from 'node:test';
 
 const group = 'Teleports suite';
 
@@ -10,10 +11,10 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Can list teleports with /tplist',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+      });
 
       const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 3);
 
@@ -52,15 +53,13 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Public teleports show up in /tplist',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-        {
-          userConfig: JSON.stringify({
-            allowPublicTeleports: true,
-          }),
-        },
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          allowPublicTeleports: true,
+        }),
+      });
 
       const setTpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -110,10 +109,10 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Teleports set by player A cannot be seen by player B with /tplist',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+      });
 
       const setTpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -142,13 +141,12 @@ const tests = [
     group,
     snapshot: false,
     setup: modulesTestSetup,
-    // eslint-disable-next-line quotes
     name: "bug repro /tplist: Player A and B have teleports set but B cannot see A's teleports",
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+      });
 
       const setTpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 

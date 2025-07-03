@@ -4,9 +4,10 @@ import { Job } from 'bullmq';
 import { logger, ctx } from '@takaro/util';
 import { DomainService } from '../service/DomainService.js';
 import { GameServerService } from '../service/GameServerService.js';
-import { PlayerService } from '../service/PlayerService.js';
+import { PlayerService } from '../service/Player/index.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';
 import { getWorkerMetrics } from '../lib/metrics.js';
+import { TrackingService } from '../service/Tracking/index.js';
 
 const log = logger('worker:playerSync');
 
@@ -44,6 +45,9 @@ export async function processJob(job: Job<IGameServerQueueData>) {
     domainPromises.push(
       ...domains.results.map(async (domain) => {
         const promises = [];
+
+        const trackingService = new TrackingService(domain.id);
+        await trackingService.repo.ensureLocationPartition();
 
         const gameserverService = new GameServerService(domain.id);
         const gameServers = await gameserverService.find({ filters: { enabled: [true] } });
@@ -83,7 +87,17 @@ export async function processJob(job: Job<IGameServerQueueData>) {
       }),
     );
 
-    await Promise.allSettled(domainPromises);
+    const domainRes = await Promise.allSettled(domainPromises);
+
+    for (const r of domainRes) {
+      if (r.status === 'rejected') {
+        log.error(r.reason);
+        await job.log(r.reason);
+      }
+    }
+    if (domainRes.some((r) => r.status === 'rejected')) {
+      throw new Error('Some domain promises failed');
+    }
 
     return;
   }

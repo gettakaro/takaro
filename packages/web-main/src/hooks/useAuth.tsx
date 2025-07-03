@@ -3,9 +3,9 @@ import { MeOutputDTO } from '@takaro/apiclient';
 import { createContext, useCallback, useContext } from 'react';
 import { useOry } from './useOry';
 import * as Sentry from '@sentry/react';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import { usePostHog } from 'posthog-js/react';
-import { userKeys } from 'queries/user';
+import { userKeys } from '../queries/user';
 
 export interface IAuthContext {
   logOut: () => Promise<void>;
@@ -34,6 +34,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email: session.user.email,
       domain: session.domain,
     });
+
+    // @ts-expect-error - We load Produktly via a script tag in the index...
+    window.Produktly.identifyUser(session.user.idpId, {
+      domain: session.domain,
+      createdAt: session.user.createdAt,
+      email: session.user.email,
+      permissions: session.user.roles.map((role) => role.role.permissions.map((p) => p.permission.permission)).flat(),
+    });
   }, []);
 
   const getSession = async function (): Promise<MeOutputDTO> {
@@ -49,8 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return newSession;
     } catch {
       queryClient.clear();
-      window.location.href = '/login';
-      throw 'should have no session and should be redirected to login';
+      return Promise.reject();
     }
   };
 

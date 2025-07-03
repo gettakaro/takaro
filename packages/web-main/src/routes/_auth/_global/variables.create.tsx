@@ -1,9 +1,9 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import { ExecutionType, IFormInputs, VariablesForm } from './-variables/VariableCreateUpdateForm';
-import { useVariableCreate } from 'queries/variable';
-import { hasPermission } from 'hooks/useHasPermission';
+import { IFormInputs, VariablesForm } from './-variables/VariablesForm';
+import { useVariableCreate } from '../../../queries/variable';
+import { hasPermission } from '../../../hooks/useHasPermission';
 import { VariableCreateDTO } from '@takaro/apiclient';
-import { userMeQueryOptions } from 'queries/user';
+import { userMeQueryOptions } from '../../../queries/user';
 
 export const Route = createFileRoute('/_auth/_global/variables/create')({
   beforeLoad: async ({ context }) => {
@@ -34,5 +34,5 @@ function Component() {
     mutate(createdVariable);
   }
 
-  return <VariablesForm isLoading={isPending} submit={createVariable} type={ExecutionType.CREATE} error={error} />;
+  return <VariablesForm isLoading={isPending} onSubmit={createVariable} error={error} />;
 }

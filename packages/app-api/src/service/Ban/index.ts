@@ -5,7 +5,7 @@ import { PaginatedOutput } from '../../db/base.js';
 import { BanCreateDTO, BanOutputDTO, BanUpdateDTO } from './dto.js';
 import { BanModel, BanRepo } from '../../db/ban.js';
 import { GameServerService } from '../GameServerService.js';
-import { PlayerService } from '../PlayerService.js';
+import { PlayerService } from '../Player/index.js';
 
 @traceableClass('service:ban')
 export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateDTO, BanUpdateDTO> {
@@ -32,7 +32,9 @@ export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateD
       // Some game servers still need a date, so we default to 1000 years from now
       const until = item.until || '3021-01-01T00:00:00.000Z';
 
-      await gameServerService.banPlayer(item.gameServerId, item.playerId, reason, until);
+      if (item.gameServerId) {
+        await gameServerService.banPlayer(item.gameServerId, item.playerId, reason, until);
+      }
 
       if (item.isGlobal) {
         const allGameservers = await gameServerService.find({});
@@ -60,15 +62,23 @@ export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateD
       if (existing.takaroManaged) {
         const gameServerService = new GameServerService(this.domainId);
 
-        await gameServerService.unbanPlayer(existing.gameServerId, existing.playerId);
-
         if (existing.isGlobal) {
           const allGameservers = await gameServerService.find({});
-          await Promise.all(
-            allGameservers.results.map(async (gs) => {
-              return gameServerService.unbanPlayer(gs.id, existing.playerId);
-            }),
+          const serverScopedBans = (await this.find({ filters: { playerId: [existing.playerId] } })).results.filter(
+            (b) => !b.isGlobal,
           );
+
+          const unbanPromises = allGameservers.results.map(async (gs) => {
+            return gameServerService.unbanPlayer(gs.id, existing.playerId);
+          });
+
+          const childBanDeletePromises = serverScopedBans.map(async (b) => this.delete(b.id));
+          this.log.debug(
+            `Removing a global ban, deleting ${childBanDeletePromises.length} server-scoped bans and executing ${unbanPromises.length} unbans`,
+          );
+          await Promise.all([...unbanPromises, ...childBanDeletePromises]);
+        } else {
+          await gameServerService.unbanPlayer(existing.gameServerId, existing.playerId);
         }
       }
     } catch (error) {
@@ -84,7 +94,7 @@ export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateD
     const gameServerService = new GameServerService(this.domainId);
     const { player, pogs } = await playerService.resolveFromId(playerId);
 
-    await Promise.allSettled(
+    await Promise.all(
       pogs.map(async (pog) => {
         return gameServerService.banPlayer(pog.gameServerId, player.id, ban.reason, ban.until);
       }),
@@ -118,10 +128,14 @@ export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateD
           return null;
         }
 
+        // If this player has a global ban in Takaro, we create this ban as 'takaroManaged'
+        const takaroManaged = globalBans.results.some((b) => b.playerId === player.id);
+
         return new BanCreateDTO({
           ...ban,
           gameServerId,
           playerId: player.id,
+          takaroManaged,
         });
       }),
     );

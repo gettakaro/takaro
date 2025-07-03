@@ -1,7 +1,7 @@
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { JsonSchemaForm } from '..';
 import { Button } from '@takaro/lib-components';
-import { gameServersQueryOptions } from 'queries/gameserver';
+import { gameServersQueryOptions } from '../../../queries/gameserver';
 import { useQuery } from '@tanstack/react-query';
 
 export default {
@@ -36,7 +36,9 @@ export const Default = () => {
   // todo should wrap this in a route?
   return (
     <JsonSchemaForm schema={schema} initialData={{}} uiSchema={uiSchema}>
-      <Button type="submit" text="Submit" onClick={() => console.log('form submitted')} />
+      <Button type="submit" onClick={() => console.log('form submitted')}>
+        Submit
+      </Button>
     </JsonSchemaForm>
   );
 };

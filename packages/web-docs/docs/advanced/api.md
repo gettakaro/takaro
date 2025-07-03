@@ -4,11 +4,11 @@ sidebar_position: 4
 
 # API
 
-For a hands-on experience and quick start with the Takaro API, please visit the [interactive API documentation](https://api.stg.takaro.dev/api.html). This page allows you to explore the API's endpoints, make test requests, and view responses in real-time. It's a great resource for both learning and debugging.
+For a hands-on experience and quick start with the Takaro API, please visit the [interactive API documentation](https://api.takaro.io/api.html). This page allows you to explore the API's endpoints, make test requests, and view responses in real-time. It's a great resource for both learning and debugging.
 
 ## Authentication
 
-If you are logged in to the Takaro dashboard, you can automatically use the endpoints on the [interactive API documentation](https://api.stg.takaro.dev/api.html).
+If you are logged in to the Takaro dashboard, you can automatically use the endpoints on the [interactive API documentation](https://api.takaro.io/api.html).
 
 If you dont have login credentials, ask your server administrator to create these.
 
@@ -116,7 +116,7 @@ Then, you can import it into your project and use it to make API requests:
 import { Client } from '@takaro/apiclient';
 
 const client = new Client({
-  url: 'https://api.stg.takaro.dev',
+  url: 'https://api.takaro.io',
   auth: {
     username: 'username',
     password: 'password,

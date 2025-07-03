@@ -1,19 +1,13 @@
 import { FC, useState } from 'react';
 import { PlayerRoleAssignmentOutputDTO } from '@takaro/apiclient';
 import { createColumnHelper, CellContext } from '@tanstack/react-table';
-import { gameServersQueryOptions } from 'queries/gameserver';
+import { gameServersQueryOptions } from '../../../../queries/gameserver';
 import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon, AiOutlineEye as ViewIcon } from 'react-icons/ai';
-import { usePlayerRoleUnassign } from 'queries/player';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { useTableActions, Table, Button, Dropdown, IconButton, Dialog, Skeleton, styled } from '@takaro/lib-components';
+import { useTableActions, Table, Button, Dropdown, IconButton, Skeleton } from '@takaro/lib-components';
 import { DateTime } from 'luxon';
 import { useQuery } from '@tanstack/react-query';
-
-const StyledDialogBody = styled(Dialog.Body)`
-  h2 {
-    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
-  }
-`;
+import { PlayerRoleDeleteDialog } from '../../../../components/dialogs/PlayerRoleDeleteDialog';
 
 interface IPlayerRolesTableProps {
   roles: PlayerRoleAssignmentOutputDTO[];
@@ -23,10 +17,8 @@ interface IPlayerRolesTableProps {
 
 export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, playerName }) => {
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerRoleAssignmentOutputDTO>();
-  const { mutate } = usePlayerRoleUnassign();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [deletingInfo, setDeletingInfo] = useState<CellContext<PlayerRoleAssignmentOutputDTO, unknown> | null>(null);
-  const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const filteredServerIds = roles.filter((role) => role.gameServerId).map((role) => role.gameServerId);
@@ -38,19 +30,6 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
       },
     }),
   );
-
-  const handleOnDelete = async () => {
-    if (deletingInfo) {
-      setIsDeleting(true);
-      mutate({
-        playerId,
-        roleId: deletingInfo.row.original.role.id,
-        gameServerId: deletingInfo.row.original.gameServerId,
-      });
-      setIsDeleting(false);
-      setOpenDialog(false);
-    }
-  };
 
   if (isLoading || !gameServers) {
     return <Skeleton variant="rectangular" width="100%" height="100%" />;
@@ -74,7 +53,7 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
       header: 'Gameserver',
       id: 'gameServerId',
       cell: (info) => {
-        const gameServer = gameServers.find((server) => server.id === info.getValue());
+        const gameServer = gameServers.data.find((server) => server.id === info.getValue());
         return gameServer?.name;
       },
       enableColumnFilter: true,
@@ -132,12 +111,13 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
               }
             />
             <Dropdown.Menu.Item
-              label="Unassign role"
+              label="Remove role"
               icon={<DeleteIcon />}
               onClick={() => {
                 setOpenDialog(true);
                 setDeletingInfo(info);
               }}
+              disabled={info.row.original.role.name === 'Player'}
             />
           </Dropdown.Menu>
         </Dropdown>
@@ -147,37 +127,26 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
 
   return (
     <>
-      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <Dialog.Content>
-          <Dialog.Heading>
-            Role: <span style={{ textTransform: 'capitalize' }}>{deletingInfo?.row.original.role.name}</span>{' '}
-          </Dialog.Heading>
-          <StyledDialogBody size="medium">
-            <h2>Unassign Role</h2>
-            <p>
-              Are you sure you want to unassign <strong>{deletingInfo?.row.original.role.name} </strong> from{' '}
-              <strong>{playerName}</strong>?
-            </p>
-            <Button
-              isLoading={isDeleting}
-              onClick={() => handleOnDelete()}
-              fullWidth
-              text={'Unassign role'}
-              color="error"
-            />
-          </StyledDialogBody>
-        </Dialog.Content>
-      </Dialog>
+      {deletingInfo && (
+        <PlayerRoleDeleteDialog
+          open={openDialog}
+          onOpenChange={setOpenDialog}
+          playerId={deletingInfo.row.original.playerId}
+          playerName={playerName}
+          roleId={deletingInfo.row.original.roleId}
+          gameServerId={deletingInfo.row.original.gameServerId}
+          roleName={deletingInfo.row.original.role.name}
+        />
+      )}
       <Table
         title="Player roles Management"
         id="roles"
         columns={columnDefs}
         data={roles}
         renderToolbar={() => (
-          <Button
-            onClick={() => navigate({ to: '/player/$playerId/role/assign', params: { playerId } })}
-            text="Assign role"
-          />
+          <Button onClick={() => navigate({ to: '/player/$playerId/role/assign', params: { playerId } })}>
+            Assign role
+          </Button>
         )}
         pagination={{
           paginationState: pagination.paginationState,

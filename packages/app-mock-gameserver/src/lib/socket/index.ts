@@ -15,6 +15,7 @@ class SocketServer {
     'getPlayerLocation',
     'executeConsoleCommand',
     'sendMessage',
+    'giveItem',
     'teleportPlayer',
     'kickPlayer',
     'banPlayer',

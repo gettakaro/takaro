@@ -1,5 +1,6 @@
 import { EventsAwaiter, expect, IntegrationTest, IShopSetup, shopSetup } from '@takaro/test';
 import { HookEvents } from '../../dto/index.js';
+import { describe } from 'node:test';
 
 const group = 'EconomyUtils:Shop:Browse';
 
@@ -49,10 +50,10 @@ const tests = [
     setup: shopSetup,
     name: 'Can view the second page of shop items',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.utilsModule.latestVersion.id,
+      });
       await this.setupData.createListings(this.client, { gameServerId: this.setupData.gameserver.id, amount: 5 });
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.CHAT_MESSAGE, 3);
       const commandExecutedEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(
@@ -137,6 +138,29 @@ const tests = [
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/shop 1 1 buy',
         playerId: this.setupData.players[0].id,
+      });
+
+      expect(await events).to.have.length(2);
+      expect((await events)[0].data.meta.msg).to.equal('You have purchased Test item for 100 test coin.');
+      expect((await events)[1].data.meta.msg).to.equal('You have received items from a shop order.');
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    setup: shopSetup,
+    name: 'Can buy an item when not linked to a user',
+    test: async function () {
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.CHAT_MESSAGE, 2);
+      const unlinkedPlayer = this.setupData.players[1];
+      await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
+        this.setupData.gameserver.id,
+        unlinkedPlayer.id,
+        { currency: 250 },
+      );
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/shop 1 1 buy',
+        playerId: unlinkedPlayer.id,
       });
 
       expect(await events).to.have.length(2);

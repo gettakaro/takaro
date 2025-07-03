@@ -15,7 +15,6 @@ const DataTypeMap: Record<FunctionType, string> = {
 
 export function setExtraLibs(monaco: typeof mon, dataType: FunctionType) {
   const libSource = [
-    // eslint-disable-next-line quotes
     "declare module '@takaro/helpers' {",
     `    declare const data: ${DataTypeMap[dataType]}`, // : Promise<ICommandJobData | IHookJobData | ICronJobData>
     '    declare const takaro: Client;',

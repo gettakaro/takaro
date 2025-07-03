@@ -1,5 +1,11 @@
-import { useMutation, useQueryClient, queryOptions } from '@tanstack/react-query';
-import { getApiClient } from 'util/getApiClient';
+import {
+  useMutation,
+  useQueryClient,
+  queryOptions,
+  infiniteQueryOptions,
+  keepPreviousData,
+} from '@tanstack/react-query';
+import { getApiClient } from '../util/getApiClient';
 import {
   APIOutput,
   VariableCreateDTO,
@@ -8,7 +14,7 @@ import {
   VariableSearchInputDTO,
   VariableUpdateDTO,
 } from '@takaro/apiclient';
-import { mutationWrapper } from './util';
+import { getNextPage, mutationWrapper, queryParamsToArray } from './util';
 import { AxiosError } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 import { useSnackbar } from 'notistack';
@@ -17,6 +23,7 @@ export const variableKeys = {
   all: ['variables'] as const,
   list: () => [...variableKeys.all, 'list'] as const,
   detail: (id: string) => [...variableKeys.all, 'detail', id] as const,
+  count: () => [...variableKeys.all, 'count'] as const,
 };
 
 const defaultVariableErrorMessages: Partial<ErrorMessageMapping> = {
@@ -38,6 +45,22 @@ export const variablesQueryOptions = (queryParams: VariableSearchInputDTO) =>
     queryFn: async () => (await getApiClient().variable.variableControllerSearch(queryParams)).data,
   });
 
+export const variableCountQueryOptions = () =>
+  queryOptions<number, AxiosError<number>>({
+    queryKey: variableKeys.count(),
+    queryFn: async () => (await getApiClient().variable.variableControllerSearch({ limit: 1 })).data.meta.total!,
+  });
+
+export const variablesInfiniteQueryOptions = (queryParams: VariableSearchInputDTO) =>
+  infiniteQueryOptions<VariableOutputArrayDTOAPI, AxiosError<VariableOutputArrayDTOAPI>>({
+    queryKey: [...variableKeys.list(), 'infinite', ...queryParamsToArray(queryParams)],
+    queryFn: async ({ pageParam }) =>
+      (await getApiClient().variable.variableControllerSearch({ ...queryParams, page: pageParam as number })).data,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
+    placeholderData: keepPreviousData,
+  });
+
 export const useVariableCreate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
@@ -50,6 +73,7 @@ export const useVariableCreate = () => {
         enqueueSnackbar('Variable created!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: variableKeys.list() });
         queryClient.setQueryData<VariableOutputDTO>(variableKeys.detail(newVariable.id), newVariable);
+        queryClient.setQueryData<number>(variableKeys.count(), (old) => (old ? old + 1 : 1));
       },
     }),
     defaultVariableErrorMessages,
@@ -96,6 +120,12 @@ export const useVariableDelete = () => {
         enqueueSnackbar('Variable successfully deleted!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: variableKeys.list() });
         queryClient.removeQueries({ queryKey: variableKeys.detail(variableId) });
+
+        // if there is a count query, update the count
+        const variableCountQueryData = queryClient.getQueryData<number>(variableKeys.count());
+        if (variableCountQueryData) {
+          queryClient.setQueryData<number>(variableKeys.count(), variableCountQueryData - 1);
+        }
       },
     }),
     {},

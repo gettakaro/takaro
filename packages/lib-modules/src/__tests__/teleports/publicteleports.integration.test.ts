@@ -1,5 +1,6 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../../dto/index.js';
+import { describe } from 'node:test';
 
 const group = 'Teleports suite';
 
@@ -10,15 +11,13 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Can set teleports as public, allowing other players to use it',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-        {
-          userConfig: JSON.stringify({
-            allowPublicTeleports: true,
-          }),
-        },
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          allowPublicTeleports: true,
+        }),
+      });
 
       const setTpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -56,15 +55,13 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Can set public teleports as private again',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-        {
-          userConfig: JSON.stringify({
-            allowPublicTeleports: true,
-          }),
-        },
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          allowPublicTeleports: true,
+        }),
+      });
 
       const setTpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -115,16 +112,14 @@ const tests = [
     setup: modulesTestSetup,
     name: 'When configured to not allow public teleports, creating public teleports is not allowed',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-        {
-          userConfig: JSON.stringify({
-            allowPublicTeleports: false,
-            timeout: 0,
-          }),
-        },
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          allowPublicTeleports: false,
+          timeout: 0,
+        }),
+      });
 
       const setTpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -153,16 +148,14 @@ const tests = [
     setup: modulesTestSetup,
     name: 'When configured to not allow public teleports, players cannot teleport to public teleports',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-        {
-          userConfig: JSON.stringify({
-            allowPublicTeleports: true,
-            timeout: 0,
-          }),
-        },
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          allowPublicTeleports: true,
+          timeout: 0,
+        }),
+      });
 
       const setTpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -194,16 +187,14 @@ const tests = [
       expect((await tpEvent).length).to.be.eq(1);
       expect((await tpEvent)[0].data.meta.msg).to.be.eq('Teleported to test.');
 
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-        {
-          userConfig: JSON.stringify({
-            allowPublicTeleports: false,
-            timeout: 0,
-          }),
-        },
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          allowPublicTeleports: false,
+          timeout: 0,
+        }),
+      });
 
       const tpEvent2 = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -222,6 +213,15 @@ const tests = [
     setup: modulesTestSetup,
     name: 'If player does not have role to create public teleports, command gets denied',
     test: async function () {
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          allowPublicTeleports: true,
+          timeout: 0,
+        }),
+      });
+
       const useTeleportsRole = await this.client.permissionCodesToInputs(['TELEPORTS_USE']);
       await this.client.role.roleControllerUpdate(this.setupData.role.id, {
         permissions: [
@@ -231,17 +231,6 @@ const tests = [
           },
         ],
       });
-
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-        {
-          userConfig: JSON.stringify({
-            allowPublicTeleports: true,
-            timeout: 0,
-          }),
-        },
-      );
 
       const setTpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -270,8 +259,18 @@ const tests = [
     group,
     snapshot: false,
     setup: modulesTestSetup,
+    attempts: 5,
     name: 'Prohibits players from settings more public teleports than their role allows',
     test: async function () {
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          allowPublicTeleports: true,
+          timeout: 0,
+        }),
+      });
+
       const permissionRes = await this.client.permissionCodesToInputs(['TELEPORTS_CREATE_PUBLIC', 'TELEPORTS_USE']);
       await this.client.role.roleControllerUpdate(this.setupData.role.id, {
         permissions: [
@@ -285,17 +284,6 @@ const tests = [
           },
         ],
       });
-
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-        {
-          userConfig: JSON.stringify({
-            allowPublicTeleports: true,
-            timeout: 0,
-          }),
-        },
-      );
 
       const setTpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 4);
 

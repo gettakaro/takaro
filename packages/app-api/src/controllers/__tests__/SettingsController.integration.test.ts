@@ -1,20 +1,30 @@
-import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
-import {
-  GameServerOutputDTO,
-  GameServerCreateDTOTypeEnum,
-  SettingsOutputDTOKeyEnum,
-  SettingsOutputDTOTypeEnum,
-} from '@takaro/apiclient';
+import { IntegrationTest, expect } from '@takaro/test';
+import { GameServerOutputDTO, SettingsOutputDTOKeyEnum, SettingsOutputDTOTypeEnum } from '@takaro/apiclient';
+import { describe } from 'node:test';
+import { randomUUID } from 'node:crypto';
+import { getMockServer } from '@takaro/mock-gameserver';
 
 const group = 'SettingsController';
 
-const mockGameServer = {
-  name: 'Test gameserver',
-  connectionInfo: JSON.stringify({
-    host: integrationConfig.get('mockGameserver.host'),
-  }),
-  type: GameServerCreateDTOTypeEnum.Mock,
-};
+async function setupGameServer(this: IntegrationTest<any>): Promise<GameServerOutputDTO> {
+  if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
+
+  const gameServerIdentityToken = randomUUID();
+
+  await getMockServer({
+    mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServerIdentityToken },
+  });
+
+  const gameServers = (
+    await this.client.gameserver.gameServerControllerSearch({
+      filters: { identityToken: [gameServerIdentityToken] },
+    })
+  ).data.data;
+
+  if (!gameServers[0]) throw new Error('Game server not found. Did something fail when registering?');
+
+  return gameServers[0];
+}
 
 const tests = [
   new IntegrationTest<void>({
@@ -85,9 +95,7 @@ const tests = [
     group,
     snapshot: true,
     name: 'Gameservers can overwrite global settings',
-    setup: async function () {
-      return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
-    },
+    setup: setupGameServer,
     test: async function () {
       await this.client.settings.settingsControllerSet(SettingsOutputDTOKeyEnum.CommandPrefix, {
         value: '!',
@@ -111,9 +119,7 @@ const tests = [
     group,
     snapshot: true,
     name: 'Requesting game server settings merges with global settings',
-    setup: async function () {
-      return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
-    },
+    setup: setupGameServer,
     test: async function () {
       await this.client.settings.settingsControllerSet(SettingsOutputDTOKeyEnum.CommandPrefix, {
         value: '!',
@@ -148,9 +154,7 @@ const tests = [
     group,
     snapshot: true,
     name: 'Can unset gameserver setting, system goes back to global then',
-    setup: async function () {
-      return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
-    },
+    setup: setupGameServer,
     test: async function () {
       await this.client.settings.settingsControllerSet(SettingsOutputDTOKeyEnum.CommandPrefix, {
         value: 'global!',
@@ -188,9 +192,7 @@ const tests = [
     group,
     snapshot: true,
     name: 'Correctly handles global settings and the delete',
-    setup: async function () {
-      return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
-    },
+    setup: setupGameServer,
     test: async function () {
       await this.client.settings.settingsControllerSet(SettingsOutputDTOKeyEnum.CommandPrefix, {
         value: 'global!',
@@ -217,9 +219,7 @@ const tests = [
     group,
     snapshot: true,
     name: 'Setting for gameserver multiple times overwrites properly',
-    setup: async function () {
-      return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
-    },
+    setup: setupGameServer,
     test: async function () {
       await this.client.settings.settingsControllerSet(SettingsOutputDTOKeyEnum.CommandPrefix, {
         value: '$',

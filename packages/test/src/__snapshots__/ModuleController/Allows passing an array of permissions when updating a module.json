@@ -5,9 +5,7 @@
       "createdAt": "2024-07-14T14:37:40.327Z",
       "updatedAt": "2024-07-14T14:37:40.393Z",
       "id": "828e664f-6ef4-4cd2-ade3-605b0cefdbfb",
-      "name": "Test module",
-      "builtin": null,
-      "description": "No description provided.",
+      "description": "No description",
       "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
       "uiSchema": "{}",
       "cronJobs": [],
@@ -23,10 +21,13 @@
           "permission": "test",
           "description": "test",
           "friendlyName": "test",
-          "canHaveCount": false
+          "canHaveCount": false,
+          "moduleVersionId": "4d74d223-f51e-4ad1-b727-93f768abdf35"
         }
       ],
-      "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}"
+      "tag": "latest",
+      "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}",
+      "defaultSystemConfig": null
     }
   },
   "status": 200,
@@ -35,7 +36,8 @@
     "snapshot": true,
     "name": "Allows passing an array of permissions when updating a module",
     "filteredFields": [
-      "moduleId"
+      "moduleId",
+      "moduleVersionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

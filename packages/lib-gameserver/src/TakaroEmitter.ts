@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import {
   BaseEvent,
   EventChatMessage,
@@ -9,6 +11,7 @@ import {
   GameEvents,
 } from '@takaro/modules';
 import { errors, isTakaroDTO, logger } from '@takaro/util';
+import EventEmitter from 'events';
 import { isPromise } from 'util/types';
 
 const log = logger('TakaroEmitter');
@@ -30,8 +33,8 @@ export interface IEventMap {
 export abstract class TakaroEmitter {
   private listenerMap: Map<keyof IEventMap, IEventMap[keyof IEventMap][]> = new Map();
 
+  abstract start(nodeEventEmitter?: EventEmitter): Promise<void>;
   abstract stop(): Promise<void>;
-  abstract start(): Promise<void>;
 
   constructor() {
     return getErrorProxyHandler(this);

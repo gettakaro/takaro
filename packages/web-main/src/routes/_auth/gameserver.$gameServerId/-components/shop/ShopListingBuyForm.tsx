@@ -1,5 +1,5 @@
 import { Button, TextField } from '@takaro/lib-components';
-import { useShopOrderCreate } from 'queries/shopOrder';
+import { useShopOrderCreate } from '../../../../../queries/shopOrder';
 import { FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
@@ -46,7 +46,7 @@ export const ShopListingBuyForm: FC<ShopListingBuyFormProps> = ({
       enqueueSnackbar({
         variant: 'default',
         type: 'success',
-        message: `successfully bought listing for ! ${price} ${currencyName}`,
+        message: `successfully bought listing for ${amount * price} ${currencyName}!`,
       });
     } catch {
       enqueueSnackbar({ variant: 'default', type: 'error', message: 'Failed to buy listing ${}' });
@@ -68,8 +68,9 @@ export const ShopListingBuyForm: FC<ShopListingBuyFormProps> = ({
         fullWidth
         type="submit"
         disabled={playerCurrencyAmount < price || isDraft}
-        text={`Buy for ${price * watch('amount')} ${currencyName}`}
-      />
+      >
+        Buy for {price * watch('amount')} {currencyName}
+      </Button>
     </form>
   );
 };

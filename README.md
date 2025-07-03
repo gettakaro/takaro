@@ -24,10 +24,45 @@ Here are some examples:
 
 ### Custom modules
 The above modules represent only a **tiny fraction** of the modules maintained by the Takaro team. 
-To explore all the modules we offer, visit our [full List of Built-In Modules](https://docs.takaro.io/built-in-modules)
+To explore all the modules we offer, visit our [full List of Built-In Modules](https://docs.takaro.io/modules/overview)
 
 If however the current modules don't cater to your specific needs, don't worry. Takaro also provides a development environment to create your own custom modules.
 
+
+## Testing
+
+Takaro includes helpful test scripts to make running tests easier:
+
+### Quick Test Commands
+
+```bash
+# Run a specific test file
+npm run test:file packages/lib-config/src/__tests__/config.unit.test.ts
+
+# Run test with TypeScript checking first
+npm run test:file:check packages/app-api/src/controllers/__tests__/TrackingController.integration.test.ts
+
+# Debug a test file (connects debugger)
+npm run test:debug packages/lib-modules/src/__tests__/ping.integration.test.ts
+
+# Test a specific package
+PKG=lib-config npm run test:package
+PKG=app-api npm run test:package:integration
+
+# Run all tests of a type
+npm run test:unit          # All unit tests
+npm run test:integration   # All integration tests
+npm test                   # All tests
+
+# Check TypeScript in test files
+npm run test:check
+```
+
+These scripts provide:
+- **Readable**: Simple npm commands instead of complex shell commands
+- **TypeScript Support**: Clear error messages with `--check` options
+- **Debugging**: Easy debugging with `test:debug`
+- **Package-focused**: Easy testing of individual packages
 
 ## Contributions
 We welcome contributions from the community! Whether you're a developer, designer, or gamer, your input can help shape the future of Takaro. 

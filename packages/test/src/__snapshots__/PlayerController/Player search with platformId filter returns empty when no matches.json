@@ -1,0 +1,24 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 0
+    },
+    "data": []
+  },
+  "status": 200,
+  "test": {
+    "group": "PlayerController",
+    "snapshot": true,
+    "name": "Player search with platformId filter returns empty when no matches",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "updatedAt",
+      "domain"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

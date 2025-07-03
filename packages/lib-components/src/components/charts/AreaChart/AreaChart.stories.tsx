@@ -23,12 +23,6 @@ const Wrapper = styled.div`
   width: 500px;
 `;
 
-const Header = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
 export const Default: StoryFn<AreaChartProps<AppleStock>> = (args) => {
   const getDate = (d: AppleStock) => new Date(d.date);
   const getStockValue = (d: AppleStock) => d.close;
@@ -57,7 +51,7 @@ function generateData() {
   const data: PingData[] = [];
   for (let i = 0; i < 100; i++) {
     const timestamp = faker.date.between({ from: '2021-01-01T00:00:00Z', to: '2021-01-31T23:59:59Z' }).toISOString();
-    const latency = faker.number.float({ min: 0, max: 70, precision: 1 });
+    const latency = faker.number.float({ min: 0, max: 70, fractionDigits: 1 });
     data.push({ timestamp, latency });
   }
   data.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
@@ -75,8 +69,7 @@ export const PingExample: StoryFn = () => {
   return (
     <div style={{ width: 800, height: 300 }}>
       <Card variant="outline">
-        <Header>
-          <h2 style={{ marginBottom: '10px' }}>Ping latency</h2>
+        <Card.Title label="Ping latency">
           <Dropdown>
             <Dropdown.Trigger asChild>
               <IconButton icon={<MenuIcon />} ariaLabel="open menu" />
@@ -87,17 +80,19 @@ export const PingExample: StoryFn = () => {
               <Dropdown.Menu.Item onClick={() => {}} label="Option 3" />
             </Dropdown.Menu>
           </Dropdown>
-        </Header>
-        <div style={{ height: '500px' }}>
-          <AreaChart<PingData>
-            name="Ping"
-            xAccessor={getDate}
-            yAccessor={getLatency}
-            tooltipAccessor={tooltipAccessor}
-            data={generateData()}
-            showBrush={false}
-          />
-        </div>
+        </Card.Title>
+        <Card.Body>
+          <div style={{ height: '500px' }}>
+            <AreaChart<PingData>
+              name="Ping"
+              xAccessor={getDate}
+              yAccessor={getLatency}
+              tooltipAccessor={tooltipAccessor}
+              data={generateData()}
+              showBrush={false}
+            />
+          </div>
+        </Card.Body>
       </Card>
     </div>
   );

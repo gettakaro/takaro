@@ -36,7 +36,9 @@ export const InfiniteScroll = forwardRef<HTMLElement, InfiniteScrollProps>(funct
           ref={ref}
           style={{ display: 'flex', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}
         >
-          <Button text="Load more" ref={ref} onClick={handleOnClick} />
+          <Button ref={ref} onClick={handleOnClick}>
+            Load more
+          </Button>
         </div>
       )}
       {hasNextPage && isFetchingNextPage && (

@@ -13,7 +13,7 @@ import { Routes, RESTGetAPICurrentUserGuildsResult } from 'discord-api-types/v10
 import oauth from 'passport-oauth2';
 import { DiscordService } from './DiscordService.js';
 import { domainStateMiddleware } from '../middlewares/domainStateMiddleware.js';
-import { DomainService } from './DomainService.js';
+import { DOMAIN_STATES, DomainService } from './DomainService.js';
 
 interface DiscordUserInfo {
   id: string;
@@ -67,10 +67,13 @@ export function checkPermissions(requiredPermissions: PERMISSIONS[], user: UserO
     return [...acc, ...role.role.permissions.map((c) => c.permission.permission)];
   }, [] as string[]);
 
-  const hasAllPermissions = requiredPermissions.every((permission) => allUserPermissions.includes(permission));
+  const allPlayerPermissions = user.player?.roleAssignments.reduce((acc, role) => {
+    return [...acc, ...role.role.permissions.map((c) => c.permission.permission)];
+  }, [] as string[]);
 
-  const userHasRootPermission = allUserPermissions.includes(PERMISSIONS.ROOT);
-
+  const allPermissions = [...allUserPermissions, ...(allPlayerPermissions || [])];
+  const hasAllPermissions = requiredPermissions.every((permission) => allPermissions.includes(permission));
+  const userHasRootPermission = allPermissions.includes(PERMISSIONS.ROOT);
   return hasAllPermissions || userHasRootPermission;
 }
 
@@ -182,7 +185,9 @@ export class AuthService extends DomainScoped {
     if (!user) {
       try {
         let domainId = req.cookies ? req.cookies['takaro-domain'] : null;
-
+        if (req.headers['authorization']?.includes('Basic')) {
+          delete req.headers['authorization'];
+        }
         const identity = await ory.getIdentityFromReq(req);
         if (!identity) return null;
 
@@ -193,7 +198,15 @@ export class AuthService extends DomainScoped {
             log.warn(`No domain found for identity ${identity.id}`);
             throw new errors.UnauthorizedError();
           }
-          domainId = domains[0].id;
+          // Find the first active domain
+          domainId = domains.find((d) => d.state === DOMAIN_STATES.ACTIVE)?.id;
+
+          if (!domainId && domains.length) {
+            log.warn(
+              `No active domain found for identity (but domains found: ${domains.map((d) => ({ id: d.id, state: d.state })).join(',')})`,
+            );
+            throw new errors.BadRequestError('Domain is disabled. Please contact support.');
+          }
 
           // Set the domain cookie
           if (req.res?.cookie)
@@ -215,6 +228,9 @@ export class AuthService extends DomainScoped {
       } catch (error) {
         // Not an ory session, throw a sanitized error
         log.warn(error);
+        // If we explicitly throw a BadRequestError, we want to pass it through
+        // So the client gets a meaningful error message
+        if (error instanceof errors.BadRequestError) throw error;
         throw new errors.UnauthorizedError();
       }
     }
@@ -244,12 +260,31 @@ export class AuthService extends DomainScoped {
           return next(new errors.ForbiddenError());
         }
 
+        /**
+         * Check if any requested permissions are a MANAGE_* permission
+         * If so, the user must be a dashboard user to proceed
+         * READ_* permissions are exempt from this check, as player profiles should be able to view and use the shop
+         * This is not a auth error exactly, it's a limit with the domains billing plan
+         * TODO: we should extend this check in the future, API tokens should pass this check too
+         */
+        const isRequestingManagePermission = permissions.some((p) => p.startsWith('MANAGE_'));
+        const isDashboardUser =
+          user.isDashboardUser ||
+          user.roles.some((r) => r.role.permissions.some((p) => p.permission.permission === PERMISSIONS.ROOT));
+        if (isRequestingManagePermission && !isDashboardUser) {
+          log.warn(`User ${user.id} does not have MANAGE_* permissions`);
+          return next(new errors.BadRequestError('You must be a dashboard user to perform this action'));
+        }
+
         req.user = user;
         req.domainId = user.domain;
 
         if (domainStateCheck) return domainStateMiddleware(req, _res, next);
         return next();
       } catch (error) {
+        // If we explicitly throw a BadRequestError, we want to pass it through
+        // So the client gets a meaningful error message
+        if (error instanceof errors.BadRequestError) return next(error);
         log.error('Unexpected error in auth middleware', error);
         return next(new errors.ForbiddenError());
       }

@@ -12,7 +12,7 @@ import {
   MouseEvent,
 } from 'react';
 import { GroupContainer, GroupLabel } from '../style';
-import { SelectContainer, StyledFloatingOverlay, StyledArrowIcon, SelectButton } from '../../sharedStyle';
+import { SelectContainer, StyledArrowIcon, SelectButton } from '../../sharedStyle';
 import { FilterInput } from './FilterInput';
 import { AiOutlineClose as ClearIcon } from 'react-icons/ai';
 
@@ -40,9 +40,6 @@ import { IconButton } from '../../../../../components/';
 interface SharedSelectFieldProps {
   render: (selectedItems: SelectItem[]) => React.ReactNode;
   enableFilter?: boolean;
-  /// Rendering in portal will render the selectDropdown independent from its parent container.
-  /// this is useful when select is rendered in other floating elements with limited space.
-  inPortal?: boolean;
 
   /// When true, The select icon will be replaced by a cross icon to clear the selected value.
   canClear?: boolean;
@@ -85,7 +82,6 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
     hasError,
     hasDescription,
     name,
-    inPortal = false,
     disabled,
     enableFilter = false,
     multiple = false,
@@ -116,14 +112,22 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
       size({
         apply({ availableHeight, elements, availableWidth }) {
           const refWidth = elements.reference.getBoundingClientRect().width;
+          const floatingContentWidth = elements.floating.scrollWidth;
+
+          const width =
+            availableWidth > refWidth
+              ? `${Math.min(availableWidth, 500)}px`
+              : `${Math.max(refWidth, floatingContentWidth)}px`;
 
           Object.assign(elements.floating.style, {
             // Note: we cannot use the rects.reference.width here because if the referenced item is very small compared to the other options, there will be horizontal overflow.
             // fit-content isn't the perfect solution either, because if there is no space available it might render outside the viewport.
-            width: availableWidth < refWidth ? `${availableWidth}px` : `${refWidth}px`,
+            width: width,
+
             maxHeight: `${Math.max(150, availableHeight)}px`,
           });
         },
+        padding: 10,
       }),
       flip({
         fallbackStrategy: 'bestFit',
@@ -286,14 +290,7 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
           <StyledArrowIcon size={16} />
         )}
       </SelectButton>
-      {open &&
-        (!inPortal ? (
-          <StyledFloatingOverlay lockScroll style={{ zIndex: 1000 }}>
-            {renderSelect()}
-          </StyledFloatingOverlay>
-        ) : (
-          <FloatingPortal>{renderSelect()}</FloatingPortal>
-        ))}
+      {open && <FloatingPortal>{renderSelect()}</FloatingPortal>}
     </SelectContext.Provider>
   );
 };

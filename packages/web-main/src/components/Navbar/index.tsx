@@ -1,5 +1,5 @@
-import { FC, cloneElement, ReactElement } from 'react';
-import { Link, LinkProps } from '@tanstack/react-router';
+import { FC, ReactElement } from 'react';
+import { LinkProps } from '@tanstack/react-router';
 import { Chip, RequiredPermissions, Tooltip, useTheme } from '@takaro/lib-components';
 import { UserDropdown } from './UserDropdown';
 import { Nav, IconNav, Container, IconNavContainer } from './style';
@@ -21,10 +21,10 @@ import {
 } from 'react-icons/ai';
 
 import { FaDiscord as DiscordIcon } from 'react-icons/fa';
-import { PermissionsGuard } from 'components/PermissionsGuard';
 import { GameServerNav } from './GameServerNav';
-import { TAKARO_DOMAIN_COOKIE_REGEX } from 'routes/_auth/domain.select';
-import { DeveloperModeGuard } from 'components/DeveloperModeGuard';
+import { TAKARO_DOMAIN_COOKIE_REGEX } from '../../util/domainCookieRegex';
+import { getConfigVar, getTakaroVersionComponents } from '../../util/getConfigVar';
+import { renderLink } from './renderLink';
 
 const domainLinks: NavbarLink[] = [
   {
@@ -119,33 +119,13 @@ export interface NavbarLink {
   end?: boolean;
 }
 
-export const renderLink = ({
-  linkProps,
-  icon,
-  label,
-  requiredPermissions,
-  requiresDevelopmentModeEnabled = false,
-}: NavbarLink) => (
-  <DeveloperModeGuard enabled={requiresDevelopmentModeEnabled}>
-    <PermissionsGuard key={`guard-${linkProps.to}`} requiredPermissions={requiredPermissions || []}>
-      <div key={`wrapper-${linkProps.to}`}>
-        <Link to={linkProps.to} key={`link-${linkProps.to}`}>
-          <span key={`inner-${linkProps.to}`}>
-            {cloneElement(icon, { size: 20, key: `icon-${linkProps.to}` })}
-            <p key={`label-${linkProps.to}`}>{label}</p>
-          </span>
-        </Link>
-      </div>
-    </PermissionsGuard>
-  </DeveloperModeGuard>
-);
-
 interface NavbarProps {
   showGameServerNav?: boolean;
 }
 
 export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
   const theme = useTheme();
+  const { version } = getTakaroVersionComponents(getConfigVar('takaroVersion'));
 
   return (
     <Container animate={{ width: 325 }} transition={{ duration: 1, type: 'spring', bounce: 0.5 }}>
@@ -167,11 +147,15 @@ export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
             label={`${document.cookie.replace(TAKARO_DOMAIN_COOKIE_REGEX, '$1')}`}
           />
         </div>
-
+        <div
+          style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: theme.spacing['0_75'] }}
+        >
+          Version: <Chip showIcon="hover" color="secondary" variant="outline" label={version} />
+        </div>
         <IconNav>
           <Tooltip>
             <Tooltip.Trigger asChild>
-              <a href="https://github.com/gettakaro/takaro" target="_blank" rel="noreferrer">
+              <a href="https://aka.takaro.io/github" target="_blank" rel="noreferrer">
                 <GithubIcon size={18} />
               </a>
             </Tooltip.Trigger>
@@ -187,7 +171,7 @@ export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
           </Tooltip>
           <Tooltip>
             <Tooltip.Trigger asChild>
-              <a href="https://catalysm.net/discord/" target="_blank" rel="noreferrer">
+              <a href="https://aka.takaro.io/discord" target="_blank" rel="noreferrer">
                 <DiscordIcon size={18} />
               </a>
             </Tooltip.Trigger>

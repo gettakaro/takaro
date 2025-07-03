@@ -4,6 +4,7 @@ import { readFile } from 'fs/promises';
 import { join } from 'path';
 import * as url from 'url';
 import { GAME_SERVER_TYPE } from '@takaro/gameserver';
+import { describe } from 'node:test';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -21,7 +22,7 @@ async function doImport(client: Client, importData: string, options: ImportInput
 
   // Poll for completion
   let jobStatus = null;
-  while (jobStatus === null || jobStatus === 'pending') {
+  while (jobStatus !== 'failed' && jobStatus !== 'completed') {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     jobStatus = (await client.gameserver.gameServerControllerGetImport(jobId)).data.data.status;
   }
@@ -33,7 +34,7 @@ const tests = [
     group,
     name: 'Full import',
     test: async function () {
-      const importFile = await readFile(join(__dirname, 'csmm-export-full.json'), 'utf8');
+      const importFile = await readFile(join(__dirname, 'data', 'csmm-export-full.json'), 'utf8');
       const options: ImportInputDTO = {
         currency: true,
         roles: true,
@@ -51,6 +52,10 @@ const tests = [
 
       const players = (await this.client.player.playerControllerSearch()).data.data;
       expect(players).to.have.length(7);
+
+      /*       const listings = (await this.client.shopListing.shopListingControllerSearch()).data.data;
+            expect(listings).to.have.length(4);
+            expect(listings[0]).to.have.property('quality', null); */
     },
   }),
   new IntegrationTest({
@@ -58,7 +63,7 @@ const tests = [
     group,
     name: 'Import without roles',
     test: async function () {
-      const importFile = await readFile(join(__dirname, 'csmm-export-full.json'), 'utf8');
+      const importFile = await readFile(join(__dirname, 'data', 'csmm-export-full.json'), 'utf8');
       const options: ImportInputDTO = {
         currency: true,
         roles: false,
@@ -83,7 +88,7 @@ const tests = [
     group,
     name: 'Import without players',
     test: async function () {
-      const importFile = await readFile(join(__dirname, 'csmm-export-full.json'), 'utf8');
+      const importFile = await readFile(join(__dirname, 'data', 'csmm-export-full.json'), 'utf8');
       const options: ImportInputDTO = {
         currency: true,
         roles: true,
@@ -108,7 +113,7 @@ const tests = [
     group,
     name: 'Import existing server skips server creation but allows other data to be imported',
     test: async function () {
-      const importFile = await readFile(join(__dirname, 'csmm-export-full.json'), 'utf8');
+      const importFile = await readFile(join(__dirname, 'data', 'csmm-export-full.json'), 'utf8');
 
       const createdServer = (
         await this.client.gameserver.gameServerControllerCreate({

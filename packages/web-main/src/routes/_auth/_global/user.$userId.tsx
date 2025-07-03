@@ -1,12 +1,12 @@
 import { UserAssignmentOutputDTO, UserOutputWithRolesDTO } from '@takaro/apiclient';
 import { Button, Divider, Dropdown, IconButton, Skeleton, Table, useTableActions } from '@takaro/lib-components';
-import { useUserRemoveRole, userMeQueryOptions, userQueryOptions } from 'queries/user';
+import { useUserRemoveRole, userMeQueryOptions, userQueryOptions } from '../../../queries/user';
 import { createColumnHelper } from '@tanstack/react-table';
 import { FC } from 'react';
 import { Outlet, redirect, useNavigate, createFileRoute, Link } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
 import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon, AiOutlineEye as ViewIcon } from 'react-icons/ai';
-import { hasPermission } from 'hooks/useHasPermission';
+import { hasPermission } from '../../../hooks/useHasPermission';
 import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/user/$userId')({
@@ -121,7 +121,7 @@ const UserRolesTable: FC<IUserRolesTableProps> = ({ roles, userId }) => {
             />
 
             <Dropdown.Menu.Item
-              label="Unassign role"
+              label="Remove role"
               icon={<DeleteIcon />}
               onClick={() => {
                 mutate({
@@ -142,7 +142,7 @@ const UserRolesTable: FC<IUserRolesTableProps> = ({ roles, userId }) => {
       columns={columnDefs}
       data={roles}
       renderToolbar={() => (
-        <Button onClick={() => navigate({ to: '/user/$userId/role/assign', params: { userId } })} text="Assign role" />
+        <Button onClick={() => navigate({ to: '/user/$userId/role/assign', params: { userId } })}>Assign role</Button>
       )}
       pagination={{
         paginationState: pagination.paginationState,
