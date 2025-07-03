@@ -119,7 +119,8 @@ const SteamInfoCard: FC<{ player: PlayerOutputDTO }> = ({ player }) => {
       <InfoCard.Title label="Steam" />
       <InfoCard.Body>
         <InnerBody>
-          <span>Steam Profile</span> {player.steamId ? <SteamIdLink steamId={player.steamId} placeholder="View Profile" /> : '/'}
+          <span>Steam Profile</span>{' '}
+          {player.steamId ? <SteamIdLink steamId={player.steamId} placeholder="View Profile" /> : '/'}
           <span>VAC banned</span> {player.steamVacBanned ? 'Yes' : 'No'}
           <span>VAC bans</span> {player.steamNumberOfVACBans ?? 0}
           <span>Days since last ban</span> {player.steamsDaysSinceLastBan ?? 0}
@@ -150,4 +151,3 @@ const IpInfoLine = styled.div`
   flex-direction: row;
   gap: ${({ theme }) => theme.spacing['0_5']};
 `;
-

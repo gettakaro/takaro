@@ -123,7 +123,9 @@ function Component() {
               <td>
                 <Chip color="secondary" label={pog.online ? 'Online' : 'Offline'} />
               </td>
-              <td><IpLink ip={pog.ip} placeholder="Unknown" /></td>
+              <td>
+                <IpLink ip={pog.ip} placeholder="Unknown" />
+              </td>
             </tr>
           );
         })}

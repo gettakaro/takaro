@@ -19,12 +19,7 @@ const StyledExternalLink = styled.a`
 
 export const ExternalLink: FC<ExternalLinkProps> = ({ href, children, className }) => {
   return (
-    <StyledExternalLink
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={className}
-    >
+    <StyledExternalLink href={href} target="_blank" rel="noopener noreferrer" className={className}>
       {children}
     </StyledExternalLink>
   );

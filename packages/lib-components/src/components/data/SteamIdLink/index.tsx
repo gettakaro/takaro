@@ -52,12 +52,10 @@ export const SteamIdLink: FC<SteamIdLinkProps> = ({ steamId, placeholder }) => {
     <Chip
       icon={
         <IconContainer>
-          <ExternalLink href={steamUrl}><LinkIcon /></ExternalLink>
-          {copied ? (
-            <StyledCheckmarkIcon />
-          ) : (
-            <StyledCopyIcon onClick={() => handleCopy(steamId)} />
-          )}
+          <ExternalLink href={steamUrl}>
+            <LinkIcon />
+          </ExternalLink>
+          {copied ? <StyledCheckmarkIcon /> : <StyledCopyIcon onClick={() => handleCopy(steamId)} />}
         </IconContainer>
       }
       variant="outline"

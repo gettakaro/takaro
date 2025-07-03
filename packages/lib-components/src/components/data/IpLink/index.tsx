@@ -26,7 +26,6 @@ const StyledCheckmarkIcon = styled(CheckmarkIcon)`
   color: ${({ theme }) => theme.colors.success};
 `;
 
-
 export const IpLink: FC<IpLinkProps> = ({ ip, placeholder }) => {
   const [copied, setCopied] = useState<boolean>(false);
 
@@ -53,12 +52,10 @@ export const IpLink: FC<IpLinkProps> = ({ ip, placeholder }) => {
     <Chip
       icon={
         <IconContainer>
-          <ExternalLink href={scamalyticsUrl}><LinkIcon /></ExternalLink>
-          {copied ? (
-            <StyledCheckmarkIcon />
-          ) : (
-            <StyledCopyIcon onClick={() => handleCopy(ip)} />
-          )}
+          <ExternalLink href={scamalyticsUrl}>
+            <LinkIcon />
+          </ExternalLink>
+          {copied ? <StyledCheckmarkIcon /> : <StyledCopyIcon onClick={() => handleCopy(ip)} />}
         </IconContainer>
       }
       variant="outline"
