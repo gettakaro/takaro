@@ -1,50 +1,21 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { IpLink } from './';
+import React from 'react';
+import { Meta, StoryFn } from '@storybook/react';
+import { IpLink, IpLinkProps } from './';
 
-const meta: Meta<typeof IpLink> = {
+export default {
   title: 'Data/IpLink',
   component: IpLink,
-  parameters: {
-    layout: 'centered',
-  },
-  tags: ['autodocs'],
-  argTypes: {
-    ip: {
-      control: 'text',
-      description: 'The IP address to link to Scamalytics',
-    },
-    placeholder: {
-      control: 'text',
-      description: 'Custom text to display instead of the IP',
-    },
-  },
-};
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
   args: {
     ip: '178.116.125.71',
   },
-};
+} as Meta<IpLinkProps>;
 
-export const WithPlaceholder: Story = {
-  args: {
-    ip: '192.168.1.1',
-    placeholder: 'Check IP Reputation',
-  },
-};
+export const Default: StoryFn<IpLinkProps> = (args) => <IpLink {...args} />;
 
-export const NoIp: Story = {
-  args: {
-    ip: undefined,
-  },
-};
+export const WithPlaceholder: StoryFn<IpLinkProps> = () => (
+  <IpLink ip="192.168.1.1" placeholder="Check IP Reputation" />
+);
 
-export const NoIpWithPlaceholder: Story = {
-  args: {
-    ip: undefined,
-    placeholder: 'No IP available',
-  },
-};
+export const NoIp: StoryFn<IpLinkProps> = () => <IpLink />;
+
+export const NoIpWithPlaceholder: StoryFn<IpLinkProps> = () => <IpLink placeholder="No IP available" />;

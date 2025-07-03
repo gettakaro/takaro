@@ -1,50 +1,25 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { ExternalLink } from './';
+import React from 'react';
+import { Meta, StoryFn } from '@storybook/react';
+import { ExternalLink, ExternalLinkProps } from './';
 
-const meta: Meta<typeof ExternalLink> = {
+export default {
   title: 'Actions/ExternalLink',
   component: ExternalLink,
-  parameters: {
-    layout: 'centered',
-  },
-  tags: ['autodocs'],
-  argTypes: {
-    href: {
-      control: 'text',
-      description: 'The URL to link to',
-    },
-  },
-};
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
   args: {
     href: 'https://example.com',
     children: 'Visit Example.com',
   },
-};
+} as Meta<ExternalLinkProps>;
 
-export const WithIcon: Story = {
-  args: {
-    href: 'https://steamcommunity.com/profiles/76561198028175941',
-    children: (
-      <>
-        🔗 Steam Profile
-      </>
-    ),
-  },
-};
+export const Default: StoryFn<ExternalLinkProps> = (args) => <ExternalLink {...args} />;
 
-export const InText: Story = {
-  render: () => (
-    <p>
-      This is some text with an{' '}
-      <ExternalLink href="https://scamalytics.com/ip/192.168.1.1">
-        external link
-      </ExternalLink>{' '}
-      in the middle of it.
-    </p>
-  ),
-};
+export const WithIcon: StoryFn<ExternalLinkProps> = () => (
+  <ExternalLink href="https://steamcommunity.com/profiles/76561198028175941">🔗 Steam Profile</ExternalLink>
+);
+
+export const InText: StoryFn<ExternalLinkProps> = () => (
+  <p>
+    This is some text with an <ExternalLink href="https://scamalytics.com/ip/192.168.1.1">external link</ExternalLink>{' '}
+    in the middle of it.
+  </p>
+);

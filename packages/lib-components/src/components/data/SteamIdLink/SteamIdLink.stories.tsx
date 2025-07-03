@@ -1,50 +1,23 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { SteamIdLink } from './';
+import React from 'react';
+import { Meta, StoryFn } from '@storybook/react';
+import { SteamIdLink, SteamIdLinkProps } from './';
 
-const meta: Meta<typeof SteamIdLink> = {
+export default {
   title: 'Data/SteamIdLink',
   component: SteamIdLink,
-  parameters: {
-    layout: 'centered',
-  },
-  tags: ['autodocs'],
-  argTypes: {
-    steamId: {
-      control: 'text',
-      description: 'The Steam ID to link to Steam Community',
-    },
-    placeholder: {
-      control: 'text',
-      description: 'Custom text to display instead of the Steam ID',
-    },
-  },
-};
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
   args: {
     steamId: '76561198028175941',
   },
-};
+} as Meta<SteamIdLinkProps>;
 
-export const WithPlaceholder: Story = {
-  args: {
-    steamId: '76561198028175941',
-    placeholder: 'View Steam Profile',
-  },
-};
+export const Default: StoryFn<SteamIdLinkProps> = (args) => <SteamIdLink {...args} />;
 
-export const NoSteamId: Story = {
-  args: {
-    steamId: undefined,
-  },
-};
+export const WithPlaceholder: StoryFn<SteamIdLinkProps> = () => (
+  <SteamIdLink steamId="76561198028175941" placeholder="View Steam Profile" />
+);
 
-export const NoSteamIdWithPlaceholder: Story = {
-  args: {
-    steamId: undefined,
-    placeholder: 'No Steam ID available',
-  },
-};
+export const NoSteamId: StoryFn<SteamIdLinkProps> = () => <SteamIdLink />;
+
+export const NoSteamIdWithPlaceholder: StoryFn<SteamIdLinkProps> = () => (
+  <SteamIdLink placeholder="No Steam ID available" />
+);
