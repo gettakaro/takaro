@@ -33,7 +33,7 @@ export const ChatMessagesCard: FC = () => {
         ],
       },
       sortBy: 'createdAt',
-      sortDirection: EventSearchInputDTOSortDirectionEnum.Asc,
+      sortDirection: EventSearchInputDTOSortDirectionEnum.Desc,
       extend: ['player'],
     }),
   );
@@ -78,7 +78,7 @@ export const ChatMessagesCard: FC = () => {
       </Card.Title>
       <CardBody>
         <Scrollable ref={scrollContainerRef} onScroll={handleScroll}>
-          {events.map((event) => (
+          {[...events].reverse().map((event) => (
             <ChatMessage key={event.id} event={event} />
           ))}
         </Scrollable>
