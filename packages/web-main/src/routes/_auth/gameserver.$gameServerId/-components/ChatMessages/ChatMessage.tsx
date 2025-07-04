@@ -27,6 +27,16 @@ export const ChatMessage: FC<{ event: EventOutputDTO }> = ({ event }) => {
   if (!meta || !('msg' in meta)) return null;
 
   if (!event.playerId) {
+    // Determine what to show in parentheses
+    let targetInfo = '';
+    if (meta.recipient) {
+      targetInfo = ` (to ${meta.recipient.name})`;
+    } else if (meta.channel) {
+      // Capitalize first letter of channel name
+      const channelName = meta.channel.charAt(0).toUpperCase() + meta.channel.slice(1);
+      targetInfo = ` (${channelName})`;
+    }
+
     return (
       <Message>
         <TimeStamp>{friendlyTimeStamp}</TimeStamp>
@@ -40,7 +50,7 @@ export const ChatMessage: FC<{ event: EventOutputDTO }> = ({ event }) => {
           <Avatar size="tiny">
             <Avatar.Image src={'/favicon.ico'} alt={'takaro icon'} />
           </Avatar>
-          Server
+          Server{targetInfo}
         </span>
         <span>{meta.msg as string}</span>
       </Message>

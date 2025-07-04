@@ -434,6 +434,19 @@ export class GameServerService extends TakaroService<
       timestamp: new Date().toISOString(),
     });
 
+    // If there's a recipient, get their player information
+    if (opts && opts.recipient) {
+      try {
+        const recipientPlayer = await this.getPlayer(gameServerId, opts.recipient);
+        if (recipientPlayer) {
+          meta.recipient = recipientPlayer;
+        }
+      } catch (error) {
+        // If we can't get the recipient info, continue without it
+        this.log.warn('Failed to get recipient player information', { error, recipient: opts.recipient });
+      }
+    }
+
     await eventService.create(
       new EventCreateDTO({
         eventName: GameEvents.CHAT_MESSAGE,
