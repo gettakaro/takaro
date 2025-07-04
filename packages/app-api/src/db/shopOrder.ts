@@ -3,6 +3,7 @@ import { Model } from 'objection';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { SHOP_LISTING_TABLE_NAME, ShopListingModel } from './shopListing.js';
+import { Knex } from 'knex';
 import {
   ShopOrderStatus,
   ShopOrderOutputDTO,
@@ -115,5 +116,28 @@ export class ShopOrderRepo extends ITakaroRepo<
 
   async delete(_id: string): Promise<boolean> {
     throw new errors.NotImplementedError();
+  }
+
+  async findOneForUpdate(id: string, trx: Knex.Transaction): Promise<ShopOrderOutputDTO> {
+    const { model } = await this.getModel();
+    const res = await model.query(trx).modify('domainScoped', this.domainId).forUpdate().findById(id);
+    if (!res) {
+      throw new errors.NotFoundError();
+    }
+    return new ShopOrderOutputDTO(res);
+  }
+
+  async updateWithTransaction(
+    id: string,
+    data: ShopOrderUpdateDTO,
+    trx: Knex.Transaction,
+  ): Promise<ShopOrderOutputDTO> {
+    const { model } = await this.getModel();
+    const order = await model
+      .query(trx)
+      .modify('domainScoped', this.domainId)
+      .updateAndFetchById(id, { status: data.status })
+      .returning('*');
+    return new ShopOrderOutputDTO(order);
   }
 }
