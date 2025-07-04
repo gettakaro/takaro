@@ -162,14 +162,15 @@ function Component() {
       id: 'steamId',
       cell: (info) => {
         const steamId = info.getValue();
-        return steamId ? (
+        if (!steamId) return null;
+
+        return (
           <CopyId
-            placeholder={steamId}
             id={steamId}
             externalLink={`https://steamcommunity.com/profiles/${steamId}`}
             externalLinkTooltip="View Steam profile"
           />
-        ) : null;
+        );
       },
       enableColumnFilter: true,
     }),
