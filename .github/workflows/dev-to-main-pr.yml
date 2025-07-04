@@ -51,9 +51,12 @@ jobs:
             exit 1
           fi
           
-          # Get merge commits between main and current development state
+          # Get merge commits between main and development using explicit branch comparison
           echo "Getting merge commits..."
-          PR_LIST=$(git log origin/main..HEAD --merges --pretty=format:"%H %s" | grep -E "Merge pull request #[0-9]+" | head -20 || true)
+          git fetch origin development:refs/remotes/origin/development
+          
+          # Use explicit branch comparison to avoid stale references
+          PR_LIST=$(git log origin/main..origin/development --merges --pretty=format:"%H %s" | grep -E "Merge pull request #[0-9]+" | head -20 || true)
           
           echo "Found merge commits: $PR_LIST"
           
@@ -72,13 +75,38 @@ jobs:
                 if [ -n "$PR_NUM" ] && [ "$PR_NUM" != "" ]; then
                   echo "Fetching details for PR #$PR_NUM"
                   # Get PR details using gh CLI with better error handling
-                  if PR_INFO=$(gh pr view "$PR_NUM" --json number,title,author,url 2>/dev/null); then
+                  if PR_INFO=$(gh pr view "$PR_NUM" --json number,title,author,url,baseRefName 2>/dev/null); then
                     if [ -n "$PR_INFO" ] && [ "$PR_INFO" != "null" ]; then
                       PR_TITLE=$(echo "$PR_INFO" | jq -r '.title // "Unknown"' || echo "Unknown")
                       PR_AUTHOR=$(echo "$PR_INFO" | jq -r '.author.login // "unknown"' || echo "unknown")
-                      PR_MARKDOWN="${PR_MARKDOWN}- #${PR_NUM}: ${PR_TITLE} (@${PR_AUTHOR})\n"
-                      PR_COUNT=$((PR_COUNT + 1))
-                      echo "Added PR #$PR_NUM to list (count: $PR_COUNT)"
+                      PR_BASE=$(echo "$PR_INFO" | jq -r '.baseRefName // "unknown"' || echo "unknown")
+                      
+                      # Filter out automated merge PRs and bot PRs
+                      SKIP_PR=false
+                      
+                      # Skip if it's a "Merge development into main" PR
+                      if [[ "$PR_TITLE" =~ ^🤖.*Merge\ development\ into\ main ]] || [[ "$PR_TITLE" =~ Merge\ development\ into\ main ]]; then
+                        echo "Skipping automated merge PR #$PR_NUM: $PR_TITLE"
+                        SKIP_PR=true
+                      fi
+                      
+                      # Skip if it's created by CI bot and targets main
+                      if [[ "$PR_AUTHOR" == "takaro-ci-bot[bot]" ]] && [[ "$PR_BASE" == "main" ]]; then
+                        echo "Skipping bot PR to main #$PR_NUM: $PR_TITLE"
+                        SKIP_PR=true
+                      fi
+                      
+                      # Skip PRs with skip-changelog label (they are merge PRs)
+                      if [[ "$PR_TITLE" =~ 🤖 ]] && [[ "$PR_BASE" == "main" ]]; then
+                        echo "Skipping automated PR #$PR_NUM: $PR_TITLE"
+                        SKIP_PR=true
+                      fi
+                      
+                      if [ "$SKIP_PR" = false ]; then
+                        PR_MARKDOWN="${PR_MARKDOWN}- #${PR_NUM}: ${PR_TITLE} (@${PR_AUTHOR})\n"
+                        PR_COUNT=$((PR_COUNT + 1))
+                        echo "Added PR #$PR_NUM to list (count: $PR_COUNT)"
+                      fi
                     else
                       echo "Warning: Empty PR info for #$PR_NUM"
                     fi
@@ -89,7 +117,7 @@ jobs:
               fi
             done <<< "$PR_LIST"
           else
-            echo "No merge commits found between origin/main and HEAD"
+            echo "No merge commits found between origin/main and origin/development"
           fi
           
           echo "Final PR count: $PR_COUNT"
