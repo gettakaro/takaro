@@ -27,7 +27,179 @@ jobs:
       - name: Reset promotion branch
         run: |
           git fetch origin development:development
+          git fetch origin main:refs/remotes/origin/main
           git reset --hard development
+      - name: Generate PR list
+        id: pr_list
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: |
+          set -e  # Exit on any error
+          
+          echo "Fetching PR list..."
+          echo "Current commit: $(git rev-parse HEAD)"
+          echo "Main branch: $(git rev-parse origin/main)"
+          
+          # Ensure we have the required tools
+          if ! command -v gh &> /dev/null; then
+            echo "Error: gh CLI not found"
+            exit 1
+          fi
+          
+          if ! command -v jq &> /dev/null; then
+            echo "Error: jq not found"
+            exit 1
+          fi
+          
+          # Get merge commits that will be included in this main-promotion
+          echo "Getting merge commits from main-promotion content..."
+          
+          # After reset --hard development, HEAD contains exactly what will be merged to main
+          # So we just need to compare HEAD (main-promotion content) vs origin/main
+          PR_LIST=$(git log origin/main..HEAD --merges --pretty=format:"%H %s" | grep -E "Merge pull request #[0-9]+" | head -20 || true)
+          
+          echo "Found merge commits: $PR_LIST"
+          
+          # Initialize categorized PR lists
+          declare -A PR_CATEGORIES
+          PR_CATEGORIES[feature]=""
+          PR_CATEGORIES[bug]=""
+          PR_CATEGORIES[chore]=""
+          PR_CATEGORIES[docs]=""
+          PR_CATEGORIES[other]=""
+          
+          declare -A PR_COUNTS
+          PR_COUNTS[feature]=0
+          PR_COUNTS[bug]=0
+          PR_COUNTS[chore]=0
+          PR_COUNTS[docs]=0
+          PR_COUNTS[other]=0
+          
+          TOTAL_PR_COUNT=0
+          
+          if [ -n "$PR_LIST" ]; then
+            echo "Processing PR list..."
+            while IFS= read -r line; do
+              if [ -n "$line" ]; then
+                echo "Processing line: $line"
+                PR_NUM=$(echo "$line" | grep -oE "#[0-9]+" | tr -d '#' || true)
+                echo "Extracted PR number: $PR_NUM"
+                
+                if [ -n "$PR_NUM" ] && [ "$PR_NUM" != "" ]; then
+                  echo "Fetching details for PR #$PR_NUM"
+                  # Get PR details including labels
+                  if PR_INFO=$(gh pr view "$PR_NUM" --json number,title,author,url,baseRefName,labels 2>/dev/null); then
+                    if [ -n "$PR_INFO" ] && [ "$PR_INFO" != "null" ]; then
+                      PR_TITLE=$(echo "$PR_INFO" | jq -r '.title // "Unknown"' || echo "Unknown")
+                      PR_AUTHOR=$(echo "$PR_INFO" | jq -r '.author.login // "unknown"' || echo "unknown")
+                      PR_BASE=$(echo "$PR_INFO" | jq -r '.baseRefName // "unknown"' || echo "unknown")
+                      PR_LABELS=$(echo "$PR_INFO" | jq -r '.labels[]?.name // empty' 2>/dev/null || echo "")
+                      
+                      # Filter out automated merge PRs and bot PRs
+                      SKIP_PR=false
+                      
+                      # Skip if it's a "Merge development into main" PR
+                      if [[ "$PR_TITLE" =~ ^🤖.*Merge\ development\ into\ main ]] || [[ "$PR_TITLE" =~ Merge\ development\ into\ main ]]; then
+                        echo "Skipping automated merge PR #$PR_NUM: $PR_TITLE"
+                        SKIP_PR=true
+                      fi
+                      
+                      # Skip if it's created by CI bot and targets main
+                      if [[ "$PR_AUTHOR" == "takaro-ci-bot[bot]" ]] && [[ "$PR_BASE" == "main" ]]; then
+                        echo "Skipping bot PR to main #$PR_NUM: $PR_TITLE"
+                        SKIP_PR=true
+                      fi
+                      
+                      # Skip PRs with skip-changelog label (they are merge PRs)
+                      if [[ "$PR_TITLE" =~ 🤖 ]] && [[ "$PR_BASE" == "main" ]]; then
+                        echo "Skipping automated PR #$PR_NUM: $PR_TITLE"
+                        SKIP_PR=true
+                      fi
+                      
+                      if [ "$SKIP_PR" = false ]; then
+                        # Categorize PR based on labels
+                        CATEGORY="other"
+                        echo "PR Labels: $PR_LABELS"
+                        
+                        if echo "$PR_LABELS" | grep -qi "feature\|enhancement"; then
+                          CATEGORY="feature"
+                        elif echo "$PR_LABELS" | grep -qi "bug\|fix"; then
+                          CATEGORY="bug"
+                        elif echo "$PR_LABELS" | grep -qi "chore\|maintenance\|dependencies"; then
+                          CATEGORY="chore"
+                        elif echo "$PR_LABELS" | grep -qi "documentation\|docs"; then
+                          CATEGORY="docs"
+                        fi
+                        
+                        # Add to appropriate category (simplified format: just #123 (@author))
+                        PR_CATEGORIES[$CATEGORY]="${PR_CATEGORIES[$CATEGORY]}- #${PR_NUM} (@${PR_AUTHOR})\n"
+                        PR_COUNTS[$CATEGORY]=$((PR_COUNTS[$CATEGORY] + 1))
+                        TOTAL_PR_COUNT=$((TOTAL_PR_COUNT + 1))
+                        echo "Added PR #$PR_NUM to $CATEGORY category (count: ${PR_COUNTS[$CATEGORY]})"
+                      fi
+                    else
+                      echo "Warning: Empty PR info for #$PR_NUM"
+                    fi
+                  else
+                    echo "Warning: Could not fetch details for PR #$PR_NUM"
+                  fi
+                fi
+              fi
+            done <<< "$PR_LIST"
+          else
+            echo "No merge commits found between origin/main and HEAD (main-promotion content)"
+          fi
+          
+          echo "Final total PR count: $TOTAL_PR_COUNT"
+          echo "Feature PRs: ${PR_COUNTS[feature]}"
+          echo "Bug fix PRs: ${PR_COUNTS[bug]}"
+          echo "Chore PRs: ${PR_COUNTS[chore]}"
+          echo "Documentation PRs: ${PR_COUNTS[docs]}"
+          echo "Other PRs: ${PR_COUNTS[other]}"
+          
+          # Create the categorized PR body
+          if [ "$TOTAL_PR_COUNT" -eq 0 ]; then
+            PR_BODY="This PR merges the development branch into the main branch.\n\nNo pull requests found between branches."
+          else
+            PR_BODY="This PR merges the development branch into the main branch.\n\n## Included Pull Requests (${TOTAL_PR_COUNT})\n\n"
+            
+            # Add features section
+            if [ "${PR_COUNTS[feature]}" -gt 0 ]; then
+              PR_BODY="${PR_BODY}### ✨ Features\n${PR_CATEGORIES[feature]}\n"
+            fi
+            
+            # Add bug fixes section
+            if [ "${PR_COUNTS[bug]}" -gt 0 ]; then
+              PR_BODY="${PR_BODY}### 🐛 Bug Fixes\n${PR_CATEGORIES[bug]}\n"
+            fi
+            
+            # Add chores section
+            if [ "${PR_COUNTS[chore]}" -gt 0 ]; then
+              PR_BODY="${PR_BODY}### 🔧 Chores & Maintenance\n${PR_CATEGORIES[chore]}\n"
+            fi
+            
+            # Add documentation section
+            if [ "${PR_COUNTS[docs]}" -gt 0 ]; then
+              PR_BODY="${PR_BODY}### 📚 Documentation\n${PR_CATEGORIES[docs]}\n"
+            fi
+            
+            # Add other section
+            if [ "${PR_COUNTS[other]}" -gt 0 ]; then
+              PR_BODY="${PR_BODY}### 🔄 Other Changes\n${PR_CATEGORIES[other]}\n"
+            fi
+          fi
+          
+          # Add comparison link
+          if REPO_URL=$(gh repo view --json url -q .url 2>/dev/null); then
+            PR_BODY="${PR_BODY}\n\n## Branch Comparison\n[View all changes](${REPO_URL}/compare/main...development)"
+          else
+            echo "Warning: Could not fetch repository URL"
+          fi
+          
+          # Save to file to handle multiline content
+          echo -e "$PR_BODY" > "$GITHUB_WORKSPACE/pr_body.txt"
+          echo "PR body saved to file"
+          
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
@@ -35,9 +207,7 @@ jobs:
           labels: skip-changelog
           token: ${{ steps.generate_token.outputs.token }}
           title: 🤖 Merge development into main
-          body: |
-            This PR merges the development branch into the main branch.
-            It is created automatically by the Takaro CI bot.
+          body-path: ${{ github.workspace }}/pr_body.txt
 
   updateDevelopment:
     runs-on: ubuntu-latest
