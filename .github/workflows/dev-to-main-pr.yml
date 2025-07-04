@@ -28,6 +28,52 @@ jobs:
         run: |
           git fetch origin development:development
           git reset --hard development
+      - name: Generate PR list
+        id: pr_list
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: |
+          # Get the list of PRs merged into development but not in main
+          echo "Fetching PR list..."
+          
+          # Get merge commits between main and development
+          PR_LIST=$(git log origin/main..origin/development --merges --pretty=format:"%H %s" | grep -E "Merge pull request #[0-9]+" | head -20)
+          
+          # Format PR list as markdown
+          PR_MARKDOWN=""
+          PR_COUNT=0
+          
+          if [ -n "$PR_LIST" ]; then
+            while IFS= read -r line; do
+              PR_NUM=$(echo "$line" | grep -oE "#[0-9]+" | tr -d '#')
+              if [ -n "$PR_NUM" ]; then
+                # Get PR details using gh CLI
+                PR_INFO=$(gh pr view "$PR_NUM" --json number,title,author,url 2>/dev/null || echo "")
+                if [ -n "$PR_INFO" ]; then
+                  PR_TITLE=$(echo "$PR_INFO" | jq -r '.title // "Unknown"')
+                  PR_AUTHOR=$(echo "$PR_INFO" | jq -r '.author.login // "unknown"')
+                  PR_URL=$(echo "$PR_INFO" | jq -r '.url // ""')
+                  PR_MARKDOWN="${PR_MARKDOWN}- #${PR_NUM}: ${PR_TITLE} (@${PR_AUTHOR})\n"
+                  ((PR_COUNT++))
+                fi
+              fi
+            done <<< "$PR_LIST"
+          fi
+          
+          # Create the PR body
+          if [ $PR_COUNT -eq 0 ]; then
+            PR_BODY="This PR merges the development branch into the main branch.\n\nNo pull requests found between branches."
+          else
+            PR_BODY="This PR merges the development branch into the main branch.\n\n## Included Pull Requests (${PR_COUNT})\n\n${PR_MARKDOWN}"
+          fi
+          
+          # Add comparison link
+          REPO_URL=$(gh repo view --json url -q .url)
+          PR_BODY="${PR_BODY}\n\n## Branch Comparison\n[View all changes](${REPO_URL}/compare/main...development)"
+          
+          # Save to file to handle multiline content
+          echo -e "$PR_BODY" > pr_body.txt
+          
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
@@ -35,9 +81,7 @@ jobs:
           labels: skip-changelog
           token: ${{ steps.generate_token.outputs.token }}
           title: 🤖 Merge development into main
-          body: |
-            This PR merges the development branch into the main branch.
-            It is created automatically by the Takaro CI bot.
+          body-path: pr_body.txt
 
   updateDevelopment:
     runs-on: ubuntu-latest
