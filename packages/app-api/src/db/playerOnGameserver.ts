@@ -40,6 +40,8 @@ export class PlayerOnGameServerModel extends TakaroModel {
 
   online: boolean;
 
+  ip?: string;
+
   static get relationMappings() {
     return {
       gameServer: {
@@ -222,6 +224,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
       currency: data.currency,
       online: data.online,
       playtimeSeconds: data.playtimeSeconds,
+      ip: data.ip,
     });
 
     return this.findOne(res.id);
