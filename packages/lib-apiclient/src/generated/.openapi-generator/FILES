@@ -358,6 +358,7 @@ docs/TakaroEventRoleRemoved.md
 docs/TakaroEventRoleUpdated.md
 docs/TakaroEventServerStatusChanged.md
 docs/TakaroEventSettingsSet.md
+docs/TakaroEventShopItem.md
 docs/TakaroEventShopListingCreated.md
 docs/TakaroEventShopListingDeleted.md
 docs/TakaroEventShopListingUpdated.md

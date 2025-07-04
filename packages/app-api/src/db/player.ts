@@ -422,4 +422,70 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
       mau,
     };
   }
+
+  async findByPlatformIds(platformIds: {
+    steamId?: string;
+    epicOnlineServicesId?: string;
+    xboxLiveId?: string;
+    platformId?: string;
+  }): Promise<PlayerOutputWithRolesDTO[]> {
+    const { query } = await this.getModel();
+
+    let qb = query;
+
+    // Use OR conditions to find players matching any of the platform IDs
+    qb = qb.where((builder) => {
+      if (platformIds.steamId) {
+        builder.orWhere('steamId', platformIds.steamId);
+      }
+      if (platformIds.epicOnlineServicesId) {
+        builder.orWhere('epicOnlineServicesId', platformIds.epicOnlineServicesId);
+      }
+      if (platformIds.xboxLiveId) {
+        builder.orWhere('xboxLiveId', platformIds.xboxLiveId);
+      }
+      if (platformIds.platformId) {
+        builder.orWhere('platformId', platformIds.platformId);
+      }
+    });
+
+    const result = await qb.withGraphFetched('roleAssignments.role.permissions.permission');
+
+    if (!result.length) {
+      return [];
+    }
+
+    return Promise.all(result.map(async (player) => new PlayerOutputWithRolesDTO(player)));
+  }
+
+  async batchRemoveRoles(
+    expiredRoles: Array<{
+      playerId: string;
+      roleId: string;
+      gameServerId?: string;
+    }>,
+  ): Promise<void> {
+    if (expiredRoles.length === 0) return;
+
+    const knex = await this.getKnex();
+    const roleOnPlayerModel = RoleOnPlayerModel.bindKnex(knex);
+
+    // Build a query to delete all expired roles in one operation
+    const query = roleOnPlayerModel.query().delete();
+
+    // Use OR conditions to match all the expired role assignments
+    query.where((builder) => {
+      expiredRoles.forEach((expiredRole) => {
+        const whereClause: Record<string, string | null> = {
+          playerId: expiredRole.playerId,
+          roleId: expiredRole.roleId,
+          gameServerId: expiredRole.gameServerId || null,
+        };
+        builder.orWhere(whereClause);
+      });
+    });
+
+    const deletedCount = await query;
+    this.log.info('Batch removed expired roles', { requestedCount: expiredRoles.length, deletedCount });
+  }
 }

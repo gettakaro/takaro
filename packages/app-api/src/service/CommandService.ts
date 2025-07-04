@@ -288,6 +288,12 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
   }
 
   async handleChatMessage(chatMessage: EventChatMessage, gameServerId: string) {
+    this.log.debug('handleChatMessage: Starting to process chat message', {
+      gameServerId,
+      msgLength: chatMessage.msg.length,
+      player: chatMessage.player?.gameId,
+    });
+
     const prefix = await new SettingsService(this.domainId, gameServerId).get(SETTINGS_KEYS.commandPrefix);
     if (!chatMessage.msg.startsWith(prefix.value)) {
       // Message doesn't start with configured prefix
@@ -301,6 +307,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
     }
 
     const commandName = chatMessage.msg.slice(prefix.value.length).split(' ')[0];
+    this.log.debug('handleChatMessage: Extracted command name', { commandName });
 
     if (commandName === 'link') {
       const { player, pog } = await this.playerService.resolveRef(chatMessage.player, gameServerId);
@@ -322,6 +329,10 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
     }
 
     const triggeredCommands = await this.repo.getTriggeredCommands(commandName, gameServerId);
+    this.log.debug('handleChatMessage: Queried for triggered commands', {
+      commandName,
+      foundCount: triggeredCommands.length,
+    });
 
     if (triggeredCommands.length) {
       this.log.debug(`Found ${triggeredCommands.length} commands that match the event`);
@@ -333,6 +344,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       const userRes = await userService.find({ filters: { playerId: [player.id] } });
       const user = userRes.results[0];
 
+      this.log.debug('handleChatMessage: Starting to parse commands');
       const parsedCommands = await Promise.all(
         triggeredCommands.map(async (c) => {
           let parsedCommand: IParsedCommand | null = null;
@@ -375,6 +387,11 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
           if (!commandConfig.enabled) return;
 
           const delay = commandConfig ? commandConfig.delay * 1000 : 0;
+          this.log.debug('handleChatMessage: Command delay configuration', {
+            commandName: db.name,
+            delay,
+            announceDelay: commandConfig?.announceDelay,
+          });
 
           if (delay && commandConfig.announceDelay) {
             await gameServerService.sendMessage(
@@ -406,7 +423,15 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
           // Also set an expiration for this lock of 2 minutes
           // This prevents the lock from being held forever if the job fails
           await redisClient.expire(commandsRunningKey(jobData), 120);
+
+          this.log.debug('handleChatMessage: Adding command job to queue', {
+            commandId: db.id,
+            commandName: db.name,
+            delay,
+            playerId: player.id,
+          });
           await queueService.queues.commands.queue.add(jobData, { delay });
+          this.log.debug('handleChatMessage: Command job added to queue successfully');
         }
       });
 
