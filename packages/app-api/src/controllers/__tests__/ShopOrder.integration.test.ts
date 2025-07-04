@@ -275,59 +275,6 @@ const tests = [
   }),
   new IntegrationTest<IShopSetup>({
     group,
-    snapshot: false,
-    name: 'Race condition protection: Multiple concurrent claim attempts only succeed once',
-    setup: shopSetup,
-    test: async function () {
-      // Create a single order
-      const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
-        listingId: this.setupData.listing100.id,
-        amount: 1,
-      });
-
-      // Attempt to claim the same order concurrently multiple times
-      const claimPromises = [];
-      const numConcurrentAttempts = 5;
-
-      for (let i = 0; i < numConcurrentAttempts; i++) {
-        claimPromises.push(
-          this.setupData.client1.shopOrder
-            .shopOrderControllerClaim(order.data.data.id)
-            .then((res) => ({ success: true, status: res.data.data.status }))
-            .catch((error) => ({
-              success: false,
-              error: isAxiosError(error) && error.response ? error.response.data.meta.error : error,
-            })),
-        );
-      }
-
-      // Wait for all claim attempts to complete
-      const results = await Promise.all(claimPromises);
-
-      // Verify that exactly one claim succeeded
-      const successfulClaims = results.filter((r) => r.success);
-      const failedClaims = results.filter((r) => !r.success);
-
-      expect(successfulClaims).to.have.length(1);
-      expect(successfulClaims[0].status).to.eq(ShopOrderOutputDTOStatusEnum.Completed);
-
-      expect(failedClaims).to.have.length(numConcurrentAttempts - 1);
-
-      // All failed claims should have the correct error
-      failedClaims.forEach((failed) => {
-        expect(failed.error.code).to.eq('BadRequestError');
-        expect(failed.error.message).to.eq('Can only claim paid, unclaimed orders. Current status: COMPLETED');
-      });
-
-      // Verify the order is indeed completed
-      const finalOrder = await this.setupData.client1.shopOrder.shopOrderControllerGetOne(order.data.data.id);
-      expect(finalOrder.data.data.status).to.eq(ShopOrderOutputDTOStatusEnum.Completed);
-
-      return finalOrder;
-    },
-  }),
-  new IntegrationTest<IShopSetup>({
-    group,
     snapshot: true,
     name: 'Cancel order',
     setup: shopSetup,

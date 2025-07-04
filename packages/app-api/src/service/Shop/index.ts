@@ -28,6 +28,7 @@ import {
   TakaroEventShopListingDeleted,
   TakaroEventShopListingUpdated,
   TakaroEventShopOrderStatusChanged,
+  TakaroEventShopOrderDeliveryFailed,
   TakaroEventShopItem,
 } from '@takaro/modules';
 import { IMessageOptsDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
@@ -270,106 +271,118 @@ export class ShopListingService extends TakaroService<
   async claimOrder(orderId: string): Promise<ShopOrderOutputDTO> {
     const { model } = await this.orderRepo.getModel();
 
-    // Retry logic for handling transaction conflicts
-    const maxRetries = 3;
-    let lastError: Error | null = null;
+    // First, check if the order exists and belongs to user, and get necessary data
+    const initialOrder = await this.orderRepo.findOne(orderId);
+    if (!initialOrder) throw new errors.NotFoundError(`Shop order with id ${orderId} not found`);
+    await this.checkIfOrderBelongsToUser(initialOrder);
 
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
-      try {
-        return await model.transaction(async (trx) => {
-          // Lock the order row for update to prevent concurrent claims
-          const order = await this.orderRepo.findOneForUpdate(orderId, trx);
-          if (!order) throw new errors.NotFoundError(`Shop order with id ${orderId} not found`);
-          await this.checkIfOrderBelongsToUser(order);
+    // Pre-transaction checks: Get listing and verify player is online
+    const listing = await this.findOne(initialOrder.listingId);
+    const gameServerId = listing.gameServerId;
 
-          // Check status again within the transaction with the lock held
-          if (order.status !== ShopOrderStatus.PAID)
-            throw new errors.BadRequestError(`Can only claim paid, unclaimed orders. Current status: ${order.status}`);
+    const playerService = new PlayerService(this.domainId);
+    const { pogs } = await playerService.resolveFromId(initialOrder.playerId, gameServerId);
+    const pog = pogs.find((pog) => pog.gameServerId === gameServerId);
+    if (!pog) throw new errors.BadRequestError('You have not logged in to the game server yet.');
+    if (!pog.online)
+      throw new errors.BadRequestError(
+        'You must be online in the game server to claim the order. If you have just logged in, please wait a few seconds and try again.',
+      );
 
-          // Update status immediately after checking to minimize race condition window
-          const updatedOrder = await this.orderRepo.updateWithTransaction(
-            orderId,
-            new ShopOrderUpdateDTO({ status: ShopOrderStatus.COMPLETED }),
-            trx,
+    // Phase 1: Quick database transaction to update order status
+    const transactionResult = await model.transaction(async (trx) => {
+      // Lock the order row for update to prevent concurrent claims
+      const order = await this.orderRepo.findOneForUpdate(orderId, trx);
+      if (!order) throw new errors.NotFoundError(`Shop order with id ${orderId} not found`);
+
+      // Check status again within the transaction with the lock held
+      if (order.status !== ShopOrderStatus.PAID)
+        throw new errors.BadRequestError(`Can only claim paid, unclaimed orders. Current status: ${order.status}`);
+
+      // Update status immediately after checking to minimize race condition window
+      const updatedOrder = await this.orderRepo.updateWithTransaction(
+        orderId,
+        new ShopOrderUpdateDTO({ status: ShopOrderStatus.COMPLETED }),
+        trx,
+      );
+
+      return { updatedOrder, order };
+    });
+
+    // Phase 2: Make external game server calls (outside of transaction)
+    const { updatedOrder, order } = transactionResult;
+
+    try {
+      const gameServerService = new GameServerService(this.domainId);
+      if (listing.items.length) {
+        for (let i = 0; i < order.amount; i++) {
+          await Promise.all(
+            listing.items.map((item) =>
+              gameServerService.giveItem(gameServerId, pog.playerId, item.item.id, item.amount, item.quality),
+            ),
           );
-
-          const listing = await this.findOne(order.listingId);
-          const gameServerId = listing.gameServerId;
-
-          const playerService = new PlayerService(this.domainId);
-          const { pogs } = await playerService.resolveFromId(order.playerId, gameServerId);
-          const pog = pogs.find((pog) => pog.gameServerId === gameServerId);
-          if (!pog) throw new errors.BadRequestError('You have not logged in to the game server yet.');
-          if (!pog.online)
-            throw new errors.BadRequestError(
-              'You must be online in the game server to claim the order. If you have just logged in, please wait a few seconds and try again.',
-            );
-
-          const gameServerService = new GameServerService(this.domainId);
-          if (listing.items.length) {
-            for (let i = 0; i < order.amount; i++) {
-              await Promise.all(
-                listing.items.map((item) =>
-                  gameServerService.giveItem(gameServerId, pog.playerId, item.item.id, item.amount, item.quality),
-                ),
-              );
-            }
-
-            await gameServerService.sendMessage(
-              gameServerId,
-              'You have received items from a shop order.',
-              new IMessageOptsDTO({
-                recipient: new IPlayerReferenceDTO({ gameId: pog.gameId }),
-              }),
-            );
-            for (const item of listing.items) {
-              await gameServerService.sendMessage(
-                gameServerId,
-                `${item.amount}x ${item.item.name}`,
-                new IMessageOptsDTO({
-                  recipient: new IPlayerReferenceDTO({ gameId: pog.gameId }),
-                }),
-              );
-            }
-          }
-
-          await this.eventService.create(
-            new EventCreateDTO({
-              eventName: EVENT_TYPES.SHOP_ORDER_STATUS_CHANGED,
-              gameserverId: gameServerId,
-              playerId: pog.playerId,
-              meta: new TakaroEventShopOrderStatusChanged({
-                id: updatedOrder.id,
-                status: ShopOrderStatus.COMPLETED,
-              }),
-            }),
-          );
-
-          return updatedOrder;
-        });
-      } catch (error: any) {
-        lastError = error;
-
-        // Check if this is a deadlock/lock timeout error that we should retry
-        // PostgreSQL error codes: 40P01 (deadlock detected), 55P03 (lock not available)
-        if (error.code === '40P01' || error.code === '55P03' || error.message?.includes('lock')) {
-          this.log.warn(
-            `Transaction conflict on attempt ${attempt + 1}/${maxRetries} for order ${orderId}: ${error.message}`,
-          );
-          if (attempt < maxRetries - 1) {
-            // Add exponential backoff delay before retry
-            await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt) * 100));
-            continue;
-          }
         }
 
-        // For other errors or if it's a business logic error, throw immediately
-        throw error;
+        await gameServerService.sendMessage(
+          gameServerId,
+          'You have received items from a shop order.',
+          new IMessageOptsDTO({
+            recipient: new IPlayerReferenceDTO({ gameId: pog.gameId }),
+          }),
+        );
+        for (const item of listing.items) {
+          await gameServerService.sendMessage(
+            gameServerId,
+            `${item.amount}x ${item.item.name}`,
+            new IMessageOptsDTO({
+              recipient: new IPlayerReferenceDTO({ gameId: pog.gameId }),
+            }),
+          );
+        }
       }
+
+      await this.eventService.create(
+        new EventCreateDTO({
+          eventName: EVENT_TYPES.SHOP_ORDER_STATUS_CHANGED,
+          gameserverId: gameServerId,
+          playerId: pog.playerId,
+          meta: new TakaroEventShopOrderStatusChanged({
+            id: updatedOrder.id,
+            status: ShopOrderStatus.COMPLETED,
+          }),
+        }),
+      );
+    } catch (deliveryError: any) {
+      // Log the delivery failure but don't throw - the order is already marked as completed
+      this.log.error(
+        `Failed to deliver items for order ${orderId} after successful claim: ${deliveryError.message}`,
+        deliveryError,
+      );
+
+      // Create an event to signal the delivery failure
+      await this.eventService.create(
+        new EventCreateDTO({
+          eventName: EVENT_TYPES.SHOP_ORDER_DELIVERY_FAILED,
+          gameserverId: gameServerId,
+          playerId: pog.playerId,
+          meta: new TakaroEventShopOrderDeliveryFailed({
+            id: updatedOrder.id,
+            error: deliveryError.message,
+            items: listing.items.map(
+              (item) =>
+                new TakaroEventShopItem({
+                  name: item.item.name,
+                  code: item.item.code,
+                  amount: item.amount * order.amount,
+                  quality: item.quality,
+                }),
+            ),
+          }),
+        }),
+      );
     }
 
-    // If we've exhausted all retries, throw the last error
-    throw lastError || new errors.InternalServerError('Failed to claim order after multiple attempts');
+    return updatedOrder;
   }
 
   async cancelOrder(orderId: string): Promise<ShopOrderOutputDTO> {
