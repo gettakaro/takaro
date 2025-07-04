@@ -51,17 +51,12 @@ jobs:
             exit 1
           fi
           
-          # Get merge commits between main and development using merge-base for accuracy
-          echo "Getting merge commits..."
-          git fetch origin development:refs/remotes/origin/development
+          # Get merge commits that will be included in this main-promotion
+          echo "Getting merge commits from main-promotion content..."
           
-          # Find the actual divergence point to avoid including PRs already in main
-          MERGE_BASE=$(git merge-base origin/main origin/development || echo "origin/main")
-          echo "Merge base: $MERGE_BASE"
-          echo "Using range: $MERGE_BASE..origin/development"
-          
-          # Use merge-base comparison to get only truly new commits
-          PR_LIST=$(git log $MERGE_BASE..origin/development --merges --pretty=format:"%H %s" | grep -E "Merge pull request #[0-9]+" | head -20 || true)
+          # After reset --hard development, HEAD contains exactly what will be merged to main
+          # So we just need to compare HEAD (main-promotion content) vs origin/main
+          PR_LIST=$(git log origin/main..HEAD --merges --pretty=format:"%H %s" | grep -E "Merge pull request #[0-9]+" | head -20 || true)
           
           echo "Found merge commits: $PR_LIST"
           
@@ -152,7 +147,7 @@ jobs:
               fi
             done <<< "$PR_LIST"
           else
-            echo "No merge commits found between $MERGE_BASE and origin/development"
+            echo "No merge commits found between origin/main and HEAD (main-promotion content)"
           fi
           
           echo "Final total PR count: $TOTAL_PR_COUNT"
