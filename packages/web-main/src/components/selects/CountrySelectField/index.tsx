@@ -57,7 +57,7 @@ export const CountrySelectField: FC<CountrySelectProps> = ({
             <Inner>
               <Flag
                 alt={`Flag of ${name}`}
-                src={`http://purecatamphetamine.github.io/country-flag-icons/3x2/${code}.svg`}
+                src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${code}.svg`}
               />
               <span>{name}</span>
             </Inner>
