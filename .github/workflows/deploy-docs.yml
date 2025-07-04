@@ -37,14 +37,14 @@ jobs:
       - name: Generate API client docs
         run: |
           npx typedoc
-          mv reports/api-docs packages/web-docs/build/api-docs
+          mv reports/api-docs packages/web-docs/dist/api-docs
 
       # Upload the build artifacts so they can be used by the deploy job
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: docs-build
-          path: './packages/web-docs/build'
+          path: './packages/web-docs/dist'
           retention-days: 1
 
   # Deploy job that only runs on main branch
