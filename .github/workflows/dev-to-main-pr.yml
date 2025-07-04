@@ -51,18 +51,36 @@ jobs:
             exit 1
           fi
           
-          # Get merge commits between main and development using explicit branch comparison
+          # Get merge commits between main and development using merge-base for accuracy
           echo "Getting merge commits..."
           git fetch origin development:refs/remotes/origin/development
           
-          # Use explicit branch comparison to avoid stale references
-          PR_LIST=$(git log origin/main..origin/development --merges --pretty=format:"%H %s" | grep -E "Merge pull request #[0-9]+" | head -20 || true)
+          # Find the actual divergence point to avoid including PRs already in main
+          MERGE_BASE=$(git merge-base origin/main origin/development || echo "origin/main")
+          echo "Merge base: $MERGE_BASE"
+          echo "Using range: $MERGE_BASE..origin/development"
+          
+          # Use merge-base comparison to get only truly new commits
+          PR_LIST=$(git log $MERGE_BASE..origin/development --merges --pretty=format:"%H %s" | grep -E "Merge pull request #[0-9]+" | head -20 || true)
           
           echo "Found merge commits: $PR_LIST"
           
-          # Format PR list as markdown
-          PR_MARKDOWN=""
-          PR_COUNT=0
+          # Initialize categorized PR lists
+          declare -A PR_CATEGORIES
+          PR_CATEGORIES[feature]=""
+          PR_CATEGORIES[bug]=""
+          PR_CATEGORIES[chore]=""
+          PR_CATEGORIES[docs]=""
+          PR_CATEGORIES[other]=""
+          
+          declare -A PR_COUNTS
+          PR_COUNTS[feature]=0
+          PR_COUNTS[bug]=0
+          PR_COUNTS[chore]=0
+          PR_COUNTS[docs]=0
+          PR_COUNTS[other]=0
+          
+          TOTAL_PR_COUNT=0
           
           if [ -n "$PR_LIST" ]; then
             echo "Processing PR list..."
@@ -74,12 +92,13 @@ jobs:
                 
                 if [ -n "$PR_NUM" ] && [ "$PR_NUM" != "" ]; then
                   echo "Fetching details for PR #$PR_NUM"
-                  # Get PR details using gh CLI with better error handling
-                  if PR_INFO=$(gh pr view "$PR_NUM" --json number,title,author,url,baseRefName 2>/dev/null); then
+                  # Get PR details including labels
+                  if PR_INFO=$(gh pr view "$PR_NUM" --json number,title,author,url,baseRefName,labels 2>/dev/null); then
                     if [ -n "$PR_INFO" ] && [ "$PR_INFO" != "null" ]; then
                       PR_TITLE=$(echo "$PR_INFO" | jq -r '.title // "Unknown"' || echo "Unknown")
                       PR_AUTHOR=$(echo "$PR_INFO" | jq -r '.author.login // "unknown"' || echo "unknown")
                       PR_BASE=$(echo "$PR_INFO" | jq -r '.baseRefName // "unknown"' || echo "unknown")
+                      PR_LABELS=$(echo "$PR_INFO" | jq -r '.labels[]?.name // empty' 2>/dev/null || echo "")
                       
                       # Filter out automated merge PRs and bot PRs
                       SKIP_PR=false
@@ -103,9 +122,25 @@ jobs:
                       fi
                       
                       if [ "$SKIP_PR" = false ]; then
-                        PR_MARKDOWN="${PR_MARKDOWN}- #${PR_NUM}: ${PR_TITLE} (@${PR_AUTHOR})\n"
-                        PR_COUNT=$((PR_COUNT + 1))
-                        echo "Added PR #$PR_NUM to list (count: $PR_COUNT)"
+                        # Categorize PR based on labels
+                        CATEGORY="other"
+                        echo "PR Labels: $PR_LABELS"
+                        
+                        if echo "$PR_LABELS" | grep -qi "feature\|enhancement"; then
+                          CATEGORY="feature"
+                        elif echo "$PR_LABELS" | grep -qi "bug\|fix"; then
+                          CATEGORY="bug"
+                        elif echo "$PR_LABELS" | grep -qi "chore\|maintenance\|dependencies"; then
+                          CATEGORY="chore"
+                        elif echo "$PR_LABELS" | grep -qi "documentation\|docs"; then
+                          CATEGORY="docs"
+                        fi
+                        
+                        # Add to appropriate category (simplified format: just #123 (@author))
+                        PR_CATEGORIES[$CATEGORY]="${PR_CATEGORIES[$CATEGORY]}- #${PR_NUM} (@${PR_AUTHOR})\n"
+                        PR_COUNTS[$CATEGORY]=$((PR_COUNTS[$CATEGORY] + 1))
+                        TOTAL_PR_COUNT=$((TOTAL_PR_COUNT + 1))
+                        echo "Added PR #$PR_NUM to $CATEGORY category (count: ${PR_COUNTS[$CATEGORY]})"
                       fi
                     else
                       echo "Warning: Empty PR info for #$PR_NUM"
@@ -117,16 +152,46 @@ jobs:
               fi
             done <<< "$PR_LIST"
           else
-            echo "No merge commits found between origin/main and origin/development"
+            echo "No merge commits found between $MERGE_BASE and origin/development"
           fi
           
-          echo "Final PR count: $PR_COUNT"
+          echo "Final total PR count: $TOTAL_PR_COUNT"
+          echo "Feature PRs: ${PR_COUNTS[feature]}"
+          echo "Bug fix PRs: ${PR_COUNTS[bug]}"
+          echo "Chore PRs: ${PR_COUNTS[chore]}"
+          echo "Documentation PRs: ${PR_COUNTS[docs]}"
+          echo "Other PRs: ${PR_COUNTS[other]}"
           
-          # Create the PR body
-          if [ "$PR_COUNT" -eq 0 ]; then
+          # Create the categorized PR body
+          if [ "$TOTAL_PR_COUNT" -eq 0 ]; then
             PR_BODY="This PR merges the development branch into the main branch.\n\nNo pull requests found between branches."
           else
-            PR_BODY="This PR merges the development branch into the main branch.\n\n## Included Pull Requests (${PR_COUNT})\n\n${PR_MARKDOWN}"
+            PR_BODY="This PR merges the development branch into the main branch.\n\n## Included Pull Requests (${TOTAL_PR_COUNT})\n\n"
+            
+            # Add features section
+            if [ "${PR_COUNTS[feature]}" -gt 0 ]; then
+              PR_BODY="${PR_BODY}### ✨ Features\n${PR_CATEGORIES[feature]}\n"
+            fi
+            
+            # Add bug fixes section
+            if [ "${PR_COUNTS[bug]}" -gt 0 ]; then
+              PR_BODY="${PR_BODY}### 🐛 Bug Fixes\n${PR_CATEGORIES[bug]}\n"
+            fi
+            
+            # Add chores section
+            if [ "${PR_COUNTS[chore]}" -gt 0 ]; then
+              PR_BODY="${PR_BODY}### 🔧 Chores & Maintenance\n${PR_CATEGORIES[chore]}\n"
+            fi
+            
+            # Add documentation section
+            if [ "${PR_COUNTS[docs]}" -gt 0 ]; then
+              PR_BODY="${PR_BODY}### 📚 Documentation\n${PR_CATEGORIES[docs]}\n"
+            fi
+            
+            # Add other section
+            if [ "${PR_COUNTS[other]}" -gt 0 ]; then
+              PR_BODY="${PR_BODY}### 🔄 Other Changes\n${PR_CATEGORIES[other]}\n"
+            fi
           fi
           
           # Add comparison link
