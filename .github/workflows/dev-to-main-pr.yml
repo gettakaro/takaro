@@ -196,9 +196,9 @@ jobs:
             echo "Warning: Could not fetch repository URL"
           fi
           
-          # Save to file to handle multiline content
-          echo -e "$PR_BODY" > "$GITHUB_WORKSPACE/pr_body.txt"
-          echo "PR body saved to file"
+          # Save to /tmp to avoid committing the temp file
+          echo -e "$PR_BODY" > "/tmp/pr_body.txt"
+          echo "PR body saved to temp file"
           
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
@@ -207,7 +207,7 @@ jobs:
           labels: skip-changelog
           token: ${{ steps.generate_token.outputs.token }}
           title: 🤖 Merge development into main
-          body-path: ${{ github.workspace }}/pr_body.txt
+          body-path: /tmp/pr_body.txt
 
   updateDevelopment:
     runs-on: ubuntu-latest
