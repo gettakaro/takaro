@@ -261,7 +261,7 @@
     "lightningcss": "1.27.0",
     "lint-staged": "15.2.10",
     "mocha": "10.7.3",
-    "nodemon": "3.1.7",
+    "nodemon": "3.1.10",
     "path-browserify": "1.0.1",
     "prettier": "3.3.3",
     "rimraf": "6.0.1",
@@ -284,7 +284,7 @@
   },
   "optionalDependencies": {
     "bufferutil": "4.0.9",
-    "utf-8-validate": "6.0.4"
+    "utf-8-validate": "6.0.5"
   },
   "engines": {
     "node": "22.11.0",

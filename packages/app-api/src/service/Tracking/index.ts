@@ -13,6 +13,8 @@ import {
   PlayerItemHistoryOutputDTO,
 } from './dto.js';
 import { ITakaroQuery } from '@takaro/db';
+import { PlayerService } from '../Player/index.js';
+import { PlayerOnGameServerService } from '../PlayerOnGameserverService.js';
 
 @traceableClass('service:tracking')
 export class TrackingService extends TakaroService<
@@ -45,8 +47,48 @@ export class TrackingService extends TakaroService<
     throw new errors.NotImplementedError();
   }
 
+  private async checkIdType(id: string): Promise<{ isPlayerId: boolean; isPogId: boolean }> {
+    const playerService = new PlayerService(this.domainId);
+    const pogService = new PlayerOnGameServerService(this.domainId);
+
+    let isPlayerId = false;
+    let isPogId = false;
+
+    try {
+      await playerService.findOne(id);
+      isPlayerId = true;
+    } catch {
+      // Not a player ID
+    }
+
+    try {
+      await pogService.findOne(id);
+      isPogId = true;
+    } catch {
+      // Not a PoG ID
+    }
+
+    return { isPlayerId, isPogId };
+  }
+
   async getPlayerMovementHistory(input: PlayerMovementHistoryInputDTO): Promise<PlayerLocationOutputDTO[]> {
-    return this.repo.getPlayerMovementHistory(input);
+    const result = await this.repo.getPlayerMovementHistory(input);
+
+    // If no results and playerIds were provided, check if wrong ID type was used
+    if (result.length === 0 && input.playerId && input.playerId.length > 0) {
+      for (const id of input.playerId) {
+        const { isPlayerId, isPogId } = await this.checkIdType(id);
+
+        if (isPlayerId && !isPogId) {
+          throw new errors.BadRequestError(
+            `No tracking data found for ID: ${id}. This appears to be a Player ID, but this endpoint requires a PlayerOnGameserver ID. ` +
+              `Please use the PlayerOnGameserver ID instead. You can find the correct ID by querying /gameservers/{gameServerId}/players/{playerId}`,
+          );
+        }
+      }
+    }
+
+    return result;
   }
 
   async getBoundingBoxPlayers(input: BoundingBoxSearchInputDTO): Promise<PlayerLocationOutputDTO[]> {
@@ -58,7 +100,21 @@ export class TrackingService extends TakaroService<
   }
 
   async getPlayerInventoryHistory(input: PlayerInventoryHistoryInputDTO): Promise<PlayerInventoryOutputDTO[]> {
-    return this.repo.getPlayerInventoryHistory(input);
+    const result = await this.repo.getPlayerInventoryHistory(input);
+
+    // If no results, check if wrong ID type was used
+    if (result.length === 0) {
+      const { isPlayerId, isPogId } = await this.checkIdType(input.playerId);
+
+      if (isPlayerId && !isPogId) {
+        throw new errors.BadRequestError(
+          `No tracking data found for ID: ${input.playerId}. This appears to be a Player ID, but this endpoint requires a PlayerOnGameserver ID. ` +
+            `Please use the PlayerOnGameserver ID instead. You can find the correct ID by querying /gameservers/{gameServerId}/players/{playerId}`,
+        );
+      }
+    }
+
+    return result;
   }
 
   async getPlayersByItem(input: PlayersByItemInputDTO): Promise<PlayerItemHistoryOutputDTO[]> {
