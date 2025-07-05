@@ -22,7 +22,6 @@ export const ChatMessage: FC<{ event: EventOutputDTO }> = ({ event }) => {
       </Message>
     );
   }
-
   const meta = event.meta as EventChatMessage;
   if (!meta || !('msg' in meta)) return null;
 
