@@ -76,7 +76,7 @@ test.describe('Domain Name Override Feature', () => {
     // Set a custom domain name
     const customDomainName = 'My Custom Domain Name';
     await page.getByLabel('domain name').fill(customDomainName);
-    await page.getByRole('button', { name: 'Save' }).click();
+    await page.getByText('Save settings').click();
 
     // Wait for save to complete and verify it persisted
     await page.waitForTimeout(1000); // Give it time to save
@@ -104,7 +104,7 @@ test.describe('Domain Name Override Feature', () => {
 
     // Clear any existing domain name override
     await page.getByLabel('domain name').clear();
-    await page.getByRole('button', { name: 'Save' }).click();
+    await page.getByText('Save settings').click();
 
     // Wait for save to complete
     await page.waitForTimeout(1000);
