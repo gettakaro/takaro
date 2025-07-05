@@ -90,7 +90,7 @@ const tests = [
         },
       );
 
-      expect(rejectedRes.data.meta.error.message).to.be.eq('Currency must be positive');
+      expect(rejectedRes.data.meta.error.message).to.be.eq('Validation error');
 
       return rejectedRes;
     },
@@ -419,6 +419,116 @@ const tests = [
       );
 
       expect(playerRes.data.data.currency).to.be.eq(0);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Rejects negative amount for addCurrency',
+    setup: SetupGameServerPlayers.setup,
+    expectedStatus: 400,
+    test: async function () {
+      const res = await this.client.playerOnGameserver.playerOnGameServerControllerSearch();
+      const player = res.data.data[0];
+
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: player.gameServerId,
+        value: 'true',
+      });
+
+      const rejectedRes = await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
+        player.gameServerId,
+        player.playerId,
+        {
+          currency: -50,
+        },
+      );
+
+      expect(rejectedRes.data.meta.error.message).to.be.eq('Validation error');
+      return rejectedRes;
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Rejects zero amount for addCurrency',
+    setup: SetupGameServerPlayers.setup,
+    expectedStatus: 400,
+    test: async function () {
+      const res = await this.client.playerOnGameserver.playerOnGameServerControllerSearch();
+      const player = res.data.data[0];
+
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: player.gameServerId,
+        value: 'true',
+      });
+
+      const rejectedRes = await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
+        player.gameServerId,
+        player.playerId,
+        {
+          currency: 0,
+        },
+      );
+
+      expect(rejectedRes.data.meta.error.message).to.be.eq('Validation error');
+      return rejectedRes;
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Rejects negative amount for deductCurrency',
+    setup: SetupGameServerPlayers.setup,
+    expectedStatus: 400,
+    test: async function () {
+      const res = await this.client.playerOnGameserver.playerOnGameServerControllerSearch();
+      const player = res.data.data[0];
+
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: player.gameServerId,
+        value: 'true',
+      });
+
+      const rejectedRes = await this.client.playerOnGameserver.playerOnGameServerControllerDeductCurrency(
+        player.gameServerId,
+        player.playerId,
+        {
+          currency: -50,
+        },
+      );
+
+      expect(rejectedRes.data.meta.error.message).to.be.eq('Validation error');
+      return rejectedRes;
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Rejects negative amount for transfer',
+    setup: SetupGameServerPlayers.setup,
+    expectedStatus: 400,
+    test: async function () {
+      const res = await this.client.playerOnGameserver.playerOnGameServerControllerSearch();
+      const player1 = res.data.data[0];
+      const player2 = res.data.data[1];
+
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: player1.gameServerId,
+        value: 'true',
+      });
+
+      const rejectedRes = await this.client.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(
+        player1.gameServerId,
+        player1.id,
+        player2.id,
+        {
+          currency: -50,
+        },
+      );
+
+      expect(rejectedRes.data.meta.error.message).to.be.eq('Validation error');
+      return rejectedRes;
     },
   }),
 ];

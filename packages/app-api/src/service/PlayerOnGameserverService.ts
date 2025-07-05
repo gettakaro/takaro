@@ -241,6 +241,9 @@ export class PlayerOnGameServerService extends TakaroService<
   }
 
   async transact(senderId: string, receiverId: string, amount: number) {
+    if (amount <= 0) {
+      throw new errors.BadRequestError('Amount must be greater than 0');
+    }
     await this.repo.transact(senderId, receiverId, amount);
 
     const eventsService = new EventService(this.domainId);
@@ -273,6 +276,9 @@ export class PlayerOnGameServerService extends TakaroService<
   }
 
   async deductCurrency(id: string, amount: number) {
+    if (amount <= 0) {
+      throw new errors.BadRequestError('Amount must be greater than 0');
+    }
     const updatedPlayerOnGameServer = await this.repo.deductCurrency(id, amount);
     const eventsService = new EventService(this.domainId);
     const record = await this.findOne(id);
@@ -294,6 +300,9 @@ export class PlayerOnGameServerService extends TakaroService<
   }
 
   async addCurrency(id: string, amount: number): Promise<PlayerOnGameserverOutputDTO> {
+    if (amount <= 0) {
+      throw new errors.BadRequestError('Amount must be greater than 0');
+    }
     const updatedPlayerOnGameServer = await this.repo.addCurrency(id, amount);
     const eventsService = new EventService(this.domainId);
     const record = await this.findOne(id);
