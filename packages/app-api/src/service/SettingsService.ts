@@ -1,5 +1,5 @@
 import { TakaroDTO, TakaroModelDTO, ctx, traceableClass, errors } from '@takaro/util';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsModel, SettingsRepo } from '../db/settings.js';
 import { TakaroService } from './Base.js';
@@ -38,9 +38,8 @@ export class Settings extends TakaroModelDTO<Settings> {
   developerMode: string;
   @IsString()
   messagePrefix: string;
-  @IsOptional()
   @IsString()
-  domainName?: string;
+  domainName: string;
 }
 
 export enum SettingsMode {
