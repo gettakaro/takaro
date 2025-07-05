@@ -1,4 +1,4 @@
-import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, IsUUID, ValidateNested, Min } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
@@ -71,6 +71,7 @@ class PlayerOnGameServerSearchInputDTO extends ITakaroQuery<PlayerOnGameserverOu
 
 class PlayerOnGameServerSetCurrencyInputDTO {
   @IsNumber()
+  @Min(0.01)
   currency!: number;
 }
 
