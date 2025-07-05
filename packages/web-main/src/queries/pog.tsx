@@ -9,7 +9,7 @@ import {
   GiveItemInputDTO,
 } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
-import { mutationWrapper } from '../queries/util';
+import { mutationWrapper, queryParamsToArray } from '../queries/util';
 import { useSnackbar } from 'notistack';
 import { userKeys } from './user';
 
@@ -26,7 +26,7 @@ interface PogInput {
 
 export const playersOnGameServersQueryOptions = (queryParams: PlayerOnGameServerSearchInputDTO = {}) => {
   return queryOptions<PlayerOnGameserverOutputArrayDTOAPI, AxiosError<PlayerOnGameserverOutputArrayDTOAPI>>({
-    queryKey: [...pogKeys.list(), { queryParams }],
+    queryKey: [...pogKeys.list(), ...queryParamsToArray(queryParams)],
     queryFn: async () => (await getApiClient().playerOnGameserver.playerOnGameServerControllerSearch(queryParams)).data,
   });
 };

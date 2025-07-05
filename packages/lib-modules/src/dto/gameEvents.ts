@@ -99,6 +99,11 @@ export class EventChatMessage extends BaseGameEvent<EventChatMessage> {
   @IsEnum(Object.values(ChatChannel))
   channel: ChatChannel;
 
+  @ValidateNested()
+  @Type(() => IGamePlayer)
+  @IsOptional()
+  recipient?: IGamePlayer;
+
   declare msg: string;
 }
 
