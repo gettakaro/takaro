@@ -455,6 +455,7 @@ const tests = [
         minZ: testPoint.box.minZ,
         maxZ: testPoint.box.maxZ,
         timestamp: testPoint.timestamp,
+        gameserverId: this.setupData.gameServer1.id,
       });
 
       const data = res.data.data;
@@ -489,6 +490,7 @@ const tests = [
         minZ: 50,
         maxZ: 150,
         timestamp: timestamp,
+        gameserverId: this.setupData.gameServer1.id,
       });
 
       const data = res.data.data;
@@ -520,6 +522,7 @@ const tests = [
         z: testPoint.center.z,
         radius: testPoint.radius,
         timestamp: testPoint.timestamp,
+        gameserverId: this.setupData.gameServer1.id,
       });
 
       const data = res.data.data;
@@ -551,6 +554,7 @@ const tests = [
         z: 500,
         radius: 150, // Slightly larger than the 100 unit circle radius
         timestamp: timestamp,
+        gameserverId: this.setupData.gameServer1.id,
       });
 
       const data = res.data.data;
@@ -562,6 +566,47 @@ const tests = [
       // Should find at least player 2
       const playerIds = data.map((location) => location.playerId);
       expect(playerIds).to.include(this.setupData.pogs1[2].id);
+    },
+  }),
+
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Bounding box search fails without gameserverId',
+    setup: SetupGameServerPlayers.setup,
+    expectedStatus: 400,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      await setupHistoricalData(this.standardDomainId, this.setupData.pogs1);
+
+      try {
+        // @ts-expect-error types accurately fail here, but we're testing runtime behavior
+        await this.client.tracking.trackingControllerGetBoundingBoxPlayers({
+          minX: 0,
+          maxX: 200,
+          minY: 0,
+          maxY: 100,
+          minZ: 0,
+          maxZ: 200,
+          timestamp: '2024-01-15T12:00:00Z',
+          // gameserverId is missing - should fail
+        });
+        throw new Error('Expected request to fail');
+      } catch (error) {
+        if (isAxiosError(error)) {
+          expect(error.response?.status).to.equal(400);
+          expect(error.response?.data.meta.error.message).to.equal('Validation error');
+          // Check that the error details mention gameserverId is required
+          const errorDetails = error.response?.data.meta.error.details;
+          expect(errorDetails).to.be.an('array');
+          const gameserverIdError = errorDetails.find((detail: any) => detail.property === 'gameserverId');
+          expect(gameserverIdError).to.exist;
+          expect(gameserverIdError.constraints.isUuid).to.equal('gameserverId must be a UUID');
+        } else {
+          throw error;
+        }
+      }
     },
   }),
 
@@ -584,10 +629,50 @@ const tests = [
         minZ: 10000,
         maxZ: 11000,
         timestamp: '2024-01-15T12:00:00Z',
+        gameserverId: this.setupData.gameServer1.id,
       });
 
       const data = res.data.data;
       expect(data.length).to.equal(0);
+    },
+  }),
+
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Radius search fails without gameserverId',
+    setup: SetupGameServerPlayers.setup,
+    expectedStatus: 400,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      await setupHistoricalData(this.standardDomainId, this.setupData.pogs1);
+
+      try {
+        // @ts-expect-error types accurately fail here, but we're testing runtime behavior
+        await this.client.tracking.trackingControllerGetRadiusPlayers({
+          x: 500,
+          y: 100,
+          z: 500,
+          radius: 50,
+          timestamp: '2024-01-15T12:00:00Z',
+          // gameserverId is missing - should fail
+        });
+        throw new Error('Expected request to fail');
+      } catch (error) {
+        if (isAxiosError(error)) {
+          expect(error.response?.status).to.equal(400);
+          expect(error.response?.data.meta.error.message).to.equal('Validation error');
+          // Check that the error details mention gameserverId is required
+          const errorDetails = error.response?.data.meta.error.details;
+          expect(errorDetails).to.be.an('array');
+          const gameserverIdError = errorDetails.find((detail: any) => detail.property === 'gameserverId');
+          expect(gameserverIdError).to.exist;
+          expect(gameserverIdError.constraints.isUuid).to.equal('gameserverId must be a UUID');
+        } else {
+          throw error;
+        }
+      }
     },
   }),
 
@@ -608,10 +693,123 @@ const tests = [
         z: 50000,
         radius: 10,
         timestamp: '2024-01-15T12:00:00Z',
+        gameserverId: this.setupData.gameServer1.id,
       });
 
       const data = res.data.data;
       expect(data.length).to.equal(0);
+    },
+  }),
+
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Bounding box search isolates data by gameserver',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      // Setup data for both gameservers
+      await setupHistoricalData(this.standardDomainId, this.setupData.pogs1);
+      await setupHistoricalData(this.standardDomainId, this.setupData.pogs2);
+
+      // Search in a box that would contain players from both servers
+      const res1 = await this.client.tracking.trackingControllerGetBoundingBoxPlayers({
+        minX: 0,
+        maxX: 200,
+        minY: 0,
+        maxY: 100,
+        minZ: 0,
+        maxZ: 200,
+        timestamp: '2024-01-15T12:00:00Z',
+        gameserverId: this.setupData.gameServer1.id,
+      });
+
+      const res2 = await this.client.tracking.trackingControllerGetBoundingBoxPlayers({
+        minX: 0,
+        maxX: 200,
+        minY: 0,
+        maxY: 100,
+        minZ: 0,
+        maxZ: 200,
+        timestamp: '2024-01-15T12:00:00Z',
+        gameserverId: this.setupData.gameServer2.id,
+      });
+
+      const data1 = res1.data.data;
+      const data2 = res2.data.data;
+
+      // Get all player IDs from each result
+      const playerIds1 = data1.map((location) => location.playerId);
+      const playerIds2 = data2.map((location) => location.playerId);
+
+      // Verify that players from server 1 are only in server 1 results
+      this.setupData.pogs1.forEach((pog) => {
+        if (playerIds1.includes(pog.id)) {
+          expect(playerIds2).to.not.include(pog.id);
+        }
+      });
+
+      // Verify that players from server 2 are only in server 2 results
+      this.setupData.pogs2.forEach((pog) => {
+        if (playerIds2.includes(pog.id)) {
+          expect(playerIds1).to.not.include(pog.id);
+        }
+      });
+    },
+  }),
+
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Radius search isolates data by gameserver',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      // Setup data for both gameservers
+      await setupHistoricalData(this.standardDomainId, this.setupData.pogs1);
+      await setupHistoricalData(this.standardDomainId, this.setupData.pogs2);
+
+      // Search in an area that would contain players from both servers
+      const res1 = await this.client.tracking.trackingControllerGetRadiusPlayers({
+        x: 500,
+        y: 100,
+        z: 500,
+        radius: 200,
+        timestamp: '2024-01-15T12:00:00Z',
+        gameserverId: this.setupData.gameServer1.id,
+      });
+
+      const res2 = await this.client.tracking.trackingControllerGetRadiusPlayers({
+        x: 500,
+        y: 100,
+        z: 500,
+        radius: 200,
+        timestamp: '2024-01-15T12:00:00Z',
+        gameserverId: this.setupData.gameServer2.id,
+      });
+
+      const data1 = res1.data.data;
+      const data2 = res2.data.data;
+
+      // Get all player IDs from each result
+      const playerIds1 = data1.map((location) => location.playerId);
+      const playerIds2 = data2.map((location) => location.playerId);
+
+      // Verify that players from server 1 are only in server 1 results
+      this.setupData.pogs1.forEach((pog) => {
+        if (playerIds1.includes(pog.id)) {
+          expect(playerIds2).to.not.include(pog.id);
+        }
+      });
+
+      // Verify that players from server 2 are only in server 2 results
+      this.setupData.pogs2.forEach((pog) => {
+        if (playerIds2.includes(pog.id)) {
+          expect(playerIds1).to.not.include(pog.id);
+        }
+      });
     },
   }),
 
