@@ -103,6 +103,7 @@ test.describe('Domain Name Override Feature', () => {
     await navigateTo(page, 'global-settings');
 
     // Clear any existing domain name override
+    await page.getByLabel('domain name').fill('blabla');
     await page.getByLabel('domain name').clear();
     await page.getByText('Save settings').click();
 
