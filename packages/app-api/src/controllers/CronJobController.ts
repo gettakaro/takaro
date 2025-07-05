@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, IsUUID, ValidateNested, IsEnum } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -62,6 +62,9 @@ class CronJobSearchInputAllowedSearch extends AllowedSearch {
   name!: string[];
 }
 
+const cronJobExtendOptions = ['module', 'gameServer'];
+type CronJobExtendOptions = (typeof cronJobExtendOptions)[number];
+
 export class CronJobSearchInputDTO extends ITakaroQuery<CronJobSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => CronJobSearchInputAllowedFilters)
@@ -70,6 +73,10 @@ export class CronJobSearchInputDTO extends ITakaroQuery<CronJobSearchInputAllowe
   @ValidateNested()
   @Type(() => CronJobSearchInputAllowedSearch)
   declare search: CronJobSearchInputAllowedSearch;
+
+  @IsOptional()
+  @IsEnum(cronJobExtendOptions, { each: true })
+  declare extend?: CronJobExtendOptions[];
 }
 
 @OpenAPI({

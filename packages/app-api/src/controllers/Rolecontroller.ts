@@ -12,7 +12,7 @@ import {
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
-import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, IsUUID, ValidateNested, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
 import { Response } from 'express';
@@ -43,6 +43,9 @@ export class RoleSearchInputAllowedSearch extends AllowedSearch {
   name!: string[];
 }
 
+const roleExtendOptions = ['permissions'];
+type RoleExtendOptions = (typeof roleExtendOptions)[number];
+
 export class RoleSearchInputDTO extends ITakaroQuery<SearchRoleInputDTO> {
   @ValidateNested()
   @Type(() => RoleSearchInputAllowedFilters)
@@ -51,6 +54,10 @@ export class RoleSearchInputDTO extends ITakaroQuery<SearchRoleInputDTO> {
   @ValidateNested()
   @Type(() => RoleSearchInputAllowedSearch)
   declare search: RoleSearchInputAllowedSearch;
+
+  @IsOptional()
+  @IsEnum(roleExtendOptions, { each: true })
+  declare extend?: RoleExtendOptions[];
 }
 
 export class PermissionOutputDTOAPI extends APIOutput<PermissionOutputDTO[]> {

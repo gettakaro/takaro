@@ -104,6 +104,9 @@ class GameServerSearchInputAllowedSearch extends AllowedSearch {
   name!: string[];
 }
 
+const gameServerExtendOptions = ['players', 'items'];
+type GameServerExtendOptions = (typeof gameServerExtendOptions)[number];
+
 class GameServerSearchInputDTO extends ITakaroQuery<GameServerOutputDTO> {
   @ValidateNested()
   @Type(() => GameServerSearchInputAllowedFilters)
@@ -112,6 +115,10 @@ class GameServerSearchInputDTO extends ITakaroQuery<GameServerOutputDTO> {
   @ValidateNested()
   @Type(() => GameServerSearchInputAllowedSearch)
   declare search: GameServerSearchInputAllowedSearch;
+
+  @IsOptional()
+  @IsEnum(gameServerExtendOptions, { each: true })
+  declare extend?: GameServerExtendOptions[];
 }
 
 class GameServerTestReachabilityInputDTO extends TakaroDTO<GameServerTestReachabilityInputDTO> {
