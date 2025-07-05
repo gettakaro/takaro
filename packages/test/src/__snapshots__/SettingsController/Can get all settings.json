@@ -31,6 +31,11 @@
         "key": "messagePrefix",
         "value": "",
         "type": "default"
+      },
+      {
+        "key": "domainName",
+        "value": "",
+        "type": "default"
       }
     ]
   },
