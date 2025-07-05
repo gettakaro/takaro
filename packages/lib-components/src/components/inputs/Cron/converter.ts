@@ -9,6 +9,22 @@ interface CronValues {
   minutes: string[];
 }
 
+// Convert UI weekday (1-7, Mon-Sun) to cron weekday (0-6, Sun-Sat)
+function uiToCronWeekday(uiDay: string): string {
+  const day = parseInt(uiDay);
+  // UI: 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat, 7=Sun
+  // Cron: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+  return day === 7 ? '0' : day.toString();
+}
+
+// Convert cron weekday (0-6, Sun-Sat) to UI weekday (1-7, Mon-Sun)
+function cronToUiWeekday(cronDay: string): string {
+  const day = parseInt(cronDay);
+  // Cron: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+  // UI: 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat, 7=Sun
+  return day === 0 ? '7' : day.toString();
+}
+
 function expandRange(range: string): string[] {
   const [start, end] = range.split('-').map((num) => parseInt(num));
   const result: string[] = [];
@@ -49,7 +65,7 @@ export function parseCronString(cronString: string): CronValues {
     hours: parseField(hour),
     monthDays: parseField(dayMonth),
     months: parseField(month),
-    weekDays: parseField(dayWeek),
+    weekDays: parseField(dayWeek).map(cronToUiWeekday),
   };
 
   return values;
@@ -101,7 +117,7 @@ export function getCronStringFromValues(
   monthDays: string[] | undefined,
   weekDays: string[] | undefined,
   hours: string[] | undefined,
-  minutes: string[] | undefined
+  minutes: string[] | undefined,
 ): string {
   // Standard cron format: minute hour day-of-month month day-of-week
   let cronParts: string[] = ['*', '*', '*', '*', '*'];
@@ -135,7 +151,7 @@ export function getCronStringFromValues(
         hours?.length ? convertToRanges(hours) : '0',
         '*',
         '*',
-        weekDays?.length ? convertToRanges(weekDays) : '*',
+        weekDays?.length ? convertToRanges(weekDays.map(uiToCronWeekday)) : '*',
       ];
       break;
 

@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useLayoutEffect, useMemo, useState } from 'react';
+import { FC, MouseEvent, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { UnControlledSelectField } from '../../../components/inputs';
 import { GenericInputProps } from '../../../components/inputs/InputProps';
 import { Popover } from '../../../components/feedback';
@@ -34,31 +34,45 @@ export const GenericCron: FC<GenericCronProps> = ({
   const [selectedWeekdays, setSelectedWeekdays] = useState<string[]>([]);
   const [selectedHours, setSelectedHours] = useState<string[]>([]);
   const [selectedMinutes, setSelectedMinutes] = useState<string[]>([]);
-  const [temporaryResult, setTemporaryResult] = useState<string>();
 
-  const updateFromCronString = (cronString: string) => {
-    try {
-      const { period, months, monthDays, weekDays, hours, minutes } = parseCronString(cronString);
-
-      setSelectedPeriod(period);
-      setSelectedMonths(months);
-      setSelectedDays(monthDays);
-      setSelectedWeekdays(weekDays);
-      setSelectedHours(hours);
-      setSelectedMinutes(minutes);
-    } catch (error) {
-      console.error('Invalid cron string:', error);
-      // Handle error appropriately
+  // Initialize state from value prop
+  useEffect(() => {
+    if (value) {
+      try {
+        const { period, months, monthDays, weekDays, hours, minutes } = parseCronString(value);
+        setSelectedPeriod(period);
+        setSelectedMonths(months);
+        setSelectedDays(monthDays);
+        setSelectedWeekdays(weekDays);
+        setSelectedHours(hours);
+        setSelectedMinutes(minutes);
+      } catch (error) {
+        console.error('Invalid cron string:', error);
+        // Reset to defaults on invalid cron string
+        setSelectedPeriod('month');
+        setSelectedMonths([]);
+        setSelectedDays([]);
+        setSelectedWeekdays([]);
+        setSelectedHours([]);
+        setSelectedMinutes([]);
+      }
     }
-  };
+  }, [value]);
 
   const handleOnChange = () => {
-    let temp = '';
+    const cronString = getCronStringFromValues(
+      selectedPeriod,
+      selectedMonths,
+      selectedDays,
+      selectedWeekdays,
+      selectedHours,
+      selectedMinutes,
+    );
 
     const event = {
-      target: { value: temp, name },
-      preventDefault: () => { },
-      stopPropagation: () => { },
+      target: { value: cronString, name },
+      preventDefault: () => {},
+      stopPropagation: () => {},
     } as unknown as React.ChangeEvent<HTMLInputElement>;
 
     onChange(event);
@@ -69,8 +83,8 @@ export const GenericCron: FC<GenericCronProps> = ({
     return {
       // value does not matter I think
       target: { value: '' },
-      preventDefault: () => { },
-      stopPropagation: () => { },
+      preventDefault: () => {},
+      stopPropagation: () => {},
     } as unknown as React.FocusEvent<HTMLInputElement>;
   }, []);
 
@@ -85,15 +99,21 @@ export const GenericCron: FC<GenericCronProps> = ({
   }, [open]);
 
   const renderResult = () => {
-    let value = getCronStringFromValues(
+    // When popover is closed, show the actual value prop
+    // When popover is open, show preview of current selections
+    if (!open && value) {
+      return value;
+    }
+
+    const cronString = getCronStringFromValues(
       selectedPeriod,
       selectedMonths,
       selectedDays,
       selectedWeekdays,
       selectedHours,
-      selectedMinutes
+      selectedMinutes,
     );
-    return value;
+    return cronString;
   };
 
   const handleClear = (e: MouseEvent) => {
@@ -146,6 +166,9 @@ export const GenericCron: FC<GenericCronProps> = ({
                 </UnControlledSelectField.Option>
                 <UnControlledSelectField.Option value="week" label="Week">
                   Week
+                </UnControlledSelectField.Option>
+                <UnControlledSelectField.Option value="day" label="Day">
+                  Day
                 </UnControlledSelectField.Option>
                 <UnControlledSelectField.Option value="hour" label="Hour">
                   Hour
@@ -307,37 +330,41 @@ export const GenericCron: FC<GenericCronProps> = ({
               selectedPeriod === 'month' ||
               selectedPeriod === 'week' ||
               selectedPeriod === 'day') && (
-                <>
-                  <span>At</span>
-                  <UnControlledSelectField
-                    value={selectedHours}
-                    onChange={(value) => setSelectedHours(value)}
-                    name="hours"
-                    id={`hours-${id}`}
-                    hasError={false}
-                    hasDescription={false}
-                    canClear={false}
-                    readOnly={readOnly}
-                    multiple={true}
-                    size="medium"
-                    enableFilter={false}
-                    render={(selectedItems) => {
-                      if (selectedItems.length === 0) {
-                        return 'Every hour';
-                      }
-                      return selectedItems.map((item) => item.label).join(', ');
-                    }}
-                  >
-                    <UnControlledSelectField.OptionGroup>
-                      {Array.from({ length: 24 }, (_, i) => i + 1).map((hour) => (
-                        <UnControlledSelectField.Option key={hour} value={hour.toString()} label={hour.toString()}>
-                          {hour.toString()}
-                        </UnControlledSelectField.Option>
-                      ))}
-                    </UnControlledSelectField.OptionGroup>
-                  </UnControlledSelectField>
-                </>
-              )}
+              <>
+                <span>At</span>
+                <UnControlledSelectField
+                  value={selectedHours}
+                  onChange={(value) => setSelectedHours(value)}
+                  name="hours"
+                  id={`hours-${id}`}
+                  hasError={false}
+                  hasDescription={false}
+                  canClear={false}
+                  readOnly={readOnly}
+                  multiple={true}
+                  size="medium"
+                  enableFilter={false}
+                  render={(selectedItems) => {
+                    if (selectedItems.length === 0) {
+                      return 'Every hour';
+                    }
+                    return selectedItems.map((item) => item.label).join(', ');
+                  }}
+                >
+                  <UnControlledSelectField.OptionGroup>
+                    {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
+                      <UnControlledSelectField.Option
+                        key={hour}
+                        value={hour.toString()}
+                        label={hour.toString().padStart(2, '0')}
+                      >
+                        {hour.toString().padStart(2, '0')}
+                      </UnControlledSelectField.Option>
+                    ))}
+                  </UnControlledSelectField.OptionGroup>
+                </UnControlledSelectField>
+              </>
+            )}
 
             {selectedPeriod !== 'minute' && selectedPeriod !== 'hour' && <span>:</span>}
             {selectedPeriod === 'hour' && <span>at</span>}
@@ -363,9 +390,13 @@ export const GenericCron: FC<GenericCronProps> = ({
                 }}
               >
                 <UnControlledSelectField.OptionGroup>
-                  {Array.from({ length: 59 }, (_, i) => i + 1).map((minute) => (
-                    <UnControlledSelectField.Option key={minute} value={minute.toString()} label={minute.toString()}>
-                      {minute.toString()}
+                  {Array.from({ length: 60 }, (_, i) => i).map((minute) => (
+                    <UnControlledSelectField.Option
+                      key={minute}
+                      value={minute.toString()}
+                      label={minute.toString().padStart(2, '0')}
+                    >
+                      {minute.toString().padStart(2, '0')}
                     </UnControlledSelectField.Option>
                   ))}
                 </UnControlledSelectField.OptionGroup>
