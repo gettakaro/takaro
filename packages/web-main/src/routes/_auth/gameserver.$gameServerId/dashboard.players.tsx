@@ -335,7 +335,7 @@ function Component() {
             title="Players"
             id="gameserver-players"
             columns={columnDefs}
-            data={(data?.data ?? []) as Array<PlayerOnGameserverOutputDTO & { player: PlayerOutputDTO }>}
+            data={(data?.data ?? []) as unknown as Array<PlayerOnGameserverOutputDTO & { player: PlayerOutputDTO }>}
             pagination={p}
             columnFiltering={columnFilters}
             columnSearch={columnSearch}
