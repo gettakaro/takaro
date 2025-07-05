@@ -27,6 +27,7 @@ import { config } from '../config.js';
 import { PlayerService } from '../service/Player/index.js';
 import { PlayerOnGameserverOutputDTO } from '../service/PlayerOnGameserverService.js';
 import { PlayerOutputWithRolesDTO } from '../service/Player/dto.js';
+import { SettingsService, SETTINGS_KEYS } from '../service/SettingsService.js';
 
 export class GetUserDTO {
   @Length(3, 50)
@@ -201,6 +202,23 @@ export class UserController {
         return d;
       });
     }
+
+    // Apply custom domain names from settings
+    domains = await Promise.all(
+      domains.map(async (domain) => {
+        try {
+          const settingsService = new SettingsService(domain.id);
+          const domainNameSetting = await settingsService.get(SETTINGS_KEYS.domainName);
+
+          if (domainNameSetting.value && domainNameSetting.value.trim() !== '') {
+            domain.name = domainNameSetting.value;
+          }
+        } catch {
+          // If settings lookup fails, continue with original domain name
+        }
+        return domain;
+      }),
+    );
 
     const response = new MeOutputDTO({ user, domains, domain: req.domainId, pogs: [] });
 

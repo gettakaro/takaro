@@ -3994,6 +3994,7 @@ export const GetSettingsInputKeysEnum = {
   CurrencyName: 'currencyName',
   DeveloperMode: 'developerMode',
   MessagePrefix: 'messagePrefix',
+  DomainName: 'domainName',
 } as const;
 
 export type GetSettingsInputKeysEnum = (typeof GetSettingsInputKeysEnum)[keyof typeof GetSettingsInputKeysEnum];
@@ -7430,6 +7431,7 @@ export const ParamKeyKeyEnum = {
   CurrencyName: 'currencyName',
   DeveloperMode: 'developerMode',
   MessagePrefix: 'messagePrefix',
+  DomainName: 'domainName',
 } as const;
 
 export type ParamKeyKeyEnum = (typeof ParamKeyKeyEnum)[keyof typeof ParamKeyKeyEnum];
@@ -9785,6 +9787,12 @@ export interface Settings {
    * @type {string}
    * @memberof Settings
    */
+  domainName: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
   id: string;
   /**
    *
@@ -9851,6 +9859,7 @@ export const SettingsOutputDTOKeyEnum = {
   CurrencyName: 'currencyName',
   DeveloperMode: 'developerMode',
   MessagePrefix: 'messagePrefix',
+  DomainName: 'domainName',
 } as const;
 
 export type SettingsOutputDTOKeyEnum = (typeof SettingsOutputDTOKeyEnum)[keyof typeof SettingsOutputDTOKeyEnum];
@@ -24459,6 +24468,7 @@ export const SettingsControllerGetKeysEnum = {
   CurrencyName: 'currencyName',
   DeveloperMode: 'developerMode',
   MessagePrefix: 'messagePrefix',
+  DomainName: 'domainName',
 } as const;
 export type SettingsControllerGetKeysEnum =
   (typeof SettingsControllerGetKeysEnum)[keyof typeof SettingsControllerGetKeysEnum];
