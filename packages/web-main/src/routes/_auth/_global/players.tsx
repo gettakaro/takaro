@@ -27,7 +27,6 @@ import { PlayerStats } from './-players/playerStats';
 import { userMeQueryOptions } from '../../../queries/user';
 import { GameServerContainer } from '../../../components/GameServer';
 import { PlayerBanDialog } from '../../../components/dialogs/PlayerBanDialog';
-import { InvestigationLink } from '../../../components/InvestigationLink';
 
 export const StyledDialogBody = styled(Dialog.Body)`
   h2 {
