@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
   PlayerOnGameserverOutputDTO,
   PlayerOnGameServerSearchInputDTOSortDirectionEnum,
@@ -144,7 +144,6 @@ function Component() {
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOnGameserverOutputDTO>({
     pageSize: 25,
   });
-  const [quickSearchInput, setQuickSearchInput] = useState<string>('');
 
   const queryParams = {
     page: pagination.paginationState.pageIndex,
@@ -161,7 +160,6 @@ function Component() {
     },
     search: {
       gameId: columnSearch.columnSearchState.find((search) => search.id === 'gameId')?.value,
-      name: quickSearchInput ? [quickSearchInput] : undefined,
     },
   };
 
@@ -169,7 +167,7 @@ function Component() {
     ...playersOnGameServersQueryOptions(queryParams),
     // Only use initialData if the query params match the initial load
     initialData:
-      pagination.paginationState.pageIndex === 0 && columnFilters.columnFiltersState.length === 0 && !quickSearchInput
+      pagination.paginationState.pageIndex === 0 && columnFilters.columnFiltersState.length === 0
         ? loaderData.playersData
         : undefined,
   });
@@ -375,8 +373,6 @@ function Component() {
             columnSearch={columnSearch}
             sorting={sorting}
             isLoading={isLoading}
-            onSearchInputChanged={setQuickSearchInput}
-            searchInputPlaceholder="Search players by name..."
           />
         </TableWrapper>
       </TableContainer>
