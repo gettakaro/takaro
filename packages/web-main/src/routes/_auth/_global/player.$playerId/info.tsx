@@ -8,6 +8,7 @@ import { CountryCodeToEmoji } from '../../../../components/CountryCodeToEmoji';
 import { DateTime } from 'luxon';
 import { playerQueryOptions } from '../../../../queries/player';
 import { useQuery } from '@tanstack/react-query';
+import { AiOutlineLink as LinkIcon } from 'react-icons/ai';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/info')({
   component: Component,
@@ -72,13 +73,35 @@ const IpInfo: FC<{ ipInfo: IpHistoryOutputDTO[] }> = ({ ipInfo }) => {
   );
 };
 
-const InfoCard = styled(Card)`
+const InfoCard = styled(Card)<{ clickable?: boolean }>`
+  position: relative;
+
   h3 {
     color: ${({ theme }) => theme.colors.textAlt};
     font-weight: 400;
-
     margin-bottom: ${({ theme }) => theme.spacing['1']};
   }
+
+  ${({ clickable, theme }) =>
+    clickable &&
+    `
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      
+      &:hover {
+        background-color: ${theme.colors.backgroundAlt};
+      }
+    `}
+`;
+
+const ExternalLinkIcon = styled(LinkIcon)`
+  position: absolute;
+  top: ${({ theme }) => theme.spacing['1']};
+  right: ${({ theme }) => theme.spacing['1']};
+  width: 16px;
+  height: 16px;
+  opacity: 0.5;
+  color: ${({ theme }) => theme.colors.text};
 `;
 
 const CardContainer = styled.div`
@@ -128,6 +151,7 @@ const SteamInfoCard: FC<{ player: PlayerOutputDTO }> = ({ player }) => {
           <span>Economy Banned</span> {player.steamEconomyBan ? 'Yes' : 'No'}
         </InnerBody>
       </InfoCard.Body>
+      <ExternalLinkIcon />
     </InfoCard>
   );
 };

@@ -227,6 +227,18 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
+    case EventOutputDTOEventNameEnum.ShopOrderDeliveryFailed:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty name="player" value={event.player?.name} />
+          <EventProperty name="error" value={meta?.error} />
+          {meta?.items && meta.items.length > 0 && (
+            <EventProperty name="items" value={`${meta.items.length} items failed`} />
+          )}
+        </>
+      );
+      break;
     case EventOutputDTOEventNameEnum.PlayerLinked:
       properties = (
         <>
