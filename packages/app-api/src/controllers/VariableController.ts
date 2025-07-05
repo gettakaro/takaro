@@ -1,5 +1,5 @@
-import { Type, Exclude } from 'class-transformer';
-import { ValidateNested, IsOptional, IsString, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ValidateNested, IsOptional, IsString, IsUUID, IsEnum } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -52,6 +52,9 @@ class VariableSearchInputAllowedSearch extends AllowedSearch {
   key!: string[];
 }
 
+const variableExtendOptions = ['module', 'player', 'gameServer'];
+type VariableExtendOptions = (typeof variableExtendOptions)[number];
+
 class VariableSearchInputDTO extends ITakaroQuery<VariableSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => VariableSearchInputAllowedFilters)
@@ -61,8 +64,9 @@ class VariableSearchInputDTO extends ITakaroQuery<VariableSearchInputAllowedFilt
   @Type(() => VariableSearchInputAllowedSearch)
   declare search: VariableSearchInputAllowedSearch;
 
-  @Exclude()
-  declare extend?: string[];
+  @IsOptional()
+  @IsEnum(variableExtendOptions, { each: true })
+  declare extend?: VariableExtendOptions[];
 }
 
 @OpenAPI({

@@ -12416,6 +12416,13 @@ export interface VariableSearchInputDTO {
   sortDirection?: VariableSearchInputDTOSortDirectionEnum;
 }
 
+export const VariableSearchInputDTOExtendEnum = {
+  Module: 'module',
+  Player: 'player',
+  GameServer: 'gameServer'
+} as const;
+
+export type VariableSearchInputDTOExtendEnum = typeof VariableSearchInputDTOExtendEnum[keyof typeof VariableSearchInputDTOExtendEnum];
 export const VariableSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
