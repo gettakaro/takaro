@@ -18,7 +18,6 @@ import { Duration } from 'luxon';
 import {
   AiOutlineUser as UsersIcon,
   AiOutlineCheckCircle as OnlineIcon,
-  AiOutlineClockCircle as ClockIcon,
   AiOutlineUserAdd as NewPlayerIcon,
 } from 'react-icons/ai';
 
@@ -80,7 +79,10 @@ const TableWrapper = styled.div`
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/dashboard/players')({
   loader: async ({ params, context }) => {
-    const [gameServer, playersData] = await Promise.all([
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const [gameServer, playersData, onlinePlayersData, todayPlayersData] = await Promise.all([
       context.queryClient.ensureQueryData(gameServerQueryOptions(params.gameServerId)),
       context.queryClient.ensureQueryData(
         playersOnGameServersQueryOptions({
@@ -89,8 +91,26 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/dashboard/
           limit: 25,
         }),
       ),
+      // Query for online players count
+      context.queryClient.ensureQueryData(
+        playersOnGameServersQueryOptions({
+          filters: {
+            gameServerId: [params.gameServerId],
+            online: [true],
+          },
+          limit: 1, // We only need the meta.total
+        }),
+      ),
+      // Query for players who joined today
+      context.queryClient.ensureQueryData(
+        playersOnGameServersQueryOptions({
+          filters: { gameServerId: [params.gameServerId] },
+          greaterThan: { createdAt: startOfToday.toISOString() },
+          limit: 1, // We only need the meta.total
+        }),
+      ),
     ]);
-    return { gameServer, playersData };
+    return { gameServer, playersData, onlinePlayersData, todayPlayersData };
   },
   component: Component,
   pendingComponent: PendingComponent,
@@ -100,7 +120,7 @@ function PendingComponent() {
   return (
     <Container>
       <StatsGrid>
-        {[...Array(4)].map((_, i) => (
+        {[...Array(3)].map((_, i) => (
           <Skeleton key={i} variant="rectangular" width="100%" height="120px" />
         ))}
       </StatsGrid>
@@ -146,12 +166,39 @@ function Component() {
     initialData: loaderData.playersData,
   });
 
+  // Query for online players count
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  const { data: onlinePlayersData, refetch: refetchOnlinePlayers } = useQuery({
+    ...playersOnGameServersQueryOptions({
+      filters: {
+        gameServerId: [gameServerId],
+        online: [true],
+      },
+      limit: 1,
+    }),
+    initialData: loaderData.onlinePlayersData,
+  });
+
+  // Query for today's new players
+  const { data: todayPlayersData, refetch: refetchTodayPlayers } = useQuery({
+    ...playersOnGameServersQueryOptions({
+      filters: { gameServerId: [gameServerId] },
+      greaterThan: { createdAt: startOfToday.toISOString() },
+      limit: 1,
+    }),
+    initialData: loaderData.todayPlayersData,
+  });
+
   // Real-time updates
   useEffect(() => {
     const handleEvent = (event: EventOutputDTO) => {
       if (event.eventName === 'player-connected' || event.eventName === 'player-disconnected') {
         if (event.gameserverId === gameServerId) {
           refetch();
+          refetchOnlinePlayers();
+          refetchTodayPlayers();
         }
       }
     };
@@ -161,25 +208,12 @@ function Component() {
     return () => {
       socket.off('event', handleEvent);
     };
-  }, [socket, gameServerId, refetch]);
+  }, [socket, gameServerId, refetch, refetchOnlinePlayers, refetchTodayPlayers]);
 
   // Calculate statistics
   const totalPlayers = data?.meta.total ?? 0;
-  const onlinePlayers = data?.data.filter((p) => p.online).length ?? 0;
-  const todayPlayers =
-    data?.data.filter((p) => {
-      const createdDate = new Date(p.createdAt);
-      const today = new Date();
-      return createdDate.toDateString() === today.toDateString();
-    }).length ?? 0;
-
-  const avgPlaytimeSeconds = data?.data.reduce((sum, p) => sum + p.playtimeSeconds, 0) ?? 0;
-  const avgPlaytime =
-    totalPlayers > 0
-      ? Duration.fromObject({ seconds: avgPlaytimeSeconds / totalPlayers })
-          .shiftTo('hours', 'minutes')
-          .toHuman({ unitDisplay: 'narrow' })
-      : '0h';
+  const onlinePlayers = onlinePlayersData?.meta.total ?? 0;
+  const todayPlayers = todayPlayersData?.meta.total ?? 0;
 
   const columnHelper = createColumnHelper<PlayerOnGameserverOutputDTO & { player: PlayerOutputDTO }>();
   const columnDefs = [
@@ -318,14 +352,6 @@ function Component() {
           </StatCardHeader>
           <StatValue>{todayPlayers}</StatValue>
           <StatDescription>First time players</StatDescription>
-        </StatCard>
-        <StatCard variant="outline">
-          <StatCardHeader>
-            <StatLabel>Avg. Playtime</StatLabel>
-            <ClockIcon size={20} />
-          </StatCardHeader>
-          <StatValue>{avgPlaytime}</StatValue>
-          <StatDescription>Per player</StatDescription>
         </StatCard>
       </StatsGrid>
 
