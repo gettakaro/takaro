@@ -73,10 +73,11 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
 
   async find(filters: Partial<UserSearchInputDTO>) {
     const { query } = await this.getModel();
+    const extend = filters.extend || [];
 
     const qry = new QueryBuilder<UserModel, UserOutputDTO>({
       ...filters,
-      extend: ['roles.role.permissions.permission'],
+      extend: ['roles.role.permissions.permission', ...extend],
     }).build(query);
 
     if (filters.filters?.roleId) {

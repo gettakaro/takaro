@@ -35,6 +35,9 @@ class EventSearchInputAllowedFilters extends AllowedFilters {
   actingModuleId!: string[];
 }
 
+const eventExtendOptions = ['module', 'gameServer', 'player', 'user'];
+type EventExtendOptions = (typeof eventExtendOptions)[number];
+
 export class EventSearchInputDTO extends ITakaroQuery<EventOutputDTO> {
   @ValidateNested()
   @Type(() => EventSearchInputAllowedFilters)
@@ -45,6 +48,10 @@ export class EventSearchInputDTO extends ITakaroQuery<EventOutputDTO> {
   @ValidateNested()
   @Type(() => RangeFilterCreatedAndUpdatedAt)
   declare lessThan: RangeFilterCreatedAndUpdatedAt;
+
+  @IsOptional()
+  @IsEnum(eventExtendOptions, { each: true })
+  declare extend?: EventExtendOptions[];
 }
 
 export class EventOutputArrayDTOAPI extends APIOutput<EventOutputDTO[]> {

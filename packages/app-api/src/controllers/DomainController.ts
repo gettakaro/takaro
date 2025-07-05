@@ -12,7 +12,7 @@ import { apiResponse, APIOutput } from '@takaro/http';
 import { Param, Body, Get, Post, Put, Delete, JsonController, UseBefore, Req, Res } from 'routing-controllers';
 
 import { ResponseSchema, OpenAPI } from 'routing-controllers-openapi';
-import { Type } from 'class-transformer';
+import { Type, Exclude } from 'class-transformer';
 import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Request, Response } from 'express';
 import { TokenOutputDTO, TokenInputDTO, AuthService } from '../service/AuthService.js';
@@ -73,6 +73,9 @@ export class DomainSearchInputDTO extends ITakaroQuery<DomainOutputDTO> {
   @ValidateNested()
   @Type(() => DomainSearchInputAllowedSearch)
   declare search: DomainSearchInputAllowedSearch;
+
+  @Exclude()
+  declare extend?: string[];
 }
 export class TokenOutputDTOAPI extends APIOutput<TokenOutputDTO> {
   @Type(() => TokenOutputDTO)

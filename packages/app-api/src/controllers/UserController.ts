@@ -1,4 +1,14 @@
-import { IsBoolean, IsEmail, IsISO8601, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsEmail,
+  IsISO8601,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+  ValidateNested,
+  IsEnum,
+} from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { UserCreateInputDTO, UserOutputDTO, UserOutputWithRolesDTO, UserUpdateDTO } from '../service/User/dto.js';
@@ -122,6 +132,9 @@ class UserSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
   lastSeen?: string | undefined;
 }
 
+const userExtendOptions = ['roles'];
+type UserExtendOptions = (typeof userExtendOptions)[number];
+
 export class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   @ValidateNested()
   @Type(() => UserSearchInputAllowedFilters)
@@ -138,6 +151,10 @@ export class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   @ValidateNested()
   @Type(() => UserSearchInputAllowedRangeFilter)
   declare lessThan: Partial<UserSearchInputAllowedRangeFilter>;
+
+  @IsOptional()
+  @IsEnum(userExtendOptions, { each: true })
+  declare extend?: UserExtendOptions[];
 }
 
 class LinkPlayerUnauthedInputDTO extends TakaroDTO<LinkPlayerUnauthedInputDTO> {
