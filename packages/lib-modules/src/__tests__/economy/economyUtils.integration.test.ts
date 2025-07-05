@@ -96,7 +96,7 @@ const tests = [
           playerOnGameServer[0].gameServerId,
           playerOnGameServer[0].playerId,
           {
-            currency: 1000 * index,
+            currency: 1000 * index + 1,
           },
         );
       });
@@ -114,7 +114,7 @@ const tests = [
       expect((await events).length).to.be.eq(6);
       for (const message of messages) {
         expect(message).to.match(
-          /(Richest players\:|1\. .+ - 9000 test coin|2\. .+ - 8000 test coin|3\. .+ - 7000 test coin|4\. .+ - 6000 test coin|5\. .+ - 5000 test coin)/,
+          /(Richest players\:|1\. .+ - 9001 test coin|2\. .+ - 8001 test coin|3\. .+ - 7001 test coin|4\. .+ - 6001 test coin|5\. .+ - 5001 test coin)/,
         );
       }
     },
