@@ -72,7 +72,7 @@ function Component() {
         >
           <h1>Current plan usage</h1>
           <a href={getConfigVar('billingManageUrl')} target="_blank" rel="noreferrer">
-            <Button size="large" text="Manage plan" />
+            <Button size="large">Manage plan</Button>
           </a>
         </div>
       </div>

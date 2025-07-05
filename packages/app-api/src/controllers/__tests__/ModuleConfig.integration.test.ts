@@ -1,6 +1,8 @@
-import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
-import { GameServerCreateDTOTypeEnum, GameServerOutputDTO, isAxiosError, ModuleOutputDTO } from '@takaro/apiclient';
+import { IntegrationTest, expect } from '@takaro/test';
+import { GameServerOutputDTO, isAxiosError, ModuleOutputDTO } from '@takaro/apiclient';
 import { describe } from 'node:test';
+import { randomUUID } from 'node:crypto';
+import { getMockServer } from '@takaro/mock-gameserver';
 
 const group = 'ModuleConfig';
 
@@ -11,13 +13,21 @@ interface ISetupData {
 }
 
 const setup = async function (this: IntegrationTest<ISetupData>): Promise<ISetupData> {
-  const gameserverRes = await this.client.gameserver.gameServerControllerCreate({
-    name: 'Test gameserver',
-    connectionInfo: JSON.stringify({
-      host: integrationConfig.get('mockGameserver.host'),
-    }),
-    type: GameServerCreateDTOTypeEnum.Mock,
+  if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
+
+  const gameServer1IdentityToken = randomUUID();
+
+  await getMockServer({
+    mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer1IdentityToken },
   });
+
+  const gameServers = (
+    await this.client.gameserver.gameServerControllerSearch({
+      filters: { identityToken: [gameServer1IdentityToken] },
+    })
+  ).data.data;
+
+  if (!gameServers[0]) throw new Error('Game server not found. Did something fail when registering?');
 
   const moduleRes = await this.client.module.moduleControllerCreate({
     name: 'Test module',
@@ -63,7 +73,7 @@ const setup = async function (this: IntegrationTest<ISetupData>): Promise<ISetup
   const cronjobModuleRes = await this.client.module.moduleControllerGetOne(cronjobModuleCreateRes.data.data.id);
 
   return {
-    gameserver: gameserverRes.data.data,
+    gameserver: gameServers[0],
     module: moduleRes.data.data,
     cronJobsModule: cronjobModuleRes.data.data,
   };
@@ -210,7 +220,7 @@ const tests = [
   }),
   new IntegrationTest<ISetupData>({
     group,
-    snapshot: true,
+    snapshot: false,
     name: 'Installing with correct system config - multiple cron jobs',
     setup,
     test: async function () {
@@ -223,7 +233,7 @@ const tests = [
 
       const updatedModuleRes = await this.client.module.moduleControllerGetOne(this.setupData.cronJobsModule.id);
 
-      return await this.client.module.moduleInstallationsControllerInstallModule({
+      const res = await this.client.module.moduleInstallationsControllerInstallModule({
         gameServerId: this.setupData.gameserver.id,
         versionId: this.setupData.cronJobsModule.latestVersion.id,
 
@@ -234,6 +244,14 @@ const tests = [
           },
         }),
       });
+
+      const data = res.data.data;
+      expect(
+        (data.systemConfig as Record<string, any>).cronJobs[updatedModuleRes.data.data.latestVersion.cronJobs[0].name],
+      ).to.not.be.undefined;
+      expect(
+        (data.systemConfig as Record<string, any>).cronJobs[updatedModuleRes.data.data.latestVersion.cronJobs[1].name],
+      ).to.not.be.undefined;
     },
     filteredFields: ['gameserverId', 'moduleId', 'functionId'],
   }),
@@ -326,6 +344,56 @@ const tests = [
         expect(error.response?.data.meta.error.message).to.match(/Invalid config schema/);
       }
     },
+  }),
+  new IntegrationTest<ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Installing a module takes the defaultSystemConfig into account',
+    setup,
+    test: async function () {
+      await this.client.module.moduleControllerUpdate(this.setupData.cronJobsModule.id, {
+        latestVersion: {
+          defaultSystemConfig: JSON.stringify({ cronJobs: { 'Test cron job': { temporalValue: '1 1 1 1 1' } } }),
+        },
+      });
+
+      const installRes = await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.cronJobsModule.latestVersion.id,
+      });
+
+      expect((installRes.data.data.systemConfig as any).cronJobs['Test cron job'].temporalValue).to.equal('1 1 1 1 1');
+    },
+  }),
+  new IntegrationTest<ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Setting a default system config runs the validation on it when updating module',
+    setup,
+    test: async function () {
+      return this.client.module.moduleControllerUpdate(this.setupData.cronJobsModule.id, {
+        // Enabled should be a boolean ;)
+        latestVersion: { defaultSystemConfig: JSON.stringify({ enabled: 'a little bit' }) },
+      });
+    },
+    expectedStatus: 400,
+  }),
+  new IntegrationTest<ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Setting a default system config runs the validation on it when creating module',
+    setup,
+    test: async function () {
+      return this.client.module.moduleControllerCreate({
+        name: 'Test module 2',
+        latestVersion: {
+          description: 'Test description',
+          // Enabled should be a boolean ;)
+          defaultSystemConfig: JSON.stringify({ enabled: 'a little bit' }),
+        },
+      });
+    },
+    expectedStatus: 400,
   }),
 ];
 

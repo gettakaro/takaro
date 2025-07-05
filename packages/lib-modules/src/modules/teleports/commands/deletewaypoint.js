@@ -1,20 +1,18 @@
 import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';
-import { ensureWaypointsModule, getWaypointName } from './utils.js';
+import { getWaypointName, waypointReconciler } from './utils.js';
 
 async function main() {
-  const { pog, gameServerId, arguments: args } = data;
+  const { pog, gameServerId, arguments: args, module: mod } = data;
 
   if (!checkPermission(pog, 'TELEPORTS_MANAGE_WAYPOINTS')) {
     throw new TakaroUserError('You do not have permission to manage waypoints.');
   }
 
-  const { waypointsInstallation } = await ensureWaypointsModule();
-
   const variable = await takaro.variable.variableControllerSearch({
     filters: {
       key: [getWaypointName(args.waypoint)],
       gameServerId: [gameServerId],
-      moduleId: [waypointsInstallation.moduleId],
+      moduleId: [mod.moduleId],
     },
   });
 
@@ -23,18 +21,7 @@ async function main() {
   }
 
   await takaro.variable.variableControllerDelete(variable.data.data[0].id);
-
-  const teleportCommand = await takaro.command.commandControllerSearch({
-    filters: {
-      moduleId: [waypointsInstallation.moduleId],
-      name: [`waypoint ${args.waypoint} server ${gameServerId}`],
-    },
-  });
-
-  if (teleportCommand.data.data.length) {
-    await takaro.command.commandControllerRemove(teleportCommand.data.data[0].id);
-  }
-
+  await waypointReconciler();
   await pog.pm(`Waypoint ${args.waypoint} deleted.`);
 }
 

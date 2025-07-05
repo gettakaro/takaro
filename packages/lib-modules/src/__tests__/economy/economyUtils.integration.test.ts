@@ -114,7 +114,7 @@ const tests = [
       expect((await events).length).to.be.eq(6);
       for (const message of messages) {
         expect(message).to.match(
-          /(Richest players\:|1\. .+ - 4000 test coin|2\. .+ - 3000 test coin|3\. .+ - 2000 test coin|4\. .+ - 1000 test coin|5\. .+ - 0 test coin)/,
+          /(Richest players\:|1\. .+ - 9000 test coin|2\. .+ - 8000 test coin|3\. .+ - 7000 test coin|4\. .+ - 6000 test coin|5\. .+ - 5000 test coin)/,
         );
       }
     },

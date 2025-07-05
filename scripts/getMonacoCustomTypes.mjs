@@ -83,7 +83,7 @@ async function getDts({ nodeModulesPath, packages }) {
 async function main() {
   const dts = await getDts({
     nodeModulesPath: './node_modules',
-    packages: ['axios', '@takaro/helpers', '@takaro/queues'],
+    packages: ['axios', '@takaro/helpers', '@takaro/queues', '@takaro/apiclient'],
   });
 
   const webMainEditorPath = path.join(
@@ -93,6 +93,7 @@ async function main() {
     'web-main',
     'src',
     'routes',
+    '_auth',
     '-module-builder',
     'Editor',
   );

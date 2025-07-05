@@ -40,14 +40,41 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
   private async handleRoleExpiry(players: PlayerOutputWithRolesDTO[]): Promise<PlayerOutputWithRolesDTO[]> {
     const now = new Date();
 
+    // Collect all expired role assignments across all players
+    const allExpiredRoles: Array<{
+      playerId: string;
+      roleId: string;
+      gameServerId?: string;
+      role?: any;
+    }> = [];
+
     for (const player of players) {
       const expired = player.roleAssignments.filter((item) => item.expiresAt && new Date(item.expiresAt) < now);
 
-      if (expired.length) this.log.info('Removing expired roles', { expired: expired.map((item) => item.roleId) });
-      await Promise.all(expired.map((item) => this.removeRole(item.roleId, player.id, item.gameServerId)));
+      if (expired.length) {
+        this.log.info('Found expired roles for player', {
+          playerId: player.id,
+          expiredRoles: expired.map((item) => item.roleId),
+        });
 
-      // Delete expired roles from original object
+        // Collect expired roles for batch processing
+        expired.forEach((item) => {
+          allExpiredRoles.push({
+            playerId: player.id,
+            roleId: item.roleId,
+            gameServerId: item.gameServerId,
+            role: item.role,
+          });
+        });
+      }
+
+      // Remove expired roles from the player object
       player.roleAssignments = player.roleAssignments.filter((item) => !expired.includes(item));
+    }
+
+    // Batch remove all expired roles if any exist
+    if (allExpiredRoles.length > 0) {
+      await this.batchRemoveRoles(allExpiredRoles);
     }
 
     return players;
@@ -130,24 +157,36 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     gamePlayer: IGamePlayer,
     gameServerId: string,
   ): Promise<{ player: PlayerOutputWithRolesDTO; pog: PlayerOnGameserverOutputWithRolesDTO }> {
+    // Validate that at least one platform identifier is provided
+    if (!gamePlayer.steamId && !gamePlayer.epicOnlineServicesId && !gamePlayer.xboxLiveId && !gamePlayer.platformId) {
+      throw new errors.ValidationError(
+        'At least one platform identifier (steamId, epicOnlineServicesId, xboxLiveId, or platformId) must be provided',
+      );
+    }
+
     const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
     let pog = await playerOnGameServerService.findAssociations(gamePlayer.gameId, gameServerId);
 
     let player: PlayerOutputWithRolesDTO | null = null;
 
-    const promises = [];
+    // Use the optimized findByPlatformIds method to avoid multiple queries
+    const foundPlayers = await this.repo.findByPlatformIds({
+      steamId: gamePlayer.steamId,
+      epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
+      xboxLiveId: gamePlayer.xboxLiveId,
+      platformId: gamePlayer.platformId,
+    });
 
-    if (gamePlayer.steamId) promises.push(this.find({ filters: { steamId: [gamePlayer.steamId] } }));
-    if (gamePlayer.epicOnlineServicesId)
-      promises.push(this.find({ filters: { epicOnlineServicesId: [gamePlayer.epicOnlineServicesId] } }));
-    if (gamePlayer.xboxLiveId) promises.push(this.find({ filters: { xboxLiveId: [gamePlayer.xboxLiveId] } }));
+    // Extend the results to add default roles
+    const extendedPlayers = await this.extend(foundPlayers);
 
-    const promiseResults = await Promise.all(promises);
-    // Merge all results into one array
-    const foundPlayers = promiseResults.reduce((acc: PlayerOutputWithRolesDTO[], item) => acc.concat(item.results), []);
+    // Deduplicate in case a player matches multiple criteria (unlikely but possible)
+    const uniquePlayers = extendedPlayers.filter(
+      (player, index, self) => self.findIndex((p) => p.id === player.id) === index,
+    );
 
     // If NO players are found, create a new one
-    if (!foundPlayers.length) {
+    if (!uniquePlayers.length) {
       // Main player profile does not exist yet!
       this.log.debug('No existing associations found, creating new global player', {
         gameId: gamePlayer.gameId,
@@ -159,11 +198,12 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
           steamId: gamePlayer.steamId,
           epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
           xboxLiveId: gamePlayer.xboxLiveId,
+          platformId: gamePlayer.platformId,
         }),
       );
     } else {
       // At least one player is found, use the first one
-      player = foundPlayers[0];
+      player = uniquePlayers[0];
 
       // Also, update any missing IDs and names
       await this.update(
@@ -173,6 +213,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
           steamId: gamePlayer.steamId,
           xboxLiveId: gamePlayer.xboxLiveId,
           epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
+          platformId: gamePlayer.platformId,
         }),
       );
     }
@@ -231,6 +272,41 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     );
   }
 
+  private async batchRemoveRoles(
+    expiredRoles: Array<{
+      playerId: string;
+      roleId: string;
+      gameServerId?: string;
+      role?: any;
+    }>,
+  ) {
+    if (expiredRoles.length === 0) return;
+
+    this.log.info('Batch removing expired roles', { count: expiredRoles.length });
+
+    // Batch remove roles from database
+    await this.repo.batchRemoveRoles(expiredRoles);
+
+    // Create events for all removed roles
+    const eventService = new EventService(this.domainId);
+    const events = expiredRoles.map(
+      (expiredRole) =>
+        new EventCreateDTO({
+          eventName: EVENT_TYPES.ROLE_REMOVED,
+          playerId: expiredRole.playerId,
+          gameserverId: expiredRole.gameServerId,
+          meta: new TakaroEventRoleRemoved({
+            role: expiredRole.role
+              ? { id: expiredRole.role.id, name: expiredRole.role.name }
+              : { id: expiredRole.roleId, name: 'Unknown' },
+          }),
+        }),
+    );
+
+    // Batch create all events
+    await Promise.all(events.map((event) => eventService.create(event)));
+  }
+
   /**
    * Syncs steam data for all players that have steamId set
    * @returns Number of players synced
@@ -279,38 +355,6 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     return toRefresh.length;
   }
 
-  async syncSingleSteamAccount(steamId: string) {
-    if (steamApi.isRateLimited) {
-      this.log.error('Rate limited, skipping steam sync');
-      return;
-    }
-
-    // If this is a real steam ID
-    if (!/^7[0-9]{16}$/.test(steamId)) {
-      this.log.error('Invalid steam ID', { steamId });
-      return;
-    }
-
-    const [summary, ban] = await Promise.all([
-      steamApi.getPlayerSummaries([steamId]),
-      steamApi.getPlayerBans([steamId]),
-    ]);
-
-    const fullData = {
-      steamId,
-      steamAvatar: summary[0].avatarfull,
-      steamAccountCreated: summary[0].timecreated,
-      steamCommunityBanned: ban[0].CommunityBanned,
-      steamEconomyBan: ban[0].EconomyBan,
-      steamVacBanned: ban[0].VACBanned,
-      steamsDaysSinceLastBan: ban[0].DaysSinceLastBan,
-      steamNumberOfVACBans: ban[0].NumberOfVACBans,
-      steamLevel: summary ? await steamApi.getLevel(steamId) : null,
-    };
-
-    await this.repo.setSteamData([fullData]);
-  }
-
   async observeIp(playerId: string, gameServerId: string, ip: string) {
     const lookupResult = ipLookup.get(ip);
 
@@ -353,10 +397,22 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
   async handlePlayerLink(player: PlayerOutputDTO, pog: PlayerOnGameserverOutputDTO) {
     const secretCode = humanId({ separator: '-', capitalize: false });
     const redis = await Redis.getClient('playerLink');
-    await redis.set(secretCode, player.id, {
+
+    // First, check if the player has any pending codes from before
+    const allKeys = await redis.keys('playerLink:*');
+    for (const key of allKeys) {
+      const storedPlayerId = await redis.get(key);
+      if (storedPlayerId === player.id) {
+        this.log.info('Found existing player link code', { key, playerId: player.id });
+        await redis.del(key);
+        await redis.del(`${key}-domain`);
+      }
+    }
+
+    await redis.set(`playerLink:${secretCode}`, player.id, {
       EX: 60 * 30,
     });
-    await redis.set(`${secretCode}-domain`, this.domainId, {
+    await redis.set(`playerLink:${secretCode}-domain`, this.domainId, {
       EX: 60 * 30,
     });
 

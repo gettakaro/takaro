@@ -67,7 +67,7 @@ function Component() {
 
   if (isSuccess && session?.user.email === watch('email')) {
     enqueueSnackbar('Player linked successfully!', { variant: 'default', type: 'success' });
-    return <Navigate to="/dashboard" />;
+    return <Navigate to="/" />;
   }
 
   if (isSuccess) {
@@ -117,7 +117,9 @@ function Component() {
         {error && <FormError error={error} />}
         {session && session.user.email ? (
           <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '1rem' }}>
-            <Button fullWidth isLoading={isPending} type="submit" text="Link Player to Account" />
+            <Button fullWidth isLoading={isPending} type="submit">
+              Link Player to Account
+            </Button>
             <Button
               onClick={async () => await logOut()}
               variant="outline"
@@ -125,11 +127,14 @@ function Component() {
               fullWidth
               icon={<LogoutIcon />}
               type="button"
-              text="log out"
-            />
+            >
+              Log out
+            </Button>
           </div>
         ) : (
-          <Button fullWidth isLoading={isPending} type="submit" text="Link Player to Account" />
+          <Button fullWidth isLoading={isPending} type="submit">
+            Link Player to Account
+          </Button>
         )}
       </form>
     </Container>

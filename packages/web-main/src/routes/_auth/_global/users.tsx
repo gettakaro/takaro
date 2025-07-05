@@ -9,10 +9,12 @@ import {
   CopyId,
   useTheme,
   Tooltip,
+  Chip,
 } from '@takaro/lib-components';
 
+import { useSnackbar } from 'notistack';
 import { Player } from '../../../components/Player';
-import { usersQueryOptions, userMeQueryOptions, userCountQueryOptions } from '../../../queries/user';
+import { usersQueryOptions, userMeQueryOptions, userCountQueryOptions, useUserUpdate } from '../../../queries/user';
 import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import {
@@ -21,6 +23,8 @@ import {
   AiOutlineUser as ProfileIcon,
   AiOutlineEdit as EditIcon,
   AiOutlineRight as ActionIcon,
+  AiOutlineUserAdd as DashboardUser,
+  AiOutlineUserDelete as RegularUser,
 } from 'react-icons/ai';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { hasPermission, useHasPermission } from '../../../hooks/useHasPermission';
@@ -79,7 +83,6 @@ function Component() {
           quickSearchInput,
         ],
         discordId: columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value,
-        playerId: columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value,
       },
     }),
   });
@@ -125,6 +128,7 @@ function Component() {
       id: 'discordId',
       cell: (info) => <CopyId placeholder="Discord ID" id={info.getValue()} />,
     }),
+
     columnHelper.accessor('playerId', {
       header: 'Player ID',
       id: 'playerId',
@@ -134,6 +138,21 @@ function Component() {
         ) : (
           'no player assigned'
         ),
+    }),
+    columnHelper.accessor('isDashboardUser', {
+      header: () => {
+        return (
+          <Tooltip>
+            <Tooltip.Trigger asChild>
+              <span>Team member (Dashboard user)</span>
+            </Tooltip.Trigger>
+            <Tooltip.Content>User that has access to the dashboard</Tooltip.Content>
+          </Tooltip>
+        );
+      },
+      id: 'isDashboardUser',
+      cell: (info) => (info.getValue() ? <Chip variant="outline" color="primary" label="Yes" /> : <div>No</div>),
+      enableSorting: true,
     }),
     columnHelper.accessor('createdAt', {
       header: 'Created at',
@@ -194,10 +213,11 @@ const InviteUser: FC<{
     <>
       <Button
         onClick={() => setOpen(true)}
-        text="Invite user"
         icon={<InviteUserIcon />}
         disabled={!hasManageUsersPermission || !canInviteUser}
-      />
+      >
+        Invite user
+      </Button>
       <MaxUsage value={currentUserCount} total={maxUserCount} unit="Users" />
       <UserInviteDialog open={open} onOpenChange={setOpen} />
     </>
@@ -209,7 +229,22 @@ const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const hasReadUsersPermission = useHasPermission([PERMISSIONS.ReadUsers]);
+  const hasManageUsersPermission = useHasPermission([PERMISSIONS.ManageUsers]);
   const hasManageRolesPermission = useHasPermission([PERMISSIONS.ManageRoles]);
+  const { mutate } = useUserUpdate();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const onToggleDashboardUser = () => {
+    try {
+      mutate({ userId: user.id, isDashboardUser: !user.isDashboardUser });
+    } catch {
+      if (user.isDashboardUser) {
+        enqueueSnackbar('Failed to downgrade user', { variant: 'default', type: 'error' });
+      } else {
+        enqueueSnackbar('Failed to upgrade user to team member', { variant: 'default', type: 'error' });
+      }
+    }
+  };
 
   return (
     <>
@@ -229,6 +264,12 @@ const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
             icon={<EditIcon />}
             onClick={() => navigate({ to: '/user/$userId/role/assign', params: { userId: user.id } })}
             disabled={!hasManageRolesPermission}
+          />
+          <Dropdown.Menu.Item
+            icon={user.isDashboardUser ? <RegularUser /> : <DashboardUser />}
+            label={user.isDashboardUser ? 'Downgrade to regular user' : 'Upgrade to Team member'}
+            onClick={onToggleDashboardUser}
+            disabled={!hasManageUsersPermission}
           />
           <Dropdown.Menu.Item
             label="Delete user"

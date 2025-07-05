@@ -5,9 +5,13 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { moduleTagsInfiniteQueryOptions } from '../../queries/module';
 import { SmallModuleVersionOutputDTO } from '@takaro/apiclient';
 
+type returnVariant = 'tag' | 'versionId';
+
 interface ModuleVersionSelectQueryFieldProps extends CustomSelectQueryProps {
   moduleId: string;
   filter?: (version: SmallModuleVersionOutputDTO) => boolean;
+  addAllVersionsOption?: boolean;
+  returnVariant: returnVariant;
 }
 
 export const ModuleVersionSelectQueryField: FC<ModuleVersionSelectQueryFieldProps> = ({
@@ -16,7 +20,6 @@ export const ModuleVersionSelectQueryField: FC<ModuleVersionSelectQueryFieldProp
   name,
   hint,
   size,
-  loading,
   disabled,
   readOnly,
   required,
@@ -26,32 +29,38 @@ export const ModuleVersionSelectQueryField: FC<ModuleVersionSelectQueryFieldProp
   canClear,
   filter,
   placeholder,
+  addAllVersionsOption,
+  returnVariant,
 }) => {
-  const {
-    data,
-    isLoading: isLoadingData,
-    isFetching,
-    hasNextPage,
-    isFetchingNextPage,
-    fetchNextPage,
-  } = useInfiniteQuery(moduleTagsInfiniteQueryOptions({ moduleId, limit: 20 }));
+  const { data, isFetching, hasNextPage, isFetchingNextPage, fetchNextPage, refetch } = useInfiniteQuery(
+    moduleTagsInfiniteQueryOptions({ moduleId, limit: 20 }, { enabled: false }),
+  );
 
-  if (isLoadingData) {
-    return <Skeleton variant="rectangular" width="100%" height="25px" />;
-  }
-
-  let smallVersions = data?.pages.flatMap((page) => page.data);
-  if (!smallVersions) {
-    return <div>no modules found</div>;
-  }
+  let smallVersions = data?.pages.flatMap((page) => page.data) ?? [];
   if (filter) {
     smallVersions = smallVersions.filter(filter);
   }
 
+  smallVersions = [
+    {
+      name: 'Global - applies to all gameservers',
+      id: 'null',
+      tag: 'All versions',
+      createdAt: 'placeholder',
+      updatedAt: 'placeholder',
+    } as SmallModuleVersionOutputDTO,
+    ...smallVersions,
+  ];
+
+  const handleOpen = (isOpen: boolean) => {
+    if (isOpen) {
+      refetch();
+    }
+  };
+
   return (
     <ModuleVersionSelectView
       required={required}
-      loading={loading}
       control={control}
       readOnly={readOnly}
       description={description}
@@ -67,13 +76,20 @@ export const ModuleVersionSelectQueryField: FC<ModuleVersionSelectQueryFieldProp
       hasNextPage={hasNextPage}
       isFetchingNextPage={isFetchingNextPage}
       canClear={canClear}
+      onOpenChange={handleOpen}
       placeholder={placeholder}
+      addAllVersionsOption={addAllVersionsOption}
+      returnVariant={returnVariant}
     />
   );
 };
 
 type ModuleVersionSelectViewProps = CustomSelectQueryProps &
-  PaginationProps & { moduleVersions: SmallModuleVersionOutputDTO[] };
+  PaginationProps & {
+    moduleVersions: SmallModuleVersionOutputDTO[];
+    addAllVersionsOption?: boolean;
+    returnVariant: returnVariant;
+  };
 
 export const ModuleVersionSelectView: FC<ModuleVersionSelectViewProps> = ({
   control,
@@ -83,7 +99,6 @@ export const ModuleVersionSelectView: FC<ModuleVersionSelectViewProps> = ({
   disabled,
   hint,
   required,
-  loading,
   label,
   canClear,
   multiple,
@@ -91,8 +106,10 @@ export const ModuleVersionSelectView: FC<ModuleVersionSelectViewProps> = ({
   isFetching,
   hasNextPage,
   fetchNextPage,
+  onOpenChange,
   name,
   moduleVersions,
+  returnVariant,
   placeholder = 'Select version...',
 }) => {
   return (
@@ -106,8 +123,8 @@ export const ModuleVersionSelectView: FC<ModuleVersionSelectViewProps> = ({
       disabled={disabled}
       size={size}
       required={required}
-      loading={loading}
       multiple={multiple}
+      onOpenChange={onOpenChange}
       canClear={canClear}
       isFetching={isFetching}
       hasNextPage={hasNextPage}
@@ -122,7 +139,7 @@ export const ModuleVersionSelectView: FC<ModuleVersionSelectViewProps> = ({
     >
       <SelectQueryField.OptionGroup>
         {moduleVersions.map(({ tag, id }) => (
-          <SelectQueryField.Option key={id} value={id} label={tag}>
+          <SelectQueryField.Option key={id} value={returnVariant === 'tag' ? tag : id} label={tag}>
             <div>
               <span>{tag}</span>
             </div>
@@ -134,8 +151,8 @@ export const ModuleVersionSelectView: FC<ModuleVersionSelectViewProps> = ({
 };
 
 export const UnControlledModuleVersionSelectQueryField: FC<
-  CustomUncontrolledSelectQueryFieldProps & { moduleId: string; returnValue: 'versionId' | 'tag' }
-> = ({ value, handleInputValueChange, onChange, canClear, placeholder, name, moduleId, returnValue }) => {
+  CustomUncontrolledSelectQueryFieldProps & { moduleId: string }
+> = ({ value, handleInputValueChange, onChange, canClear, placeholder, name, moduleId, readOnly }) => {
   const {
     data,
     isLoading: isLoadingData,
@@ -161,6 +178,7 @@ export const UnControlledModuleVersionSelectQueryField: FC<
       hasError={false}
       value={value}
       handleInputValueChange={handleInputValueChange}
+      readOnly={readOnly}
       name={name}
       multiple={false}
       onChange={onChange}
@@ -178,10 +196,10 @@ export const UnControlledModuleVersionSelectQueryField: FC<
       }}
     >
       <UnControlledSelectQueryField.OptionGroup>
-        {moduleVersions.map(({ tag, id }) => (
-          <SelectQueryField.Option key={id} value={returnValue === 'versionId' ? id : tag} label={tag}>
+        {moduleVersions.map((moduleVersion) => (
+          <SelectQueryField.Option key={moduleVersion.id} value={moduleVersion.tag} label={moduleVersion.tag}>
             <div>
-              <span>{tag}</span>
+              <span>{moduleVersion.tag}</span>
             </div>
           </SelectQueryField.Option>
         ))}

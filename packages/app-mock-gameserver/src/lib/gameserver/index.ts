@@ -10,6 +10,9 @@ import {
   BanDTO,
   IItemDTO,
   MapInfoDTO,
+  IEntityDTO,
+  ILocationDTO,
+  EntityType,
 } from '@takaro/gameserver';
 import {
   EventLogLine,
@@ -90,6 +93,8 @@ export class MockGameserver implements IMockGameServer {
       return;
     }
 
+    const dimensions = ['overworld', 'nether', 'end'];
+
     const players = Array.from(Array(5).keys()).map((p) => ({
       gameId: p.toString(),
       name: faker.internet.userName(),
@@ -99,6 +104,7 @@ export class MockGameserver implements IMockGameServer {
       positionX: 500 - faker.number.int({ max: 999 }),
       positionY: 500 - faker.number.int({ max: 999 }),
       positionZ: 500 - faker.number.int({ max: 999 }),
+      dimension: dimensions[faker.number.int({ min: 0, max: dimensions.length - 1 })],
       online: 'true',
     }));
 
@@ -109,8 +115,8 @@ export class MockGameserver implements IMockGameServer {
     );
   }
 
-  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number): Promise<void> {
-    this.sendLog(`Giving ${player.gameId} ${amount}x${item}`);
+  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number, quality?: string): Promise<void> {
+    this.sendLog(`Giving ${player.gameId} ${amount}x${item}${quality ? ` (quality: ${quality})` : ''}`);
   }
 
   async getPlayer(playerRef: IPlayerReferenceDTO, onlyOnline = true): Promise<IGamePlayer | null> {
@@ -124,7 +130,7 @@ export class MockGameserver implements IMockGameServer {
       name: player.name,
       ip: player.ip,
       steamId: player.steamId,
-      ping: faker.number.int({ max: 99 }),
+      ping: player.ping ? parseInt(player.ping, 10) : faker.number.int({ max: 99 }),
     });
   }
 
@@ -146,7 +152,7 @@ export class MockGameserver implements IMockGameServer {
             name: player.name,
             ip: player.ip,
             steamId: player.steamId,
-            ping: faker.number.int({ max: 99 }),
+            ping: player.ping ? parseInt(player.ping, 10) : faker.number.int({ max: 99 }),
           }),
       ),
     );
@@ -158,11 +164,12 @@ export class MockGameserver implements IMockGameServer {
       return null;
     }
 
-    return {
+    return new IPosition({
       x: parseInt(player.positionX, 10),
       y: parseInt(player.positionY, 10),
       z: parseInt(player.positionZ, 10),
-    };
+      dimension: player.dimension || undefined,
+    });
   }
 
   async executeConsoleCommand(rawCommand: string) {
@@ -248,6 +255,51 @@ export class MockGameserver implements IMockGameServer {
       output.success = true;
     }
 
+    if (rawCommand.startsWith('setPlayerPing')) {
+      const [_, steamId, pingValue] = rawCommand.split(' ');
+      const allPlayerKeys = await (await this.redis).keys(this.getRedisKey('player:*'));
+      let playerFound = false;
+
+      for (const playerKey of allPlayerKeys) {
+        const player = await (await this.redis).hGetAll(playerKey);
+        if (player.steamId === steamId) {
+          await (await this.redis).hSet(playerKey, 'ping', pingValue);
+          output.rawResult = `Set ping for player ${steamId} to ${pingValue}`;
+          output.success = true;
+          playerFound = true;
+          break;
+        }
+      }
+
+      if (!playerFound) {
+        output.rawResult = `Player with steamId ${steamId} not found`;
+        output.success = false;
+      }
+    }
+
+    if (rawCommand.startsWith('connectPlayer')) {
+      const [_, steamId] = rawCommand.split(' ');
+      const allPlayerKeys = await (await this.redis).keys(this.getRedisKey('player:*'));
+      let playerFound = false;
+
+      for (const playerKey of allPlayerKeys) {
+        const player = await (await this.redis).hGetAll(playerKey);
+        if (player.steamId === steamId) {
+          const playerRef = new IPlayerReferenceDTO({ gameId: player.gameId });
+          await this.setPlayerOnlineStatus(playerRef, true);
+          output.rawResult = `Connected player ${steamId}`;
+          output.success = true;
+          playerFound = true;
+          break;
+        }
+      }
+
+      if (!playerFound) {
+        output.rawResult = `Player with steamId ${steamId} not found`;
+        output.success = false;
+      }
+    }
+
     await this.sendLog(`${output.success ? '🟢' : '🔴'} Command executed: ${rawCommand}`);
 
     return output;
@@ -267,7 +319,7 @@ export class MockGameserver implements IMockGameServer {
     await this.sendLog(fullMessage);
   }
 
-  async teleportPlayer(playerRef: IPlayerReferenceDTO, x: number, y: number, z: number) {
+  async teleportPlayer(playerRef: IPlayerReferenceDTO, x: number, y: number, z: number, dimension?: string) {
     const player = await (await this.redis).hGetAll(this.getRedisKey(`player:${playerRef.gameId}`));
 
     if (!player) {
@@ -278,9 +330,14 @@ export class MockGameserver implements IMockGameServer {
     player.positionY = y.toString();
     player.positionZ = z.toString();
 
+    if (dimension !== undefined) {
+      player.dimension = dimension;
+    }
+
     await (await this.redis).hSet(this.getRedisKey(`player:${playerRef.gameId}`), player);
 
-    await this.sendLog(`Teleported ${player.name} to ${x}, ${y}, ${z}`);
+    const dimensionMsg = dimension ? ` in dimension ${dimension}` : '';
+    await this.sendLog(`Teleported ${player.name} to ${x}, ${y}, ${z}${dimensionMsg}`);
   }
 
   async kickPlayer(playerRef: IPlayerReferenceDTO, reason: string): Promise<void> {
@@ -376,6 +433,31 @@ export class MockGameserver implements IMockGameServer {
         name: 'Stone',
         description: 'Stone can get you stoned',
       }),
+      new IItemDTO({
+        code: 'iron',
+        name: 'Iron',
+        description: 'Iron is strong',
+      }),
+      new IItemDTO({
+        code: 'gold',
+        name: 'Gold',
+        description: 'Gold is shiny',
+      }),
+      new IItemDTO({
+        code: 'adminGun',
+        name: 'Admin Gun',
+        description: 'A powerful gun for admins',
+      }),
+      new IItemDTO({
+        code: 'healingPotion',
+        name: 'Healing Potion',
+        description: 'Restores health over time',
+      }),
+      new IItemDTO({
+        code: 'magicWand',
+        name: 'Magic Wand',
+        description: 'A wand that casts spells',
+      }),
     ];
   }
 
@@ -415,7 +497,91 @@ export class MockGameserver implements IMockGameServer {
   }
 
   async getMapTile(_x: number, _y: number, _z: number) {
-    return Buffer.from('mock-tile');
+    return '';
+  }
+
+  async listEntities(): Promise<IEntityDTO[]> {
+    return [
+      new IEntityDTO({
+        code: 'zombie',
+        name: 'Zombie',
+        description: 'A shambling undead creature',
+        type: EntityType.HOSTILE,
+      }),
+      new IEntityDTO({
+        code: 'skeleton',
+        name: 'Skeleton',
+        description: 'An undead archer',
+        type: EntityType.HOSTILE,
+      }),
+      new IEntityDTO({
+        code: 'spider',
+        name: 'Spider',
+        description: 'A large arachnid',
+        type: EntityType.HOSTILE,
+      }),
+      new IEntityDTO({
+        code: 'cow',
+        name: 'Cow',
+        description: 'A peaceful farm animal',
+        type: EntityType.FRIENDLY,
+      }),
+      new IEntityDTO({
+        code: 'pig',
+        name: 'Pig',
+        description: 'A pink farm animal',
+        type: EntityType.FRIENDLY,
+      }),
+      new IEntityDTO({
+        code: 'sheep',
+        name: 'Sheep',
+        description: 'A woolly farm animal',
+        type: EntityType.FRIENDLY,
+      }),
+      new IEntityDTO({
+        code: 'chicken',
+        name: 'Chicken',
+        description: 'A small farm bird',
+        type: EntityType.FRIENDLY,
+      }),
+      new IEntityDTO({
+        code: 'wolf',
+        name: 'Wolf',
+        description: 'A wild canine that can be tamed',
+        type: EntityType.NEUTRAL,
+      }),
+      new IEntityDTO({
+        code: 'enderman',
+        name: 'Enderman',
+        description: 'A tall dark creature from another dimension',
+        type: EntityType.NEUTRAL,
+      }),
+      new IEntityDTO({
+        code: 'villager',
+        name: 'Villager',
+        description: 'A peaceful NPC that trades items',
+        type: EntityType.FRIENDLY,
+        metadata: { profession: 'merchant', canTrade: true },
+      }),
+      new IEntityDTO({
+        code: 'creeper',
+        name: 'Creeper',
+        description: 'An explosive green creature',
+        type: EntityType.HOSTILE,
+        metadata: { explosive: true, range: 3 },
+      }),
+      new IEntityDTO({
+        code: 'horse',
+        name: 'Horse',
+        description: 'A rideable animal',
+        type: EntityType.FRIENDLY,
+        metadata: { rideable: true, speed: 'fast' },
+      }),
+    ];
+  }
+
+  async listLocations(): Promise<ILocationDTO[]> {
+    return [];
   }
 }
 

@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CronJobOutputDTO } from '@takaro/apiclient';
-import { TextField, Button, Alert } from '@takaro/lib-components';
+import { TextField, Button, Alert, TextAreaField } from '@takaro/lib-components';
 import { cronjobQueryOptions, useCronJobUpdate } from '../../../../../queries/module';
 import { FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -10,6 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 
 const validationSchema = z.object({
   temporalValue: z.string(),
+  description: z.string().optional(),
 });
 type FormInputs = z.infer<typeof validationSchema>;
 
@@ -40,6 +41,7 @@ export const CronJobConfigForm: FC<CronJobConfigFormProps> = ({ cronjob, readOnl
     resolver: zodResolver(validationSchema),
     values: {
       temporalValue: cronjob.temporalValue,
+      description: cronjob.description,
     },
   });
 
@@ -61,14 +63,17 @@ export const CronJobConfigForm: FC<CronJobConfigFormProps> = ({ cronjob, readOnl
         description="This controls when the cronjob triggers, you can use https://crontab.guru/ to help you with the syntax. Note that this is a default value, you can override this per-gameserver when you install this module"
         readOnly={readOnly}
       />
+      <TextAreaField
+        control={control}
+        name="description"
+        label="Description"
+        description="A description of what this cron job does"
+        readOnly={readOnly}
+      />
       {!readOnly && (
-        <Button
-          isLoading={isPending}
-          disabled={!formState.isDirty}
-          fullWidth
-          type="submit"
-          text="Save cronjob config"
-        />
+        <Button isLoading={isPending} disabled={!formState.isDirty} fullWidth type="submit">
+          Save cronjob config
+        </Button>
       )}
     </form>
   );

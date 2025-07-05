@@ -1,6 +1,8 @@
-import { ModuleOutputDTO, GameServerOutputDTO, RoleOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
+import { ModuleOutputDTO, GameServerOutputDTO, RoleOutputDTO, PlayerOutputDTO, Client } from '@takaro/apiclient';
 import type { EventTypes } from '@takaro/modules';
-import { EventsAwaiter, IntegrationTest, integrationConfig } from '../main.js';
+import { EventsAwaiter, IntegrationTest } from '../main.js';
+import { randomUUID } from 'crypto';
+import { getMockServer } from '@takaro/mock-gameserver';
 
 export interface IDetectedEvent {
   event: EventTypes;
@@ -10,6 +12,7 @@ export interface IDetectedEvent {
 export interface IModuleTestsSetupData {
   modules: ModuleOutputDTO[];
   gameserver: GameServerOutputDTO;
+  gameserver2: GameServerOutputDTO;
   utilsModule: ModuleOutputDTO;
   teleportsModule: ModuleOutputDTO;
   gimmeModule: ModuleOutputDTO;
@@ -18,8 +21,11 @@ export interface IModuleTestsSetupData {
   serverMessagesModule: ModuleOutputDTO;
   lotteryModule: ModuleOutputDTO;
   geoBlockModule: ModuleOutputDTO;
+  highPingKickerModule: ModuleOutputDTO;
   role: RoleOutputDTO;
   players: PlayerOutputDTO[];
+  players2: PlayerOutputDTO[];
+  mockservers: Awaited<ReturnType<typeof getMockServer>>[];
 }
 
 export const chatMessageSorter = (a: IDetectedEvent, b: IDetectedEvent) => {
@@ -32,6 +38,27 @@ export const chatMessageSorter = (a: IDetectedEvent, b: IDetectedEvent) => {
   return 0;
 };
 
+async function triggerItemSync(client: Client, gameServerId: string) {
+  const triggeredJobRes = await client.gameserver.gameServerControllerTriggerJob('syncItems', gameServerId);
+  const triggeredJob = triggeredJobRes.data.data;
+  if (!triggeredJob || !triggeredJob.id) throw new Error('Triggered job ID not found');
+
+  // Poll the job until it's done
+  while (true) {
+    const jobToAwait = await (
+      await client.gameserver.gameServerControllerGetJob('syncItems', triggeredJob.id)
+    ).data.data;
+    if (!jobToAwait) throw new Error('Job not found');
+    if (jobToAwait.status === 'completed') {
+      break;
+    }
+    if (jobToAwait.status === 'failed') {
+      throw new Error(`Job failed: ${jobToAwait.failedReason}.`);
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+}
+
 export const modulesTestSetup = async function (
   this: IntegrationTest<IModuleTestsSetupData>,
 ): Promise<IModuleTestsSetupData> {
@@ -42,23 +69,28 @@ export const modulesTestSetup = async function (
   // 10 players, 10 pogs should be created
   const playerCreatedEvents = eventAwaiter.waitForEvents('player-created', 20);
 
-  const gameServer1 = await this.client.gameserver.gameServerControllerCreate({
-    name: 'Gameserver 1',
-    type: 'MOCK',
-    connectionInfo: JSON.stringify({
-      host: integrationConfig.get('mockGameserver.host'),
-      name: `test-${this.test.name}-${this.standardDomainId}-1`,
-    }),
+  if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
+  const gameServer1IdentityToken = randomUUID();
+  const gameServer2IdentityToken = randomUUID();
+  const mockserver1 = await getMockServer({
+    mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer1IdentityToken },
+  });
+  const mockserver2 = await getMockServer({
+    mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer2IdentityToken },
   });
 
-  const gameServer2 = await this.client.gameserver.gameServerControllerCreate({
-    name: 'Gameserver 2',
-    type: 'MOCK',
-    connectionInfo: JSON.stringify({
-      host: integrationConfig.get('mockGameserver.host'),
-      name: `test-${this.test.name}-${this.standardDomainId}-2`,
-    }),
-  });
+  const gameServers = (
+    await this.client.gameserver.gameServerControllerSearch({
+      filters: { identityToken: [gameServer1IdentityToken, gameServer2IdentityToken] },
+    })
+  ).data.data;
+
+  const gameServer1 = gameServers.find((gs) => gs.identityToken === gameServer1IdentityToken);
+  const gameServer2 = gameServers.find((gs) => gs.identityToken === gameServer2IdentityToken);
+
+  if (!gameServer1 || !gameServer2) {
+    throw new Error('Game servers not found. Did something fail when registering?');
+  }
 
   const teleportsModule = modules.find((m) => m.name === 'teleports');
   if (!teleportsModule) throw new Error('teleports module not found');
@@ -84,10 +116,16 @@ export const modulesTestSetup = async function (
   const geoBlockModule = modules.find((m) => m.name === 'geoBlock');
   if (!geoBlockModule) throw new Error('geoBlock module not found');
 
+  const highPingKickerModule = modules.find((m) => m.name === 'highPingKicker');
+  if (!highPingKickerModule) throw new Error('highPingKicker module not found');
+
   await Promise.all([
-    this.client.gameserver.gameServerControllerExecuteCommand(gameServer1.data.data.id, { command: 'connectAll' }),
-    this.client.gameserver.gameServerControllerExecuteCommand(gameServer2.data.data.id, { command: 'connectAll' }),
+    this.client.gameserver.gameServerControllerExecuteCommand(gameServer1.id, { command: 'connectAll' }),
+    this.client.gameserver.gameServerControllerExecuteCommand(gameServer2.id, { command: 'connectAll' }),
   ]);
+
+  await triggerItemSync(this.client, gameServer1.id);
+  await triggerItemSync(this.client, gameServer2.id);
 
   await playerCreatedEvents;
 
@@ -96,7 +134,7 @@ export const modulesTestSetup = async function (
 
   const pogsRes = (
     await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
-      filters: { gameServerId: [gameServer1.data.data.id] },
+      filters: { gameServerId: [gameServer1.id] },
     })
   ).data.data;
   const playersRes = await this.client.player.playerControllerSearch({
@@ -106,6 +144,23 @@ export const modulesTestSetup = async function (
 
   await Promise.all(
     playersRes.data.data.map(async (player) => {
+      await this.client.player.playerControllerAssignRole(player.id, roleRes.data.data.id);
+    }),
+  );
+
+  const pogsRes2 = (
+    await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+      filters: { gameServerId: [gameServer2.id] },
+    })
+  ).data.data;
+
+  const playersRes2 = await this.client.player.playerControllerSearch({
+    filters: { id: pogsRes2.map((p) => p.playerId) },
+    extend: ['playerOnGameServers'],
+  });
+
+  await Promise.all(
+    playersRes2.data.data.map(async (player) => {
       await this.client.player.playerControllerAssignRole(player.id, roleRes.data.data.id);
     }),
   );
@@ -120,8 +175,12 @@ export const modulesTestSetup = async function (
     economyUtilsModule,
     lotteryModule,
     geoBlockModule,
-    gameserver: gameServer1.data.data,
+    highPingKickerModule,
+    gameserver: gameServer1,
+    gameserver2: gameServer2,
     role: roleRes.data.data,
     players: playersRes.data.data,
+    players2: playersRes2.data.data,
+    mockservers: [mockserver1, mockserver2],
   };
 };

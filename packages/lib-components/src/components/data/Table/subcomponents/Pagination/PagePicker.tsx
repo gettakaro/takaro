@@ -88,8 +88,9 @@ export const PagePicker: FC<PagePickerProps> = ({
             variant="outline"
             onClick={() => setPageIndex(i - 1)}
             className={i === pageIndex + 1 ? 'active' : ''}
-            text={`${i}`}
-          />
+          >
+            {i}
+          </Button>
         ))}
       {showButtons && (
         <IconButton size="tiny" icon={<NextIcon />} onClick={nextPage} disabled={!hasNext} ariaLabel="next page" />

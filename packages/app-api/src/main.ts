@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 
 import { randomUUID } from 'crypto';
-import { queueService } from '@takaro/queues';
-import { HTTP } from '@takaro/http';
+import { getBullBoard, queueService } from '@takaro/queues';
+import { getAdminBasicAuth, HTTP } from '@takaro/http';
 import { errors, logger } from '@takaro/util';
 import { DomainController } from './controllers/DomainController.js';
 import { Server as HttpServer } from 'http';
@@ -29,11 +29,9 @@ import { CronJobWorker } from './workers/cronjobWorker.js';
 import { CommandWorker } from './workers/commandWorker.js';
 import { PlayerOnGameServerController } from './controllers/PlayerOnGameserverController.js';
 import { ItemController } from './controllers/ItemController.js';
-import { ItemsSyncWorker } from './workers/ItemsSyncWorker.js';
+import { EntityController } from './controllers/EntityController.js';
 import { PlayerSyncWorker } from './workers/playerSyncWorker.js';
 import { CSMMImportWorker } from './workers/csmmImportWorker.js';
-import { SteamSyncWorker } from './workers/steamSyncWorker.js';
-import { BansSyncWorker } from './workers/bansSyncWorker.js';
 import { AxiosError } from 'axios';
 import { StatsController } from './controllers/StatsController.js';
 import { KPIWorker } from './workers/kpiWorker.js';
@@ -44,6 +42,7 @@ import { BanController } from './controllers/BanController.js';
 import { ModuleController } from './controllers/Module/modules.js';
 import { ModuleVersionController } from './controllers/Module/versions.js';
 import { ModuleInstallationsController } from './controllers/Module/installations.js';
+import { TrackingController } from './controllers/TrackingController.js';
 
 export const server = new HTTP(
   {
@@ -67,10 +66,12 @@ export const server = new HTTP(
       EventController,
       PlayerOnGameServerController,
       ItemController,
+      EntityController,
       StatsController,
       ShopListingController,
       ShopOrderController,
       BanController,
+      TrackingController,
     ],
   },
   {
@@ -111,17 +112,8 @@ async function main() {
     new HookWorker(config.get('queues.hooks.concurrency'));
     log.info('👷 Hook worker started');
 
-    new ItemsSyncWorker();
-    log.info('👷 Items sync worker started');
-
     new PlayerSyncWorker();
     log.info('👷 playerSync worker started');
-
-    new BansSyncWorker();
-    log.info('👷 bansSync worker started');
-
-    new SteamSyncWorker();
-    log.info('👷 steamSync worker started');
 
     new CSMMImportWorker();
     log.info('👷 csmmImport worker started');
@@ -134,6 +126,8 @@ async function main() {
   }
 
   await getSocketServer(server.server as HttpServer);
+  server.expressInstance.use('/queues', getAdminBasicAuth(config.get('adminClientSecret')), getBullBoard());
+
   await server.start();
 
   log.info('🚀 Server started');

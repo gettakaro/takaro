@@ -25,6 +25,7 @@ import { PlayerStats } from './-players/playerStats';
 import { userMeQueryOptions } from '../../../queries/user';
 import { GameServerContainer } from '../../../components/GameServer';
 import { PlayerBanDialog } from '../../../components/dialogs/PlayerBanDialog';
+import { InvestigationLink } from '../../../components/InvestigationLink';
 
 export const StyledDialogBody = styled(Dialog.Body)`
   h2 {
@@ -67,9 +68,6 @@ function Component() {
           quickSearchInput,
         ],
         steamId: columnSearch.columnSearchState.find((search) => search.id === 'steamId')?.value,
-        epicOnlineServicesId: columnSearch.columnSearchState.find((search) => search.id === 'epicOnlineServicesId')
-          ?.value,
-        xboxLiveId: columnSearch.columnSearchState.find((search) => search.id === 'xboxLiveId')?.value,
       },
     }),
   );
@@ -96,7 +94,11 @@ function Component() {
               <td>
                 <GameServerContainer gameServerId={pog.gameServerId} />
               </td>
-              <td>{Duration.fromObject({ seconds: pog.playtimeSeconds }).toHuman()}</td>
+              <td>
+                {Duration.fromObject({ seconds: pog.playtimeSeconds })
+                  .shiftTo('days', 'hours', 'minutes', 'seconds')
+                  .toHuman({ unitDisplay: 'narrow', listStyle: 'narrow' })}
+              </td>
               <td>{pog.currency}</td>
               <td>{pog.ping}</td>
               <td>
@@ -120,7 +122,19 @@ function Component() {
               <td>
                 <Chip color="secondary" label={pog.online ? 'Online' : 'Offline'} />
               </td>
-              <td>{pog.ip ? pog.ip : 'Unknown'}</td>
+              <td>
+                {pog.ip ? (
+                  <InvestigationLink
+                    href={`https://scamalytics.com/ip/${pog.ip}`}
+                    tooltipText="Investigate IP on Scamalytics"
+                    showIcon={true}
+                  >
+                    {pog.ip}
+                  </InvestigationLink>
+                ) : (
+                  'Unknown'
+                )}
+              </td>
             </tr>
           );
         })}
@@ -146,7 +160,18 @@ function Component() {
     columnHelper.accessor('steamId', {
       header: 'Steam ID',
       id: 'steamId',
-      cell: (info) => <CopyId placeholder={info.getValue()} id={info.getValue()} />,
+      cell: (info) => {
+        const steamId = info.getValue();
+        if (!steamId) return null;
+
+        return (
+          <CopyId
+            id={steamId}
+            externalLink={`https://steamcommunity.com/profiles/${steamId}`}
+            externalLinkTooltip="View Steam profile"
+          />
+        );
+      },
       enableColumnFilter: true,
     }),
 

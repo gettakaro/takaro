@@ -8,13 +8,9 @@
       "deletedAt": null,
       "name": "Test gameserver 2",
       "enabled": true,
-      "connectionInfo": {
-        "host": "somewhere.else",
-        "port": 9876
-      },
-      "type": "MOCK",
-      "reachable": true,
-      "deletedAt": null
+      "connectionInfo": {},
+      "type": "GENERIC",
+      "reachable": true
     }
   },
   "status": 200,
@@ -23,7 +19,9 @@
     "snapshot": true,
     "name": "Update",
     "expectedStatus": 200,
-    "filteredFields": [],
+    "filteredFields": [
+      "identityToken"
+    ],
     "standardEnvironment": true
   }
 }

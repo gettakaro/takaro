@@ -3,7 +3,7 @@ import { styled, CollapseList } from '@takaro/lib-components';
 import { Editor } from './Editor';
 import { Resizable } from 're-resizable';
 import { FileExplorer } from './FileExplorer';
-import { CronJobConfig, CommandConfig, HookConfig } from './Editor/configs';
+import { CronJobConfig, CommandConfig, HookConfig, FunctionConfig } from './Editor/configs';
 import { Header } from './Header';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { EventFeedWidget } from '../../../components/events/EventFeedWidget';
@@ -11,6 +11,7 @@ import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { useModuleBuilderContext } from './useModuleBuilderStore';
 import { FileType } from './types';
 import { CronjobTrigger } from './Editor/CronjobTrigger';
+import { SystemConfig } from './Editor/configs/defaultSystemConfig';
 
 const EventsWrapper = styled.div`
   padding-right: ${({ theme }) => theme.spacing[1]};
@@ -47,6 +48,7 @@ export const ModuleBuilderInner: FC = () => {
   const activeFilePath = useModuleBuilderContext((s) => s.activeFile);
   const files = useModuleBuilderContext((s) => s.fileMap);
   const moduleId = useModuleBuilderContext((s) => s.moduleId);
+  const versionId = useModuleBuilderContext((s) => s.versionId);
   const activeFile = activeFilePath ? files[activeFilePath] : null;
 
   function getConfigComponent(type: FileType, itemId: string) {
@@ -57,6 +59,8 @@ export const ModuleBuilderInner: FC = () => {
         return <CommandConfig itemId={itemId} readOnly={readOnly} moduleId={moduleId} />;
       case FileType.CronJobs:
         return <CronJobConfig itemId={itemId} readOnly={readOnly} moduleId={moduleId} />;
+      case FileType.Functions:
+        return <FunctionConfig itemId={itemId} readOnly={readOnly} moduleId={moduleId} versionId={versionId} />;
       default:
         return null;
     }
@@ -66,6 +70,7 @@ export const ModuleBuilderInner: FC = () => {
     [FileType.Hooks]: 'Hook Config',
     [FileType.Commands]: 'Command Config',
     [FileType.CronJobs]: 'CronJob Config',
+    [FileType.Functions]: 'Function Config',
   } as const;
 
   return (
@@ -99,7 +104,12 @@ export const ModuleBuilderInner: FC = () => {
                   <FileExplorer />
                 </ErrorBoundary>
               </CollapseList.Item>
-              {activeFile && activeFile.type !== FileType.Functions && (
+              <CollapseList.Item title={'Default system config'}>
+                <ErrorBoundary>
+                  <SystemConfig moduleId={moduleId} versionId={versionId} readOnly={readOnly} />
+                </ErrorBoundary>
+              </CollapseList.Item>
+              {activeFile && (
                 <>
                   <CollapseList.Item title={configTitleMap[activeFile.type]}>
                     <ErrorBoundary>{getConfigComponent(activeFile.type, activeFile.itemId)}</ErrorBoundary>

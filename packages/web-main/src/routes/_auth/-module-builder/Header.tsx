@@ -50,7 +50,6 @@ export const Header = () => {
           moduleId={moduleId}
           canClear={false}
           value={moduleVersionTag}
-          returnValue="tag"
           onChange={handleOnModuleVersionTagChanged}
         />
       </Flex>
@@ -62,7 +61,9 @@ export const Header = () => {
       <Flex>
         <Tooltip disabled={!isLatest}>
           <Tooltip.Trigger>
-            <Button text="Tag version" disabled={!isLatest} onClick={() => setOpenTagDialog(true)} />
+            <Button disabled={!isLatest} onClick={() => setOpenTagDialog(true)}>
+              Tag version
+            </Button>
           </Tooltip.Trigger>
           <Tooltip.Content>Only the latest version can be used to create a new tagged version</Tooltip.Content>
         </Tooltip>

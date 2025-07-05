@@ -39,15 +39,18 @@
               "id": "8733f76d-7781-406a-b1bd-7d6ba8d903cf",
               "code": "test",
               "name": null,
-              "versionId": null
-            }
+              "versionId": null,
+              "description": null
+            },
+            "description": null
           }
         ],
         "hooks": [],
         "commands": [],
         "permissions": [],
         "functions": [],
-        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"},\"cronJobs\":{\"type\":\"object\",\"properties\":{\"Test cron job\":{\"type\":\"object\",\"required\":[],\"default\":{},\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the Test cron job cron job.\"},\"temporalValue\":{\"type\":\"string\",\"description\":\"Temporal value for the cron job. Controls when it runs\",\"default\":\"1 * * * *\"}}}},\"required\":[],\"default\":{}}},\"required\":[\"cronJobs\"],\"additionalProperties\":false}"
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"},\"cronJobs\":{\"type\":\"object\",\"properties\":{\"Test cron job\":{\"type\":\"object\",\"required\":[],\"default\":{},\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the Test cron job cron job.\"},\"temporalValue\":{\"type\":\"string\",\"description\":\"Temporal value for the cron job. Controls when it runs\",\"default\":\"1 * * * *\"}}}},\"required\":[],\"default\":{}}},\"required\":[\"cronJobs\"],\"additionalProperties\":false}",
+        "defaultSystemConfig": null
       },
       "module": {
         "createdAt": "2024-12-15T21:33:07.501Z",

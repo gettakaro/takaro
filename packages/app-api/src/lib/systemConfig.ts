@@ -1,5 +1,6 @@
 import Ajv from 'ajv';
 import ms from 'ms';
+import dedent from 'dedent';
 import { DiscordEvents } from '@takaro/modules';
 import { ModuleVersionOutputDTO } from '../service/Module/dto.js';
 import { ModuleVersionOutputDTO as ModuleVersionOutputDTOApi } from '@takaro/apiclient';
@@ -75,6 +76,31 @@ export function getSystemConfigSchema(mod: ModuleVersionOutputDTO | ModuleVersio
             default: true,
             description: `Enable the ${hook.name} hook.`,
           },
+          delay: {
+            type: 'number',
+            default: 0,
+            minimum: 0,
+            maximum: ms('1 day') / 1000,
+            description: 'How many seconds to wait before executing the hook.',
+          },
+          cooldown: {
+            type: 'number',
+            default: 0,
+            minimum: 0,
+            maximum: ms('1 day') / 1000,
+            description: 'How many seconds before this hook can be triggered again.',
+          },
+          cooldownType: {
+            type: 'string',
+            enum: ['player', 'server', 'global'],
+            default: 'player',
+            description: dedent`When a cooldown time is set, this determines the scope of the cooldown.
+            If set to 'player', the target player will have to wait before triggering the hook again.
+            If set to 'server', the cooldown will apply to all players on the server.
+            If set to 'global', the cooldown will apply to the entire domain.
+            
+            Note that if you select 'player' but the hook fires for an event that has no player attached (e.g. a server goes on/offline), the cooldown will be treated as a server cooldown instead.`,
+          },
         },
         required: [],
         default: {},
@@ -128,6 +154,11 @@ export function getSystemConfigSchema(mod: ModuleVersionOutputDTO | ModuleVersio
             minimum: 0,
             maximum: ms('1 day') / 1000,
             description: 'How many seconds to wait before executing the command.',
+          },
+          announceDelay: {
+            type: 'boolean',
+            default: true,
+            description: 'Whether to announce the delay to the user.',
           },
           cooldown: {
             type: 'number',

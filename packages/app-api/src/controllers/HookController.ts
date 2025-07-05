@@ -25,7 +25,7 @@ import { EventTypes, HookEvents } from '@takaro/modules';
 import { moduleProtectionMiddleware } from '../middlewares/moduleProtectionMiddleware.js';
 import { EventOutputArrayDTOAPI, EventSearchInputDTO } from './EventController.js';
 import { EVENT_TYPES, EventService } from '../service/EventService.js';
-import { AllowedFilters } from './shared.js';
+import { AllowedFilters, AllowedSearch } from './shared.js';
 
 export class HookOutputDTOAPI extends APIOutput<HookOutputDTO> {
   @Type(() => HookOutputDTO)
@@ -43,14 +43,21 @@ class HookSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsUUID(4, { each: true })
   moduleId!: string[];
-
+  @IsOptional()
+  @IsUUID(4, { each: true })
+  versionId!: string[];
   @IsOptional()
   @IsString({ each: true })
   name!: string[];
-
   @IsOptional()
   @IsEnum({ ...HookEvents }, { each: true })
   eventType!: EventTypes[];
+}
+
+class HookSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name!: string[];
 }
 
 class HookSearchInputDTO extends ITakaroQuery<HookSearchInputAllowedFilters> {
@@ -59,8 +66,8 @@ class HookSearchInputDTO extends ITakaroQuery<HookSearchInputAllowedFilters> {
   declare filters: HookSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => HookSearchInputAllowedFilters)
-  declare search: HookSearchInputAllowedFilters;
+  @Type(() => HookSearchInputAllowedSearch)
+  declare search: HookSearchInputAllowedSearch;
 }
 
 @OpenAPI({

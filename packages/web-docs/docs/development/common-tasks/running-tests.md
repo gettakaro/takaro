@@ -79,3 +79,17 @@ API tests can use snapshots for their assertions. Snapshots are stored in the `p
 ```sh
 docker compose exec -e OVERWRITE_SNAPSHOTS=true takaro npm -w packages/app-api run test:integration
 ```
+
+### Frontend component tests
+
+Run component tests with Vitest:
+
+```sh
+# Run all frontend tests
+npm run test:unit --workspace=packages/lib-components
+
+# Update snapshots when they fail
+npm run test:snapshot --workspace=packages/lib-components
+```
+
+When CI fails due to snapshot mismatches (e.g., after adding new components), update the snapshots locally and commit the changes.

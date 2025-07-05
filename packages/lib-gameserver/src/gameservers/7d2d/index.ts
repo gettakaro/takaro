@@ -3,11 +3,13 @@ import { IGamePlayer, IPosition } from '@takaro/modules';
 import {
   BanDTO,
   CommandOutput,
+  IEntityDTO,
   IGameServer,
   IItemDTO,
   IMessageOptsDTO,
   IPlayerReferenceDTO,
   TestReachabilityOutputDTO,
+  ILocationDTO,
 } from '../../interfaces/GameServer.js';
 import { SevenDaysToDieEmitter } from './emitter.js';
 import { SdtdApiClient } from './sdtdAPIClient.js';
@@ -56,7 +58,6 @@ export class SevenDaysToDie implements IGameServer {
           ip: p.ip,
           name: p.name,
           epicOnlineServicesId: p.crossplatformid.replace('EOS_', ''),
-          platformId: p.steamid.replace('Steam_', ''),
           ping: p.ping,
         };
 
@@ -76,6 +77,7 @@ export class SevenDaysToDie implements IGameServer {
   }
 
   async steamIdOrXboxToGameId(id: string): Promise<IGamePlayer | undefined> {
+    if (!id) return undefined;
     if (id.startsWith('Steam_')) id = id.replace('Steam_', '');
     if (id.startsWith('XBL_')) id = id.replace('XBL_', '');
     const players = await this.getPlayers();
@@ -91,11 +93,11 @@ export class SevenDaysToDie implements IGameServer {
       return null;
     }
 
-    return {
+    return new IPosition({
       x: playerLocation.position.x,
       y: playerLocation.position.y,
       z: playerLocation.position.z,
-    };
+    });
   }
 
   async giveItem(player: IPlayerReferenceDTO, item: string, amount: number = 1, quality?: string): Promise<void> {
@@ -162,7 +164,6 @@ export class SevenDaysToDie implements IGameServer {
   }
 
   async sendMessage(message: string, opts?: IMessageOptsDTO) {
-    // eslint-disable-next-line quotes
     const escapedMessage = message.replaceAll(/"/g, "'");
 
     let command = `say "${escapedMessage}"`;
@@ -183,7 +184,8 @@ export class SevenDaysToDie implements IGameServer {
     await this.executeConsoleCommand(command);
   }
 
-  async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
+  async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number, _dimension?: string) {
+    // 7D2D doesn't support dimensions, so we ignore the dimension parameter
     const command = `teleportplayer EOS_${player.gameId} ${x} ${y} ${z}`;
     await this.executeConsoleCommand(command);
   }
@@ -347,5 +349,13 @@ export class SevenDaysToDie implements IGameServer {
 
   async getMapTile(x: number, y: number, z: number) {
     return this.apiClient.getMapTile(x, y, z);
+  }
+
+  async listEntities(): Promise<IEntityDTO[]> {
+    throw new errors.NotImplementedError();
+  }
+
+  async listLocations(): Promise<ILocationDTO[]> {
+    throw new errors.NotImplementedError();
   }
 }

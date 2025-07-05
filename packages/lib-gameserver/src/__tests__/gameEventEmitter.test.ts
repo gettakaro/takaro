@@ -1,6 +1,6 @@
 import { expect, sandbox } from '@takaro/test';
-import { MockConnectionInfo } from '../gameservers/mock/connectionInfo.js';
-import { Mock } from '../gameservers/mock/index.js';
+import { GenericConnectionInfo } from '../gameservers/generic/connectionInfo.js';
+import { Generic } from '../gameservers/generic/index.js';
 import { GameEvents } from '@takaro/modules';
 import { describe, it } from 'node:test';
 
@@ -11,17 +11,12 @@ describe('GameEventEmitter', () => {
    * We use @ts-expect-error so that if the compiler fails to mark these as errors, we'll know instantly
    */
   it('Has a typed event emitter', async () => {
-    const gameServer = new Mock(new MockConnectionInfo({}));
+    const gameServer = new Generic(new GenericConnectionInfo({}), {}, 'dummy-id');
     const emitter = gameServer.getEventEmitter();
     const listenerSpy = sandbox.spy();
 
     emitter.on(GameEvents.PLAYER_CONNECTED, async (e) => {
-      expect(() => e.player.name).to.throw(
-        // Eslint and prettier disagree on how to format this
-        // And I cba fixing it for this specific instance :)
-        // eslint-disable-next-line quotes
-        "Cannot read properties of undefined (reading 'name')",
-      );
+      expect(() => e.player.name).to.throw("Cannot read properties of undefined (reading 'name')");
     });
     emitter.on(GameEvents.PLAYER_CONNECTED, listenerSpy);
 

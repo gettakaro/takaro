@@ -25,7 +25,8 @@
         "commands": [],
         "permissions": [],
         "functions": [],
-        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}"
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}",
+        "defaultSystemConfig": null
       },
       "module": {
         "createdAt": "2024-12-15T21:32:57.746Z",

@@ -19,6 +19,7 @@ import {
   IMessageOptsDTO,
   GAME_SERVER_TYPE,
   BanDTO,
+  MapInfoDTO,
 } from '@takaro/gameserver';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -26,21 +27,10 @@ import {
   GameServerOutputDTO,
   GameServerService,
   GameServerUpdateDTO,
+  JobStatusOutputDTO,
 } from '../service/GameServerService.js';
 import { AuthenticatedRequest, AuthService, checkPermissions } from '../service/AuthService.js';
-import {
-  Body,
-  Get,
-  Post,
-  Delete,
-  JsonController,
-  UseBefore,
-  Req,
-  Put,
-  Params,
-  Res,
-  ContentType,
-} from 'routing-controllers';
+import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId, PogParam } from '../lib/validators.js';
@@ -48,8 +38,9 @@ import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { PlayerOnGameserverOutputDTOAPI } from './PlayerOnGameserverController.js';
 import { UserService } from '../service/User/index.js';
-import { AllowedFilters } from './shared.js';
+import { AllowedFilters, AllowedSearch } from './shared.js';
 import multer from 'multer';
+import { SystemTaskType } from '../workers/systemWorkerDefinitions.js';
 
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -101,6 +92,16 @@ class GameServerSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsBoolean({ each: true })
   enabled!: boolean[];
+
+  @IsOptional()
+  @IsString({ each: true })
+  identityToken!: string[];
+}
+
+class GameServerSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name!: string[];
 }
 
 class GameServerSearchInputDTO extends ITakaroQuery<GameServerOutputDTO> {
@@ -109,8 +110,8 @@ class GameServerSearchInputDTO extends ITakaroQuery<GameServerOutputDTO> {
   declare filters: GameServerSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => GameServerSearchInputAllowedFilters)
-  declare search: GameServerSearchInputAllowedFilters;
+  @Type(() => GameServerSearchInputAllowedSearch)
+  declare search: GameServerSearchInputAllowedSearch;
 }
 
 class GameServerTestReachabilityInputDTO extends TakaroDTO<GameServerTestReachabilityInputDTO> {
@@ -164,6 +165,10 @@ class TeleportPlayerInputDTO extends TakaroDTO<TeleportPlayerInputDTO> {
 
   @IsNumber({ allowNaN: false, allowInfinity: false })
   z: number;
+
+  @IsString()
+  @IsOptional()
+  dimension?: string;
 }
 
 class KickPlayerInputDTO extends TakaroDTO<KickPlayerInputDTO> {
@@ -201,21 +206,10 @@ export class ImportInputDTO extends TakaroDTO<ImportInputDTO> {
   @IsBoolean()
   shop: boolean;
 }
-
-export class ImportStatusOutputDTO extends TakaroDTO<ImportStatusOutputDTO> {
-  @IsString()
-  id!: string;
-  @IsEnum(['pending', 'completed', 'failed'])
-  status: 'pending' | 'completed' | 'failed';
-  @IsOptional()
-  @IsString()
-  failedReason?: string;
-}
-
-export class ImportStatusOutputDTOAPI extends APIOutput<ImportStatusOutputDTO> {
-  @Type(() => ImportStatusOutputDTO)
+export class JobStatusOutputDTOAPI extends APIOutput<JobStatusOutputDTO> {
+  @Type(() => JobStatusOutputDTO)
   @ValidateNested()
-  declare data: ImportStatusOutputDTO;
+  declare data: JobStatusOutputDTO;
 }
 
 class ImportOutputDTO extends TakaroDTO<ImportOutputDTO> {
@@ -234,11 +228,27 @@ class MapTileInputDTO extends TakaroDTO<MapTileInputDTO> {
   y: number;
 }
 
+class MapInfoOutputDTOAPI extends APIOutput<MapInfoDTO> {
+  @Type(() => MapInfoDTO)
+  @ValidateNested()
+  declare data: MapInfoDTO;
+}
+
 class ImportOutputDTOAPI extends APIOutput<ImportOutputDTO> {
   @Type(() => ImportOutputDTO)
   @ValidateNested()
   declare data: ImportOutputDTO;
 }
+
+export class GetJobInputDTO {
+  @IsEnum(['csmmImport', ...Object.values(SystemTaskType)], {
+    message: `key must be one of: ${[...Object.values(SystemTaskType), 'csmmImport'].join(', ')}`,
+  })
+  type: 'csmmImport' | SystemTaskType;
+  @IsString()
+  id: string;
+}
+
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -273,6 +283,19 @@ export class GameServerController {
   async getTypes(@Req() req: AuthenticatedRequest) {
     const service = new GameServerService(req.domainId);
     return apiResponse(await service.getTypes());
+  }
+
+  @Delete('/gameserver/registrationToken')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @OpenAPI({
+    description:
+      'Regenerate the registration token for a gameserver. Careful, this will invalidate all existing connections.',
+  })
+  @ResponseSchema(APIOutput)
+  async regenerateRegistrationToken(@Req() req: AuthenticatedRequest) {
+    const service = new GameServerService(req.domainId);
+    await service.regenerateRegistrationToken();
+    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([]))
@@ -387,11 +410,7 @@ export class GameServerController {
     @Body() data: TeleportPlayerInputDTO,
   ) {
     const service = new GameServerService(req.domainId);
-    await service.teleportPlayer(params.gameServerId, params.playerId, {
-      x: data.x,
-      y: data.y,
-      z: data.z,
-    });
+    await service.teleportPlayer(params.gameServerId, params.playerId, data);
     return apiResponse();
   }
 
@@ -450,8 +469,7 @@ export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @OpenAPI({
     description:
-      // eslint-disable-next-line quotes
-      "Give an item to a player. Requires gameserver to be online and reachable. Depending on the underlying game implementation, it's possible that the item is dropped on the ground instead of placed directly in the player's inventory.",
+      "Give an item to a player. Accepts item UUID (preferred) or item code. Requires gameserver to be online and reachable. Depending on the underlying game implementation, it's possible that the item is dropped on the ground instead of placed directly in the player's inventory.",
   })
   async giveItem(@Req() req: AuthenticatedRequest, @Params() params: PogParam, @Body() data: GiveItemInputDTO) {
     const service = new GameServerService(req.domainId);
@@ -463,7 +481,6 @@ export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @OpenAPI({
     description:
-      // eslint-disable-next-line quotes
       "Shuts down the gameserver. This is a 'soft' shutdown, meaning the gameserver will be stopped gracefully. If the gameserver is not reachable, this will have no effect. Note that most hosting providers will automatically restart the gameserver after a shutdown, which makes this operation act as a 'restart' instead.",
   })
   async shutdown(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -484,15 +501,40 @@ export class GameServerController {
     return apiResponse(result);
   }
 
+  @Get('/gameserver/job/:type/:id')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @OpenAPI({
+    description: 'Fetch a job status',
+  })
+  @ResponseSchema(JobStatusOutputDTOAPI)
+  async getJob(@Req() req: AuthenticatedRequest, @Params() params: GetJobInputDTO) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.getJob(params);
+    return apiResponse(result);
+  }
+
+  @Post('/gameserver/job/:type/:id')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @OpenAPI({
+    description: 'Manually trigger a job, you can poll the status with the GET endpoint',
+  })
+  @ResponseSchema(JobStatusOutputDTOAPI)
+  async triggerJob(@Req() req: AuthenticatedRequest, @Params() params: GetJobInputDTO) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.triggerJob(params);
+    return apiResponse(result);
+  }
+
   @Get('/gameserver/import/:id')
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
-  @ResponseSchema(ImportStatusOutputDTOAPI)
+  @ResponseSchema(JobStatusOutputDTOAPI)
   @OpenAPI({
     description: 'Fetch status of an import from CSMM',
+    deprecated: true,
   })
   async getImport(@Req() req: AuthenticatedRequest, @Params() params: ImportOutputDTO) {
     const service = new GameServerService(req.domainId);
-    const result = await service.getImport(params.id);
+    const result = await service.getCSMMImport(params.id);
     return apiResponse(result);
   }
 
@@ -541,8 +583,9 @@ export class GameServerController {
 
   @Get('/gameserver/:id/map/info')
   @UseBefore(AuthService.getAuthMiddleware([]))
+  @ResponseSchema(MapInfoOutputDTOAPI)
   @OpenAPI({
-    description: 'Get map metadata for Leaflet',
+    description: 'Get map metadata',
   })
   async getMapInfo(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
@@ -551,13 +594,18 @@ export class GameServerController {
 
   @Get('/gameserver/:id/map/tile/:x/:y/:z')
   @UseBefore(AuthService.getAuthMiddleware([]))
-  @ContentType('image/png')
   @OpenAPI({
-    description: 'Get a map tile for Leaflet',
+    description: 'Get a map tile',
   })
-  async getMapTile(@Req() req: AuthenticatedRequest, @Params() params: MapTileInputDTO) {
+  async getMapTile(@Req() req: AuthenticatedRequest, @Params() params: MapTileInputDTO, @Res() res: Response) {
     const service = new GameServerService(req.domainId);
     const result = await service.getMapTile(params.id, params.x, params.y, params.z);
-    return result;
+    if (result) {
+      res.set('Content-Type', 'image/png');
+      res.set('Content-Length', result.length.toString());
+      res.send(result);
+    } else {
+      throw new errors.NotFoundError('Tile not found');
+    }
   }
 }

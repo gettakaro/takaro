@@ -5,10 +5,11 @@ import { logger, errors } from '@takaro/util';
 import { config } from './config.js';
 import { ConnectorWorker } from './lib/worker.js';
 import { gameServerManager } from './lib/GameServerManager.js';
+import { GameServerController } from './controllers/gameserverController.js';
 
 export const server = new HTTP(
   {
-    controllers: [],
+    controllers: [GameServerController],
   },
   {
     port: config.get('http.port'),
@@ -17,6 +18,14 @@ export const server = new HTTP(
 );
 
 const log = logger('main');
+
+process.on('unhandledRejection', (reason, promise) => {
+  log.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  log.error('Uncaught Exception thrown:', error);
+});
 
 async function main() {
   log.info('Starting...');
@@ -33,6 +42,7 @@ async function main() {
   }
 
   await server.start();
+
   new ConnectorWorker();
   try {
     await gameServerManager.init();

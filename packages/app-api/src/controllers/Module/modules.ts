@@ -21,7 +21,7 @@ import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { errors } from '@takaro/util';
 import { moduleProtectionMiddleware } from '../../middlewares/moduleProtectionMiddleware.js';
-import { AllowedFilters, PaginationParams, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
+import { AllowedFilters, AllowedSearch, PaginationParams, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
 import { ITakaroQuery } from '@takaro/db';
 import { ModuleService } from '../../service/Module/index.js';
 import {
@@ -35,6 +35,7 @@ import {
 import { ModuleTransferDTO, ICommand, ICommandArgument, ICronJob, IFunction, IHook } from '@takaro/modules';
 import { PermissionCreateDTO } from '../../service/RoleService.js';
 import { ModuleTransferVersionDTO } from '@takaro/modules';
+import { getEmptyUiSchema } from '../../lib/systemConfig.js';
 
 export class ModuleOutputDTOAPI extends APIOutput<ModuleOutputDTO> {
   @Type(() => ModuleOutputDTO)
@@ -63,13 +64,19 @@ class ModuleSearchInputAllowedFilters extends AllowedFilters {
   builtin: string[];
 }
 
+class ModuleSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name: string[];
+}
+
 class ModuleSearchInputDTO extends ITakaroQuery<ModuleSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => ModuleSearchInputAllowedFilters)
   declare filters: ModuleSearchInputAllowedFilters;
   @ValidateNested()
-  @Type(() => ModuleSearchInputAllowedFilters)
-  declare search: ModuleSearchInputAllowedFilters;
+  @Type(() => ModuleSearchInputAllowedSearch)
+  declare search: ModuleSearchInputAllowedSearch;
   @ValidateNested()
   @Type(() => RangeFilterCreatedAndUpdatedAt)
   declare greaterThan: RangeFilterCreatedAndUpdatedAt;
@@ -202,7 +209,10 @@ export class ModuleController {
     const versions = await service.findVersions({ filters: { moduleId: [params.id] } });
 
     if (options.versionIds) {
-      versions.results = versions.results.filter((_) => options.versionIds?.includes(_.id));
+      // If user specifies an empty list, we assume they want all versions
+      if (options.versionIds?.length) {
+        versions.results = versions.results.filter((_) => options.versionIds?.includes(_.id));
+      }
     }
 
     const preparedVersions = await Promise.all(
@@ -212,13 +222,14 @@ export class ModuleController {
             tag: version.tag,
             description: version.description,
             configSchema: version.configSchema,
-            uiSchema: version.uiSchema,
+            uiSchema: version.uiSchema || JSON.stringify(getEmptyUiSchema()),
             commands: await Promise.all(
               version.commands.map(
                 (_) =>
                   new ICommand({
                     function: _.function.code,
                     name: _.name,
+                    description: _.description,
                     trigger: _.trigger,
                     helpText: _.helpText,
                     arguments: _.arguments.map(
@@ -240,7 +251,9 @@ export class ModuleController {
                   new IHook({
                     function: _.function.code,
                     name: _.name,
+                    description: _.description,
                     eventType: _.eventType,
+                    regex: _.regex,
                   }),
               ),
             ),
@@ -250,6 +263,7 @@ export class ModuleController {
                   new ICronJob({
                     function: _.function.code,
                     name: _.name,
+                    description: _.description,
                     temporalValue: _.temporalValue,
                   }),
               ),
@@ -260,6 +274,7 @@ export class ModuleController {
                   new IFunction({
                     function: _.code,
                     name: _.name,
+                    description: _.description,
                   }),
               ),
             ),

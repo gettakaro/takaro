@@ -88,6 +88,9 @@ export class DomainOutputDTO extends NOT_DOMAIN_SCOPED_TakaroModelDTO<DomainOutp
   externalReference: string;
   @IsEnum(Object.values(DOMAIN_STATES))
   state: DOMAIN_STATES;
+  @IsString()
+  @IsOptional()
+  serverRegistrationToken?: string;
   @IsNumber()
   rateLimitPoints: number;
   @IsNumber()
@@ -242,7 +245,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
         name: 'root',
         password: password,
         email: `root@${domain.id}.com`,
-        isDashboardUser: true,
+        isDashboardUser: false,
       }),
     );
 
@@ -269,5 +272,11 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       throw new errors.NotFoundError();
     }
     return domains;
+  }
+
+  async resolveByRegistrationToken(registrationToken: string): Promise<DomainOutputDTO> {
+    const result = await this.repo.find({ filters: { serverRegistrationToken: [registrationToken] } });
+    if (!result.total) throw new errors.NotFoundError();
+    return result.results[0];
   }
 }

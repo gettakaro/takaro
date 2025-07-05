@@ -3,14 +3,14 @@ import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { UserCreateInputDTO, UserOutputDTO, UserOutputWithRolesDTO, UserUpdateDTO } from '../service/User/dto.js';
 import { UserService } from '../service/User/index.js';
-import { AuthenticatedRequest, AuthService, LoginOutputDTO } from '../service/AuthService.js';
+import { AuthenticatedRequest, AuthService, checkPermissions, LoginOutputDTO } from '../service/AuthService.js';
 import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res, Param } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId, ParamIdAndRoleId } from '../lib/validators.js';
 import { Request, Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
-import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from './shared.js';
+import { AllowedFilters, AllowedSearch, RangeFilterCreatedAndUpdatedAt } from './shared.js';
 import { DomainOutputDTO, DomainService } from '../service/DomainService.js';
 import { TakaroDTO } from '@takaro/util';
 import { config } from '../config.js';
@@ -106,6 +106,15 @@ class UserSearchInputAllowedFilters extends AllowedFilters {
   isDashboardUser?: boolean[];
 }
 
+class UserSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name?: string[] | undefined;
+  @IsOptional()
+  @IsString({ each: true })
+  discordId?: string[] | undefined;
+}
+
 class UserSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
   @IsOptional()
   @IsISO8601()
@@ -118,8 +127,8 @@ export class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   declare filters: UserSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => UserSearchInputAllowedFilters)
-  declare search: UserSearchInputAllowedFilters;
+  @Type(() => UserSearchInputAllowedSearch)
+  declare search: UserSearchInputAllowedSearch;
 
   @ValidateNested()
   @Type(() => UserSearchInputAllowedRangeFilter)
@@ -165,7 +174,17 @@ export class UserController {
   async me(@Req() req: AuthenticatedRequest) {
     const user = await new UserService(req.domainId).findOne(req.user.id);
     const domainService = new DomainService();
-    const domains = await domainService.resolveDomainByIdpId(user.idpId);
+    let domains = await domainService.resolveDomainByIdpId(user.idpId);
+
+    const hasManageServersPermission = checkPermissions([PERMISSIONS.MANAGE_GAMESERVERS], user);
+
+    if (!hasManageServersPermission) {
+      domains = domains.map((d) => {
+        delete d.serverRegistrationToken;
+        return d;
+      });
+    }
+
     const response = new MeOutputDTO({ user, domains, domain: req.domainId, pogs: [] });
 
     if (user.playerId) {
@@ -180,6 +199,20 @@ export class UserController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_USERS], false))
   @ResponseSchema(UserOutputArrayDTOAPI)
+  @OpenAPI({
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            membersOfRole: {
+              summary: 'Get all users with a specific role',
+              value: { filters: { roleId: ['1ec529af-0f8f-4d8d-b06a-7f83c64f0086'] } },
+            },
+          },
+        },
+      },
+    },
+  })
   @Post('/user/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: UserSearchInputDTO) {
     const service = new UserService(req.domainId);

@@ -46,6 +46,7 @@ export const categorizedEventNames = [
       e.CurrencyDeducted,
       e.ShopOrderCreated,
       e.ShopOrderStatusChanged,
+      e.ShopOrderDeliveryFailed,
       e.ShopListingCreated,
       e.ShopListingUpdated,
       e.ShopListingDeleted,

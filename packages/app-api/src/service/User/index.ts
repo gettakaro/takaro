@@ -183,8 +183,8 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     code: string,
   ): Promise<{ user: UserOutputDTO; domainId: string }> {
     const redis = await Redis.getClient('playerLink');
-    const resolvedPlayerId = await redis.get(code);
-    const resolvedDomainId = await redis.get(`${code}-domain`);
+    const resolvedPlayerId = await redis.get(`playerLink:${code}`);
+    const resolvedDomainId = await redis.get(`playerLink:${code}-domain`);
 
     if (!resolvedPlayerId) {
       this.log.warn('Player link code not found', { code });
@@ -218,9 +218,10 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     if (existingIdpProfile) {
       const maybeUser = await userService.find({ filters: { idpId: [existingIdpProfile.id] } });
       if (maybeUser.results.length === 0) {
-        throw new errors.InternalServerError();
+        user = await userService.inviteUser(email, { isDashboardUser: false });
+      } else {
+        user = maybeUser.results[0];
       }
-      user = maybeUser.results[0];
     } else {
       user = await userService.inviteUser(email, { isDashboardUser: false });
     }

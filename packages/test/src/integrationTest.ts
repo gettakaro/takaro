@@ -65,6 +65,7 @@ export class IntegrationTest<SetupData> {
   public readonly client: Client;
 
   public standardDomainId: string | null = null;
+  public domainRegistrationToken: string | null = null;
   public setupData!: Awaited<SetupData>;
   public standardLogin: { username: string; password: string } = {
     username: '',
@@ -91,6 +92,7 @@ export class IntegrationTest<SetupData> {
       maxUsers: 5,
     });
     this.standardDomainId = createdDomain.data.data.createdDomain.id;
+    this.domainRegistrationToken = createdDomain.data.data.createdDomain.serverRegistrationToken!;
 
     this.client.username = createdDomain.data.data.rootUser.email;
     this.client.password = createdDomain.data.data.password;
@@ -136,6 +138,17 @@ export class IntegrationTest<SetupData> {
         await integrationTestContext.test.teardown.bind(integrationTestContext)();
       }
 
+      if (
+        integrationTestContext.setupData &&
+        typeof integrationTestContext.setupData === 'object' &&
+        'mockservers' in integrationTestContext.setupData
+      ) {
+        const servers = integrationTestContext.setupData.mockservers as any[];
+        for (const mockserver of servers) {
+          await mockserver.shutdown();
+        }
+      }
+
       if (integrationTestContext.standardDomainId) {
         try {
           const failedFunctionsRes = await integrationTestContext.client.event.eventControllerGetFailedFunctions();
@@ -175,9 +188,9 @@ export class IntegrationTest<SetupData> {
         try {
           if (attempt > 0) {
             console.log(`Retry attempt ${attempt}/${maxRetries} for test: ${integrationTestContext.test.name}`);
-            // Re-run setup for each retry to ensure clean state
-            await setup();
           }
+
+          await setup();
 
           response = await integrationTestContext.test.test.bind(integrationTestContext)();
 
@@ -216,6 +229,19 @@ export class IntegrationTest<SetupData> {
 
           // If this was our last retry, throw the error
           if (attempt === maxRetries) {
+            if (isAxiosError(lastError)) {
+              console.log(
+                `Request ${lastError.config?.method} ${lastError.config?.url} failed with status ${lastError.response?.status}`,
+              );
+              console.log('Response data:');
+              console.log(JSON.stringify(lastError.response?.data, null, 2));
+              console.log('Request data:');
+              console.log(JSON.stringify(lastError.config?.data, null, 2));
+              // Throw a sanitized error
+              throw new Error(
+                `Request ${lastError.config?.method} ${lastError.config?.url} failed with status ${lastError.response?.status}`,
+              );
+            }
             throw lastError;
           }
         }
@@ -224,7 +250,6 @@ export class IntegrationTest<SetupData> {
 
     it(integrationTestContext.test.name, async () => {
       try {
-        await setup();
         await executeTest();
       } finally {
         await teardown();

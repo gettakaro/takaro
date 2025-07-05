@@ -7,8 +7,8 @@ export class Gimme extends ModuleTransferDTO<Gimme> {
     this.name = 'gimme';
     this.versions = [
       new ModuleTransferVersionDTO({
-        tag: '0.0.1',
-        description: 'Randomly selects item from a list of items and entities.',
+        tag: '0.0.3',
+        description: 'Randomly selects item from a list of items and entities. Fixed issue with item identifiers.',
         configSchema: JSON.stringify({
           $schema: 'http://json-schema.org/draft-07/schema#',
           type: 'object',

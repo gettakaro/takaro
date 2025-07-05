@@ -7,14 +7,19 @@ import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDT
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { PaginatedOutput } from '../db/base.js';
-import { ITakaroQuery } from '@takaro/db';
 import { randomUUID } from 'crypto';
 import { InstallModuleDTO, ModuleInstallationOutputDTO } from './Module/dto.js';
 import { ModuleService } from './Module/index.js';
+import { PartialDeep } from 'type-fest/index.js';
+import { CronJobSearchInputDTO } from '../controllers/CronJobController.js';
 
 export class CronJobOutputDTO extends TakaroModelDTO<CronJobOutputDTO> {
   @IsString()
-  name!: string;
+  name: string;
+  @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
   @IsString()
   temporalValue!: string;
   @Type(() => FunctionOutputDTO)
@@ -29,6 +34,10 @@ export class CronJobCreateDTO extends TakaroDTO<CronJobCreateDTO> {
   @Length(1, 50)
   name: string;
   @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
+  @IsString()
   temporalValue!: string;
   @IsUUID()
   versionId: string;
@@ -42,6 +51,10 @@ export class CronJobUpdateDTO extends TakaroDTO<CronJobUpdateDTO> {
   @IsString()
   @IsOptional()
   name!: string;
+  @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
   @IsString()
   @IsOptional()
   temporalValue!: string;
@@ -66,7 +79,7 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
     return new CronJobRepo(this.domainId);
   }
 
-  find(filters: ITakaroQuery<CronJobOutputDTO>): Promise<PaginatedOutput<CronJobOutputDTO>> {
+  find(filters: PartialDeep<CronJobSearchInputDTO>): Promise<PaginatedOutput<CronJobOutputDTO>> {
     return this.repo.find(filters);
   }
 
@@ -86,14 +99,14 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
       );
       fnIdToAdd = newFn.id;
     } else {
-      const newFn = await functionsService.create(await new FunctionCreateDTO());
+      const newFn = await functionsService.create(new FunctionCreateDTO());
       fnIdToAdd = newFn.id;
     }
 
     const created = await this.repo.create(new CronJobCreateDTO({ ...item, function: fnIdToAdd }));
+    await this.moduleService.refreshInstallations(created.versionId);
     const installedModules = await this.moduleService.getInstalledModules({ versionId: item.versionId });
     await Promise.all(installedModules.map((mod) => this.addCronjobToQueue(created, mod)));
-    await this.moduleService.refreshInstallations(created.versionId);
     return created;
   }
   async update(id: string, item: CronJobUpdateDTO) {
@@ -159,9 +172,10 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
 
   async syncModuleCronjobs(modInstallation: ModuleInstallationOutputDTO) {
     this.log.debug(`Syncing cronjobs for module ${modInstallation.moduleId}`);
+
+    await this.removeCronjobFromQueue(modInstallation.version.cronJobs, modInstallation);
     await Promise.all(
       modInstallation.version.cronJobs.map(async (cronJob) => {
-        await this.removeCronjobFromQueue(cronJob, modInstallation);
         await this.addCronjobToQueue(cronJob, modInstallation);
       }),
     );
@@ -176,11 +190,7 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
   }
 
   async uninstallCronJobs(modInstallation: ModuleInstallationOutputDTO) {
-    await Promise.all(
-      modInstallation.version.cronJobs.map(async (cronJob) => {
-        await this.removeCronjobFromQueue(cronJob, modInstallation);
-      }),
-    );
+    await this.removeCronjobFromQueue(modInstallation.version.cronJobs, modInstallation);
   }
 
   private async addCronjobToQueue(cronJob: CronJobOutputDTO, modInstallation: ModuleInstallationOutputDTO) {
@@ -210,15 +220,28 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
     this.log.debug(`Added repeatable job ${key}`);
   }
 
-  private async removeCronjobFromQueue(cronJob: CronJobOutputDTO, modInstallation: ModuleInstallationOutputDTO) {
-    const repeatables = await queueService.queues.cronjobs.queue.getRepeatableJobs();
-    const key = this.getJobKey(modInstallation, cronJob);
+  private async removeCronjobFromQueue(
+    cronJobs: CronJobOutputDTO | CronJobOutputDTO[],
+    modInstallation: ModuleInstallationOutputDTO,
+  ) {
+    const jobsArray = Array.isArray(cronJobs) ? cronJobs : [cronJobs];
 
-    const repeatable = repeatables.find((r) => r.key === key);
-    if (repeatable) {
-      await queueService.queues.cronjobs.queue.removeRepeatableByKey(repeatable.key);
-      this.log.debug(`Removed repeatable job ${key}`);
-    }
+    if (jobsArray.length === 0) return;
+
+    const repeatables = await queueService.queues.cronjobs.queue.getRepeatableJobs();
+
+    const repeatablesByKey = new Map(repeatables.map((r) => [r.key, r]));
+
+    const keysToRemove = jobsArray
+      .map((cronJob) => this.getJobKey(modInstallation, cronJob))
+      .filter((key) => repeatablesByKey.has(key));
+
+    await Promise.all(
+      keysToRemove.map(async (key) => {
+        await queueService.queues.cronjobs.queue.removeRepeatableByKey(key);
+        this.log.debug(`Removed repeatable job ${key}`);
+      }),
+    );
   }
 
   async trigger(data: CronJobTriggerDTO) {

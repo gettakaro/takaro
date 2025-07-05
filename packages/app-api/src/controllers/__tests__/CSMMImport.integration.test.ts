@@ -22,7 +22,7 @@ async function doImport(client: Client, importData: string, options: ImportInput
 
   // Poll for completion
   let jobStatus = null;
-  while (jobStatus === null || jobStatus === 'pending') {
+  while (jobStatus !== 'failed' && jobStatus !== 'completed') {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     jobStatus = (await client.gameserver.gameServerControllerGetImport(jobId)).data.data.status;
   }

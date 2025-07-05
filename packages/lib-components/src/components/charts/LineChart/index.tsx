@@ -19,7 +19,6 @@ const defaultShowAxisX = true;
 const defaultShowAxisY = true;
 
 type CurveType = keyof typeof allCurves;
-// eslint-disable-next-line quotes
 const formatDate = timeFormat("%b %d, '%y");
 
 export interface LineChartProps<T> extends ChartProps {

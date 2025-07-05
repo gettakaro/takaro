@@ -91,7 +91,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
   }
 
   async findOneVersion(id: string): Promise<ModuleVersionOutputDTO | undefined> {
-    return this.repo.findOneVersion(id);
+    return await this.repo.findOneVersion(id);
   }
 
   async findOneInstallation(gameServerId: string, moduleId: string) {
@@ -137,12 +137,25 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     // This ensures that there is a 'latest' version
     const version = await this.getLatestVersion(created.id);
 
+    if (mod.latestVersion.defaultSystemConfig) {
+      const validator = ajv.compile(JSON.parse(getSystemConfigSchema(version)));
+      const valid = validator(JSON.parse(mod.latestVersion.defaultSystemConfig));
+      if (!valid) {
+        if (validator.errors) {
+          throw new errors.ValidationError('Invalid system config', validator.errors);
+        } else {
+          throw new errors.ValidationError('Invalid system config');
+        }
+      }
+    }
+
     await this.repo.updateVersion(
       version.id,
       new ModuleVersionUpdateDTO({
         description: mod.latestVersion?.description,
         configSchema: mod.latestVersion.configSchema,
         uiSchema: mod.latestVersion.uiSchema,
+        defaultSystemConfig: mod.latestVersion.defaultSystemConfig,
         permissions: await Promise.all(
           (mod.latestVersion.permissions ?? []).map(
             (p) => new PermissionCreateDTO({ ...p, canHaveCount: p.canHaveCount ?? false }),
@@ -177,6 +190,17 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         } catch (e) {
           this.log.warn('Invalid config schema', { error: JSON.stringify(e) });
           throw new errors.BadRequestError('Invalid config schema');
+        }
+      }
+      if (mod.latestVersion.defaultSystemConfig) {
+        const validator = ajv.compile(JSON.parse(getSystemConfigSchema(latestVersion)));
+        const valid = validator(JSON.parse(mod.latestVersion.defaultSystemConfig));
+        if (!valid) {
+          if (validator.errors) {
+            throw new errors.ValidationError('Invalid system config', validator.errors);
+          } else {
+            throw new errors.ValidationError('Invalid system config');
+          }
         }
       }
       await this.repo.updateVersion(latestVersion.id, mod.latestVersion);
@@ -229,7 +253,18 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
   async seedBuiltinModules() {
     const modules = getModules();
-    await Promise.all(modules.map((m: ModuleTransferDTO<unknown>) => this.seedModule(m, { isBuiltin: true })));
+    await Promise.all(
+      modules.map(async (m: ModuleTransferDTO<unknown>) => {
+        try {
+          await this.seedModule(m, { isBuiltin: true });
+        } catch (error) {
+          this.log.warn('Failed to seed builtin module', {
+            error: (error as Error).message,
+            module: m.name,
+          });
+        }
+      }),
+    );
   }
 
   async seedModule(data: ModuleTransferDTO<unknown>, { isBuiltin } = { isBuiltin: false }): Promise<ModuleOutputDTO> {
@@ -250,6 +285,12 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           }),
         ],
       });
+    }
+
+    for (let i = 0; i < data.versions.length; i++) {
+      if (!data.versions[i].uiSchema) {
+        data.versions[i].uiSchema = JSON.stringify(getEmptyUiSchema());
+      }
     }
 
     // Always ensure we pass it through the DTO constructor so transformations/logic can happen
@@ -284,7 +325,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       // If not builtin and tagged -> skip - We will never replace user-tagged versions
       // If not builtin and versionTag=latest -> replace
       // If builtin and in dev mode -> replace - This provides hot-reload for builtin modules
-      // If builtin and in prod -> throw - We will never replace versions in prod, we should be incrementing the version
+      // If builtin and in prod -> skip - We will never replace versions in prod, we should be incrementing the version
       if (versionExists) {
         if (!isBuiltin && !importingLatest) {
           this.log.info('Version already exists, skipping', { moduleId: mod.id, tag: version.tag });
@@ -302,6 +343,14 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
             tag: version.tag,
           });
           await this.repo.deleteVersion(existingVersions[0].id);
+        }
+
+        if (isBuiltin && process.env.NODE_ENV === 'production') {
+          this.log.info('Builtin version already exists and in prod mode, skipping', {
+            moduleId: mod.id,
+            tag: version.tag,
+          });
+          continue;
         }
       }
 
@@ -520,8 +569,10 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const isValidUserConfig = validateUserConfig(modUserConfig);
 
     const modSystemConfig = JSON.parse(installDto.systemConfig);
+    const defaultSystemConfig = versionToInstall.defaultSystemConfig || {};
+    const fullConfig = { ...defaultSystemConfig, ...modSystemConfig };
     const validateSystemConfig = ajv.compile(JSON.parse(getSystemConfigSchema(versionToInstall)));
-    const isValidSystemConfig = validateSystemConfig(modSystemConfig);
+    const isValidSystemConfig = validateSystemConfig(fullConfig);
 
     if (!isValidUserConfig || !isValidSystemConfig) {
       const allErrors = [...(validateSystemConfig.errors ?? []), ...(validateUserConfig.errors ?? [])];
@@ -534,12 +585,12 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           return `${e.instancePath} ${e.message}`;
         })
         .join(', ');
-      throw new errors.BadRequestError(`Invalid config: ${prettyErrors}`);
+      throw new errors.ValidationError(`Invalid config: ${prettyErrors}`, allErrors);
     }
 
     // ajv mutates the object, so we need to stringify it again
     installDto.userConfig = JSON.stringify(modUserConfig);
-    installDto.systemConfig = JSON.stringify(modSystemConfig);
+    installDto.systemConfig = JSON.stringify(fullConfig);
 
     // If this module is already installed, we'll uninstall it first
     const existingInstallation = await this.getInstalledModules({
@@ -604,18 +655,15 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     for (const installation of installations) {
       if (installation.version.tag !== 'latest') {
         this.log.error('This should not happen! Everything except "latest" tag is immutable', { versionId });
-        throw new errors.BadRequestError('Cannot refresh latest version');
+        throw new errors.BadRequestError('Cannot update tagged versions');
       }
       try {
-        await this.uninstallModule(installation.gameserverId, installation.moduleId);
-        await this.installModule(
-          new InstallModuleDTO({
-            gameServerId: installation.gameserverId,
-            versionId,
-            systemConfig: JSON.stringify(installation.systemConfig),
-            userConfig: JSON.stringify(installation.userConfig),
-          }),
-        );
+        const modSystemConfig = installation.systemConfig;
+        const validateSystemConfig = ajv.compile(JSON.parse(getSystemConfigSchema(installation.version)));
+        validateSystemConfig(modSystemConfig);
+        await this.repo.updateInstallation(installation.gameserverId, installation.moduleId, {
+          systemConfig: JSON.stringify(modSystemConfig),
+        });
       } catch (error) {
         if ((error as Error).message === 'Invalid config schema') {
           this.log.warn('Invalid config schema, leaving as-is', {

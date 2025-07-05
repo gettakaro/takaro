@@ -161,6 +161,7 @@ function Component() {
                 data={countryStats}
                 allowZoomAndDrag={false}
                 showZoomControls={false}
+                showCountrySidebar={true}
               />
             </div>
           </Card.Body>

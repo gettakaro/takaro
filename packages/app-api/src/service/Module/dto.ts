@@ -18,6 +18,9 @@ export class ModuleVersionOutputDTO extends TakaroModelDTO<ModuleVersionOutputDT
   uiSchema: string;
   @IsJSON()
   systemConfigSchema: string;
+  @IsJSON()
+  @IsOptional()
+  defaultSystemConfig: string;
   @IsUUID('4')
   moduleId: string;
   @Type(() => CronJobOutputDTO)
@@ -91,7 +94,7 @@ export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
 export class ModuleCreateVersionInputDTO extends TakaroDTO<ModuleCreateVersionInputDTO> {
   @IsString()
   @IsOptional()
-  @Length(1, 5000)
+  @Length(1, 500000)
   description?: string;
   @IsJSON()
   @IsOptional()
@@ -99,6 +102,9 @@ export class ModuleCreateVersionInputDTO extends TakaroDTO<ModuleCreateVersionIn
   @IsJSON()
   @IsOptional()
   uiSchema: string;
+  @IsJSON()
+  @IsOptional()
+  defaultSystemConfig?: string;
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => PermissionCreateDTO)
@@ -131,7 +137,7 @@ export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> 
 export class ModuleVersionUpdateDTO extends TakaroDTO<ModuleVersionUpdateDTO> {
   @IsString()
   @IsOptional()
-  @Length(1, 5000)
+  @Length(1, 500000)
   description?: string;
   @IsJSON()
   @IsOptional()
@@ -139,6 +145,9 @@ export class ModuleVersionUpdateDTO extends TakaroDTO<ModuleVersionUpdateDTO> {
   @IsJSON()
   @IsOptional()
   uiSchema: string;
+  @IsJSON()
+  @IsOptional()
+  defaultSystemConfig?: string;
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => PermissionCreateDTO)

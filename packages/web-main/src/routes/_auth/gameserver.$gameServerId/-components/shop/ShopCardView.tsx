@@ -44,7 +44,9 @@ export const ShopCardView: FC<ShopViewProps> = ({ gameServerId, currency, curren
             header="No shop listings"
             description="Create a shop listing to start selling items."
             actions={[
-              <Button key="shop-listing-empty" onClick={onCreateShopListingClicked} text="Create shop listing" />,
+              <Button key="shop-listing-empty" onClick={onCreateShopListingClicked}>
+                Create shop listing
+              </Button>,
             ]}
           />
         </EmptyPage>

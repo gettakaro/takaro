@@ -14,7 +14,7 @@ services:
     volumes:
       - ./_data/db:/var/lib/postgresql/data
     ports:
-      - 127.0.0.1:13100:5432
+      - 13100:5432
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -27,7 +27,9 @@ services:
     # sudo sysctl -w vm.overcommit_memory=1 (enables on-the-fly temporary)
     # https://github.com/redis/docker-library-redis/issues/19#issuecomment-96080885
     # Kernel docs: https://www.kernel.org/doc/Documentation/vm/overcommit-accounting
-    command: redis-server --maxmemory-policy noeviction
+    command: redis-server --maxmemory-policy noeviction --save 60 1 --dbfilename dump.rdb
+    volumes:
+      - ./_data/redis:/data
     ports:
       - 6379:6379
 
@@ -75,6 +77,7 @@ services:
       NODE_OPTIONS: '--import=ts-node-maintained/register/esm'
       REDIS_HOST: redis
       POSTGRES_HOST: postgresql
+      POSTGRES_PORT: 5432
 
       TAKARO_HOST: http://takaro:3000
 
@@ -102,6 +105,8 @@ services:
       - 13006:3002
       - 12004:12004
       # connector
+      - 13008:3003
+      - 3004:3004
       - 12003:12003
       # Docs
       - 13005:13005

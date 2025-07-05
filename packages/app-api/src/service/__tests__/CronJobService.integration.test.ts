@@ -1,8 +1,9 @@
-import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
+import { IntegrationTest, expect } from '@takaro/test';
 import { GameServerOutputDTO, ModuleOutputDTO, CronJobOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import { queueService } from '@takaro/queues';
 import { describe } from 'node:test';
-
+import { randomUUID } from 'crypto';
+import { getMockServer } from '@takaro/mock-gameserver';
 const group = 'CronJobService';
 
 interface IStandardSetupData {
@@ -10,6 +11,7 @@ interface IStandardSetupData {
   mod: ModuleOutputDTO;
   installation: ModuleInstallationOutputDTO;
   cronjob: CronJobOutputDTO;
+  mockservers: Awaited<ReturnType<typeof getMockServer>>[];
 }
 
 function getJobKey(
@@ -36,15 +38,22 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
 
   const mod = (await this.client.module.moduleControllerGetOne(modCreate.id)).data.data;
 
-  const gameserver = (
-    await this.client.gameserver.gameServerControllerCreate({
-      name: 'Test gameserver',
-      type: 'MOCK',
-      connectionInfo: JSON.stringify({
-        host: integrationConfig.get('mockGameserver.host'),
-      }),
+  if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
+  const identityToken = randomUUID();
+  const mockServer = await getMockServer({
+    mockserver: {
+      registrationToken: this.domainRegistrationToken,
+      identityToken,
+    },
+  });
+
+  const gameServerRes = (
+    await this.client.gameserver.gameServerControllerSearch({
+      filters: { identityToken: [identityToken] },
     })
   ).data.data;
+  const gameserver = gameServerRes.find((gs) => gs.identityToken === identityToken);
+  if (!gameserver) throw new Error('Game server not found. Did something fail when registering?');
 
   const installation = (
     await this.client.module.moduleInstallationsControllerInstallModule({
@@ -60,6 +69,7 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
     gameserver,
     installation,
     cronjob,
+    mockservers: [mockServer],
   };
 }
 

@@ -311,6 +311,18 @@ const tests = [
         expect(error.response?.status).to.be.eq(400);
         expect(error.response?.data.meta.error.message).to.be.eq('This module has reached the limit of 50 functions');
       }
+
+      // We can still search for them
+      const hooks = await this.client.hook.hookControllerSearch({
+        filters: { moduleId: [module.id] },
+      });
+
+      // We can also still GET them
+      const hook = await this.client.hook.hookControllerGetOne(hooks.data.data[0].id);
+      expect(hook.data.data.name).to.not.be.undefined;
+
+      // And we can still delete them
+      await this.client.hook.hookControllerRemove(hook.data.data.id);
     },
   }),
   /**
@@ -370,6 +382,66 @@ const tests = [
       // Now should be able to create modules
       const newModule = await userClient.module.moduleControllerCreate({ name: 'test module' });
       expect(newModule.data.data.name).to.equal('test module');
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Creating a cronjob in a module that has latest version installed should work',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      // Create a module, install it
+      // Then create a cronjob in the module
+
+      const moduleRes = await this.client.module.moduleControllerCreate({
+        name: 'cronjob-test-module',
+        latestVersion: {
+          description: 'test module for cronjob',
+        },
+      });
+
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameServer1.id,
+        versionId: moduleRes.data.data.latestVersion.id,
+      });
+
+      const cronjobRes = await this.client.cronjob.cronJobControllerCreate({
+        name: 'cronjob-test',
+        versionId: moduleRes.data.data.latestVersion.id,
+        temporalValue: '0 0 * * *',
+      });
+
+      expect(cronjobRes.data.data.name).to.equal('cronjob-test');
+    },
+  }),
+  /**
+   * Depending on the endpoint, strings are allowed and not validated to be UUIDs.
+   * If this happens, the API would throw an internal server error
+   * Instead, it should throw a clean 400 error
+   */
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Passing a string as an arg to something that expects UUID returns a clean error',
+    test: async function () {
+      const roles = (await this.client.role.roleControllerSearch()).data.data;
+      const role = roles[0];
+
+      try {
+        await this.client.role.roleControllerUpdate(role.id, {
+          name: 'blabla',
+          permissions: [
+            {
+              permissionId: 'not-uuid',
+            },
+          ],
+        });
+        throw new Error('Should have thrown an error');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.be.eq(400);
+        expect(error.response?.data.meta.error.message).to.be.eq('Invalid UUID. Passed a string instead of a UUID');
+      }
     },
   }),
 ];

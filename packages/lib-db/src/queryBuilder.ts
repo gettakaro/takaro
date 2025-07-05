@@ -64,7 +64,6 @@ export async function populateModelColumns() {
     const knex = await getKnex();
     // Find all tables
     const tables = await knex.raw(
-      // eslint-disable-next-line
       "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'",
     );
     // For each table, store the columns

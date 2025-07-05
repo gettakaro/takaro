@@ -1,11 +1,13 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { CommandOutputDTOAPI, CommandCreateDTO, CommandArgumentCreateDTO } from '@takaro/apiclient';
 import { describe } from 'node:test';
+import { randomUUID } from 'crypto';
 
 const group = 'CommandController';
 
 const mockCommand = (versionId: string, name = 'Test command'): CommandCreateDTO => ({
   name,
+  description: 'Cool description',
   trigger: 'test',
   versionId,
 });
@@ -60,6 +62,7 @@ const tests = [
     test: async function () {
       return this.client.command.commandControllerUpdate(this.setupData.data.id, {
         name: 'Updated command',
+        description: 'Updated description',
       });
     },
     filteredFields: ['moduleId', 'functionId'],
@@ -133,6 +136,36 @@ const tests = [
     },
     filteredFields: ['moduleId', 'functionId', 'commandId'],
     expectedStatus: 409,
+  }),
+  new IntegrationTest<CommandOutputDTOAPI>({
+    group,
+    snapshot: true,
+    name: 'Can search by moduleId',
+    setup: setupModuleAndCommand,
+    test: async function () {
+      const versionRes = await this.client.module.moduleVersionControllerGetModuleVersion(
+        this.setupData.data.versionId,
+      );
+
+      const res = await this.client.command.commandControllerSearch({
+        filters: {
+          moduleId: [versionRes.data.data.moduleId],
+        },
+      });
+
+      expect(res.data.data).to.have.length(1);
+
+      const badFilterRes = await this.client.command.commandControllerSearch({
+        filters: {
+          moduleId: [randomUUID()],
+        },
+      });
+
+      expect(badFilterRes.data.data).to.have.length(0);
+
+      return res;
+    },
+    filteredFields: ['moduleId', 'functionId', 'commandId'],
   }),
 ];
 

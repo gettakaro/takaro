@@ -8,6 +8,7 @@ import { CountryCodeToEmoji } from '../../../../components/CountryCodeToEmoji';
 import { DateTime } from 'luxon';
 import { playerQueryOptions } from '../../../../queries/player';
 import { useQuery } from '@tanstack/react-query';
+import { AiOutlineLink as LinkIcon } from 'react-icons/ai';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/info')({
   component: Component,
@@ -64,7 +65,7 @@ const IpInfo: FC<{ ipInfo: IpHistoryOutputDTO[] }> = ({ ipInfo }) => {
             </Tooltip>
             <span>{DateTime.fromISO(ip.createdAt).toLocaleString(DateTime.DATETIME_MED)}</span>
             <span>
-              <IpWhoisLink href={`https://www.whois.com/whois/${ip.ip}`} target="_blank">
+              <IpWhoisLink href={`https://scamalytics.com/ip/${ip.ip}`} target="_blank">
                 {ip.ip}
               </IpWhoisLink>
             </span>
@@ -76,13 +77,35 @@ const IpInfo: FC<{ ipInfo: IpHistoryOutputDTO[] }> = ({ ipInfo }) => {
   );
 };
 
-const InfoCard = styled(Card)`
+const InfoCard = styled(Card)<{ clickable?: boolean }>`
+  position: relative;
+
   h3 {
     color: ${({ theme }) => theme.colors.textAlt};
     font-weight: 400;
-
     margin-bottom: ${({ theme }) => theme.spacing['1']};
   }
+
+  ${({ clickable, theme }) =>
+    clickable &&
+    `
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      
+      &:hover {
+        background-color: ${theme.colors.backgroundAlt};
+      }
+    `}
+`;
+
+const ExternalLinkIcon = styled(LinkIcon)`
+  position: absolute;
+  top: ${({ theme }) => theme.spacing['1']};
+  right: ${({ theme }) => theme.spacing['1']};
+  width: 16px;
+  height: 16px;
+  opacity: 0.5;
+  color: ${({ theme }) => theme.colors.text};
 `;
 
 const CardContainer = styled.div`
@@ -106,10 +129,20 @@ const PlayerInfoCard: FC<{ player: PlayerOutputDTO }> = ({ player }) => {
       <InfoCard.Body>
         <InnerBody>
           <span>Player ID </span> <CopyId id={player.id} />
-          <span>Steam ID </span> {player.steamId ? <CopyId id={player.steamId} /> : '/'}
+          <span>Steam ID </span>{' '}
+          {player.steamId ? (
+            <CopyId
+              id={player.steamId}
+              externalLink={`https://steamcommunity.com/profiles/${player.steamId}`}
+              externalLinkTooltip="View Steam profile"
+            />
+          ) : (
+            '/'
+          )}
           <span>Epic Online Services ID </span>
           {player.epicOnlineServicesId ? <CopyId id={player.epicOnlineServicesId} /> : '/'}
           <span>Xbox Live ID </span> {player.xboxLiveId ? <CopyId id={player.xboxLiveId} /> : '/'}
+          <span>Platform ID </span> {player.platformId ? <CopyId id={player.platformId} /> : '/'}
         </InnerBody>
       </InfoCard.Body>
     </InfoCard>
@@ -118,7 +151,11 @@ const PlayerInfoCard: FC<{ player: PlayerOutputDTO }> = ({ player }) => {
 
 const SteamInfoCard: FC<{ player: PlayerOutputDTO }> = ({ player }) => {
   return (
-    <InfoCard variant="outline" onClick={() => window.open(`https://steamcommunity.com/profiles/${player.steamId}`)}>
+    <InfoCard
+      variant="outline"
+      clickable
+      onClick={() => window.open(`https://steamcommunity.com/profiles/${player.steamId}`)}
+    >
       <InfoCard.Title label="Steam" />
       <InfoCard.Body>
         <InnerBody>
@@ -129,6 +166,7 @@ const SteamInfoCard: FC<{ player: PlayerOutputDTO }> = ({ player }) => {
           <span>Economy Banned</span> {player.steamEconomyBan ? 'Yes' : 'No'}
         </InnerBody>
       </InfoCard.Body>
+      <ExternalLinkIcon />
     </InfoCard>
   );
 };

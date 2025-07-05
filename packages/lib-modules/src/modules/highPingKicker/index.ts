@@ -6,7 +6,7 @@ export class HighPingKicker extends ModuleTransferDTO<HighPingKicker> {
     this.name = 'highPingKicker';
     this.versions = [
       new ModuleTransferVersionDTO({
-        tag: '0.0.1',
+        tag: '0.0.2',
         description: 'Automatically kick players with high ping, with warnings and configurable thresholds.',
         configSchema: JSON.stringify({
           $schema: 'http://json-schema.org/draft-07/schema#',

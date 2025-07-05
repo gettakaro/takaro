@@ -7,8 +7,8 @@ import { IMessageOptsDTO } from '@takaro/gameserver';
 import { ICommandJobData, IParsedCommand, queueService } from '@takaro/queues';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
-import { ICommand, ICommandArgument, EventChatMessage, ChatChannel } from '@takaro/modules';
-import { ITakaroQuery, Redis } from '@takaro/db';
+import { ICommand, ICommandArgument, EventChatMessage, ChatChannel, TakaroEventCommandExecuted } from '@takaro/modules';
+import { Redis } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 import { parseCommand } from '../lib/commandParser.js';
@@ -18,6 +18,9 @@ import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { UserService } from './User/index.js';
 import { ModuleService } from './Module/index.js';
 import { InstallModuleDTO } from './Module/dto.js';
+import { CommandSearchInputDTO } from '../controllers/CommandController.js';
+import { PartialDeep } from 'type-fest/index.js';
+import { EventCreateDTO, EventService } from './EventService.js';
 
 export function commandsRunningKey(data: ICommandJobData) {
   return `commands-running:${data.pog.id}:${data.itemId}`;
@@ -26,6 +29,10 @@ export function commandsRunningKey(data: ICommandJobData) {
 export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @IsString()
   name: string;
+  @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
   @IsString()
   trigger: string;
   @IsString()
@@ -64,6 +71,10 @@ export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> implements ICo
   @IsString()
   @Length(1, 150)
   name: string;
+  @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
   @IsString()
   trigger: string;
   @IsString()
@@ -109,6 +120,10 @@ export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
   @IsString()
   @IsOptional()
   name?: string;
+  @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
 
   @IsString()
   @IsOptional()
@@ -166,7 +181,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
     return new CommandRepo(this.domainId);
   }
 
-  async find(filters: ITakaroQuery<CommandOutputDTO>): Promise<PaginatedOutput<CommandOutputDTO>> {
+  async find(filters: PartialDeep<CommandSearchInputDTO>): Promise<PaginatedOutput<CommandOutputDTO>> {
     return this.repo.find(filters);
   }
 
@@ -273,6 +288,12 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
   }
 
   async handleChatMessage(chatMessage: EventChatMessage, gameServerId: string) {
+    this.log.debug('handleChatMessage: Starting to process chat message', {
+      gameServerId,
+      msgLength: chatMessage.msg.length,
+      player: chatMessage.player?.gameId,
+    });
+
     const prefix = await new SettingsService(this.domainId, gameServerId).get(SETTINGS_KEYS.commandPrefix);
     if (!chatMessage.msg.startsWith(prefix.value)) {
       // Message doesn't start with configured prefix
@@ -286,13 +307,32 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
     }
 
     const commandName = chatMessage.msg.slice(prefix.value.length).split(' ')[0];
+    this.log.debug('handleChatMessage: Extracted command name', { commandName });
 
     if (commandName === 'link') {
       const { player, pog } = await this.playerService.resolveRef(chatMessage.player, gameServerId);
       await this.playerService.handlePlayerLink(player, pog);
+      await new EventService(this.domainId).create(
+        new EventCreateDTO({
+          playerId: player.id,
+          gameserverId: gameServerId,
+          eventName: 'command-executed',
+          meta: new TakaroEventCommandExecuted({
+            command: {
+              id: 'link',
+              name: 'link',
+              arguments: {},
+            },
+          }),
+        }),
+      );
     }
 
     const triggeredCommands = await this.repo.getTriggeredCommands(commandName, gameServerId);
+    this.log.debug('handleChatMessage: Queried for triggered commands', {
+      commandName,
+      foundCount: triggeredCommands.length,
+    });
 
     if (triggeredCommands.length) {
       this.log.debug(`Found ${triggeredCommands.length} commands that match the event`);
@@ -304,6 +344,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       const userRes = await userService.find({ filters: { playerId: [player.id] } });
       const user = userRes.results[0];
 
+      this.log.debug('handleChatMessage: Starting to parse commands');
       const parsedCommands = await Promise.all(
         triggeredCommands.map(async (c) => {
           let parsedCommand: IParsedCommand | null = null;
@@ -346,8 +387,13 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
           if (!commandConfig.enabled) return;
 
           const delay = commandConfig ? commandConfig.delay * 1000 : 0;
+          this.log.debug('handleChatMessage: Command delay configuration', {
+            commandName: db.name,
+            delay,
+            announceDelay: commandConfig?.announceDelay,
+          });
 
-          if (delay) {
+          if (delay && commandConfig.announceDelay) {
             await gameServerService.sendMessage(
               gameServerId,
               `Your command will be executed in ${delay / 1000} seconds.`,
@@ -374,7 +420,18 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
           const redisClient = await Redis.getClient('worker:command-lock');
           await redisClient.incr(commandsRunningKey(jobData));
+          // Also set an expiration for this lock of 2 minutes
+          // This prevents the lock from being held forever if the job fails
+          await redisClient.expire(commandsRunningKey(jobData), 120);
+
+          this.log.debug('handleChatMessage: Adding command job to queue', {
+            commandId: db.id,
+            commandName: db.name,
+            delay,
+            playerId: player.id,
+          });
           await queueService.queues.commands.queue.add(jobData, { delay });
+          this.log.debug('handleChatMessage: Command job added to queue successfully');
         }
       });
 

@@ -1,18 +1,13 @@
-import { ModuleInstallationOutputDTO, ModuleOutputDTO, PERMISSIONS } from '@takaro/apiclient';
 import {
-  IconButton,
-  Card,
-  useTheme,
-  Dropdown,
-  Chip,
-  IconTooltip,
-  Tooltip,
-  Button,
-  styled,
-} from '@takaro/lib-components';
+  ModuleInstallationOutputDTO,
+  ModuleOutputDTO,
+  PERMISSIONS,
+  SmallModuleVersionOutputDTO,
+} from '@takaro/apiclient';
+import { IconButton, Card, useTheme, Dropdown, Chip, Tooltip, Button, styled, Popover } from '@takaro/lib-components';
 import { PermissionsGuard } from '../../../components/PermissionsGuard';
 import { AiOutlineCopy as CopyIcon } from 'react-icons/ai';
-import { FC, useState, MouseEvent, useRef } from 'react';
+import { FC, useState, MouseEvent, useRef, useEffect } from 'react';
 import {
   AiOutlineDelete as DeleteIcon,
   AiOutlineSetting as ConfigIcon,
@@ -21,17 +16,14 @@ import {
   AiOutlineEye as ViewIcon,
   AiOutlineStop as DisableIcon,
   AiOutlineCheck as EnableIcon,
-  AiOutlineExclamation as NewVersionNotifyIcon,
   AiOutlineBook as DocumentationIcon,
+  AiOutlineRetweet as DifferentVersionIcon,
 } from 'react-icons/ai';
 import { useNavigate } from '@tanstack/react-router';
 import { SpacedRow, InnerBody } from '../style';
 import { useGameServerModuleInstall } from '../../../queries/gameserver';
-import { getNewestVersionExcludingLatestTag, versionGt } from '../../../util/ModuleVersionHelpers';
 import { DeleteImperativeHandle } from '../../../components/dialogs';
 import { ModuleUninstallDialog } from '../../../components/dialogs/ModuleUninstallDialog';
-import { useQuery } from '@tanstack/react-query';
-import { moduleTagsQueryOptions } from '../../../queries/module';
 import { ModuleVersionSelectQueryField } from '../../../components/selects';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
@@ -43,6 +35,12 @@ const Wrapper = styled.div`
   }
 `;
 
+const DescriptionDiv = styled.div`
+  max-height: 100px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+`;
+
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
   installation?: ModuleInstallationOutputDTO;
@@ -51,7 +49,7 @@ interface IModuleCardProps {
 }
 
 const validationSchema = z.object({
-  versionId: z.string().min(1),
+  tag: z.string().min(1),
 });
 
 export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gameServerId }) => {
@@ -59,11 +57,10 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
   const { mutateAsync: installModule } = useGameServerModuleInstall();
   const navigate = useNavigate();
   const theme = useTheme();
+  const [isLatestSelected, setIsLatestSelected] = useState<boolean>(false);
+  const [showInstallOtherVersionPopover, setShowInstallOtherVersionPopover] = useState<boolean>(false);
   const uninstallModuleDialogRef = useRef<DeleteImperativeHandle>(null);
-  const { data: smallVersions } = useQuery(moduleTagsQueryOptions({ limit: 2, moduleId: mod.id }));
-  const { handleSubmit, control, reset } = useForm<z.infer<typeof validationSchema>>({
-    resolver: zodResolver(validationSchema),
-  });
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const handleOnUninstallClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -85,16 +82,16 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
   const handleOnViewModuleConfigClick = (e: MouseEvent) => {
     e.stopPropagation();
     navigate({
-      to: '/gameserver/$gameServerId/modules/$moduleId/$versionId/install/view',
-      params: { gameServerId, moduleId: mod.id, versionId: installation!.version.id },
+      to: '/gameserver/$gameServerId/modules/$moduleId/$moduleVersionTag/install/view',
+      params: { gameServerId, moduleId: mod.id, moduleVersionTag: installation!.version.tag },
     });
   };
 
   const handleConfigureClick = (e: MouseEvent) => {
     e.stopPropagation();
     navigate({
-      to: '/gameserver/$gameServerId/modules/$moduleId/$versionId/update',
-      params: { gameServerId, moduleId: mod.id, versionId: installation!.version.id },
+      to: '/gameserver/$gameServerId/modules/$moduleId/$moduleVersionTag/update',
+      params: { gameServerId, moduleId: mod.id, moduleVersionTag: installation!.version.tag },
     });
   };
 
@@ -116,24 +113,6 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
     });
   };
 
-  const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async ({ versionId }) => {
-    try {
-      await installModule({
-        versionId,
-        gameServerId,
-        systemConfig: JSON.stringify(installation?.systemConfig),
-        userConfig: JSON.stringify(installation?.userConfig),
-      });
-    } catch {
-      navigate({
-        to: '/gameserver/$gameServerId/modules/$moduleId/$versionId/install',
-        params: { gameServerId, moduleId: mod.id, versionId },
-      });
-    } finally {
-      reset({ versionId: undefined });
-    }
-  };
-
   const isModuleInstallationEnabled = installation?.systemConfig['enabled'] === true ? true : false;
 
   return (
@@ -149,18 +128,17 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
           moduleName={mod.name}
         />
       )}
-      <Card data-testid={`module-installation-${mod.name}-card`}>
+      <Card
+        data-testid={`module-installation-${mod.name}-card`}
+        style={isLatestSelected ? { borderColor: theme.colors.warning } : {}}
+        ref={cardRef}
+      >
         <Card.Body>
           <InnerBody>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <h2 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>{mod.name}</h2>
               {installation && (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                  {smallVersions &&
-                    getNewestVersionExcludingLatestTag(smallVersions.data) &&
-                    versionGt(getNewestVersionExcludingLatestTag(smallVersions.data).tag, installation.version.tag) && (
-                      <IconTooltip icon={<NewVersionNotifyIcon />}>New version available</IconTooltip>
-                    )}
                   {!installation.systemConfig['enabled'] && (
                     <Tooltip>
                       <Tooltip.Trigger asChild>
@@ -180,6 +158,25 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                       <p>Installed version</p>
                     </Tooltip.Content>
                   </Tooltip>
+                  <Popover
+                    open={showInstallOtherVersionPopover}
+                    onOpenChange={setShowInstallOtherVersionPopover}
+                    placement="bottom"
+                  >
+                    <Popover.Trigger asChild>
+                      <div></div>
+                    </Popover.Trigger>
+                    <Popover.Content>
+                      <div style={{ display: 'flex', padding: '20px', flexDirection: 'column', minWidth: '300px' }}>
+                        <h2 style={{ marginBottom: '10px' }}>Install different module version</h2>
+                        <ModuleVersionInstallForm
+                          moduleId={mod.id}
+                          gameServerId={gameServerId}
+                          filterVersions={(version) => version.tag !== installation.version.tag}
+                        />
+                      </div>
+                    </Popover.Content>
+                  </Popover>
 
                   <div>
                     <Dropdown>
@@ -197,7 +194,12 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                             <Dropdown.Menu.Item
                               icon={<ConfigIcon />}
                               onClick={handleConfigureClick}
-                              label="Configure module"
+                              label="Change module configuration"
+                            />
+                            <Dropdown.Menu.Item
+                              icon={<DifferentVersionIcon />}
+                              label="Install different module version"
+                              onClick={() => setShowInstallOtherVersionPopover(true)}
                             />
                             <Dropdown.Menu.Item
                               icon={<CopyIcon />}
@@ -241,7 +243,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                 </div>
               )}
             </div>
-            <p>{mod.latestVersion.description}</p>
+            <DescriptionDiv>{mod.latestVersion.description}</DescriptionDiv>
 
             <SpacedRow>
               <span style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
@@ -251,15 +253,79 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                 {mod.latestVersion.permissions.length > 0 && <p>Permissions: {mod.latestVersion.permissions.length}</p>}
               </span>
             </SpacedRow>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <Wrapper style={{ display: 'flex', alignItems: 'center', gap: '5px', justifyContent: 'center' }}>
-                <ModuleVersionSelectQueryField control={control} name="versionId" label="" moduleId={mod.id} />
-                <Button type="submit" text="Install" />
-              </Wrapper>
-            </form>
+            {!installation && (
+              <ModuleVersionInstallForm
+                moduleId={mod.id}
+                gameServerId={gameServerId}
+                onVersionTagSelected={(tag) =>
+                  tag === 'latest' ? setIsLatestSelected(true) : setIsLatestSelected(false)
+                }
+              />
+            )}
           </InnerBody>
         </Card.Body>
       </Card>
     </>
+  );
+};
+
+interface ModuleVersionInstallFormProps {
+  moduleId: string;
+  gameServerId: string;
+  onVersionTagSelected?: (tag: string) => void;
+  filterVersions?: (version: SmallModuleVersionOutputDTO) => boolean;
+}
+
+export const ModuleVersionInstallForm: FC<ModuleVersionInstallFormProps> = ({
+  moduleId,
+  gameServerId,
+  onVersionTagSelected,
+  filterVersions,
+}) => {
+  const navigate = useNavigate();
+  const { handleSubmit, control, watch, reset } = useForm<z.infer<typeof validationSchema>>({
+    resolver: zodResolver(validationSchema),
+  });
+
+  const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async ({ tag }) => {
+    navigate({
+      to: '/gameserver/$gameServerId/modules/$moduleId/$moduleVersionTag/install',
+      params: { gameServerId, moduleId: moduleId, moduleVersionTag: tag },
+    });
+    reset({ tag: undefined });
+  };
+
+  const isLatestSelected = watch('tag') === 'latest';
+
+  useEffect(() => {
+    if (isLatestSelected && typeof onVersionTagSelected === 'function') {
+      onVersionTagSelected('latest');
+    }
+  }, [isLatestSelected]);
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Wrapper style={{ display: 'flex', alignItems: 'center', gap: '5px', justifyContent: 'center' }}>
+        <ModuleVersionSelectQueryField
+          control={control}
+          name="tag"
+          label=""
+          moduleId={moduleId}
+          filter={filterVersions}
+          returnVariant="tag"
+        />
+        <Tooltip disabled={!isLatestSelected}>
+          <Tooltip.Trigger asChild>
+            <Button color={isLatestSelected ? 'warning' : 'primary'} type="submit">
+              Install
+            </Button>
+          </Tooltip.Trigger>
+          <Tooltip.Content>
+            Installing <strong>latest</strong> is strongly discouraged as it might break your installed module. <br />
+            If you are not actively developing the module, please select a tagged version to install.
+          </Tooltip.Content>
+        </Tooltip>
+      </Wrapper>
+    </form>
   );
 };

@@ -17,6 +17,8 @@ import { ModuleDefinitionsPage, ModuleBuilderPage, GameServersPage, UsersPage, R
 import { getAdminClient, login } from '../helpers.js';
 import { PlayerProfilePage } from '../pages/PlayerProfile.js';
 import { ModuleInstallationsPage } from '../pages/ModuleInstallationsPage.js';
+import { randomUUID } from 'crypto';
+import { getMockServer } from '@takaro/mock-gameserver';
 
 global.afterEach = () => {};
 globalThis.afterEach = () => {};
@@ -67,7 +69,9 @@ const main = pwTest.extend<IBaseFixtures>({
       // User with no permissions
       const password = 'test';
 
-      const [user, emptyRole, gameServer, mod, mods] = await Promise.all([
+      const identityToken = 'Test server';
+
+      const [user, emptyRole, mockServer, mod, mods] = await Promise.all([
         // User creation
         client.user.userControllerCreate({
           name: 'test',
@@ -82,12 +86,11 @@ const main = pwTest.extend<IBaseFixtures>({
         }),
 
         // Game server creation
-        client.gameserver.gameServerControllerCreate({
-          name: 'Test server',
-          type: GameServerCreateDTOTypeEnum.Mock,
-          connectionInfo: JSON.stringify({
-            host: integrationConfig.get('mockGameserver.host'),
-          }),
+        getMockServer({
+          mockserver: {
+            registrationToken: domain.createdDomain.serverRegistrationToken,
+            identityToken,
+          },
         }),
 
         // Module creation
@@ -103,18 +106,24 @@ const main = pwTest.extend<IBaseFixtures>({
         client.module.moduleControllerSearch({ filters: { name: ['highPingKicker'] } }),
       ]);
 
+      const gameServerRes = await client.gameserver.gameServerControllerSearch({
+        filters: { identityToken: [identityToken] },
+      });
+      const gameServer = gameServerRes.data.data.find((gs) => gs.identityToken === identityToken);
+      if (!gameServer) throw new Error('Game server not found, setup did not work?');
+
       // enable developer mode by default
       await client.settings.settingsControllerSet('developerMode', { value: 'true' });
 
       // get versionId of the module
       const versionId = (await client.module.moduleControllerGetTags(mods.data.data[0].id)).data.data.find(
-        (smallVersion) => smallVersion.tag === '0.0.1',
+        (smallVersion) => smallVersion.tag !== 'latest',
       )?.id!;
 
       // Install utils module
       await client.module.moduleInstallationsControllerInstallModule({
         versionId,
-        gameServerId: gameServer.data.data.id,
+        gameServerId: gameServer.id,
       });
 
       // assign role to user
@@ -124,10 +133,10 @@ const main = pwTest.extend<IBaseFixtures>({
         rootClient: client,
         adminClient,
         builtinModule: mods.data.data[0],
-        gameServer: gameServer.data.data,
+        gameServer: gameServer,
         moduleBuilderPage: new ModuleBuilderPage(page, mod.data.data),
-        GameServersPage: new GameServersPage(page, gameServer.data.data),
-        moduleInstallationsPage: new ModuleInstallationsPage(page, gameServer.data.data),
+        GameServersPage: new GameServersPage(page, gameServer),
+        moduleInstallationsPage: new ModuleInstallationsPage(page, gameServer),
         moduleDefinitionsPage: new ModuleDefinitionsPage(page),
         usersPage: new UsersPage(page),
         rolesPage: new RolesPage(page),

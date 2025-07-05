@@ -28,6 +28,9 @@ export class ICommand extends TakaroDTO<ICommand> {
   @IsString()
   name: string;
   @IsString()
+  @IsOptional()
+  description?: string;
+  @IsString()
   function: string;
   @IsString()
   trigger: string;
@@ -44,14 +47,23 @@ export class IHook extends TakaroDTO<IHook> {
   @IsString()
   name: string;
   @IsString()
+  @IsOptional()
+  description?: string;
+  @IsString()
   function: string;
   @IsEnum(Object.values(HookEvents))
   eventType: EventTypes;
+  @IsString()
+  @IsOptional()
+  regex?: string;
 }
 
 export class ICronJob extends TakaroDTO<ICronJob> {
   @IsString()
   name: string;
+  @IsString()
+  @IsOptional()
+  description?: string;
   @IsString()
   function: string;
   @IsString()
@@ -61,6 +73,9 @@ export class ICronJob extends TakaroDTO<ICronJob> {
 export class IFunction extends TakaroDTO<IFunction> {
   @IsString()
   name: string;
+  @IsString()
+  @IsOptional()
+  description?: string;
   @IsString()
   function: string;
 }
@@ -85,7 +100,7 @@ export class ModuleTransferVersionDTO<T> extends TakaroDTO<T> {
   @IsString()
   public configSchema: string;
   @IsString()
-  public uiSchema = '{}';
+  public uiSchema: string;
   @ValidateNested({ each: true })
   @Type(() => ICommand)
   @IsOptional()

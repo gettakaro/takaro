@@ -31,7 +31,7 @@ async function main() {
 
   if (allPlayerTeleports.data.data.length >= hasPermission.count) {
     throw new TakaroUserError(
-      `You have reached the maximum number of teleports for your role, maximum allowed is ${hasPermission.count}`
+      `You have reached the maximum number of teleports for your role, maximum allowed is ${hasPermission.count}`,
     );
   }
 
@@ -42,6 +42,7 @@ async function main() {
       x: data.pog.positionX,
       y: data.pog.positionY,
       z: data.pog.positionZ,
+      dimension: data.pog.dimension,
     }),
     gameServerId,
     moduleId: mod.moduleId,

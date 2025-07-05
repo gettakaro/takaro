@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useRef, useState, FormEvent } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { Button, Drawer, CollapseList, styled, FormError } from '@takaro/lib-components';
+import { Button, Drawer, CollapseList, styled, FormError, Chip } from '@takaro/lib-components';
 import { useGameServerModuleInstall } from '../../../queries/gameserver';
 import Form from '@rjsf/core';
 import { JsonSchemaForm } from '../../../components/JsonSchemaForm';
@@ -84,7 +84,10 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
   return (
     <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={readOnly === false && isDirty}>
       <Drawer.Content>
-        <Drawer.Heading>{readOnly ? 'View configuration' : 'Install module'}</Drawer.Heading>
+        <Drawer.Heading>
+          <span style={{ marginRight: '10px' }}>{readOnly ? 'View configuration' : 'Install module'}</span>
+          <Chip variant="outline" color="primary" label={modVersion.tag} />
+        </Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
             <CollapseList.Item title="User config">
@@ -106,7 +109,7 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
                 readOnly={readOnly}
                 schema={JSON.parse(modVersion.systemConfigSchema as string)}
                 uiSchema={{}} /* System config does not have uiSchema*/
-                initialData={modInstallation?.systemConfig || systemConfig}
+                initialData={modInstallation?.systemConfig || modVersion.defaultSystemConfig || systemConfig}
                 hideSubmitButton
                 onSubmit={onSystemConfigSubmit}
                 onChange={() => {
@@ -120,20 +123,25 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
         <Drawer.Footer>
           {error && <FormError error={error} />}
           {readOnly ? (
-            <Button fullWidth text="Close view" onClick={() => setOpen(false)} color="primary" />
+            <Button fullWidth onClick={() => setOpen(false)} color="primary">
+              Close view
+            </Button>
           ) : (
             <ButtonContainer>
-              <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
+              <Button onClick={() => setOpen(false)} color="background">
+                Cancel
+              </Button>
               <Button
                 fullWidth
                 isLoading={isPending}
-                text="Install module"
                 type="button"
                 onClick={() => {
                   systemConfigFormRef.current?.formElement.current.requestSubmit();
                   userConfigFormRef.current?.formElement.current.requestSubmit();
                 }}
-              />
+              >
+                Install module
+              </Button>
             </ButtonContainer>
           )}
         </Drawer.Footer>

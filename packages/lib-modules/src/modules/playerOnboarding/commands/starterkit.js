@@ -32,7 +32,7 @@ async function main() {
       throw new TakaroUserError(`Item with ID ${item.item} not found.`);
     }
     return {
-      code: itemRecord.code,
+      id: itemRecord.id,
       quality: item.quality,
       amount: item.amount,
     };
@@ -41,7 +41,7 @@ async function main() {
   await Promise.all(
     fullItems.map(async (item) => {
       return takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.id, {
-        name: item.code,
+        name: item.id,
         quality: item.quality ?? '',
         amount: item.amount,
       });

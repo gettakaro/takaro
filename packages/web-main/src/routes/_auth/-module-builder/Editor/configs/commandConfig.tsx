@@ -30,6 +30,7 @@ import { useQuery } from '@tanstack/react-query';
 
 const validationSchema = z.object({
   trigger: z.string().min(1, { message: 'Trigger is required' }),
+  description: z.string().optional(),
   helpText: z.string(),
   arguments: z.array(
     z.object({
@@ -108,6 +109,7 @@ export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnl
     values: {
       trigger: command.trigger,
       helpText: command.helpText,
+      description: command.description,
       arguments: command.arguments
         .sort((a, b) => a.position - b.position)
         .map((arg) => {
@@ -156,6 +158,13 @@ export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnl
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <TextAreaField
+        control={control}
+        name="description"
+        label="Description"
+        description="A description of what this command does"
+        readOnly={readOnly}
+      />
       <TextField
         control={control}
         name="trigger"
@@ -285,21 +294,18 @@ export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnl
               }}
               type="button"
               fullWidth
-              text="New"
               variant="outline"
-            ></Button>
+            >
+              New
+            </Button>
           )}
           {error && <FormError error={error} />}
         </ContentContainer>
       </CollapseList.Item>
       {!readOnly && (
-        <Button
-          isLoading={isPending}
-          disabled={!formState.isDirty}
-          fullWidth
-          type="submit"
-          text="Save command config"
-        />
+        <Button isLoading={isPending} disabled={!formState.isDirty} fullWidth type="submit">
+          Save command config
+        </Button>
       )}
     </form>
   );

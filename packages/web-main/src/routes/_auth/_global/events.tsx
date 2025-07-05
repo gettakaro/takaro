@@ -167,19 +167,21 @@ function Component() {
         />
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem' }}>
           <Button
-            text={live ? 'Pause event feed' : 'Show live event feed'}
             icon={live ? <PauseIcon /> : <PlayIcon />}
             onClick={() => setLive(!live)}
             color={live ? 'primary' : 'secondary'}
-          />
+          >
+            {live ? 'Pause event feed' : 'Show live event feed'}
+          </Button>
           <Button
             isLoading={isFetching}
             disabled={live || isFetching}
-            text="Refresh feed"
             icon={<RefreshIcon />}
             onClick={() => refetch()}
             color={'secondary'}
-          />
+          >
+            Refresh feed
+          </Button>
         </div>
       </Header>
       <ContentContainer>

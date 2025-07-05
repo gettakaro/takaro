@@ -2,6 +2,7 @@ import { Config, IBaseConfig } from '@takaro/config';
 
 export interface IMailConfig extends IBaseConfig {
   mail: {
+    postmarkApiKey: string;
     host: string;
     port: number;
     secure: boolean;
@@ -14,6 +15,12 @@ export interface IMailConfig extends IBaseConfig {
 
 export const configSchema = {
   mail: {
+    postmarkApiKey: {
+      doc: 'The API key for the Postmark mail service.',
+      format: String,
+      default: '',
+      env: 'MAIL_POSTMARK_API_KEY',
+    },
     host: {
       doc: 'The host of the mail server.',
       format: String,

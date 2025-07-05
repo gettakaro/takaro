@@ -1,6 +1,6 @@
 {
   "name": "@takaro/modules",
-  "version": "0.0.16",
+  "version": "0.1.5",
   "description": "Built-in modules for Takaro",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -13,7 +13,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {},
-  "devDependencies": {}
+  "license": "ISC"
 }

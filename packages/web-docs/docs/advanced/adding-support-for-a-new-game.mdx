@@ -1,0 +1,1053 @@
+import { Columns, Column } from '@site/src/components/columns';
+
+# Adding support for a new game
+
+Takaro has a generic connector which allows any game to connect to Takaro. The requirement is that there is a mod for the game that connects to the Takaro websocket server and implements a few functions.
+
+This document explains the requirements and technical details of how to add support for a new game.
+
+## Concepts
+
+Takaro uses the concept for a `gameId` to identify players. This is a unique identifier for the player in the game. Different games will have different ways of identifying players. For example, in 7 Days to Die, the `gameId` is the 'cross ID/EOS ID' of the player. In other games, it might be the SteamID, a UUID or some other identifier. When Takaro calls a function that pertains to a specific player, it will pass the `gameId` as an argument.
+
+### Player Object Structure
+
+Takaro expects player objects to follow the `IGamePlayer` interface structure. This interface supports multiple gaming platforms and provides a consistent way to represent player data across different games.
+
+**Required Fields:**
+
+- `gameId` (string): Unique identifier for the player in the game
+- `name` (string): Player's display name/username
+
+**Optional Fields:**
+
+- `steamId` (string): Steam platform identifier
+- `epicOnlineServicesId` (string): Epic Games platform identifier
+- `xboxLiveId` (string): Xbox Live platform identifier
+- `platformId` (string): Generic platform identifier in `platform:id` format
+- `ip` (string): Player's IP address
+- `ping` (number): Player's connection ping
+
+### Platform ID Implementation
+
+The `platformId` field provides a flexible way to identify players from platforms not covered by Steam, Epic, or Xbox Live. It follows a strict format to ensure consistency:
+
+**Format**: `platform:identifier`
+
+**Validation Rules**:
+
+- Must contain exactly one colon (`:`) separating platform and identifier
+- Platform part: Only alphanumeric characters, hyphens (`-`), and underscores (`_`)
+- Identifier part: Only alphanumeric characters, hyphens (`-`), and underscores (`_`)
+- No spaces or special characters allowed
+- Both platform and identifier parts must have at least one character
+
+**Examples**:
+
+```
+✅ Valid:
+- minecraft:550e8400-e29b-41d4-a716-446655440000
+- battlenet:PlayerName-1234
+- origin:OriginPlayerID
+- discord:123456789012345678
+- custom_platform:player_123
+
+❌ Invalid:
+- invalidformat (missing colon)
+- platform: (empty identifier)
+- :identifier (empty platform)
+- platform with spaces:id (spaces not allowed)
+- platform:id:extra (multiple colons)
+```
+
+### When to Use Each Platform Field
+
+**Use platform-specific fields when available**:
+
+- Steam-based games → populate `steamId`
+- Epic Games Store games → populate `epicOnlineServicesId`
+- Xbox Live integrated games → populate `xboxLiveId`
+
+**Use platformId for**:
+
+- Games with custom authentication systems
+- Platforms not covered by the specific fields above
+- Cross-platform games with unified player IDs
+- Games using Discord, Battle.net, Origin, or other platforms
+
+**Best Practices**:
+
+- Choose descriptive platform names (e.g., `minecraft`, `battlenet`, `origin`)
+- Use consistent naming across your game instances
+- Prefer official platform identifiers when possible
+
+## Connecting to Takaro
+
+Takaro exposes a websocket server at `wss://connect.takaro.io/`. The game mod should connect to this and send a `identify` message containing the identity token and registration token.
+
+- Identity token: This is a unique token that identifies the game instance. If you connect with a new token, Takaro will create a new gameserver record. If you connect with an existing token, Takaro will update the existing gameserver record. It is important to keep this token the same across restarts of the game, otherwise Takaro will start with fresh data every time.
+- Registration token: This is a **secret** token that is used to authenticate the game instance. This token is generated for a domain in Takaro. This should be kept secret, otherwise other game instances can connect to Takaro and insert their data in your domain.
+
+```json
+{
+  "type": "identify",
+  "data": {
+    "identityToken": "<identity token>",
+    "registrationToken": "<registration token>"
+  }
+}
+```
+
+You will get a `identifyResponse` message back saying if it worked or not. If the message contains a `error` field in the payload, there'll be more details about what went wrong.
+If the payload contains a `gameServerId` field, it was successful.
+
+## Functions
+
+Takaro will request data from the server and it will perform actions on the server. The game mod should implement the following functions.
+
+Each of these will be sent over the websocket connection as a JSON message. The game server will receive a message like:
+
+```js
+{
+  type: 'request',
+  payload: { action: 'getPlayers', args: [] },
+  requestId: '1234',
+}
+```
+
+The above message means that Takaro wants to call the `getPlayers` function on the game server. The game server should respond with a message like:
+
+```js
+{
+  type: 'response',
+  payload: [... player objects],
+  requestId: '1234',
+}
+```
+
+Note the `requestId` field. This is used to match the request and response. The game server should always respond with the same `requestId` as the request. Takaro might send multiple requests at the same time, so it is important to keep track of the request IDs.
+
+If the game server returns data in a bad format, Takaro will return a error over the websocket connection.
+
+### getPlayer
+
+Retrieves information about a specific player.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "getPlayer",
+    "args": "{\"gameId\": \"12345\"}"
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": {
+    "gameId": "12345",
+    "name": "PlayerName",
+    "steamId": "76561198123456789",
+    "epicOnlineServicesId": null,
+    "xboxLiveId": null,
+    "platformId": null,
+    "ip": "192.168.1.1",
+    "ping": 50
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+If the player is not found, return `null`:
+
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+
+### getPlayers
+
+Retrieves a list of all currently connected players.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "getPlayers",
+    "args": []
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": [
+    {
+      "gameId": "12345",
+      "name": "PlayerName1",
+      "steamId": "76561198123456789",
+      "epicOnlineServicesId": null,
+      "xboxLiveId": null,
+      "platformId": null,
+      "ip": "192.168.1.1",
+      "ping": 50
+    },
+    {
+      "gameId": "67890",
+      "name": "PlayerName2",
+      "steamId": null,
+      "epicOnlineServicesId": null,
+      "xboxLiveId": null,
+      "platformId": "minecraft:550e8400-e29b-41d4-a716-446655440000",
+      "ip": "192.168.1.2",
+      "ping": 75
+    },
+    {
+      "gameId": "54321",
+      "name": "PlayerName3",
+      "steamId": null,
+      "epicOnlineServicesId": null,
+      "xboxLiveId": null,
+      "platformId": "battlenet:PlayerName-1234",
+      "ip": "192.168.1.3",
+      "ping": 42
+    }
+  ],
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### getPlayerLocation
+
+Retrieves the current 3D position of a specific player. The response includes optional dimension information for games that support multiple dimensions/worlds.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "getPlayerLocation",
+    "args": "{\"gameId\": \"12345\"}"
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": {
+    "x": 123.45,
+    "y": 67.89,
+    "z": 10.11,
+    "dimension": "overworld"
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+If the player is not found, return `null`:
+
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+
+### getPlayerInventory
+
+Retrieves the items in a specific player's inventory.
+Note that quality is a string, not all games will have a number for quality.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "getPlayerInventory",
+    "args": "{\"gameId\": \"12345\"}"
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": [
+    {
+      "code": "weapon_baseball_bat",
+      "name": "Baseball Bat",
+      "amount": 1,
+      "quality": "5"
+    },
+    {
+      "code": "first_aid_bandage",
+      "name": "First Aid Bandage",
+      "amount": 5,
+      "quality": "high"
+    }
+  ],
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### giveItem
+
+Gives an item to a specific player.
+The item code (`baseball_bat` in this case) is the code used in the `listItems` function.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "giveItem",
+    "args": "{\"player\": {\"gameId\": \"12345\"}, \"item\": \"baseball_bat\", \"amount\": 1, \"quality\": \"5\"}"
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### listItems
+
+Retrieves a list of all available items in the game.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "listItems",
+    "args": []
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": [
+    {
+      "code": "baseball_bat",
+      "name": "Baseball Bat",
+      "description": "A wooden baseball bat"
+    },
+    {
+      "code": "first_aid_bandage",
+      "name": "First Aid Bandage",
+      "description": "Used to stop bleeding"
+    }
+  ],
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### listEntities
+
+Retrieves a list of all available entities in the game. This includes both NPCs and monsters.
+Vanilla and modded entities should be included.
+
+The `metadata` field is optional and can be used to store additional (game-specific) information about the entity.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "listEntities",
+    "args": []
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": [
+    {
+      "code": "pig",
+      "name": "Pig",
+      "description": "Some tasty bacon",
+      "type": "friendly",
+      "metadata": {
+        "health": 10
+      }
+    },
+    {
+      "code": "skeleton",
+      "name": "Skeleton",
+      "description": "A spooky skeleton",
+      "type": "hostile",
+      "metadata": {
+        "health": 50,
+        "damage": 10
+      }
+    }
+  ],
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### listLocations
+
+List all locations in the game. Locations are game-defined structures or areas.
+Some examples:
+
+- Minecraft villages, nether fortresses, end cities, ...
+- 7 Days to Die POIs (Points of Interest)
+- Rust monuments
+
+Locations must be either rectangular or circular, not both.
+The `metadata` field is optional and can be used to store additional information about the location.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "listLocations",
+    "args": []
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": [
+    {
+      "position": {
+        "x": 123.45,
+        "y": 67.89,
+        "z": 10.11,
+        "dimension": "overworld"
+      },
+      "radius": 50,
+      "name": "village",
+      "code": "village_1",
+      "metadata": {}
+    },
+    {
+      "position": {
+        "x": 200.0,
+        "y": 100.0,
+        "z": 50.0,
+        "dimension": "nether"
+      },
+      "sizeX": 100,
+      "sizeY": 50,
+      "sizeZ": 100,
+      "name": "forest",
+      "code": "forest_38",
+      "metadata": {}
+    }
+  ],
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### executeConsoleCommand
+
+Executes a console command on the game server.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "executeConsoleCommand",
+    "args": "{\"command\": \"say Hi\"}"
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": {
+    "success": true,
+    "rawResult": "Message sent: Hi",
+    "errorMessage": null
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### sendMessage
+
+Sends a message to one or more players.
+
+If the `recipient` field is not provided, the message should be a global message.
+If the `recipient` field is provided, the message should be sent to the specified player (DM/whisper).
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "sendMessage",
+    "args": "{\"message\": \"Welcome to the server!\", \"opts\": {\"recipient\": {\"gameId\": \"12345\"}}}"
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### teleportPlayer
+
+Teleports a player to a specific location. The coordinates are passed as x, y, and z values.
+The `dimension` parameter is optional and allows teleportation across different game dimensions/worlds (e.g., overworld, nether, end in Minecraft).
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "teleportPlayer",
+    "args": "{\"player\": {\"gameId\": \"12345\"}, \"x\": 123.45, \"y\": 67.89, \"z\": 10.11, \"dimension\": \"nether\"}"
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+**Note**: The `dimension` parameter is optional. If not provided, the player will be teleported within their current dimension. Games that don't support dimensions can safely ignore this parameter.
+
+### testReachability
+
+Tests if the game server is reachable and properly configured. Think of this as a ping/pong test.
+If _something_ is misconfigured, the response can contain a `reason` field with a description of the issue.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "testReachability",
+    "args": []
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": {
+    "connectable": true,
+    "reason": null
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### kickPlayer
+
+Kicks a player from the server.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "kickPlayer",
+    "args": "{\"player\": {\"gameId\": \"12345\"}, \"reason\": \"Violated server rules\"}"
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### banPlayer
+
+Bans a player from the server.
+The `expiresAt` field is optional. If not provided, the ban will be permanent.
+`expiresAt` is a ISO 8601 formatted date string.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "banPlayer",
+    "args": "{\"player\": {\"gameId\": \"12345\"}, \"reason\": \"Cheating\", \"expiresAt\": \"2031-12-31T23:59:59Z\"}"
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### unbanPlayer
+
+Removes a ban for a specific player.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "unbanPlayer",
+    "args": "{\"gameId\": \"12345\"}"
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### listBans
+
+Retrieves a list of all currently banned players.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "listBans",
+    "args": []
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": [
+    {
+      "player": {
+        "gameId": "12345",
+        "name": "BannedPlayer1"
+      },
+      "reason": "Cheating",
+      "expiresAt": "2031-12-31T23:59:59Z",
+    },
+    {
+      "player": {
+        "gameId": "67890",
+        "name": "BannedPlayer2"
+      },
+      "reason": "Being rude",
+      "expiresAt": "2031-12-31T23:59:59Z",
+    }
+  ],
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### shutdown
+
+Initiates a graceful shutdown sequence for the game server.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "shutdown",
+    "args": []
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+## Takaro Game Events
+
+This document outlines the events that Takaro expects to receive from game servers. These events allow Takaro to react to changes in real-time.
+
+### Event Structure
+
+All events should be sent over the websocket connection as a JSON message with the following structure:
+
+```json
+{
+  "type": "gameEvent",
+  "payload": {
+    "type": "<event type>",
+    "data": {
+      /* event specific data */
+    }
+  }
+}
+```
+
+### log
+
+<Columns>
+<Column className='text--left'>
+**Event Type:** `log`
+
+Sent when a new log line is generated by the game server.
+
+</Column>
+<Column className='text--left'>
+```json
+{
+  "type": "gameEvent",
+  "payload": {
+    "type": "log",
+    "msg": "Server started on port 26900"
+  }
+}
+```
+</Column>
+</Columns>
+
+### player-connected
+
+<Columns>
+<Column className='text--left'>
+**Event Type:** `player-connected`
+
+Sent when a player connects to the game server.
+The `player` object must include the required `gameId` and `name` fields. Other fields like `steamId`, `epicOnlineServicesId`, `xboxLiveId`, `platformId`, `ip`, and `ping` are optional.
+
+Include the appropriate platform identifier based on your game's authentication system. Use `platformId` for custom platforms following the `platform:id` format.
+
+</Column>
+<Column className='text--left'>
+
+```json
+{
+  "type": "gameEvent",
+  "payload": {
+    "type": "player-connected",
+    "player": {
+      "gameId": "12345",
+      "name": "SteamPlayer",
+      "steamId": "76561198123456789",
+      "epicOnlineServicesId": null,
+      "xboxLiveId": null,
+      "platformId": null,
+      "ip": "192.168.1.1",
+      "ping": 50
+    }
+  }
+}
+```
+
+Example with platformId for a custom platform:
+
+```json
+{
+  "type": "gameEvent",
+  "payload": {
+    "type": "player-connected",
+    "player": {
+      "gameId": "67890",
+      "name": "MinecraftPlayer",
+      "steamId": null,
+      "epicOnlineServicesId": null,
+      "xboxLiveId": null,
+      "platformId": "minecraft:550e8400-e29b-41d4-a716-446655440000",
+      "ip": "192.168.1.2",
+      "ping": 75
+    }
+  }
+}
+```
+
+</Column>
+</Columns>
+
+### player-disconnected
+
+<Columns>
+<Column className='text--left'>
+**Event Type:** `player-disconnected`
+
+Sent when a player disconnects from the game server.
+
+</Column>
+<Column className='text--left'>
+```json
+{
+  "type": "gameEvent",
+  "payload": {
+    "type": "player-disconnected",
+    "player": {
+      "gameId": "12345"
+    }
+  }
+}
+```
+</Column>
+</Columns>
+
+### chat-message
+
+<Columns>
+<Column className='text--left'>
+**Event Type:** `chat-message`
+
+Sent when a player sends a chat message.
+
+The `channel` field must be one of:
+
+- `global`
+- `team`
+- `friends`
+- `whisper`
+
+The `player` field is optional, as some chat messages might be system messages without an associated player.
+
+</Column>
+<Column className='text--left'>
+
+```json
+{
+  "type": "gameEvent",
+  "payload": {
+    "type": "chat-message",
+    "player": {
+      "gameId": "12345",
+      "name": "PlayerName"
+    },
+    "channel": "global",
+    "msg": "Hello everyone!"
+  }
+}
+```
+
+</Column>
+</Columns>
+
+### player-death
+
+<Columns>
+<Column className='text--left'>
+**Event Type:** `player-death`
+
+Sent when a player dies in the game.
+
+The `attacker` field is optional and should only be included if the player was killed by another player.
+
+</Column>
+<Column className='text--left'>
+```json
+{
+  "type": "gameEvent",
+  "payload": {
+    "type": "player-death",
+    "player": {
+      "gameId": "12345",
+      "name": "PlayerName"
+    },
+    "attacker": {
+      "gameId": "67890",
+      "name": "AttackerName"
+    },
+    "position": {
+      "x": 123.45,
+      "y": 67.89,
+      "z": 10.11,
+      "dimension": "overworld"
+    }
+  }
+}
+```
+</Column>
+</Columns>
+
+### entity-killed
+
+<Columns>
+<Column className='text--left'>
+**Event Type:** `entity-killed`
+
+Sent when a player kills an entity in the game.
+
+</Column>
+<Column className='text--left'>
+```json
+{
+  "type": "gameEvent",
+  "payload": {
+    "type": "entity-killed",
+    "player": {
+      "gameId": "12345",
+      "name": "PlayerName"
+    },
+    "entity": "zombie",
+    "weapon": "baseball_bat"
+  }
+}
+```
+</Column>
+</Columns>
+
+## Reference implementations
+
+- [7 Days to Die](https://github.com/gettakaro/Takaro-7D2D)
+- [Minecraft](https://github.com/gettakaro/takaro-minecraft)
+- [Mock implementation](https://github.com/niekcandaele/Takaro/blob/generic-connector/packages/app-mock-gameserver/src/lib/ws-gameserver/gameserver.ts#L242) (Used for internal Takaro testing)

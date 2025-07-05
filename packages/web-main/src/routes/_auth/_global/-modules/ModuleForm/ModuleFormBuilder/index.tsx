@@ -128,7 +128,6 @@ export const ModuleFormBuilder: FC<ModuleFormProps> = ({
                 onChange={handleOnSelectedVersionChanged}
                 name="module-version-tag-select"
                 value={moduleVersion.tag}
-                returnValue="tag"
               />
             </div>
           )}
@@ -205,8 +204,9 @@ export const ModuleFormBuilder: FC<ModuleFormProps> = ({
                         });
                       }}
                       type="button"
-                      text="Create new permission"
-                    />
+                    >
+                      Create new permission
+                    </Button>
                   </div>
                 )}
               </CollapseList.Item>
@@ -263,7 +263,6 @@ export const ModuleFormBuilder: FC<ModuleFormProps> = ({
                     }}
                   >
                     <Button
-                      text="Create new config field"
                       type="button"
                       icon={<PlusIcon />}
                       variant="outline"
@@ -277,7 +276,9 @@ export const ModuleFormBuilder: FC<ModuleFormProps> = ({
                           required: false,
                         });
                       }}
-                    />
+                    >
+                      Create new config field
+                    </Button>
                   </div>
                 )}
                 {/* TODO: There is currently a bug in react-hook-form regarding refine, which in our case breaks the 
@@ -292,11 +293,17 @@ export const ModuleFormBuilder: FC<ModuleFormProps> = ({
         <Drawer.Footer>
           {!readOnly ? (
             <ButtonContainer>
-              <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-              <Button type="submit" form="module-definition" fullWidth text="Save changes" />
+              <Button onClick={() => setOpen(false)} color="background">
+                Cancel
+              </Button>
+              <Button type="submit" form="module-definition" fullWidth>
+                Save changes
+              </Button>
             </ButtonContainer>
           ) : (
-            <Button text="Close view" fullWidth onClick={() => setOpen(false)} color="primary" />
+            <Button fullWidth onClick={() => setOpen(false)} color="primary">
+              Close view
+            </Button>
           )}
         </Drawer.Footer>
       </Drawer.Content>

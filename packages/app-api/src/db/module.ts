@@ -37,6 +37,7 @@ export class ModuleVersion extends TakaroModel {
   description: string;
   configSchema: string;
   uiSchema: string;
+  defaultSystemConfig: string;
 
   cronJobs: CronJobOutputDTO[];
   hooks: HookOutputDTO[];
@@ -213,7 +214,13 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
     return {
       total: result.total,
-      results: result.results.map((_) => new ModuleVersionOutputDTO(_)),
+      results: result.results.map(
+        (_) =>
+          new ModuleVersionOutputDTO({
+            ..._,
+            systemConfigSchema: getSystemConfigSchema(_ as unknown as ModuleVersionOutputDTO),
+          }),
+      ),
     };
   }
 
@@ -477,7 +484,8 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       .modify('standardExtend');
 
     if (!res[0]) {
-      throw new errors.NotFoundError(`Installation with id ${gameServerId}-${moduleId} not found`);
+      this.log.warn('Installation not found', { gameServerId, moduleId });
+      throw new errors.NotFoundError('Installation not found');
     }
 
     const returnVal = new ModuleInstallationOutputDTO(res[0] as unknown as ModuleInstallationOutputDTO);
@@ -559,5 +567,16 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     const { queryInstallations } = await this.getModel();
     const res = await queryInstallations.delete().where('gameserverId', gameServerId).andWhere('moduleId', moduleId);
     return !!res;
+  }
+
+  async updateInstallation(
+    gameServerId: string,
+    moduleId: string,
+    data: Objection.PartialModelObject<ModuleInstallationModel>,
+  ) {
+    const { queryInstallations } = await this.getModel();
+    const installation = await this.findOneInstallation(gameServerId, moduleId);
+    await queryInstallations.updateAndFetchById(installation.id, data);
+    return this.findOneInstallation(gameServerId, moduleId);
   }
 }

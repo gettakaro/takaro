@@ -1,6 +1,6 @@
 {
   "name": "@takaro/aws",
-  "version": "0.0.16",
+  "version": "0.1.5",
   "description": "AWS helper functions",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -11,9 +11,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {},
-  "devDependencies": {
-    "@types/convict": "6.1.6"
-  }
+  "license": "ISC"
 }

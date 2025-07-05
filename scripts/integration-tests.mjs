@@ -33,7 +33,6 @@ process.env = {
   POSTGRES_DB: 'takaro-test-db',
   POSTGRES_PASSWORD,
   POSTGRES_ENCRYPTION_KEY,
-  MOCHA_RETRIES: 5,
 };
 
 const composeOpts = {
@@ -112,7 +111,7 @@ async function main() {
 
       await $`npm run --workspace=./packages/e2e test:e2e`;
     } else {
-      await run('takaro', 'npm run test:ci', { ...composeOpts, NODE_ENV: 'test' });
+      await run('takaro', 'npm run test:ci', { ...composeOpts, NODE_ENV: 'test', LOGGING_LEVEL: 'none' });
     }
   } catch (error) {
     console.error('Tests failed');

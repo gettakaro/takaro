@@ -60,13 +60,9 @@ export const VariableDeleteDialog: FC<VariableDeleteProps> = ({
               </li>
             )}
           </ul>
-          <Button
-            isLoading={isPending}
-            onClick={(e) => handleOnDelete(e)}
-            fullWidth
-            text={'Delete variable'}
-            color="error"
-          />
+          <Button isLoading={isPending} onClick={(e) => handleOnDelete(e)} fullWidth color="error">
+            Delete variable
+          </Button>
           {error && <FormError error={error} />}
         </Dialog.Body>
       </Dialog.Content>

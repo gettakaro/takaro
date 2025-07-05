@@ -101,7 +101,6 @@ export const ModuleFormManual: FC<ModuleFormProps> = ({ moduleName, moduleVersio
                 onChange={handleOnSelectedVersionChanged}
                 name="module-version-tag-select"
                 value={moduleVersion.tag}
-                returnValue="tag"
               />
             </div>
           )}
@@ -177,8 +176,9 @@ export const ModuleFormManual: FC<ModuleFormProps> = ({ moduleName, moduleVersio
                         });
                       }}
                       type="button"
-                      text="Create new permission"
-                    />
+                    >
+                      Create new permission
+                    </Button>
                   </div>
                 )}
               </CollapseList.Item>
@@ -212,7 +212,7 @@ export const ModuleFormManual: FC<ModuleFormProps> = ({ moduleName, moduleVersio
                   name="uiSchema"
                   label="UI Schema"
                   readOnly={readOnly}
-                  description="Provides information on how the form should be rendered. Read more on docs.takaro.io/advanced/modules#custom-rendering-fields-uischema"
+                  description="Provides information on how the form should be rendered. Read more on https://docs.takaro.io/advanced/modules#custom-rendering-fields-uischema"
                   rows={10}
                 />
               </CollapseList.Item>
@@ -223,11 +223,17 @@ export const ModuleFormManual: FC<ModuleFormProps> = ({ moduleName, moduleVersio
         <Drawer.Footer>
           {!readOnly ? (
             <ButtonContainer>
-              <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-              <Button type="submit" form={formId} fullWidth text="Save changes" />
+              <Button onClick={() => setOpen(false)} color="background">
+                Cancel
+              </Button>
+              <Button type="submit" form={formId} fullWidth>
+                Save changes
+              </Button>
             </ButtonContainer>
           ) : (
-            <Button text="Close view" fullWidth onClick={() => setOpen(false)} color="primary" />
+            <Button fullWidth onClick={() => setOpen(false)} color="primary">
+              Close view
+            </Button>
           )}
         </Drawer.Footer>
       </Drawer.Content>
