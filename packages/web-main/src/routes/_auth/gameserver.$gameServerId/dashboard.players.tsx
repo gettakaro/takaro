@@ -146,26 +146,32 @@ function Component() {
   });
   const [quickSearchInput, setQuickSearchInput] = useState<string>('');
 
+  const queryParams = {
+    page: pagination.paginationState.pageIndex,
+    limit: pagination.paginationState.pageSize,
+    extend: ['player'],
+    sortBy: sorting.sortingState[0]?.id,
+    sortDirection: sorting.sortingState[0]?.desc
+      ? PlayerOnGameServerSearchInputDTOSortDirectionEnum.Desc
+      : PlayerOnGameServerSearchInputDTOSortDirectionEnum.Asc,
+    filters: {
+      gameServerId: [gameServerId],
+      gameId: columnFilters.columnFiltersState.find((filter) => filter.id === 'gameId')?.value,
+      online: columnFilters.columnFiltersState.find((filter) => filter.id === 'online')?.value?.map(Boolean),
+    },
+    search: {
+      gameId: columnSearch.columnSearchState.find((search) => search.id === 'gameId')?.value,
+      name: quickSearchInput ? [quickSearchInput] : undefined,
+    },
+  };
+
   const { data, isLoading, refetch } = useQuery({
-    ...playersOnGameServersQueryOptions({
-      page: pagination.paginationState.pageIndex,
-      limit: pagination.paginationState.pageSize,
-      extend: ['player'],
-      sortBy: sorting.sortingState[0]?.id,
-      sortDirection: sorting.sortingState[0]?.desc
-        ? PlayerOnGameServerSearchInputDTOSortDirectionEnum.Desc
-        : PlayerOnGameServerSearchInputDTOSortDirectionEnum.Asc,
-      filters: {
-        gameServerId: [gameServerId],
-        gameId: columnFilters.columnFiltersState.find((filter) => filter.id === 'gameId')?.value,
-        online: columnFilters.columnFiltersState.find((filter) => filter.id === 'online')?.value?.map(Boolean),
-      },
-      search: {
-        gameId: columnSearch.columnSearchState.find((search) => search.id === 'gameId')?.value,
-        name: quickSearchInput ? [quickSearchInput] : undefined,
-      },
-    }),
-    initialData: loaderData.playersData,
+    ...playersOnGameServersQueryOptions(queryParams),
+    // Only use initialData if the query params match the initial load
+    initialData:
+      pagination.paginationState.pageIndex === 0 && columnFilters.columnFiltersState.length === 0 && !quickSearchInput
+        ? loaderData.playersData
+        : undefined,
   });
 
   // Query for online players count
@@ -324,7 +330,7 @@ function Component() {
       ? {
           paginationState: pagination.paginationState,
           setPaginationState: pagination.setPaginationState,
-          pageOptions: pagination.getPageOptions(data),
+          pageOptions: pagination.getPageOptions(data!),
         }
       : undefined;
 
@@ -363,7 +369,7 @@ function Component() {
             title="Players"
             id="gameserver-players"
             columns={columnDefs}
-            data={(data?.data ?? []) as unknown as Array<PlayerOnGameserverOutputDTO & { player: PlayerOutputDTO }>}
+            data={(data?.data as any) ?? []}
             pagination={p}
             columnFiltering={columnFilters}
             columnSearch={columnSearch}
