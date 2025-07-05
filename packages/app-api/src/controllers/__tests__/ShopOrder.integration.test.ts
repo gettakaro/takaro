@@ -1,6 +1,7 @@
 import { IntegrationTest, expect, IShopSetup, shopSetup } from '@takaro/test';
 import { ShopOrderOutputDTOStatusEnum, isAxiosError } from '@takaro/apiclient';
 import { describe } from 'node:test';
+import { EventChatMessage } from '@takaro/modules';
 const group = 'ShopOrderController';
 
 const tests = [
@@ -188,6 +189,54 @@ const tests = [
 
       const res = await this.setupData.client1.shopOrder.shopOrderControllerClaim(order.data.data.id);
       expect(res.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Completed);
+      return res;
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'Claim order with multiple amounts gives correct quantity',
+    setup: shopSetup,
+    test: async function () {
+      // First create a listing with multiple items per order
+      const items = (
+        await this.client.item.itemControllerSearch({
+          filters: { gameserverId: [this.setupData.gameserver.id] },
+        })
+      ).data.data;
+      const testItem = items[0];
+
+      const multiItemListing = await this.client.shopListing.shopListingControllerCreate({
+        gameServerId: this.setupData.gameserver.id,
+        items: [{ itemId: testItem.id, amount: 5 }], // 5 items per order
+        price: 50,
+        name: 'Multi-item test listing',
+      });
+
+      // Give the player enough currency
+      await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
+        this.setupData.gameserver.id,
+        this.setupData.players[0].id,
+        { currency: 1000 },
+      );
+
+      // Create an order for 3 units (should give 5 * 3 = 15 items total)
+      const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: multiItemListing.data.data.id,
+        amount: 3,
+      });
+
+      const res = await this.setupData.client1.shopOrder.shopOrderControllerClaim(order.data.data.id);
+      expect(res.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Completed);
+
+      // Bug repro: before when ordering 3 units, we would send 3 messages to the player,
+      // each with 5 items, resulting in 15 items total but 3 separate messages
+      // Now we should only have 1 message with 15 items total
+      const messages = (await this.client.event.eventControllerSearch({ filters: { eventName: ['chat-message'] } }))
+        .data.data;
+      const containsItemMessage = messages.some((msg) => (msg.meta as EventChatMessage)?.msg?.includes(`15x Wood`));
+      expect(containsItemMessage).to.be.true;
+
       return res;
     },
   }),

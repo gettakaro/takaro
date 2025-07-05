@@ -41,6 +41,7 @@ export const TakaroEvents = {
   SHOP_LISTING_DELETED: 'shop-listing-deleted',
   SHOP_ORDER_CREATED: 'shop-order-created',
   SHOP_ORDER_STATUS_CHANGED: 'shop-order-status-changed',
+  SHOP_ORDER_DELIVERY_FAILED: 'shop-order-delivery-failed',
   PLAYER_LINKED: 'player-linked',
   GAMESERVER_CREATED: 'gameserver-created',
   GAMESERVER_UPDATED: 'gameserver-updated',
@@ -317,6 +318,30 @@ export class TakaroEventShopOrderCreated extends BaseEvent<TakaroEventShopOrderC
   type = TakaroEvents.SHOP_ORDER_CREATED;
   @IsUUID()
   id: string;
+  @IsString()
+  listingName: string;
+  @IsNumber()
+  price: number;
+  @IsNumber()
+  amount: number;
+  @IsNumber()
+  totalPrice: number;
+  @ValidateNested({ each: true })
+  @Type(() => TakaroEventShopItem)
+  @IsOptional()
+  items?: TakaroEventShopItem[];
+}
+
+export class TakaroEventShopItem extends TakaroDTO<TakaroEventShopItem> {
+  @IsString()
+  name: string;
+  @IsString()
+  code: string;
+  @IsNumber()
+  amount: number;
+  @IsString()
+  @IsOptional()
+  quality?: string;
 }
 
 export class TakaroEventShopOrderStatusChanged extends BaseEvent<TakaroEventShopOrderStatusChanged> {
@@ -326,6 +351,18 @@ export class TakaroEventShopOrderStatusChanged extends BaseEvent<TakaroEventShop
   id: string;
   @IsString()
   status: string;
+}
+
+export class TakaroEventShopOrderDeliveryFailed extends BaseEvent<TakaroEventShopOrderDeliveryFailed> {
+  @IsString()
+  type = TakaroEvents.SHOP_ORDER_DELIVERY_FAILED;
+  @IsUUID()
+  id: string;
+  @IsString()
+  error: string;
+  @ValidateNested({ each: true })
+  @Type(() => TakaroEventShopItem)
+  items: TakaroEventShopItem[];
 }
 
 export class TakaroEventPlayerLinked extends BaseEvent<TakaroEventPlayerLinked> {
@@ -373,6 +410,7 @@ export const TakaroEventsMapping = {
   [TakaroEvents.SHOP_LISTING_DELETED]: TakaroEventShopListingDeleted,
   [TakaroEvents.SHOP_ORDER_CREATED]: TakaroEventShopOrderCreated,
   [TakaroEvents.SHOP_ORDER_STATUS_CHANGED]: TakaroEventShopOrderStatusChanged,
+  [TakaroEvents.SHOP_ORDER_DELIVERY_FAILED]: TakaroEventShopOrderDeliveryFailed,
   [TakaroEvents.PLAYER_LINKED]: TakaroEventPlayerLinked,
   [TakaroEvents.GAMESERVER_CREATED]: TakaroEventGameserverCreated,
   [TakaroEvents.GAMESERVER_UPDATED]: TakaroEventGameserverUpdated,
