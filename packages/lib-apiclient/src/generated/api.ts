@@ -1910,12 +1910,6 @@ export interface DomainSearchInputDTO {
      * @memberof DomainSearchInputDTO
      */
     'sortDirection'?: DomainSearchInputDTOSortDirectionEnum;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof DomainSearchInputDTO
-     */
-    'extend'?: Array<string>;
 }
 
 export const DomainSearchInputDTOSortDirectionEnum = {
@@ -2280,12 +2274,6 @@ export interface EntitySearchInputDTO {
      * @memberof EntitySearchInputDTO
      */
     'sortDirection'?: EntitySearchInputDTOSortDirectionEnum;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof EntitySearchInputDTO
-     */
-    'extend'?: Array<string>;
 }
 
 export const EntitySearchInputDTOSortDirectionEnum = {
@@ -4193,12 +4181,6 @@ export interface GuildSearchInputDTO {
      * @memberof GuildSearchInputDTO
      */
     'sortDirection'?: GuildSearchInputDTOSortDirectionEnum;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof GuildSearchInputDTO
-     */
-    'extend'?: Array<string>;
 }
 
 export const GuildSearchInputDTOSortDirectionEnum = {
@@ -6559,12 +6541,6 @@ export interface ModuleInstallationSearchInputDTO {
      * @memberof ModuleInstallationSearchInputDTO
      */
     'sortDirection'?: ModuleInstallationSearchInputDTOSortDirectionEnum;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof ModuleInstallationSearchInputDTO
-     */
-    'extend'?: Array<string>;
 }
 
 export const ModuleInstallationSearchInputDTOSortDirectionEnum = {
@@ -7124,12 +7100,6 @@ export interface ModuleVersionSearchInputDTO {
      * @memberof ModuleVersionSearchInputDTO
      */
     'sortDirection'?: ModuleVersionSearchInputDTOSortDirectionEnum;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof ModuleVersionSearchInputDTO
-     */
-    'extend'?: Array<string>;
 }
 
 export const ModuleVersionSearchInputDTOSortDirectionEnum = {
@@ -10533,6 +10503,8 @@ export interface ShopOrderSearchInputDTO {
 
 export const ShopOrderSearchInputDTOExtendEnum = {
     Listing: 'listing',
+    ListingItems: 'listing.items',
+    ListingItemsItem: 'listing.items.item',
     Player: 'player'
 } as const;
 
@@ -12337,12 +12309,6 @@ export interface VariableSearchInputDTO {
      * @memberof VariableSearchInputDTO
      */
     'sortDirection'?: VariableSearchInputDTOSortDirectionEnum;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof VariableSearchInputDTO
-     */
-    'extend'?: Array<string>;
 }
 
 export const VariableSearchInputDTOSortDirectionEnum = {

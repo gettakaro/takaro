@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Type, Exclude } from 'class-transformer';
 import { ValidateNested, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
@@ -60,6 +60,9 @@ class VariableSearchInputDTO extends ITakaroQuery<VariableSearchInputAllowedFilt
   @ValidateNested()
   @Type(() => VariableSearchInputAllowedSearch)
   declare search: VariableSearchInputAllowedSearch;
+
+  @Exclude()
+  declare extend?: string[];
 }
 
 @OpenAPI({
