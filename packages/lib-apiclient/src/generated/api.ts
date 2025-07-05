@@ -12380,6 +12380,12 @@ export interface VariableSearchInputDTO {
   search?: VariableSearchInputAllowedSearch;
   /**
    *
+   * @type {Array<string>}
+   * @memberof VariableSearchInputDTO
+   */
+  extend?: Array<VariableSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof VariableSearchInputDTO
    */
@@ -12419,10 +12425,11 @@ export interface VariableSearchInputDTO {
 export const VariableSearchInputDTOExtendEnum = {
   Module: 'module',
   Player: 'player',
-  GameServer: 'gameServer'
+  GameServer: 'gameServer',
 } as const;
 
-export type VariableSearchInputDTOExtendEnum = typeof VariableSearchInputDTOExtendEnum[keyof typeof VariableSearchInputDTOExtendEnum];
+export type VariableSearchInputDTOExtendEnum =
+  (typeof VariableSearchInputDTOExtendEnum)[keyof typeof VariableSearchInputDTOExtendEnum];
 export const VariableSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
