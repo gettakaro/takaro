@@ -7,6 +7,9 @@ set -e
 # allow ** to match recursively & avoid literal patterns when nothing matches
 shopt -s globstar nullglob
 
+# Source the shared TypeScript checking function
+source "$(dirname "$0")/typecheck-tests.sh"
+
 # Default values
 PACKAGE_NAME=""
 TEST_TYPE="all"
@@ -86,6 +89,10 @@ if ! ls $TEST_PATTERN >/dev/null 2>&1; then
 fi
 
 echo "Test pattern: $TEST_PATTERN"
+
+# Run TypeScript check before running tests
+echo "Checking TypeScript for $PACKAGE_NAME ($TEST_TYPE tests)..."
+typecheck_tests "$TEST_PATTERN"
 
 # Run the tests
 node --test-concurrency 1 --test-force-exit --import=ts-node-maintained/register/esm --test "$TEST_PATTERN"

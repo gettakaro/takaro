@@ -5,18 +5,16 @@
 
 set -e
 
+# Source the shared TypeScript checking function
+source "$(dirname "$0")/typecheck-tests.sh"
+
 # Default values
-CHECK_MODE=false
 DEBUG_MODE=false
 TEST_FILE=""
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
-    --check)
-      CHECK_MODE=true
-      shift
-      ;;
     --debug)
       DEBUG_MODE=true
       shift
@@ -40,10 +38,9 @@ done
 # Validate test file is provided
 if [[ -z "$TEST_FILE" ]]; then
   echo "Error: Please specify a test file to run"
-  echo "Usage: $0 [--check] [--debug] <test-file>"
+  echo "Usage: $0 [--debug] <test-file>"
   echo "Examples:"
   echo "  $0 packages/lib-config/src/__tests__/config.unit.test.ts"
-  echo "  $0 --check packages/app-api/src/controllers/__tests__/TrackingController.integration.test.ts"
   echo "  $0 --debug packages/lib-modules/src/__tests__/ping.integration.test.ts"
   exit 1
 fi
@@ -54,15 +51,9 @@ if [[ ! -f "$TEST_FILE" ]]; then
   exit 1
 fi
 
-# TypeScript checking mode
-if [[ "$CHECK_MODE" == "true" ]]; then
-  echo "Running TypeScript check on $TEST_FILE..."
-  if ! npx tsc --noEmit "$TEST_FILE"; then
-    echo "TypeScript check failed for $TEST_FILE"
-    exit 1
-  fi
-  echo "TypeScript check passed. Proceeding with test execution..."
-fi
+# Always run TypeScript check before running tests
+echo "Checking TypeScript for $TEST_FILE..."
+typecheck_tests "$TEST_FILE"
 
 # Set environment variables for consistent test behavior
 export LOGGING_LEVEL=none
