@@ -117,5 +117,5 @@ export interface IGameServer {
   shutdown(): Promise<void>;
 
   getMapInfo(): Promise<MapInfoDTO>;
-  getMapTile(x: number, y: number, z: number): Promise<Buffer>;
+  getMapTile(z: number, x: number, y: number): Promise<Buffer>;
 }

@@ -92,7 +92,7 @@ export class SdtdApiClient {
     });
   }
 
-  async getMapTile(x: number, y: number, z: number): Promise<Buffer> {
+  async getMapTile(z: number, x: number, y: number): Promise<Buffer> {
     const res = await this.client.get(`/map/${z}/${x}/${y}.png?t=${Date.now() / 1000}`, {
       responseType: 'arraybuffer',
     });

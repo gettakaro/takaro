@@ -569,8 +569,8 @@ export class GameServerService extends TakaroService<
     return gameInstance.getMapInfo();
   }
 
-  async getMapTile(gameServerId: string, x: number, y: number, z: number) {
+  async getMapTile(gameServerId: string, z: number, x: number, y: number) {
     const gameInstance = await this.getGame(gameServerId);
-    return gameInstance.getMapTile(x, y, z);
+    return gameInstance.getMapTile(z, x, y);
   }
 }
