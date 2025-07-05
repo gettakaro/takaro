@@ -58,9 +58,33 @@ When querying large data sets, it's often useful to retrieve the data in smaller
 
 In the above example, the API will return the second page of results, with a limit of 10 records per page.
 
+### Extend
+
+The extend parameter allows you to include related entities in the response. This reduces the need for multiple API calls and improves performance when you need associated data.
+
+```json
+{
+  "extend": ["roles", "gameServers"]
+}
+```
+
+When using extend, the related data will be included in the response object under the property name specified in the extend array. This makes it easy to access all necessary information in a single request.
+
+#### Nested Extends
+
+Some endpoints support nested extends using dot notation:
+
+```json
+{
+  "extend": ["listing.items.item"]
+}
+```
+
+This will include the listing, its items, and the full item details for each item in the shop order response.
+
 ### Putting it all together
 
-You can combine filters, searches, and pagination in a single query. Here is an example that combines all three:
+You can combine filters, searches, pagination, and extend in a single query. Here is an example that combines all features:
 
 ```json
 {
@@ -71,11 +95,12 @@ You can combine filters, searches, and pagination in a single query. Here is an 
     "name": ["John"]
   },
   "page": 1,
-  "limit": 5
+  "limit": 5,
+  "extend": ["roles", "gameServers"]
 }
 ```
 
-This query will return the first page of records where the email field exactly matches "example.com", and the name field contains the substring "John", with a maximum of 5 records in the response.
+This query will return the first page of records where the email field exactly matches "john@example.com", and the name field contains the substring "John", with a maximum of 5 records in the response, including the related roles and gameServers data for each record.
 
 ## Error Codes and Handling
 
