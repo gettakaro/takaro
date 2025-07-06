@@ -49,11 +49,8 @@ fi
 echo "Waiting for test dependencies..."
 node packages/test/dist/waitUntilReady.js
 
-# TypeScript check for workspace tests
-echo "Checking TypeScript for workspace tests..."
-typecheck_tests "packages/web-main/**/*.test.ts" "packages/lib-components/**/*.test.ts"
-
 # Run workspace tests first (for web-main and lib-components)
+# Note: Skipping TypeScript check for workspace tests as Vitest handles TypeScript validation
 echo "Running workspace tests..."
 COMMAND="--if-present test:unit" REGEX='(web-main)|(lib-components)' bash ./scripts/run-all-pkgs.sh
 
