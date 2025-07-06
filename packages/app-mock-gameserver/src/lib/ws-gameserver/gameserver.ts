@@ -1,8 +1,6 @@
 import {
-  EventEntityKilled,
   EventLogLine,
   EventPayload,
-  EventPlayerConnected,
   EventPlayerDisconnected,
   GameEvents,
   GameEventTypes,
@@ -28,12 +26,12 @@ import {
 } from '@takaro/gameserver';
 import { GameDataHandler } from './DataHandler.js';
 import { ActivitySimulator } from './ActivitySimulator.js';
-import { SimulationConfig, EVENT_TYPE_NAMES } from './SimulationState.js';
 import { GAME_ITEMS, GAME_ENTITIES } from './GameContent.js';
 import { getRandomPublicIP } from './IpGenerator.js';
 import { PartialDeep } from 'type-fest/index.js';
 import { readFile } from 'fs/promises';
 import path from 'path';
+import { CommandRegistry, getAllCommands, CommandContext } from './commands/index.js';
 
 interface ActionHandler {
   (args: any): Promise<any>;
@@ -49,6 +47,7 @@ export class GameServer implements IGameServer {
   private dataHandler: GameDataHandler;
   private activitySimulator: ActivitySimulator;
   private serverId;
+  private commandRegistry: CommandRegistry;
 
   public connectionInfo: unknown = {};
 
@@ -91,6 +90,11 @@ export class GameServer implements IGameServer {
       eventEmitter: async (type: string, data: any) => this.sendEvent(type as GameEventTypes, data),
       serverLogger: (message: string) => this.sendLog(message),
     });
+
+    // Initialize command registry
+    this.commandRegistry = new CommandRegistry();
+    this.commandRegistry.registerAll(getAllCommands());
+    this.log.info(`Registered ${this.commandRegistry.getAll().length} commands`);
   }
 
   async init() {
@@ -318,7 +322,7 @@ export class GameServer implements IGameServer {
     });
   }
 
-  private sendEvent(type: GameEventTypes, data: EventPayload) {
+  public sendEvent(type: GameEventTypes, data: EventPayload) {
     this.wsClient.send({
       type: 'gameEvent',
       payload: {
@@ -442,477 +446,48 @@ export class GameServer implements IGameServer {
     try {
       this.log.info(`Executing console command: ${rawCommand}`);
 
-      const output = new CommandOutput({
-        rawResult: 'Unknown command (Command not implemented in mock game server)',
-        success: false,
-      });
+      const { command, commandName, args } = this.commandRegistry.parse(rawCommand);
 
-      if (rawCommand === 'version') {
-        output.rawResult = 'Mock game server v0.0.1';
-        output.success = true;
+      if (!command) {
+        const suggestions = this.commandRegistry.getSuggestions(commandName);
+        const suggestionText = suggestions.length > 0 ? `\nDid you mean: ${suggestions.slice(0, 3).join(', ')}` : '';
+
+        return new CommandOutput({
+          rawResult: `Unknown command: ${commandName}. Use 'help' for available commands.${suggestionText}`,
+          success: false,
+        });
       }
 
-      if (rawCommand === 'connectAll') {
-        const players = await this.dataHandler.getAllPlayers();
-        await Promise.all(
-          players.map(async (p) => {
-            await this.dataHandler.setOnlineStatus(p.player.gameId, true);
-            this.sendEvent(
-              GameEvents.PLAYER_CONNECTED,
-              new EventPlayerConnected({
-                player: p.player,
-                msg: 'Player connected',
-                type: GameEvents.PLAYER_CONNECTED,
-              }),
-            );
-          }),
-        );
-        output.rawResult = 'Connected all players';
-        output.success = true;
-      }
-
-      if (rawCommand === 'disconnectAll') {
-        const players = await this.getPlayers();
-        await Promise.all(
-          players.map(async (p) => {
-            await this.dataHandler.setOnlineStatus(p.gameId, false);
-            this.sendEvent(
-              GameEvents.PLAYER_DISCONNECTED,
-              new EventPlayerDisconnected({
-                player: p,
-                msg: 'Player disconnected',
-                type: GameEvents.PLAYER_DISCONNECTED,
-              }),
-            );
-          }),
-        );
-        output.rawResult = 'Disconnected all players';
-        output.success = true;
-      }
-
-      if (rawCommand.startsWith('say')) {
-        const message = rawCommand.replace('say ', '');
-        await this.sendMessage(message, new IMessageOptsDTO({}));
-        output.rawResult = `Sent message: ${message}`;
-        output.success = true;
-      }
-
-      if (rawCommand.startsWith('ban')) {
-        const [_, playerId, reason] = rawCommand.split(' ');
-        await this.banPlayer(
-          new BanDTO({
-            player: new IPlayerReferenceDTO({ gameId: playerId }),
-            reason,
-          }),
-        );
-        output.rawResult = `Banned player ${playerId} with reason: ${reason}`;
-        output.success = true;
-      }
-
-      if (rawCommand.startsWith('unban')) {
-        const [_, playerId] = rawCommand.split(' ');
-        await this.unbanPlayer(new IPlayerReferenceDTO({ gameId: playerId }));
-        output.rawResult = `Unbanned player ${playerId}`;
-        output.success = true;
-      }
-
-      if (rawCommand.startsWith('triggerKill')) {
-        const [_, playerId] = rawCommand.split(' ');
-        const player = await this.getPlayer(new IPlayerReferenceDTO({ gameId: playerId }));
-        this.sendEvent(
-          GameEvents.ENTITY_KILLED,
-          new EventEntityKilled({
-            entity: 'zombie',
-            player,
-            weapon: 'knife',
-          }),
-        );
-        output.rawResult = `Triggered kill for player ${playerId}`;
-        output.success = true;
-      }
-
-      if (rawCommand.startsWith('setPlayerData')) {
-        try {
-          // Parse command: setPlayerData <gameId> {data}
-          const match = rawCommand.match(/^setPlayerData\s+(\S+)\s+(.+)$/);
-          if (!match) {
-            output.rawResult = 'Invalid command format. Use: setPlayerData <gameId> {data}';
-            output.success = false;
-          } else {
-            const [_, playerId, dataJson] = match;
-            try {
-              const data = JSON.parse(dataJson);
-              await this.dataHandler.updatePlayerData(playerId, data);
-              output.rawResult = `Updated player ${playerId} data`;
-              output.success = true;
-            } catch (parseError) {
-              output.rawResult = `Failed to parse JSON data: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`;
-              output.success = false;
-            }
-          }
-        } catch (error) {
-          output.rawResult = `Error updating player data: ${error instanceof Error ? error.message : 'Unknown error'}`;
-          output.success = false;
-        }
-      }
-
-      if (rawCommand.startsWith('createPlayer')) {
-        try {
-          // Parse command: createPlayer <gameId> {data}
-          const match = rawCommand.match(/^createPlayer\s+(\S+)\s+(.+)$/);
-          if (!match) {
-            output.rawResult = 'Invalid command format. Use: createPlayer <gameId> {data}';
-            output.success = false;
-          } else {
-            const [_, gameId, dataJson] = match;
-            try {
-              const data = JSON.parse(dataJson);
-
-              // Check if player already exists
-              const existingPlayer = await this.dataHandler.getPlayer(new IPlayerReferenceDTO({ gameId }));
-              if (existingPlayer) {
-                output.rawResult = `Player with gameId ${gameId} already exists`;
-                output.success = false;
-              } else {
-                // Create new player with provided data
-                const player = new IGamePlayer({
-                  gameId,
-                  name: data.name || faker.internet.userName(),
-                  steamId: data.steamId || faker.string.alphanumeric(16),
-                  epicOnlineServicesId: data.epicOnlineServicesId || faker.string.alphanumeric(16),
-                  xboxLiveId: data.xboxLiveId || faker.string.alphanumeric(16),
-                  ip: data.ip || getRandomPublicIP(),
-                  ping: data.ping || faker.number.int({ max: 99 }),
-                });
-
-                const meta = {
-                  position: {
-                    x: data.positionX || faker.number.int({ min: -1000, max: 1000 }),
-                    y: data.positionY || faker.number.int({ min: 0, max: 512 }),
-                    z: data.positionZ || faker.number.int({ min: -1000, max: 1000 }),
-                    dimension: data.dimension || 'overworld',
-                  },
-                  online: data.online || false,
-                };
-
-                await this.dataHandler.addPlayer(player, meta);
-                await this.dataHandler.initializePlayerInventory(gameId);
-
-                output.rawResult = `Created player ${gameId} with steamId: ${player.steamId}`;
-                output.success = true;
-
-                // If player is online, emit connection event
-                if (meta.online) {
-                  this.sendEvent(
-                    GameEvents.PLAYER_CONNECTED,
-                    new EventPlayerConnected({
-                      player,
-                      msg: 'Player connected',
-                      type: GameEvents.PLAYER_CONNECTED,
-                    }),
-                  );
-                }
-              }
-            } catch (parseError) {
-              output.rawResult = `Failed to parse JSON data: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`;
-              output.success = false;
-            }
-          }
-        } catch (error) {
-          output.rawResult = `Error creating player: ${error instanceof Error ? error.message : 'Unknown error'}`;
-          output.success = false;
-        }
-      }
-
-      if (rawCommand === 'startSimulation') {
-        try {
-          if (this.activitySimulator.isActive()) {
-            output.rawResult = 'Activity simulation is already running';
-            output.success = false;
-          } else {
-            await this.activitySimulator.start();
-            output.rawResult = 'Activity simulation started successfully';
-            output.success = true;
-          }
-        } catch (error) {
-          output.rawResult = `Error starting simulation: ${error instanceof Error ? error.message : 'Unknown error'}`;
-          output.success = false;
-        }
-      }
-
-      if (rawCommand === 'stopSimulation') {
-        try {
-          if (!this.activitySimulator.isActive()) {
-            output.rawResult = 'Activity simulation is not running';
-            output.success = false;
-          } else {
-            await this.activitySimulator.stop();
-            output.rawResult = 'Activity simulation stopped successfully';
-            output.success = true;
-          }
-        } catch (error) {
-          output.rawResult = `Error stopping simulation: ${error instanceof Error ? error.message : 'Unknown error'}`;
-          output.success = false;
-        }
-      }
-
-      if (rawCommand === 'simulationStatus') {
-        try {
-          const isActive = this.activitySimulator.isActive();
-          const config = this.activitySimulator.getConfig();
-          const frequencies = this.activitySimulator.getFrequencies();
-
-          const eventDetails = Object.entries(config)
-            .map(([key, eventConfig]) => {
-              const freq = frequencies[key as keyof typeof frequencies];
-              return `${key}: ${freq}% (${eventConfig.enabled ? 'enabled' : 'disabled'})`;
-            })
-            .join(', ');
-
-          output.rawResult = `Simulation ${isActive ? 'ACTIVE' : 'INACTIVE'}. Events: ${eventDetails}`;
-          output.success = true;
-        } catch (error) {
-          output.rawResult = `Error getting simulation status: ${error instanceof Error ? error.message : 'Unknown error'}`;
-          output.success = false;
-        }
-      }
-
-      if (rawCommand.startsWith('setSimulationFrequency')) {
-        try {
-          const parts = rawCommand.split(' ');
-          if (parts.length !== 2) {
-            output.rawResult = 'Usage: setSimulationFrequency <0-100>';
-            output.success = false;
-          } else {
-            const frequency = parseInt(parts[1], 10);
-            if (isNaN(frequency) || frequency < 0 || frequency > 100) {
-              output.rawResult = 'Invalid frequency. Must be a number between 0 and 100.';
-              output.success = false;
-            } else {
-              await this.activitySimulator.setGlobalFrequency(frequency);
-              output.rawResult = `Global simulation frequency set to ${frequency}%`;
-              output.success = true;
-            }
-          }
-        } catch (error) {
-          output.rawResult = `Error setting simulation frequency: ${error instanceof Error ? error.message : 'Unknown error'}`;
-          output.success = false;
-        }
-      }
-
-      if (rawCommand.startsWith('setSimulationEventFrequency')) {
-        try {
-          const parts = rawCommand.split(' ');
-          if (parts.length !== 3) {
-            output.rawResult = 'Usage: setSimulationEventFrequency <eventType> <0-100>';
-            output.success = false;
-          } else {
-            const eventType = parts[1];
-            const frequency = parseInt(parts[2], 10);
-
-            if (isNaN(frequency) || frequency < 0 || frequency > 100) {
-              output.rawResult = 'Invalid frequency. Must be a number between 0 and 100.';
-              output.success = false;
-            } else {
-              // Use imported event type names mapping
-              const internalEventType = EVENT_TYPE_NAMES[eventType] || eventType;
-
-              if (
-                !EVENT_TYPE_NAMES[eventType] &&
-                !Object.keys(this.activitySimulator.getConfig()).includes(eventType)
-              ) {
-                output.rawResult = `Unknown event type: ${eventType}. Valid types: ${Object.keys(EVENT_TYPE_NAMES).join(', ')}`;
-                output.success = false;
-              } else {
-                await this.activitySimulator.setEventFrequency(internalEventType as keyof SimulationConfig, frequency);
-                output.rawResult = `${eventType} frequency set to ${frequency}%`;
-                output.success = true;
-              }
-            }
-          }
-        } catch (error) {
-          output.rawResult = `Error setting event frequency: ${error instanceof Error ? error.message : 'Unknown error'}`;
-          output.success = false;
-        }
-      }
-
-      if (rawCommand === 'getSimulationFrequency') {
-        try {
-          const frequencies = this.activitySimulator.getFrequencies();
-          const isActive = this.activitySimulator.isActive();
-
-          let result = `Simulation Frequencies (${isActive ? 'ACTIVE' : 'INACTIVE'}):\n`;
-
-          // Map internal names to user-friendly names
-          const displayNames: Record<string, string> = {
-            chatMessage: 'Chat',
-            playerMovement: 'Movement',
-            connection: 'Connection',
-            death: 'Death',
-            kill: 'Kill',
-            itemInteraction: 'Items',
-          };
-
-          Object.entries(frequencies).forEach(([key, value]) => {
-            const displayName = displayNames[key] || key;
-            result += `- ${displayName}: ${value}%\n`;
+      // Validate command arguments
+      if (command.validate) {
+        const validation = command.validate(args);
+        if (!validation.valid) {
+          return new CommandOutput({
+            rawResult: validation.error || 'Invalid command arguments',
+            success: false,
           });
-
-          output.rawResult = result.trim();
-          output.success = true;
-        } catch (error) {
-          output.rawResult = `Error getting simulation frequencies: ${error instanceof Error ? error.message : 'Unknown error'}`;
-          output.success = false;
         }
       }
 
-      if (rawCommand === 'simulationDebug') {
-        try {
-          const isActive = this.activitySimulator.isActive();
-          const config = this.activitySimulator.getConfig();
-          const onlinePlayers = await this.dataHandler.getOnlinePlayers();
-          const allPlayers = await this.dataHandler.getAllPlayers();
+      // Create command context
+      const context: CommandContext = {
+        gameServer: this,
+        dataHandler: this.dataHandler,
+        activitySimulator: this.activitySimulator,
+        log: this.log,
+        commandRegistry: this.commandRegistry as any, // For help command
+      };
 
-          let result = '🔍 Simulation Debug Information\n';
-          result += `Status: ${isActive ? 'ACTIVE ✅' : 'INACTIVE ❌'}\n`;
-          result += `Online Players: ${onlinePlayers.length}\n`;
-          result += `Total Players: ${allPlayers.length}\n\n`;
+      // Execute the command
+      const result = await command.execute(args, context);
 
-          result += 'Event Intervals (at current frequencies):\n';
-
-          Object.entries(config).forEach(([eventType, eventConfig]) => {
-            const intervals = this.activitySimulator.calculateIntervals(
-              eventConfig.frequency,
-              eventType as keyof SimulationConfig,
-            );
-            const minSec = Math.round(intervals.minInterval / 1000);
-            const maxSec = Math.round(intervals.maxInterval / 1000);
-            const status = eventConfig.enabled ? '✅' : '❌';
-
-            result += `- ${eventType}: ${eventConfig.frequency}% ${status} (${minSec}-${maxSec}s)\n`;
-          });
-
-          if (onlinePlayers.length === 0) {
-            result += "\n⚠️ Warning: No online players - most events won't fire";
-          }
-
-          output.rawResult = result.trim();
-          output.success = true;
-        } catch (error) {
-          output.rawResult = `Error getting debug info: ${error instanceof Error ? error.message : 'Unknown error'}`;
-          output.success = false;
-        }
-      }
-
-      if (rawCommand.startsWith('testInventory')) {
-        try {
-          const [_, playerId] = rawCommand.split(' ');
-          if (!playerId) {
-            output.rawResult = 'Usage: testInventory <playerId>';
-            output.success = false;
-          } else {
-            // Test inventory operations
-            const currentInventory = await this.dataHandler.getPlayerInventory(playerId);
-            let result = `Player ${playerId} inventory before: `;
-            result += currentInventory.map((item) => `${item.code}(${item.name})`).join(', ') || 'empty';
-
-            // Add an item
-            await this.dataHandler.addItemToInventory(playerId, 'apple', 3);
-            result += '\nAdded 3x apple';
-
-            // Check inventory after
-            const updatedInventory = await this.dataHandler.getPlayerInventory(playerId);
-            result += `\nPlayer ${playerId} inventory after: `;
-            result += updatedInventory.map((item) => `${item.code}(${item.name})`).join(', ') || 'empty';
-
-            output.rawResult = result;
-            output.success = true;
-          }
-        } catch (error) {
-          output.rawResult = `Error testing inventory: ${error instanceof Error ? error.message : 'Unknown error'}`;
-          output.success = false;
-        }
-      }
-
-      if (rawCommand === 'playerPersistenceCheck') {
-        try {
-          const allPlayers = await this.dataHandler.getAllPlayers();
-          const onlinePlayers = await this.dataHandler.getOnlinePlayers();
-
-          let result = '🔍 Player Persistence Check\n';
-          result += `Total players in Redis: ${allPlayers.length}\n`;
-          result += `Online players: ${onlinePlayers.length}\n`;
-          result += `Offline players: ${allPlayers.length - onlinePlayers.length}\n\n`;
-
-          if (allPlayers.length > 0) {
-            result += 'Sample player data:\n';
-            const sample = allPlayers.slice(0, 3);
-            sample.forEach((p, i) => {
-              result += `${i + 1}. ${p.player.name} (ID: ${p.player.gameId}) - ${p.meta.online ? 'ONLINE' : 'OFFLINE'}\n`;
-            });
-          } else {
-            result += 'No players found in Redis\n';
-          }
-
-          output.rawResult = result.trim();
-          output.success = true;
-        } catch (error) {
-          output.rawResult = `Error checking persistence: ${error instanceof Error ? error.message : 'Unknown error'}`;
-          output.success = false;
-        }
-      }
-
-      if (rawCommand === 'populationStats') {
-        try {
-          const onlinePlayers = await this.dataHandler.getOnlinePlayers();
-          const allPlayers = await this.dataHandler.getAllPlayers();
-          const populationManager = new (await import('./PlayerPopulationManager.js')).PlayerPopulationManager();
-
-          const populationStats = populationManager.analyzePopulation(onlinePlayers.length, allPlayers.length);
-          const timePeriod = populationManager.getCurrentTimePeriod();
-
-          let result = '📊 Population Statistics\n';
-          result += `Current Time Period: ${timePeriod}\n`;
-          result += `Online: ${populationStats.currentOnlineCount}/${populationStats.totalPlayerCount} (${populationStats.currentPercentage}%)\n`;
-          result += `Target: ${populationStats.targetPercentage}%\n`;
-          result += `Connection Bias: ${Math.round(populationStats.bias * 100)}% toward connecting\n`;
-          result += `Next Action: ${populationStats.shouldConnect ? 'CONNECT' : 'DISCONNECT'}\n\n`;
-
-          const hourlyTargets = [];
-          for (let hour = 0; hour < 24; hour++) {
-            const testDate = new Date();
-            testDate.setHours(hour);
-            const testManager = new (await import('./PlayerPopulationManager.js')).PlayerPopulationManager();
-            // Temporarily override the current time for testing
-            const originalGetHours = Date.prototype.getHours;
-            Date.prototype.getHours = function () {
-              return hour;
-            };
-            const target = testManager.getTargetOnlinePercentage();
-            Date.prototype.getHours = originalGetHours;
-
-            hourlyTargets.push(`${hour.toString().padStart(2, '0')}:00 - ${target}%`);
-          }
-
-          result += 'Hourly Target Schedule (Today):\n';
-          result += hourlyTargets.join('\n');
-
-          output.rawResult = result.trim();
-          output.success = true;
-        } catch (error) {
-          output.rawResult = `Error getting population stats: ${error instanceof Error ? error.message : 'Unknown error'}`;
-          output.success = false;
-        }
-      }
-
-      this.sendLog(`${output.success ? '🟢' : '🔴'} Command executed: ${rawCommand}`);
-      return output;
+      this.sendLog(`${result.success ? '🟢' : '🔴'} Command executed: ${rawCommand}`);
+      return result;
     } catch (error) {
       this.log.error(`Error executing console command: ${rawCommand}`, error);
       return new CommandOutput({
-        rawResult: '',
+        rawResult: `Command execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         success: false,
-        errorMessage: error instanceof Error ? error.message : 'Unknown error occurred',
       });
     }
   }
