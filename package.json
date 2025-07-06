@@ -36,7 +36,6 @@
     "test:ci": "bash ./scripts/test-runner.sh --ci",
     "test:debug": "bash ./scripts/test-file.sh --debug",
     "test:file": "bash ./scripts/test-file.sh",
-    "test:file:check": "bash ./scripts/test-file.sh --check",
     "test:integration": "bash ./scripts/test-runner.sh --integration",
     "test:package": "bash ./scripts/test-package.sh",
     "test:package:integration": "bash ./scripts/test-package.sh --integration",
