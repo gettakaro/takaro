@@ -630,6 +630,12 @@ export interface BoundingBoxSearchInputDTO {
    * @memberof BoundingBoxSearchInputDTO
    */
   timestamp?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof BoundingBoxSearchInputDTO
+   */
+  gameserverId: string;
 }
 /**
  *
@@ -9214,6 +9220,12 @@ export interface RadiusSearchInputDTO {
    * @memberof RadiusSearchInputDTO
    */
   timestamp?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof RadiusSearchInputDTO
+   */
+  gameserverId: string;
 }
 /**
  *
