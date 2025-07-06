@@ -70,4 +70,9 @@ done
 echo "Building the API client..."
 npm run build
 
+# Run style fixes on generated code
+echo "Running style fixes on generated code..."
+cd ../..
+npm run test:style:fix
+
 echo "API client generation completed successfully!"
