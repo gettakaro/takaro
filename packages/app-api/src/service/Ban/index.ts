@@ -61,7 +61,7 @@ export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateD
           gameserverId: created.gameServerId,
           meta: new TakaroEventPlayerBanned({
             reason: created.reason,
-            until: created.until,
+            until: created.until.toString(),
             isGlobal: created.isGlobal,
             takaroManaged: created.takaroManaged,
           }),
@@ -79,9 +79,9 @@ export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateD
   }
 
   async delete(id: string): Promise<string> {
+    const existing = await this.findOne(id);
+    if (!existing) throw new errors.NotFoundError(`Ban with id ${id} not found`);
     try {
-      const existing = await this.findOne(id);
-
       if (existing.takaroManaged) {
         const gameServerService = new GameServerService(this.domainId);
 

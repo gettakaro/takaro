@@ -23,6 +23,8 @@ export const categorizedEventNames = [
       e.PlayerNewIpDetected,
       e.PlayerDeath,
       e.PlayerLinked,
+      e.PlayerBanned,
+      e.PlayerUnbanned,
     ],
   },
   {
