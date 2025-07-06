@@ -556,6 +556,74 @@ export class GameServer implements IGameServer {
         }
       }
 
+      if (rawCommand.startsWith('createPlayer')) {
+        try {
+          // Parse command: createPlayer <gameId> {data}
+          const match = rawCommand.match(/^createPlayer\s+(\S+)\s+(.+)$/);
+          if (!match) {
+            output.rawResult = 'Invalid command format. Use: createPlayer <gameId> {data}';
+            output.success = false;
+          } else {
+            const [_, gameId, dataJson] = match;
+            try {
+              const data = JSON.parse(dataJson);
+
+              // Check if player already exists
+              const existingPlayer = await this.dataHandler.getPlayer(new IPlayerReferenceDTO({ gameId }));
+              if (existingPlayer) {
+                output.rawResult = `Player with gameId ${gameId} already exists`;
+                output.success = false;
+              } else {
+                // Create new player with provided data
+                const player = new IGamePlayer({
+                  gameId,
+                  name: data.name || faker.internet.userName(),
+                  steamId: data.steamId || faker.string.alphanumeric(16),
+                  epicOnlineServicesId: data.epicOnlineServicesId || faker.string.alphanumeric(16),
+                  xboxLiveId: data.xboxLiveId || faker.string.alphanumeric(16),
+                  ip: data.ip || getRandomPublicIP(),
+                  ping: data.ping || faker.number.int({ max: 99 }),
+                });
+
+                const meta = {
+                  position: {
+                    x: data.positionX || faker.number.int({ min: -1000, max: 1000 }),
+                    y: data.positionY || faker.number.int({ min: 0, max: 512 }),
+                    z: data.positionZ || faker.number.int({ min: -1000, max: 1000 }),
+                    dimension: data.dimension || 'overworld',
+                  },
+                  online: data.online || false,
+                };
+
+                await this.dataHandler.addPlayer(player, meta);
+                await this.dataHandler.initializePlayerInventory(gameId);
+
+                output.rawResult = `Created player ${gameId} with steamId: ${player.steamId}`;
+                output.success = true;
+
+                // If player is online, emit connection event
+                if (meta.online) {
+                  this.sendEvent(
+                    GameEvents.PLAYER_CONNECTED,
+                    new EventPlayerConnected({
+                      player,
+                      msg: 'Player connected',
+                      type: GameEvents.PLAYER_CONNECTED,
+                    }),
+                  );
+                }
+              }
+            } catch (parseError) {
+              output.rawResult = `Failed to parse JSON data: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`;
+              output.success = false;
+            }
+          }
+        } catch (error) {
+          output.rawResult = `Error creating player: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
       if (rawCommand === 'startSimulation') {
         try {
           if (this.activitySimulator.isActive()) {
