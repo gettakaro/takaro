@@ -6,6 +6,8 @@ import { BanCreateDTO, BanOutputDTO, BanUpdateDTO } from './dto.js';
 import { BanModel, BanRepo } from '../../db/ban.js';
 import { GameServerService } from '../GameServerService.js';
 import { PlayerService } from '../Player/index.js';
+import { EventService, EventCreateDTO } from '../EventService.js';
+import { TakaroEvents, TakaroEventPlayerBanned, TakaroEventPlayerUnbanned } from '@takaro/modules';
 
 @traceableClass('service:ban')
 export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateDTO, BanUpdateDTO> {
@@ -48,7 +50,28 @@ export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateD
       this.log.warn('Failed to apply ban on live server for player', { error });
     }
 
-    return this.repo.create(item);
+    const created = await this.repo.create(item);
+
+    try {
+      const eventService = new EventService(this.domainId);
+      await eventService.create(
+        new EventCreateDTO({
+          eventName: TakaroEvents.PLAYER_BANNED,
+          playerId: created.playerId,
+          gameserverId: created.gameServerId,
+          meta: new TakaroEventPlayerBanned({
+            reason: created.reason,
+            until: created.until?.toString(),
+            isGlobal: created.isGlobal,
+            takaroManaged: created.takaroManaged,
+          }),
+        }),
+      );
+    } catch (error) {
+      this.log.warn('Failed to emit ban created event', { error });
+    }
+
+    return created;
   }
 
   async update(id: string, item: BanUpdateDTO): Promise<BanOutputDTO> {
@@ -56,9 +79,9 @@ export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateD
   }
 
   async delete(id: string): Promise<string> {
+    const existing = await this.findOne(id);
+    if (!existing) throw new errors.NotFoundError(`Ban with id ${id} not found`);
     try {
-      const existing = await this.findOne(id);
-
       if (existing.takaroManaged) {
         const gameServerService = new GameServerService(this.domainId);
 
@@ -86,6 +109,24 @@ export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateD
     }
 
     await this.repo.delete(id);
+
+    try {
+      const eventService = new EventService(this.domainId);
+      await eventService.create(
+        new EventCreateDTO({
+          eventName: TakaroEvents.PLAYER_UNBANNED,
+          playerId: existing.playerId,
+          gameserverId: existing.gameServerId,
+          meta: new TakaroEventPlayerUnbanned({
+            isGlobal: existing.isGlobal,
+            takaroManaged: existing.takaroManaged,
+          }),
+        }),
+      );
+    } catch (error) {
+      this.log.warn('Failed to emit ban deleted event', { error });
+    }
+
     return id;
   }
 
