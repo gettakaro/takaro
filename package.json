@@ -91,7 +91,7 @@
     "@types/basic-auth": "1.1.8",
     "@types/bcrypt": "5.0.2",
     "@types/jsonwebtoken": "9.0.7",
-    "@types/passport": "1.0.16",
+    "@types/passport": "1.0.17",
     "@types/passport-oauth2": "1.4.17",
     "@visx/axis": "3.10.1",
     "@visx/brush": "3.10.4",
