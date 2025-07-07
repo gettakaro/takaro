@@ -61,7 +61,7 @@ export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateD
           gameserverId: created.gameServerId,
           meta: new TakaroEventPlayerBanned({
             reason: created.reason,
-            until: created.until.toString(),
+            until: created.until?.toString(),
             isGlobal: created.isGlobal,
             takaroManaged: created.takaroManaged,
           }),

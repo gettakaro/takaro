@@ -1,6 +1,7 @@
 import { IntegrationTest, SetupGameServerPlayers, expect } from '@takaro/test';
 import { Client, isAxiosError } from '@takaro/apiclient';
 import { describe } from 'node:test';
+import { TakaroEvents } from '@takaro/modules';
 
 async function triggerBanSync(client: Client, domainId: string, gameServerId: string) {
   const triggeredJobRes = await client.gameserver.gameServerControllerTriggerJob('syncBans', gameServerId);
@@ -186,6 +187,37 @@ const tests = [
         isGlobal: false,
       });
 
+      // Check that PLAYER_BANNED event was created
+      const events = await this.client.event.eventControllerSearch({
+        filters: {
+          playerId: [this.setupData.pogs1[0].playerId],
+          eventName: [TakaroEvents.PLAYER_BANNED],
+        },
+        sortBy: 'createdAt',
+        sortDirection: 'desc',
+        limit: 10,
+      });
+
+      expect(events.data.data.length).to.be.greaterThan(
+        0,
+        'Expected at least one PLAYER_BANNED event to be created after ban creation',
+      );
+      const banEvent = events.data.data[0];
+      expect(banEvent.eventName).to.equal(TakaroEvents.PLAYER_BANNED, 'Event should be PLAYER_BANNED');
+      expect(banEvent.playerId).to.equal(
+        this.setupData.pogs1[0].playerId,
+        'Event playerId should match the banned player',
+      );
+      expect(banEvent.gameserverId).to.equal(
+        this.setupData.gameServer1.id,
+        'Event gameserverId should match the server where ban was applied',
+      );
+
+      const meta = banEvent.meta as any;
+      expect(meta.reason).to.equal('reason', 'Event metadata should contain the ban reason');
+      expect(meta.isGlobal).to.equal(false, 'Event metadata should indicate this is not a global ban');
+      expect(meta.takaroManaged).to.equal(true, 'Event metadata should indicate this is a Takaro-managed ban');
+
       await this.client.gameserver.gameServerControllerExecuteCommand(this.setupData.gameServer1.id, {
         command: `unban ${this.setupData.pogs1[0].gameId}`,
       });
@@ -212,6 +244,34 @@ const tests = [
         reason: 'reason',
         isGlobal: true,
       });
+
+      // Check that PLAYER_BANNED event was created for global ban
+      const events = await this.client.event.eventControllerSearch({
+        filters: {
+          playerId: [this.setupData.pogs1[0].playerId],
+          eventName: [TakaroEvents.PLAYER_BANNED],
+        },
+        sortBy: 'createdAt',
+        sortDirection: 'desc',
+        limit: 10,
+      });
+
+      expect(events.data.data.length).to.be.greaterThan(
+        0,
+        'Expected at least one PLAYER_BANNED event to be created for global ban',
+      );
+      const banEvent = events.data.data[0];
+      expect(banEvent.eventName).to.equal(TakaroEvents.PLAYER_BANNED, 'Event should be PLAYER_BANNED');
+      expect(banEvent.playerId).to.equal(
+        this.setupData.pogs1[0].playerId,
+        'Event playerId should match the banned player',
+      );
+      expect(banEvent.gameserverId).to.be.null; // Global ban events should not have a gameServerId
+
+      const meta = banEvent.meta as any;
+      expect(meta.reason).to.equal('reason', 'Event metadata should contain the ban reason');
+      expect(meta.isGlobal).to.equal(true, 'Event metadata should indicate this is a global ban');
+      expect(meta.takaroManaged).to.equal(true, 'Event metadata should indicate this is a Takaro-managed ban');
 
       await this.client.gameserver.gameServerControllerExecuteCommand(this.setupData.gameServer1.id, {
         command: `unban ${this.setupData.pogs1[0].gameId}`,
@@ -240,6 +300,34 @@ const tests = [
         isGlobal: true,
       });
 
+      // Check that PLAYER_BANNED event was created
+      const banEvents = await this.client.event.eventControllerSearch({
+        filters: {
+          playerId: [this.setupData.pogs1[0].playerId],
+          eventName: [TakaroEvents.PLAYER_BANNED],
+        },
+        sortBy: 'createdAt',
+        sortDirection: 'desc',
+        limit: 10,
+      });
+
+      expect(banEvents.data.data.length).to.be.greaterThan(
+        0,
+        'Expected at least one PLAYER_BANNED event after global ban creation',
+      );
+      const banEvent = banEvents.data.data[0];
+      expect(banEvent.eventName).to.equal(TakaroEvents.PLAYER_BANNED, 'Ban event should be PLAYER_BANNED');
+      expect(banEvent.playerId).to.equal(
+        this.setupData.pogs1[0].playerId,
+        'Ban event playerId should match the banned player',
+      );
+      expect(banEvent.gameserverId).to.be.null; // Global ban event should not have a gameServerId
+
+      const banMeta = banEvent.meta as any;
+      expect(banMeta.reason).to.equal('reason', 'Ban event metadata should contain the ban reason');
+      expect(banMeta.isGlobal).to.equal(true, 'Ban event metadata should indicate this is a global ban');
+      expect(banMeta.takaroManaged).to.equal(true, 'Ban event metadata should indicate this is a Takaro-managed ban');
+
       await triggerBanSync(this.client, this.standardDomainId, this.setupData.gameServer1.id);
 
       let bans = await this.client.player.banControllerSearch({
@@ -249,6 +337,44 @@ const tests = [
       expect(bans.data.data.length).to.equal(1);
 
       await this.client.player.banControllerDelete(createRes.data.data.id);
+
+      // Check that PLAYER_UNBANNED event was created
+      const unbanEvents = await this.client.event.eventControllerSearch({
+        filters: {
+          playerId: [this.setupData.pogs1[0].playerId],
+          eventName: [TakaroEvents.PLAYER_UNBANNED],
+        },
+        sortBy: 'createdAt',
+        sortDirection: 'desc',
+        limit: 10,
+      });
+
+      expect(unbanEvents.data.data.length).to.be.greaterThan(
+        0,
+        'Expected at least one PLAYER_UNBANNED event after ban deletion',
+      );
+
+      // Find the global unban event (with null gameserverId)
+      const globalUnbanEvent = unbanEvents.data.data.find((event) => event.gameserverId === null);
+      expect(globalUnbanEvent, 'Expected to find a global PLAYER_UNBANNED event with null gameserverId').to.not.be
+        .undefined;
+
+      expect(globalUnbanEvent!.eventName).to.equal(
+        TakaroEvents.PLAYER_UNBANNED,
+        'Unban event should be PLAYER_UNBANNED',
+      );
+      expect(globalUnbanEvent!.playerId).to.equal(
+        this.setupData.pogs1[0].playerId,
+        'Unban event playerId should match the unbanned player',
+      );
+      expect(globalUnbanEvent!.gameserverId).to.be.null; // Global unban event should not have a gameServerId
+
+      const unbanMeta = globalUnbanEvent!.meta as any;
+      expect(unbanMeta.isGlobal).to.equal(true, 'Unban event metadata should indicate this was a global ban');
+      expect(unbanMeta.takaroManaged).to.equal(
+        true,
+        'Unban event metadata should indicate this was a Takaro-managed ban',
+      );
 
       await triggerBanSync(this.client, this.standardDomainId, this.setupData.gameServer1.id);
 
@@ -324,6 +450,29 @@ const tests = [
         isGlobal: false,
       });
 
+      // Check that PLAYER_BANNED event was created with long reason
+      const events = await this.client.event.eventControllerSearch({
+        filters: {
+          playerId: [this.setupData.pogs1[0].playerId],
+          eventName: [TakaroEvents.PLAYER_BANNED],
+        },
+        sortBy: 'createdAt',
+        sortDirection: 'desc',
+        limit: 10,
+      });
+
+      expect(events.data.data.length).to.be.greaterThan(
+        0,
+        'Expected at least one PLAYER_BANNED event for ban with long reason (1000 chars)',
+      );
+      const banEvent = events.data.data[0];
+      expect(banEvent.eventName).to.equal(TakaroEvents.PLAYER_BANNED, 'Event should be PLAYER_BANNED');
+
+      const meta = banEvent.meta as any;
+      expect(meta.reason).to.equal(longReason, 'Event metadata should contain the full 1000-character ban reason');
+      expect(meta.isGlobal).to.equal(false, 'Event metadata should indicate this is not a global ban');
+      expect(meta.takaroManaged).to.equal(true, 'Event metadata should indicate this is a Takaro-managed ban');
+
       await triggerBanSync(this.client, this.standardDomainId, this.setupData.gameServer1.id);
 
       const bans = await this.client.player.banControllerSearch({
@@ -348,6 +497,34 @@ const tests = [
         reason: longReason,
         isGlobal: false,
       });
+
+      // Check that PLAYER_BANNED event was created with truncated reason
+      const events = await this.client.event.eventControllerSearch({
+        filters: {
+          playerId: [this.setupData.pogs1[0].playerId],
+          eventName: [TakaroEvents.PLAYER_BANNED],
+        },
+        sortBy: 'createdAt',
+        sortDirection: 'desc',
+        limit: 10,
+      });
+
+      expect(events.data.data.length).to.be.greaterThan(
+        0,
+        'Expected at least one PLAYER_BANNED event for ban with very long reason (15000 chars)',
+      );
+      const banEvent = events.data.data[0];
+      expect(banEvent.eventName).to.equal(TakaroEvents.PLAYER_BANNED, 'Event should be PLAYER_BANNED');
+
+      const meta = banEvent.meta as any;
+      // The event reason should also be truncated to 10,000 characters
+      expect(meta.reason.length).to.equal(10000, 'Event metadata reason should be truncated to 10,000 characters');
+      expect(meta.reason).to.equal(
+        longReason.substring(0, 10000),
+        'Event metadata should contain the ban reason truncated to 10,000 characters',
+      );
+      expect(meta.isGlobal).to.equal(false, 'Event metadata should indicate this is not a global ban');
+      expect(meta.takaroManaged).to.equal(true, 'Event metadata should indicate this is a Takaro-managed ban');
 
       await triggerBanSync(this.client, this.standardDomainId, this.setupData.gameServer1.id);
 
