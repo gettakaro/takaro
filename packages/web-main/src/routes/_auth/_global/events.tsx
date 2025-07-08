@@ -1,8 +1,18 @@
 import { Button, styled, InfiniteScroll } from '@takaro/lib-components';
 import { EventFeed, EventItem } from '../../../components/events/EventFeed';
 import { Settings } from 'luxon';
-import { eventsInfiniteQueryOptions, useEventSubscription } from '../../../queries/event';
-import { HiStop as PauseIcon, HiPlay as PlayIcon, HiArrowPath as RefreshIcon } from 'react-icons/hi2';
+import {
+  eventsInfiniteQueryOptions,
+  useEventSubscription,
+  exportEventsToCsv,
+  getEventCount,
+} from '../../../queries/event';
+import {
+  HiStop as PauseIcon,
+  HiPlay as PlayIcon,
+  HiArrowPath as RefreshIcon,
+  HiArrowDownTray as DownloadIcon,
+} from 'react-icons/hi2';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { hasPermission } from '../../../hooks/useHasPermission';
@@ -10,9 +20,10 @@ import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { useMemo, useState } from 'react';
 import { EventFilter, EventFilterInputs } from '../../../components/events/EventFilter';
 import { eventFilterSchema } from '../../../components/events/eventFilterSchema';
-import { PERMISSIONS } from '@takaro/apiclient';
+import { PERMISSIONS, EventSearchInputDTO } from '@takaro/apiclient';
 import { zodValidator } from '@tanstack/zod-adapter';
 import { userMeQueryOptions } from '../../../queries/user';
+import { useSnackbar } from 'notistack';
 
 Settings.throwOnInvalid = true;
 
@@ -101,6 +112,8 @@ function Component() {
   const navigate = useNavigate({ from: Route.fullPath });
   const search = Route.useSearch();
   const [live, setLive] = useState<boolean>(true);
+  const [isExporting, setIsExporting] = useState<boolean>(false);
+  const { enqueueSnackbar } = useSnackbar();
 
   useEventSubscription({
     enabled: live,
@@ -137,6 +150,26 @@ function Component() {
     return rawEvents.pages.flatMap((page) => page.data);
   }, [rawEvents]);
 
+  // Check if export should be disabled
+  const isExportDisabled = useMemo(() => {
+    // Disable if already exporting
+    if (isExporting) return true;
+
+    // Disable if no events are found
+    if (events.length === 0 && !isFetching) return true;
+
+    // Disable if date range exceeds 90 days
+    if (search.dateRange?.start && search.dateRange?.end) {
+      const start = new Date(search.dateRange.start);
+      const end = new Date(search.dateRange.end);
+      const diffInMs = end.getTime() - start.getTime();
+      const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+      if (diffInDays > 90) return true;
+    }
+
+    return false;
+  }, [isExporting, events.length, isFetching, search.dateRange]);
+
   const onFilterChangeSubmit = (filter: EventFilterInputs) => {
     navigate({
       search: () => ({
@@ -148,6 +181,91 @@ function Component() {
         endDate: filter.dateRange?.end ?? [],
       }),
     });
+  };
+
+  const handleExport = async () => {
+    try {
+      setIsExporting(true);
+
+      // Build the query parameters matching the current filters
+      const queryParams: EventSearchInputDTO = {
+        filters: {
+          playerId: search.playerIds.length > 0 ? search.playerIds : undefined,
+          gameserverId: search.gameServerIds.length > 0 ? search.gameServerIds : undefined,
+          eventName: search.eventNames.length > 0 ? search.eventNames : undefined,
+          moduleId: search.moduleIds.length > 0 ? search.moduleIds : undefined,
+        },
+        greaterThan: search.dateRange?.start ? { createdAt: search.dateRange.start } : undefined,
+        lessThan: search.dateRange?.end ? { createdAt: search.dateRange.end } : undefined,
+        extend: ['gameServer', 'module', 'player', 'user'],
+      };
+
+      // Check event count first
+      const eventCount = await getEventCount(queryParams);
+
+      if (eventCount > 100000) {
+        // Show warning dialog for large exports
+        const estimatedSizeMB = Math.round(eventCount * 0.001); // Rough estimate: ~1KB per event
+        const estimatedTimeMinutes = Math.ceil(eventCount / 50000); // Rough estimate: ~50k events per minute
+
+        const confirmed = window.confirm(
+          `Warning: This export contains approximately ${eventCount.toLocaleString()} events.\n\n` +
+            `Estimated file size: ~${estimatedSizeMB} MB\n` +
+            `Estimated processing time: ~${estimatedTimeMinutes} minute${estimatedTimeMinutes > 1 ? 's' : ''}\n\n` +
+            `Large exports may take significant time and bandwidth. Do you want to continue?`,
+        );
+
+        if (!confirmed) {
+          setIsExporting(false);
+          return;
+        }
+      }
+
+      await exportEventsToCsv(queryParams);
+      enqueueSnackbar('Events exported successfully', { variant: 'success' });
+    } catch (error) {
+      console.error('Export failed:', error);
+
+      // Parse error message for specific types
+      let errorMessage = 'Failed to export events';
+
+      if (error instanceof Error) {
+        // Network errors
+        if (error.message.includes('network') || error.message.includes('Network')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        }
+        // Timeout errors
+        else if (error.message.includes('timeout')) {
+          errorMessage = 'Export timed out. Try reducing the date range or applying more filters.';
+        }
+        // Server errors from our API
+        else if (error.message.includes('Database connection')) {
+          errorMessage = 'Database connection failed. Please try again later.';
+        } else if (error.message.includes('too large')) {
+          errorMessage = 'Export too large. Please reduce the date range or apply more filters.';
+        }
+        // Validation errors
+        else if (error.message.includes('90 days')) {
+          errorMessage = error.message;
+        }
+        // Count API errors
+        else if (error.message.includes('Count failed')) {
+          errorMessage = 'Failed to check export size. Please try again.';
+        }
+        // Generic server error
+        else if (error.message.includes('500') || error.message.includes('Internal Server Error')) {
+          errorMessage = 'Server error. Please try again later.';
+        }
+        // Use the error message if it's informative
+        else if (error.message && error.message !== 'Export failed') {
+          errorMessage = error.message;
+        }
+      }
+
+      enqueueSnackbar(errorMessage, { variant: 'error' });
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -181,6 +299,15 @@ function Component() {
             color={'secondary'}
           >
             Refresh feed
+          </Button>
+          <Button
+            icon={<DownloadIcon />}
+            onClick={handleExport}
+            isLoading={isExporting}
+            disabled={isExportDisabled}
+            color={'secondary'}
+          >
+            {isExporting ? 'Generating export...' : 'Export to CSV'}
           </Button>
         </div>
       </Header>

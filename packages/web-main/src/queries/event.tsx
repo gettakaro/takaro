@@ -14,6 +14,7 @@ import { useSocket } from '../hooks/useSocket';
 import { useEffect } from 'react';
 import { ShouldIncludeEvent } from '../components/events/shouldIncludeEvent';
 import { DateTime } from 'luxon';
+import { getConfigVar } from '../util/getConfigVar';
 
 const eventKeys = {
   all: ['events'] as const,
@@ -150,4 +151,83 @@ const addEventToData = (prev: InfiniteData<EventOutputArrayDTOAPI>, newEvent: Ev
       return page;
     }),
   };
+};
+
+export const getEventCount = async (queryParams: EventSearchInputDTO): Promise<number> => {
+  const apiClient = getApiClient();
+  const apiUrl = getConfigVar('apiUrl');
+
+  // Get the current auth token
+  const token = apiClient.defaults.headers.common['Authorization'];
+
+  // Prepare the request
+  const response = await fetch(`${apiUrl}/event/count`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: token as string,
+    },
+    body: JSON.stringify(queryParams),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Count failed: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.data.count;
+};
+
+export const exportEventsToCsv = async (queryParams: EventSearchInputDTO) => {
+  const apiClient = getApiClient();
+  const apiUrl = getConfigVar('apiUrl');
+
+  // Get the current auth token
+  const token = apiClient.defaults.headers.common['Authorization'];
+
+  // Prepare the request
+  const response = await fetch(`${apiUrl}/event/export`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: token as string,
+    },
+    body: JSON.stringify(queryParams),
+  });
+
+  if (!response.ok) {
+    // Try to parse error response
+    let errorMessage = `Export failed: ${response.statusText}`;
+    try {
+      const errorData = await response.json();
+      if (errorData.error) {
+        errorMessage = errorData.error;
+      }
+    } catch {
+      // If JSON parsing fails, use the default error message
+    }
+    throw new Error(errorMessage);
+  }
+
+  // Get the blob from response
+  const blob = await response.blob();
+
+  // Extract filename from Content-Disposition header or use default
+  const contentDisposition = response.headers.get('Content-Disposition');
+  const filenameMatch = contentDisposition?.match(/filename="(.+)"/);
+  const filename = filenameMatch ? filenameMatch[1] : `events_${new Date().toISOString().split('T')[0]}.csv`;
+
+  // Create a temporary URL for the blob
+  const url = window.URL.createObjectURL(blob);
+
+  // Create a temporary anchor element and trigger download
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+
+  // Clean up
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
 };
