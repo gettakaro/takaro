@@ -130,8 +130,11 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
 
   async create(item: CommandCreateDTO): Promise<CommandOutputDTO> {
     const { query } = await this.getModel();
+    const toInsert = item.toJSON();
+    if (!toInsert.requiredPermissions) toInsert.requiredPermissions = [];
+    toInsert.requiredPermissions = JSON.stringify(toInsert.requiredPermissions);
     const data = await query.insert({
-      ...item.toJSON(),
+      ...toInsert,
       domain: this.domainId,
     });
 
@@ -150,7 +153,10 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
 
   async update(id: string, data: CommandUpdateDTO): Promise<CommandOutputDTO> {
     const { query } = await this.getModel();
-    const item = await query.updateAndFetchById(id, data.toJSON()).withGraphFetched('function');
+    const toUpdate = data.toJSON();
+    if (!toUpdate.requiredPermissions) toUpdate.requiredPermissions = [];
+    toUpdate.requiredPermissions = JSON.stringify(toUpdate.requiredPermissions);
+    const item = await query.updateAndFetchById(id, toUpdate).withGraphFetched('function');
 
     return new CommandOutputDTO(item);
   }
