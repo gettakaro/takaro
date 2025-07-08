@@ -96,6 +96,7 @@ export class DailyRewards extends ModuleTransferDTO<DailyRewards> {
             name: 'daily',
             trigger: 'daily',
             helpText: 'Claim your daily reward',
+            requiredPermissions: ['DAILY_CLAIM'],
             arguments: [],
           }),
           new ICommand({

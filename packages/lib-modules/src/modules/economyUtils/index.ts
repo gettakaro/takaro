@@ -74,6 +74,7 @@ export class EconomyUtils extends ModuleTransferDTO<EconomyUtils> {
             name: 'grantCurrency',
             trigger: 'grantcurrency',
             helpText: 'Grant money to a player. The money is not taken from your own balance but is new currency.',
+            requiredPermissions: ['ECONOMY_UTILS_MANAGE_CURRENCY'],
             arguments: [
               {
                 name: 'receiver',
@@ -96,6 +97,7 @@ export class EconomyUtils extends ModuleTransferDTO<EconomyUtils> {
             name: 'revokeCurrency',
             trigger: 'revokecurrency',
             helpText: 'Revokes money from a player. The money disappears.',
+            requiredPermissions: ['ECONOMY_UTILS_MANAGE_CURRENCY'],
             arguments: [
               {
                 name: 'receiver',

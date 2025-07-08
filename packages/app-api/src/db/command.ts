@@ -24,6 +24,7 @@ export class CommandModel extends TakaroModel {
   trigger: string;
   helpText: string;
   description?: string;
+  requiredPermissions: string[];
 
   functionId: string;
 

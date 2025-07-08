@@ -73,6 +73,7 @@ export class Teleports extends ModuleTransferDTO<Teleports> {
             name: 'teleport',
             trigger: 'tp',
             helpText: 'Teleports to one of your set locations.',
+            requiredPermissions: ['TELEPORTS_USE'],
             arguments: [
               {
                 name: 'tp',
@@ -155,6 +156,7 @@ export class Teleports extends ModuleTransferDTO<Teleports> {
             name: 'setwaypoint',
             trigger: 'setwaypoint',
             helpText: 'Creates a new waypoint.',
+            requiredPermissions: ['TELEPORTS_MANAGE_WAYPOINTS'],
             arguments: [
               {
                 name: 'waypoint',
@@ -170,6 +172,7 @@ export class Teleports extends ModuleTransferDTO<Teleports> {
             name: 'deletewaypoint',
             trigger: 'deletewaypoint',
             helpText: 'Deletes a waypoint.',
+            requiredPermissions: ['TELEPORTS_MANAGE_WAYPOINTS'],
             arguments: [
               {
                 name: 'waypoint',

@@ -32,6 +32,7 @@ const validationSchema = z.object({
   trigger: z.string().min(1, { message: 'Trigger is required' }),
   description: z.string().optional(),
   helpText: z.string(),
+  requiredPermissions: z.string().optional(),
   arguments: z.array(
     z.object({
       commandId: z.string().min(1, { message: 'Command ID is required' }),
@@ -110,6 +111,7 @@ export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnl
       trigger: command.trigger,
       helpText: command.helpText,
       description: command.description,
+      requiredPermissions: (command as any).requiredPermissions ? (command as any).requiredPermissions.join(', ') : '',
       arguments: command.arguments
         .sort((a, b) => a.position - b.position)
         .map((arg) => {
@@ -147,9 +149,20 @@ export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnl
       };
     });
 
+    // Parse required permissions from comma-separated string
+    const commandData = {
+      ...data,
+      requiredPermissions: data.requiredPermissions
+        ? data.requiredPermissions
+            .split(',')
+            .map((p) => p.trim())
+            .filter((p) => p.length > 0)
+        : [],
+    } as any;
+
     await mutateAsync({
       commandId: command.id,
-      command: data as CommandUpdateDTO,
+      command: commandData as CommandUpdateDTO,
       versionId: command.versionId,
       moduleId: moduleId,
     });
@@ -178,6 +191,14 @@ export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnl
         name="helpText"
         label="Help text"
         description="Description of what the command does, this can be displayed to users in-game."
+        readOnly={readOnly}
+      />
+      <TextField
+        control={control}
+        name="requiredPermissions"
+        label="Required Permissions"
+        description="Comma-separated list of permissions required to execute this command (e.g., MANAGE_ECONOMY, USE_TELEPORTS)"
+        placeholder="PERMISSION_1, PERMISSION_2"
         readOnly={readOnly}
       />
       <CollapseList.Item title="Arguments">
