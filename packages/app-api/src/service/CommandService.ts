@@ -387,14 +387,16 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
             if (missingPermissions.length > 0) {
               // Create event for permission denied
               const eventService = new EventService(this.domainId);
-              const module = await this.moduleService.findOne(c.versionId);
+              const moduleVersion = await this.moduleService.findOneVersion(c.versionId);
+              if (!moduleVersion)
+                throw new errors.NotFoundError('Module version not found for command execution denied event');
 
               await eventService.create(
                 new EventCreateDTO({
                   eventName: EVENT_TYPES.COMMAND_EXECUTION_DENIED,
                   playerId: player.id,
                   gameserverId: gameServerId,
-                  moduleId: module?.id,
+                  moduleId: moduleVersion.moduleId,
                   meta: new TakaroEventCommandExecutionDenied({
                     command: new TakaroEventCommandDetails({
                       id: c.id,
