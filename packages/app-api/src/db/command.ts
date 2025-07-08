@@ -122,7 +122,7 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
     const data = await query.findById(id).withGraphJoined('function').withGraphJoined('arguments');
 
     if (!data) {
-      throw new errors.NotFoundError(`Record with id ${id} not found`);
+      throw new errors.NotFoundError(`Command with id ${id} not found`);
     }
 
     return new CommandOutputDTO(data);

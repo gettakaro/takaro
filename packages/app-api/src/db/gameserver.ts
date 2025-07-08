@@ -78,7 +78,7 @@ export class GameServerRepo extends ITakaroRepo<
     const data = await query.findById(id).andWhere('deletedAt', null);
 
     if (!data) {
-      throw new errors.NotFoundError(`Record with id ${id} not found`);
+      throw new errors.NotFoundError(`Gameserver with id ${id} not found`);
     }
 
     if (!decryptConnectionInfo) {

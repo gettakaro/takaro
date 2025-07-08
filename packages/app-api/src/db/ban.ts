@@ -72,7 +72,7 @@ export class BanRepo extends ITakaroRepo<BanModel, BanOutputDTO, BanCreateDTO, B
     const data = await query.findById(id);
 
     if (!data) {
-      throw new errors.NotFoundError(`Record with id ${id} not found`);
+      throw new errors.NotFoundError(`Ban with id ${id} not found`);
     }
 
     return new BanOutputDTO(data);

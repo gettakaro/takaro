@@ -79,7 +79,7 @@ export class CronJobRepo extends ITakaroRepo<CronJobModel, CronJobOutputDTO, Cro
     const data = await query.findById(id).withGraphJoined('function');
 
     if (!data) {
-      throw new errors.NotFoundError(`Record with id ${id} not found`);
+      throw new errors.NotFoundError(`Cronjob with id ${id} not found`);
     }
 
     return new CronJobOutputDTO(data);
