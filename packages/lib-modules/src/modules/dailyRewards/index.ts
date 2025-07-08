@@ -14,7 +14,7 @@ export class DailyRewards extends ModuleTransferDTO<DailyRewards> {
     this.versions = [
       new ModuleTransferVersionDTO({
         description: 'Provides daily login rewards with streak tracking',
-        tag: '0.0.1',
+        tag: '0.0.2',
         configSchema: JSON.stringify({
           $schema: 'http://json-schema.org/draft-07/schema#',
           type: 'object',
