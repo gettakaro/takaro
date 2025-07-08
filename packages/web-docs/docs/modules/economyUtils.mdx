@@ -13,7 +13,7 @@ export function Module() {
   "name": "economyUtils",
   "versions": [
     {
-      "tag": "0.0.1",
+      "tag": "0.0.2",
       "description": "A set of commands to allow players to manage their currency.",
       "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"pendingAmount\":{\"title\":\"Pending amount\",\"type\":\"number\",\"description\":\"When a player transfers money, they must confirm the transfer when the amount is equal or above this value. Set to 0 to disable.\",\"default\":0},\"zombieKillReward\":{\"title\":\"Zombie kill reward\",\"type\":\"number\",\"description\":\"The default amount of currency a player receives for killing a zombie. This can be overridden by roles.\",\"default\":1}},\"required\":[],\"additionalProperties\":false}",
       "permissions": [
