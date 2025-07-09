@@ -4,12 +4,6 @@ import { getVariableKey, findTp } from './utils.js';
 async function main() {
   const { pog, gameServerId, module: mod, arguments: args } = data;
 
-  const hasPermission = checkPermission(pog, 'TELEPORTS_USE');
-
-  if (!hasPermission) {
-    throw new TakaroUserError('You do not have permission to use teleports.');
-  }
-
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;
 
   const existingVariable = await findTp(args.tp, pog.playerId);
@@ -18,6 +12,7 @@ async function main() {
     throw new TakaroUserError(`Teleport ${args.tp} already exists, use ${prefix}deletetp ${args.tp} to delete it.`);
   }
 
+  const hasPermission = checkPermission(pog, 'TELEPORTS_USE');
   const allPlayerTeleports = await takaro.variable.variableControllerSearch({
     search: {
       key: [getVariableKey(undefined), getVariableKey(undefined, true)],

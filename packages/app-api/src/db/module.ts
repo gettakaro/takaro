@@ -247,7 +247,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     const data = await query.findById(id);
 
     if (!data) {
-      throw new errors.NotFoundError(`Record with id ${id} not found`);
+      throw new errors.NotFoundError(`Module with id ${id} not found`);
     }
 
     return new ModuleOutputDTO(data);
@@ -257,7 +257,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     const { queryVersion } = await this.getModel();
     const data = await queryVersion.findById(id).modify('standardExtend');
 
-    if (!data) throw new errors.NotFoundError(`Record with id ${id} not found`);
+    if (!data) throw new errors.NotFoundError(`Module version with id ${id} not found`);
 
     return new ModuleVersionOutputDTO({
       ...data,

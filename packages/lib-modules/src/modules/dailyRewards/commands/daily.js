@@ -1,12 +1,8 @@
-import { takaro, data, TakaroUserError, checkPermission } from '@takaro/helpers';
+import { takaro, data, TakaroUserError } from '@takaro/helpers';
 import { DAILY_KEY, STREAK_KEY, getMultiplier } from './utils.js';
 
 async function main() {
   const { pog, gameServerId, module: mod } = data;
-
-  if (!checkPermission(pog, 'DAILY_CLAIM')) {
-    throw new TakaroUserError('You do not have permission to claim daily rewards.');
-  }
 
   // Get last claim time
   const lastClaimRes = await takaro.variable.variableControllerSearch({

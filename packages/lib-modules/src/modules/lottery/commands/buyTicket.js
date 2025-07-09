@@ -1,13 +1,9 @@
-import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';
+import { takaro, data, TakaroUserError } from '@takaro/helpers';
 
 async function main() {
   const { pog, gameServerId, arguments: args, module: mod } = data;
 
   const varKey = 'lottery_tickets_bought';
-
-  if (!checkPermission(pog, 'LOTTERY_BUY')) {
-    throw new TakaroUserError('You do not have permission to buy lottery tickets.');
-  }
 
   if (args.amount < 1) {
     throw new TakaroUserError('You must buy at least 1 ticket.');
