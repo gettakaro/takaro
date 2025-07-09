@@ -103,9 +103,13 @@ jobs:
           git fetch origin main:refs/remotes/origin/main
           echo "Main branch: $(git rev-parse origin/main)"
           
-          # Get merge commits between main and main-promotion
-          echo "Getting merge commits between main and main-promotion..."
-          PR_LIST=$(git log origin/main..HEAD --merges --pretty=format:"%H %s" | grep -E "Merge pull request #[0-9]+" | head -20 || true)
+          # Get merge commits that will be included when merging to main
+          echo "Getting merge commits that will be included when merging to main..."
+          # Find the common ancestor between main and main-promotion
+          MERGE_BASE=$(git merge-base origin/main HEAD)
+          echo "Merge base between main and main-promotion: $MERGE_BASE"
+          # Get all merge commits in main-promotion since the merge base
+          PR_LIST=$(git log $MERGE_BASE..HEAD --merges --pretty=format:"%H %s" | grep -E "Merge pull request #[0-9]+" | head -20 || true)
           
           echo "Found merge commits:"
           echo "$PR_LIST"
