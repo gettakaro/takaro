@@ -1,4 +1,4 @@
-import { Button, styled, InfiniteScroll } from '@takaro/lib-components';
+import { Button, styled, InfiniteScroll, Dialog } from '@takaro/lib-components';
 import { EventFeed, EventItem } from '../../../components/events/EventFeed';
 import { Settings } from 'luxon';
 import { eventsInfiniteQueryOptions, useEventSubscription, exportEventsToCsv } from '../../../queries/event';
@@ -108,6 +108,12 @@ function Component() {
   const search = Route.useSearch();
   const [live, setLive] = useState<boolean>(true);
   const [isExporting, setIsExporting] = useState<boolean>(false);
+  const [showExportDialog, setShowExportDialog] = useState<boolean>(false);
+  const [exportDialogData, setExportDialogData] = useState<{
+    eventCount: number;
+    estimatedSizeMB: number;
+    estimatedTimeMinutes: number;
+  } | null>(null);
   const { enqueueSnackbar } = useSnackbar();
 
   useEventSubscription({
@@ -167,18 +173,17 @@ function Component() {
 
   const onFilterChangeSubmit = (filter: EventFilterInputs) => {
     navigate({
-      search: () => ({
+      search: {
         gameServerIds: filter.gameServerIds.length > 0 ? filter.gameServerIds : [],
         playerIds: filter.playerIds.length > 0 ? filter.playerIds : [],
         eventNames: filter.eventNames.length > 0 ? filter.eventNames : [],
         moduleIds: filter.moduleIds.length > 0 ? filter.moduleIds : [],
-        startDate: filter.dateRange?.start ?? [],
-        endDate: filter.dateRange?.end ?? [],
-      }),
+        dateRange: filter.dateRange,
+      },
     });
   };
 
-  const handleExport = async () => {
+  const performExport = async () => {
     try {
       setIsExporting(true);
 
@@ -194,27 +199,6 @@ function Component() {
         lessThan: search.dateRange?.end ? { createdAt: search.dateRange.end } : undefined,
         extend: ['gameServer', 'module', 'player', 'user'],
       };
-
-      // Get event count from the current search results
-      const eventCount = rawEvents.pages[0]?.meta?.total || 0;
-
-      if (eventCount > 100000) {
-        // Show warning dialog for large exports
-        const estimatedSizeMB = Math.round(eventCount * 0.001); // Rough estimate: ~1KB per event
-        const estimatedTimeMinutes = Math.ceil(eventCount / 50000); // Rough estimate: ~50k events per minute
-
-        const confirmed = window.confirm(
-          `Warning: This export contains approximately ${eventCount.toLocaleString()} events.\n\n` +
-            `Estimated file size: ~${estimatedSizeMB} MB\n` +
-            `Estimated processing time: ~${estimatedTimeMinutes} minute${estimatedTimeMinutes > 1 ? 's' : ''}\n\n` +
-            `Large exports may take significant time and bandwidth. Do you want to continue?`,
-        );
-
-        if (!confirmed) {
-          setIsExporting(false);
-          return;
-        }
-      }
 
       await exportEventsToCsv(queryParams);
       enqueueSnackbar('Events exported successfully', { variant: 'default', type: 'success' });
@@ -257,6 +241,28 @@ function Component() {
     } finally {
       setIsExporting(false);
     }
+  };
+
+  const handleExport = async () => {
+    // Get event count from the current search results
+    const eventCount = rawEvents?.pages?.[0]?.meta?.total || 0;
+
+    if (eventCount > 100000) {
+      // Show warning dialog for large exports
+      const estimatedSizeMB = Math.round(eventCount * 0.001); // Rough estimate: ~1KB per event
+      const estimatedTimeMinutes = Math.ceil(eventCount / 50000); // Rough estimate: ~50k events per minute
+
+      setExportDialogData({ eventCount, estimatedSizeMB, estimatedTimeMinutes });
+      setShowExportDialog(true);
+    } else {
+      // For small exports, proceed directly
+      await performExport();
+    }
+  };
+
+  const handleConfirmExport = async () => {
+    setShowExportDialog(false);
+    await performExport();
   };
 
   return (
@@ -321,6 +327,39 @@ function Component() {
           </EventFilterContainer>
         )}
       </ContentContainer>
+
+      <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
+        <Dialog.Content>
+          <Dialog.Heading>Confirm Large Export</Dialog.Heading>
+          <Dialog.Body>
+            {exportDialogData && (
+              <>
+                <p>This export contains approximately {exportDialogData.eventCount.toLocaleString()} events.</p>
+                <ul style={{ marginTop: '1rem', marginBottom: '1.5rem' }}>
+                  <li>
+                    <strong>Estimated file size:</strong> ~{exportDialogData.estimatedSizeMB} MB
+                  </li>
+                  <li>
+                    <strong>Estimated processing time:</strong> ~{exportDialogData.estimatedTimeMinutes} minute
+                    {exportDialogData.estimatedTimeMinutes > 1 ? 's' : ''}
+                  </li>
+                </ul>
+                <p style={{ marginBottom: '1.5rem' }}>
+                  Large exports may take significant time and bandwidth. Do you want to continue?
+                </p>
+                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                  <Button variant="outline" onClick={() => setShowExportDialog(false)} disabled={isExporting}>
+                    Cancel
+                  </Button>
+                  <Button color="primary" onClick={handleConfirmExport} isLoading={isExporting}>
+                    Continue Export
+                  </Button>
+                </div>
+              </>
+            )}
+          </Dialog.Body>
+        </Dialog.Content>
+      </Dialog>
     </>
   );
 }
