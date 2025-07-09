@@ -1,4 +1,4 @@
-import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';
+import { takaro, data, TakaroUserError } from '@takaro/helpers';
 import { getVariableKey } from './utils.js';
 
 async function main() {
@@ -8,29 +8,6 @@ async function main() {
 
   if (!mod.userConfig.allowPublicTeleports) {
     throw new TakaroUserError('Public teleports are disabled.');
-  }
-
-  const hasPermission = checkPermission(pog, 'TELEPORTS_CREATE_PUBLIC');
-
-  if (!hasPermission) {
-    throw new TakaroUserError('You do not have permission to create public teleports.');
-  }
-
-  const existingPublicTeleportsForPlayerRes = await takaro.variable.variableControllerSearch({
-    search: {
-      key: ['pubtp_'],
-    },
-    filters: {
-      gameServerId: [gameServerId],
-      playerId: [pog.playerId],
-      moduleId: [mod.moduleId],
-    },
-  });
-
-  if (existingPublicTeleportsForPlayerRes.data.data.length >= hasPermission.count) {
-    throw new TakaroUserError(
-      `You have reached the maximum number of public teleports for your role, maximum allowed is ${hasPermission.count}`
-    );
   }
 
   const teleports = (
