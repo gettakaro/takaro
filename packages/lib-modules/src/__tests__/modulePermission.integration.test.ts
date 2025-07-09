@@ -100,7 +100,9 @@ const tests = [
       });
 
       expect((await setEvents).length).to.be.eq(1);
-      expect((await setEvents)[0].data.meta.msg).to.be.eq('You do not have permission to use teleports.');
+      expect((await setEvents)[0].data.meta.msg).to.be.eq(
+        "⚠️ You need the 'Teleports Use' permission to use this command. Please contact an admin if you need access.",
+      );
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({

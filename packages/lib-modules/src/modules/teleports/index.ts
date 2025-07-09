@@ -89,6 +89,7 @@ export class Teleports extends ModuleTransferDTO<Teleports> {
             name: 'tplist',
             trigger: 'tplist',
             helpText: 'Lists all your set locations.',
+            requiredPermissions: ['TELEPORTS_USE'],
             arguments: [],
           }),
           new ICommand({
@@ -96,6 +97,7 @@ export class Teleports extends ModuleTransferDTO<Teleports> {
             name: 'settp',
             trigger: 'settp',
             helpText: 'Sets a location to teleport to.',
+            requiredPermissions: ['TELEPORTS_USE'],
             arguments: [
               {
                 name: 'tp',
@@ -126,6 +128,7 @@ export class Teleports extends ModuleTransferDTO<Teleports> {
             name: 'setpublic',
             trigger: 'setpublic',
             helpText: 'Sets a teleport to be public, allowing other players to teleport to it.',
+            requiredPermissions: ['TELEPORTS_CREATE_PUBLIC'],
             arguments: [
               {
                 name: 'tp',
