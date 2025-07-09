@@ -158,7 +158,7 @@ export const getEventCount = async (queryParams: EventSearchInputDTO): Promise<n
   const apiUrl = getConfigVar('apiUrl');
 
   // Get the current auth token
-  const token = apiClient.defaults.headers.common['Authorization'];
+  const token = apiClient.axiosInstance.defaults.headers.common['Authorization'];
 
   // Prepare the request
   const response = await fetch(`${apiUrl}/event/count`, {
@@ -183,7 +183,7 @@ export const exportEventsToCsv = async (queryParams: EventSearchInputDTO) => {
   const apiUrl = getConfigVar('apiUrl');
 
   // Get the current auth token
-  const token = apiClient.defaults.headers.common['Authorization'];
+  const token = apiClient.axiosInstance.defaults.headers.common['Authorization'];
 
   // Prepare the request
   const response = await fetch(`${apiUrl}/event/export`, {

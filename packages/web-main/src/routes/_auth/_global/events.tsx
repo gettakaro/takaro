@@ -222,7 +222,7 @@ function Component() {
       }
 
       await exportEventsToCsv(queryParams);
-      enqueueSnackbar('Events exported successfully', { variant: 'success' });
+      enqueueSnackbar('Events exported successfully', { variant: 'default', type: 'success' });
     } catch (error) {
       console.error('Export failed:', error);
 
@@ -262,7 +262,7 @@ function Component() {
         }
       }
 
-      enqueueSnackbar(errorMessage, { variant: 'error' });
+      enqueueSnackbar(errorMessage, { variant: 'default', type: 'error' });
     } finally {
       setIsExporting(false);
     }
