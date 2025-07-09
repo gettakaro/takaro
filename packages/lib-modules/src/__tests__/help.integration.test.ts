@@ -308,7 +308,7 @@ const tests = [
       await this.client.player.playerControllerRemoveRole(this.setupData.players[0].id, this.setupData.role.id);
       await this.client.player.playerControllerAssignRole(this.setupData.players[0].id, roleRes.data.data.id);
 
-      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(IHookEventTypeEnum.ChatMessage, 17);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(IHookEventTypeEnum.ChatMessage, 16);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/help',
         playerId: this.setupData.players[0].id,
