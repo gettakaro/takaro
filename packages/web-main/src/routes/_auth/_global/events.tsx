@@ -1,12 +1,7 @@
 import { Button, styled, InfiniteScroll } from '@takaro/lib-components';
 import { EventFeed, EventItem } from '../../../components/events/EventFeed';
 import { Settings } from 'luxon';
-import {
-  eventsInfiniteQueryOptions,
-  useEventSubscription,
-  exportEventsToCsv,
-  getEventCount,
-} from '../../../queries/event';
+import { eventsInfiniteQueryOptions, useEventSubscription, exportEventsToCsv } from '../../../queries/event';
 import {
   HiStop as PauseIcon,
   HiPlay as PlayIcon,
@@ -200,8 +195,8 @@ function Component() {
         extend: ['gameServer', 'module', 'player', 'user'],
       };
 
-      // Check event count first
-      const eventCount = await getEventCount(queryParams);
+      // Get event count from the current search results
+      const eventCount = rawEvents.pages[0]?.meta?.total || 0;
 
       if (eventCount > 100000) {
         // Show warning dialog for large exports
@@ -247,10 +242,6 @@ function Component() {
         // Validation errors
         else if (error.message.includes('90 days')) {
           errorMessage = error.message;
-        }
-        // Count API errors
-        else if (error.message.includes('Count failed')) {
-          errorMessage = 'Failed to check export size. Please try again.';
         }
         // Generic server error
         else if (error.message.includes('500') || error.message.includes('Internal Server Error')) {

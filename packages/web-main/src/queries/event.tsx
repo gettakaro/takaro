@@ -153,45 +153,16 @@ const addEventToData = (prev: InfiniteData<EventOutputArrayDTOAPI>, newEvent: Ev
   };
 };
 
-export const getEventCount = async (queryParams: EventSearchInputDTO): Promise<number> => {
-  const apiClient = getApiClient();
-  const apiUrl = getConfigVar('apiUrl');
-
-  // Get the current auth token
-  const token = apiClient.axiosInstance.defaults.headers.common['Authorization'];
-
-  // Prepare the request
-  const response = await fetch(`${apiUrl}/event/count`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: token as string,
-    },
-    body: JSON.stringify(queryParams),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Count failed: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  return data.data.count;
-};
-
 export const exportEventsToCsv = async (queryParams: EventSearchInputDTO) => {
-  const apiClient = getApiClient();
   const apiUrl = getConfigVar('apiUrl');
-
-  // Get the current auth token
-  const token = apiClient.axiosInstance.defaults.headers.common['Authorization'];
 
   // Prepare the request
   const response = await fetch(`${apiUrl}/event/export`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: token as string,
     },
+    credentials: 'include',
     body: JSON.stringify(queryParams),
   });
 

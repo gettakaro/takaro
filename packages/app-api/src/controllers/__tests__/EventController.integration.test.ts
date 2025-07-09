@@ -1,6 +1,7 @@
 import { IntegrationTest, expect, SetupGameServerPlayers } from '@takaro/test';
-import { EventSearchInputDTO } from '@takaro/apiclient';
-import { EventCreateDTO, EVENT_TYPES } from '../../service/EventService.js';
+import { EventCreateDTO, EventSearchInputDTO, IHookEventTypeEnum } from '@takaro/apiclient';
+import { describe } from 'node:test';
+import { isAxiosError } from 'axios';
 
 const group = 'EventController';
 
@@ -14,13 +15,13 @@ const tests = [
       // Create some test events
       const events: EventCreateDTO[] = [
         {
-          eventName: EVENT_TYPES.PLAYER_CONNECTED,
+          eventName: IHookEventTypeEnum.PlayerConnected,
           gameserverId: this.setupData.gameServer1.id,
           playerId: this.setupData.players[0].id,
           meta: { connectionInfo: { ip: '127.0.0.1' } },
         },
         {
-          eventName: EVENT_TYPES.CHAT_MESSAGE,
+          eventName: IHookEventTypeEnum.ChatMessage,
           gameserverId: this.setupData.gameServer1.id,
           playerId: this.setupData.players[1].id,
           meta: { message: 'Hello, world!', channel: 'global' },
@@ -37,7 +38,7 @@ const tests = [
         extend: ['gameServer', 'player'],
       };
 
-      const response = await this.client.getAxiosInstance().post('/event/export', query, {
+      const response = await this.client.axiosInstance.post('/event/export', query, {
         responseType: 'text',
       });
 
@@ -73,13 +74,20 @@ const tests = [
       };
 
       try {
-        await this.client.getAxiosInstance().post('/event/export', query, {
+        await this.client.axiosInstance.post('/event/export', query, {
           responseType: 'text',
         });
         expect.fail('Should have thrown validation error');
-      } catch (error: any) {
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        if (!error.response) throw error;
         expect(error.response.status).to.equal(400);
-        expect(error.response.data.error).to.include('90 days');
+
+        // Parse the response data since it's returned as string due to responseType: 'text'
+        const responseData =
+          typeof error.response.data === 'string' ? JSON.parse(error.response.data) : error.response.data;
+
+        expect(responseData.meta.error.message).to.include('90 days');
       }
     },
   }),
@@ -90,11 +98,14 @@ const tests = [
     name: 'Export empty CSV when no events match',
     setup: SetupGameServerPlayers.setup,
     test: async function () {
+      const oneYearAgo = new Date(new Date().getTime() - 365 * 24 * 60 * 60 * 1000); // 1 year ago
+      const OneYearAgoPlusOneDay = new Date(oneYearAgo.getTime() + 24 * 60 * 60 * 1000); // 1 year + 1 day
       const query: EventSearchInputDTO = {
-        filters: { eventName: ['non-existent-event'] },
+        greaterThan: { createdAt: oneYearAgo.toISOString() },
+        lessThan: { createdAt: OneYearAgoPlusOneDay.toISOString() },
       };
 
-      const response = await this.client.getAxiosInstance().post('/event/export', query, {
+      const response = await this.client.axiosInstance.post('/event/export', query, {
         responseType: 'text',
       });
 
@@ -109,39 +120,12 @@ const tests = [
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: false,
-    name: 'Event count endpoint',
-    setup: SetupGameServerPlayers.setup,
-    test: async function () {
-      // Create test events
-      const eventPromises = Array.from({ length: 5 }).map(() =>
-        this.client.event.eventControllerCreate({
-          eventName: EVENT_TYPES.PLAYER_CONNECTED,
-          gameserverId: this.setupData.gameServer1.id,
-          meta: {},
-        }),
-      );
-      await Promise.all(eventPromises);
-
-      const query: EventSearchInputDTO = {
-        filters: { gameserverId: [this.setupData.gameServer1.id] },
-      };
-
-      const response = await this.client.getAxiosInstance().post('/event/count', query);
-
-      expect(response.status).to.equal(200);
-      expect(response.data.data.count).to.be.greaterThanOrEqual(5);
-    },
-  }),
-
-  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
-    group,
-    snapshot: false,
     name: 'Export with special characters in data',
     setup: SetupGameServerPlayers.setup,
     test: async function () {
       // Create event with special characters
       await this.client.event.eventControllerCreate({
-        eventName: EVENT_TYPES.CHAT_MESSAGE,
+        eventName: IHookEventTypeEnum.ChatMessage,
         gameserverId: this.setupData.gameServer1.id,
         playerId: this.setupData.players[0].id,
         meta: {
@@ -152,12 +136,12 @@ const tests = [
 
       const query: EventSearchInputDTO = {
         filters: {
-          eventName: [EVENT_TYPES.CHAT_MESSAGE],
+          eventName: [IHookEventTypeEnum.ChatMessage],
           gameserverId: [this.setupData.gameServer1.id],
         },
       };
 
-      const response = await this.client.getAxiosInstance().post('/event/export', query, {
+      const response = await this.client.axiosInstance.post('/event/export', query, {
         responseType: 'text',
       });
 
@@ -173,7 +157,6 @@ const tests = [
     snapshot: false,
     name: 'Export performance with moderate dataset',
     setup: SetupGameServerPlayers.setup,
-    timeout: 30000, // 30 seconds for performance test
     test: async function () {
       // Create 1000 test events
       const batchSize = 100;
@@ -181,7 +164,7 @@ const tests = [
 
       for (let i = 0; i < totalEvents / batchSize; i++) {
         const batch = Array.from({ length: batchSize }).map((_, j) => ({
-          eventName: EVENT_TYPES.PLAYER_CONNECTED,
+          eventName: IHookEventTypeEnum.PlayerConnected,
           gameserverId: this.setupData.gameServer1.id,
           playerId: this.setupData.players[j % this.setupData.players.length].id,
           meta: {
@@ -200,7 +183,7 @@ const tests = [
         filters: { gameserverId: [this.setupData.gameServer1.id] },
       };
 
-      const response = await this.client.getAxiosInstance().post('/event/export', query, {
+      const response = await this.client.axiosInstance.post('/event/export', query, {
         responseType: 'text',
       });
 
