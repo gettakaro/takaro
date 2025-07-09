@@ -47,6 +47,8 @@ export class BoundingBoxSearchInputDTO extends TakaroDTO<BoundingBoxSearchInputD
   @IsISO8601()
   @IsOptional()
   timestamp?: string;
+  @IsUUID('4')
+  gameserverId: string;
 }
 
 export class RadiusSearchInputDTO extends TakaroDTO<RadiusSearchInputDTO> {
@@ -61,6 +63,8 @@ export class RadiusSearchInputDTO extends TakaroDTO<RadiusSearchInputDTO> {
   @IsISO8601()
   @IsOptional()
   timestamp?: string;
+  @IsUUID('4')
+  gameserverId: string;
 }
 
 export class PlayerInventoryOutputDTO extends TakaroModelDTO<PlayerInventoryOutputDTO> {

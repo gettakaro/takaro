@@ -36,11 +36,11 @@ export async function tryResolvePlayer(
   });
 
   const filteredByGameServer = possiblePlayers.results
-    .map((p) => p.playerOnGameServers)
-    .filter((pogs) => {
-      if (!pogs || !pogs.length) return false;
-      return pogs.filter((playerOnGameServer) => playerOnGameServer.gameServerId === gameServerId);
+    .map((p) => {
+      if (!p.playerOnGameServers || !p.playerOnGameServers.length) return null;
+      return p.playerOnGameServers.filter((pog) => pog.gameServerId === gameServerId);
     })
+    .filter((pogs) => pogs !== null && pogs.length > 0)
     .flat();
 
   if (filteredByGameServer.length === 0) {

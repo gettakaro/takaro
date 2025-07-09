@@ -311,6 +311,26 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
+    case EventOutputDTOEventNameEnum.PlayerBanned:
+      properties = (
+        <>
+          <EventProperty name="player" value={event.player?.name} />
+          <EventProperty name="gameserver" value={meta?.isGlobal ? 'All servers' : event.gameServer?.name} />
+          {meta?.reason && <EventProperty name="reason" value={meta.reason} />}
+          {meta?.until && <EventProperty name="until" value={new Date(meta.until).toLocaleString()} />}
+          {event.user && <EventProperty name="banned by" value={event.user?.name} />}
+        </>
+      );
+      break;
+    case EventOutputDTOEventNameEnum.PlayerUnbanned:
+      properties = (
+        <>
+          <EventProperty name="player" value={event.player?.name} />
+          <EventProperty name="gameserver" value={meta?.isGlobal ? 'All servers' : event.gameServer?.name} />
+          {event.user && <EventProperty name="unbanned by" value={event.user?.name} />}
+        </>
+      );
+      break;
     case EventOutputDTOEventNameEnum.GameserverCreated:
     case EventOutputDTOEventNameEnum.GameserverUpdated:
     case EventOutputDTOEventNameEnum.GameserverDeleted:

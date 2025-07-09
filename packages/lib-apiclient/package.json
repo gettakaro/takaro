@@ -1,6 +1,6 @@
 {
   "name": "@takaro/apiclient",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "API client for Takaro",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -8,8 +8,7 @@
   "scripts": {
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p ./tsconfig.build.json",
-    "generate": "node ../../scripts/wait-until-healthy.mjs && npx @openapitools/openapi-generator-cli generate -i ${TAKARO_HOST}/openapi.json -g typescript-axios -o ./src/generated/",
-    "postgenerate": "./fix-esm.sh && npm run build"
+    "generate": "../../scripts/generate-api-client.sh"
   },
   "keywords": [],
   "author": "",

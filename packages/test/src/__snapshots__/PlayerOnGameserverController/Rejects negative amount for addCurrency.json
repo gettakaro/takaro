@@ -6,9 +6,9 @@
         "details": [
           {
             "target": {
-              "currency": -100
+              "currency": -50
             },
-            "value": -100,
+            "value": -50,
             "property": "currency",
             "children": [],
             "constraints": {
@@ -25,7 +25,7 @@
   "test": {
     "group": "PlayerOnGameserverController",
     "snapshot": true,
-    "name": "Rejects negative currency",
+    "name": "Rejects negative amount for addCurrency",
     "expectedStatus": 400,
     "filteredFields": [],
     "standardEnvironment": true
