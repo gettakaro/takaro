@@ -22,7 +22,8 @@
       "moduleId": "a1ec7123-27ff-4496-b606-7cdb7a0b5dc1",
       "arguments": [],
       "versionId": "f0f64f0c-e7ef-49b1-94b5-9461cb880fa0",
-      "description": "Cool description"
+      "description": "Cool description",
+      "requiredPermissions": []
     }
   },
   "status": 200,

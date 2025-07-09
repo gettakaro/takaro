@@ -12,6 +12,7 @@ export const categorizedEventNames = [
       e.CronjobExecuted,
       e.HookExecuted,
       e.CommandExecuted,
+      e.CommandExecutionDenied,
     ],
   },
   {
