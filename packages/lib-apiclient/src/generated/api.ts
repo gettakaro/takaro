@@ -15644,6 +15644,43 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
+     * Export events matching the search criteria to CSV format. Accepts the same parameters as the search endpoint. Maximum time range is 90 days.   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerExport`
+     * @summary Export events to CSV
+     * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    eventControllerExport: async (
+      eventSearchInputDTO?: EventSearchInputDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/event/export`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(eventSearchInputDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Fetches events where cronjob, hook and command failed. Supports all the common query parameters   Required permissions: `READ_MODULES`, `READ_EVENTS`<br> OperationId: `EventControllerGetFailedFunctions`
      * @summary Get failed functions
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
@@ -15784,6 +15821,29 @@ export const EventApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
+     * Export events matching the search criteria to CSV format. Accepts the same parameters as the search endpoint. Maximum time range is 90 days.   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerExport`
+     * @summary Export events to CSV
+     * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async eventControllerExport(
+      eventSearchInputDTO?: EventSearchInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.eventControllerExport(eventSearchInputDTO, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['EventApi.eventControllerExport']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
      * Fetches events where cronjob, hook and command failed. Supports all the common query parameters   Required permissions: `READ_MODULES`, `READ_EVENTS`<br> OperationId: `EventControllerGetFailedFunctions`
      * @summary Get failed functions
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
@@ -15879,6 +15939,19 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
       return localVarFp.eventControllerCreate(eventCreateDTO, options).then((request) => request(axios, basePath));
     },
     /**
+     * Export events matching the search criteria to CSV format. Accepts the same parameters as the search endpoint. Maximum time range is 90 days.   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerExport`
+     * @summary Export events to CSV
+     * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    eventControllerExport(
+      eventSearchInputDTO?: EventSearchInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<void> {
+      return localVarFp.eventControllerExport(eventSearchInputDTO, options).then((request) => request(axios, basePath));
+    },
+    /**
      * Fetches events where cronjob, hook and command failed. Supports all the common query parameters   Required permissions: `READ_MODULES`, `READ_EVENTS`<br> OperationId: `EventControllerGetFailedFunctions`
      * @summary Get failed functions
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
@@ -15937,6 +16010,20 @@ export class EventApi extends BaseAPI {
   public eventControllerCreate(eventCreateDTO?: EventCreateDTO, options?: RawAxiosRequestConfig) {
     return EventApiFp(this.configuration)
       .eventControllerCreate(eventCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Export events matching the search criteria to CSV format. Accepts the same parameters as the search endpoint. Maximum time range is 90 days.   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerExport`
+   * @summary Export events to CSV
+   * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof EventApi
+   */
+  public eventControllerExport(eventSearchInputDTO?: EventSearchInputDTO, options?: RawAxiosRequestConfig) {
+    return EventApiFp(this.configuration)
+      .eventControllerExport(eventSearchInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
