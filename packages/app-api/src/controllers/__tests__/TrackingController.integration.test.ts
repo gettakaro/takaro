@@ -146,13 +146,15 @@ async function setupHistoricalData(domainId: string, pogs: PlayerOnGameserverOut
     testPoints: {
       boundingBoxTest: {
         box: { minX: 0, maxX: 200, minY: 0, maxY: 100, minZ: 0, maxZ: 200 },
-        timestamp: '2024-01-15T12:00:00Z',
+        startDate: '2024-01-15T11:30:00Z',
+        endDate: '2024-01-15T12:30:00Z',
         expectedPlayers: pogs.length > 0 ? [pogs[0].id] : [],
       },
       radiusTest: {
         center: { x: 500, y: 100, z: 500 },
         radius: 50,
-        timestamp: '2024-01-15T12:00:00Z',
+        startDate: '2024-01-15T11:30:00Z',
+        endDate: '2024-01-15T12:30:00Z',
         expectedPlayers: pogs.length > 1 ? [pogs[1].id] : [],
       },
     },
@@ -454,7 +456,8 @@ const tests = [
         maxY: testPoint.box.maxY,
         minZ: testPoint.box.minZ,
         maxZ: testPoint.box.maxZ,
-        timestamp: testPoint.timestamp,
+        startDate: testPoint.startDate,
+        endDate: testPoint.endDate,
         gameserverId: this.setupData.gameServer1.id,
       });
 
@@ -471,15 +474,16 @@ const tests = [
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: false,
-    name: 'Get players in bounding box with timestamp filter',
+    name: 'Get players in bounding box with date range filter',
     setup: SetupGameServerPlayers.setup,
     test: async function () {
       if (!this.standardDomainId) throw new Error('standardDomainId is not set');
 
       await setupHistoricalData(this.standardDomainId, this.setupData.pogs1);
 
-      // Test with a timestamp where we know player positions
-      const timestamp = '2024-01-01T12:00:00Z';
+      // Test with a date range where we know player positions
+      const startDate = '2024-01-01T11:30:00Z';
+      const endDate = '2024-01-01T12:30:00Z';
 
       // Define a box that should contain player 0 (stationary at 100, 50, 100)
       const res = await this.client.tracking.trackingControllerGetBoundingBoxPlayers({
@@ -489,7 +493,8 @@ const tests = [
         maxY: 100,
         minZ: 50,
         maxZ: 150,
-        timestamp: timestamp,
+        startDate: startDate,
+        endDate: endDate,
         gameserverId: this.setupData.gameServer1.id,
       });
 
@@ -521,7 +526,8 @@ const tests = [
         y: testPoint.center.y,
         z: testPoint.center.z,
         radius: testPoint.radius,
-        timestamp: testPoint.timestamp,
+        startDate: testPoint.startDate,
+        endDate: testPoint.endDate,
         gameserverId: this.setupData.gameServer1.id,
       });
 
@@ -538,22 +544,24 @@ const tests = [
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: false,
-    name: 'Get players within radius with timestamp filter',
+    name: 'Get players within radius with date range filter',
     setup: SetupGameServerPlayers.setup,
     test: async function () {
       if (!this.standardDomainId) throw new Error('standardDomainId is not set');
 
       await setupHistoricalData(this.standardDomainId, this.setupData.pogs1);
 
-      // Test with a timestamp where we know player 2 is moving in a circle around (500, 100, 500)
-      const timestamp = '2024-01-01T06:00:00Z'; // 6 hours = 1/4 of circle
+      // Test with a date range where we know player 2 is moving in a circle around (500, 100, 500)
+      const startDate = '2024-01-01T05:30:00Z';
+      const endDate = '2024-01-01T06:30:00Z'; // Around 6 hours = 1/4 of circle
 
       const res = await this.client.tracking.trackingControllerGetRadiusPlayers({
         x: 500,
         y: 100,
         z: 500,
         radius: 150, // Slightly larger than the 100 unit circle radius
-        timestamp: timestamp,
+        startDate: startDate,
+        endDate: endDate,
         gameserverId: this.setupData.gameServer1.id,
       });
 
@@ -589,7 +597,8 @@ const tests = [
           maxY: 100,
           minZ: 0,
           maxZ: 200,
-          timestamp: '2024-01-15T12:00:00Z',
+          startDate: '2024-01-15T11:30:00Z',
+          endDate: '2024-01-15T12:30:00Z',
           // gameserverId is missing - should fail
         });
         throw new Error('Expected request to fail');
@@ -628,7 +637,8 @@ const tests = [
         maxY: 2000,
         minZ: 10000,
         maxZ: 11000,
-        timestamp: '2024-01-15T12:00:00Z',
+        startDate: '2024-01-15T11:30:00Z',
+        endDate: '2024-01-15T12:30:00Z',
         gameserverId: this.setupData.gameServer1.id,
       });
 
@@ -655,7 +665,8 @@ const tests = [
           y: 100,
           z: 500,
           radius: 50,
-          timestamp: '2024-01-15T12:00:00Z',
+          startDate: '2024-01-15T11:30:00Z',
+          endDate: '2024-01-15T12:30:00Z',
           // gameserverId is missing - should fail
         });
         throw new Error('Expected request to fail');
@@ -692,7 +703,8 @@ const tests = [
         y: 5000,
         z: 50000,
         radius: 10,
-        timestamp: '2024-01-15T12:00:00Z',
+        startDate: '2024-01-15T11:30:00Z',
+        endDate: '2024-01-15T12:30:00Z',
         gameserverId: this.setupData.gameServer1.id,
       });
 
@@ -721,7 +733,8 @@ const tests = [
         maxY: 100,
         minZ: 0,
         maxZ: 200,
-        timestamp: '2024-01-15T12:00:00Z',
+        startDate: '2024-01-15T11:30:00Z',
+        endDate: '2024-01-15T12:30:00Z',
         gameserverId: this.setupData.gameServer1.id,
       });
 
@@ -732,7 +745,8 @@ const tests = [
         maxY: 100,
         minZ: 0,
         maxZ: 200,
-        timestamp: '2024-01-15T12:00:00Z',
+        startDate: '2024-01-15T11:30:00Z',
+        endDate: '2024-01-15T12:30:00Z',
         gameserverId: this.setupData.gameServer2.id,
       });
 
@@ -777,7 +791,8 @@ const tests = [
         y: 100,
         z: 500,
         radius: 200,
-        timestamp: '2024-01-15T12:00:00Z',
+        startDate: '2024-01-15T11:30:00Z',
+        endDate: '2024-01-15T12:30:00Z',
         gameserverId: this.setupData.gameServer1.id,
       });
 
@@ -786,7 +801,8 @@ const tests = [
         y: 100,
         z: 500,
         radius: 200,
-        timestamp: '2024-01-15T12:00:00Z',
+        startDate: '2024-01-15T11:30:00Z',
+        endDate: '2024-01-15T12:30:00Z',
         gameserverId: this.setupData.gameServer2.id,
       });
 
@@ -810,6 +826,127 @@ const tests = [
           expect(playerIds1).to.not.include(pog.id);
         }
       });
+    },
+  }),
+
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Bounding box search filters by date range correctly',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      await setupHistoricalData(this.standardDomainId, this.setupData.pogs1);
+
+      // Test with a very narrow date range that should only include specific hours
+      const res = await this.client.tracking.trackingControllerGetBoundingBoxPlayers({
+        minX: 0,
+        maxX: 1000,
+        minY: 0,
+        maxY: 200,
+        minZ: 0,
+        maxZ: 1000,
+        startDate: '2024-01-01T10:00:00Z',
+        endDate: '2024-01-01T10:59:59Z',
+        gameserverId: this.setupData.gameServer1.id,
+      });
+
+      const data = res.data.data;
+
+      // Should only find records from hour 10
+      data.forEach((location) => {
+        const date = new Date(location.createdAt);
+        expect(date.getHours()).to.equal(10);
+        expect(date.toISOString().startsWith('2024-01-01')).to.be.true;
+      });
+    },
+  }),
+
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Radius search filters by date range correctly',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      await setupHistoricalData(this.standardDomainId, this.setupData.pogs1);
+
+      // Test with a date range that excludes all data
+      const res = await this.client.tracking.trackingControllerGetRadiusPlayers({
+        x: 500,
+        y: 100,
+        z: 500,
+        radius: 1000, // Very large radius to ensure spatial filtering isn't the issue
+        startDate: '2025-01-01T00:00:00Z',
+        endDate: '2025-01-02T00:00:00Z',
+        gameserverId: this.setupData.gameServer1.id,
+      });
+
+      const data = res.data.data;
+      // Should find no records in the future date range
+      expect(data.length).to.equal(0);
+    },
+  }),
+
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Bounding box search works without date range filters',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      await setupHistoricalData(this.standardDomainId, this.setupData.pogs1);
+
+      // Test without any date filters - should find all players in the box
+      const res = await this.client.tracking.trackingControllerGetBoundingBoxPlayers({
+        minX: 0,
+        maxX: 1000,
+        minY: 0,
+        maxY: 200,
+        minZ: 0,
+        maxZ: 1000,
+        gameserverId: this.setupData.gameServer1.id,
+      });
+
+      const data = res.data.data;
+      // Should find records from multiple time periods
+      expect(data.length).to.be.greaterThan(0);
+
+      // Verify we have data from different hours
+      const hours = new Set(data.map((location) => new Date(location.createdAt).getHours()));
+      expect(hours.size).to.be.greaterThan(1);
+    },
+  }),
+
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Radius search works without date range filters',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      await setupHistoricalData(this.standardDomainId, this.setupData.pogs1);
+
+      // Test without any date filters - should find all players in radius
+      const res = await this.client.tracking.trackingControllerGetRadiusPlayers({
+        x: 500,
+        y: 100,
+        z: 500,
+        radius: 200,
+        gameserverId: this.setupData.gameServer1.id,
+      });
+
+      const data = res.data.data;
+      // Should find records from multiple time periods
+      expect(data.length).to.be.greaterThan(0);
+
+      // Verify we have data from different hours
+      const hours = new Set(data.map((location) => new Date(location.createdAt).getHours()));
+      expect(hours.size).to.be.greaterThan(1);
     },
   }),
 
