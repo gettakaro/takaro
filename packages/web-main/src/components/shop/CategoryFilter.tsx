@@ -145,7 +145,38 @@ export const CategoryFilter: FC<CategoryFilterProps> = ({
     }
   };
 
-  const rootCategories = categoriesData?.data.filter((cat) => !cat.parentId) || [];
+  // Build a proper category tree from the flat array
+  const buildCategoryTree = (categories: ShopCategoryOutputDTO[]): ShopCategoryOutputDTO[] => {
+    // Create a map of all categories for quick lookup
+    const categoryMap = new Map<string, ShopCategoryOutputDTO>();
+    categories.forEach((cat) => {
+      categoryMap.set(cat.id, { ...cat });
+    });
+
+    // Build the tree by assigning children to their parents
+    const rootCategories: ShopCategoryOutputDTO[] = [];
+    categories.forEach((cat) => {
+      if (cat.parentId) {
+        const parent = categoryMap.get(cat.parentId);
+        if (parent) {
+          if (!parent.children) {
+            parent.children = [];
+          }
+          // Replace the child reference with the full category object
+          const existingChildIndex = parent.children.findIndex((child) => child.id === cat.id);
+          if (existingChildIndex >= 0) {
+            parent.children[existingChildIndex] = categoryMap.get(cat.id)!;
+          }
+        }
+      } else {
+        rootCategories.push(categoryMap.get(cat.id)!);
+      }
+    });
+
+    return rootCategories;
+  };
+
+  const rootCategories = categoriesData?.data ? buildCategoryTree(categoriesData.data) : [];
 
   return (
     <Container>
