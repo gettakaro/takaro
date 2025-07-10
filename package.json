@@ -122,7 +122,7 @@
     "clsx": "2.1.1",
     "concurrently": "9.0.1",
     "convict": "6.2.4",
-    "cookie-parser": "1.4.6",
+    "cookie-parser": "1.4.7",
     "cors": "2.8.5",
     "croner": "8.1.2",
     "cronstrue": "2.51.0",
