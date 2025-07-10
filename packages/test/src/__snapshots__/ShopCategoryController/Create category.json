@@ -1,0 +1,28 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "id": "3cbf7471-2bd7-4dad-9892-12e7de2198f0",
+      "name": "New Category",
+      "emoji": "🆕",
+      "parentId": null,
+      "createdAt": "2025-07-10T16:24:35.434Z",
+      "updatedAt": "2025-07-10T16:24:35.434Z",
+      "listingCount": 0,
+      "children": []
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ShopCategoryController",
+    "snapshot": true,
+    "name": "Create category",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "updatedAt"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

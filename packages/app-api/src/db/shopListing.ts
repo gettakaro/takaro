@@ -210,10 +210,39 @@ export class ShopListingRepo extends ITakaroRepo<
   async find(filters: ITakaroQuery<ShopListingOutputDTO>) {
     const { query } = await this.getModel();
     query.where('deletedAt', null);
-    const result = await new QueryBuilder<ShopListingModel, ShopListingOutputDTO>({
+
+    // Handle category filters
+    if (
+      filters.filters?.categoryIds &&
+      Array.isArray(filters.filters.categoryIds) &&
+      filters.filters.categoryIds.length > 0
+    ) {
+      const domainId = this.domainId;
+      query.whereIn('id', function () {
+        this.select('shopListingId')
+          .from(SHOP_LISTING_CATEGORY_TABLE_NAME)
+          .whereIn('shopCategoryId', filters.filters!.categoryIds as string[])
+          .andWhere('domain', '=', domainId);
+      });
+    }
+
+    // Handle uncategorized filter
+    if (filters.filters?.uncategorized === true) {
+      const domainId = this.domainId;
+      query.whereNotIn('id', function () {
+        this.select('shopListingId').from(SHOP_LISTING_CATEGORY_TABLE_NAME).where('domain', '=', domainId);
+      });
+    }
+
+    // Remove categoryIds and uncategorized from filters before passing to QueryBuilder
+    const { categoryIds: _categoryIds, uncategorized: _uncategorized, ...otherFilters } = filters.filters || {};
+    const cleanedFilters = {
       ...filters,
+      filters: otherFilters,
       extend: [...(filters.extend || []), 'items.item', 'categories'],
-    }).build(query);
+    };
+
+    const result = await new QueryBuilder<ShopListingModel, ShopListingOutputDTO>(cleanedFilters).build(query);
 
     return {
       total: result.total,
@@ -235,7 +264,9 @@ export class ShopListingRepo extends ITakaroRepo<
     const knex = await this.getKnex();
 
     const { query } = await this.getModel();
-    const res = await query.updateAndFetchById(id, data.toJSON()).returning('*');
+    // Extract categoryIds from data to handle separately
+    const { categoryIds, ...updateData } = data.toJSON();
+    const res = await query.updateAndFetchById(id, updateData).returning('*');
 
     if (data.items) {
       const itemRepo = new ItemRepo(this.domainId);
@@ -264,13 +295,13 @@ export class ShopListingRepo extends ITakaroRepo<
     }
 
     // Handle category assignments
-    if (data.categoryIds !== undefined) {
+    if (categoryIds !== undefined) {
       // Delete existing category assignments
       await knex(SHOP_LISTING_CATEGORY_TABLE_NAME).where('shopListingId', id).delete();
 
       // Add new category assignments
-      if (data.categoryIds.length > 0) {
-        const categoryAssignments = data.categoryIds.map((categoryId) => ({
+      if (categoryIds.length > 0) {
+        const categoryAssignments = categoryIds.map((categoryId: string) => ({
           shopListingId: id,
           shopCategoryId: categoryId,
           domain: this.domainId,

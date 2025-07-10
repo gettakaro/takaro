@@ -89,8 +89,10 @@ export const useShopCategoryDelete = () => {
 
   return mutationWrapper<APIOutput, ShopCategoryDelete>(
     useMutation<APIOutput, AxiosError<APIOutput>, ShopCategoryDelete>({
-      mutationFn: async ({ shopCategoryId }) =>
-        (await getApiClient().shopCategory.shopCategoryControllerRemove(shopCategoryId)).data,
+      mutationFn: async ({ shopCategoryId }) => {
+        await getApiClient().shopCategory.shopCategoryControllerRemove(shopCategoryId);
+        return {} as APIOutput; // DELETE endpoints typically return empty response
+      },
       onSuccess: async (_, { shopCategoryId }) => {
         enqueueSnackbar('Category successfully deleted!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: shopCategoryKeys.list() });
@@ -170,8 +172,10 @@ export const useShopCategoryBulkAssign = () => {
 
   return mutationWrapper<APIOutput, ShopCategoryBulkAssign>(
     useMutation<APIOutput, AxiosError<APIOutput>, ShopCategoryBulkAssign>({
-      mutationFn: async ({ bulkAssignDTO }) =>
-        (await apiClient.shopCategory.shopCategoryControllerBulkAssign(bulkAssignDTO)).data,
+      mutationFn: async ({ bulkAssignDTO }) => {
+        await apiClient.shopCategory.shopCategoryControllerBulkAssign(bulkAssignDTO);
+        return {} as APIOutput; // Bulk assign endpoints typically return empty response
+      },
       onSuccess: async () => {
         enqueueSnackbar('Categories assigned successfully!', { variant: 'default', type: 'success' });
         // Invalidate shop listings as their categories have changed

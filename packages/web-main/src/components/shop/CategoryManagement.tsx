@@ -12,12 +12,7 @@ import {
   IconButton,
   Tooltip,
 } from '@takaro/lib-components';
-import {
-  AiOutlinePlus as AddIcon,
-  AiOutlineEdit as EditIcon,
-  AiOutlineDelete as DeleteIcon,
-  AiOutlineArrowLeft as BackIcon,
-} from 'react-icons/ai';
+import { AiOutlinePlus as AddIcon, AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon } from 'react-icons/ai';
 import { createColumnHelper } from '@tanstack/react-table';
 import { ShopCategoryOutputDTO } from '@takaro/apiclient';
 import { useShopCategories, useShopCategoryDelete } from '../../queries/shopCategories';
@@ -37,11 +32,6 @@ const Header = styled.div`
     margin: 0;
     font-size: ${({ theme }) => theme.fontSize.large};
   }
-`;
-
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing['1']};
 `;
 
 const CategoryPath = styled.div`
@@ -67,7 +57,7 @@ export const CategoryManagement: FC = () => {
   const { data: categoriesData, isLoading, error } = useShopCategories();
   const { mutate: deleteCategory, isPending: isDeleting } = useShopCategoryDelete();
 
-  const { sorting } = useTableActions<ShopCategoryOutputDTO>();
+  const { sorting, columnFilters, columnSearch } = useTableActions<ShopCategoryOutputDTO>();
 
   const handleBack = () => {
     navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId: params.gameServerId } });
@@ -157,6 +147,7 @@ export const CategoryManagement: FC = () => {
     columnHelper.accessor('name', {
       header: 'Category',
       id: 'name',
+      enableColumnFilter: false,
       cell: (info) => (
         <div style={{ paddingLeft: `${info.row.original.level * 2}rem` }}>
           <EmojiDisplay>{info.row.original.emoji}</EmojiDisplay>
@@ -167,20 +158,23 @@ export const CategoryManagement: FC = () => {
     columnHelper.accessor('path', {
       header: 'Path',
       id: 'path',
+      enableColumnFilter: false,
       cell: (info) => <CategoryPath>{info.getValue()}</CategoryPath>,
     }),
     columnHelper.accessor('createdAt', {
       header: 'Created',
       id: 'createdAt',
       enableSorting: true,
+      enableColumnFilter: false,
       cell: (info) => new Date(info.getValue()).toLocaleDateString(),
     }),
     columnHelper.display({
       header: 'Actions',
       id: 'actions',
       maxSize: 100,
+      enableColumnFilter: false,
       cell: (info) => (
-        <ButtonGroup>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
           <Tooltip>
             <Tooltip.Trigger asChild>
               <IconButton icon={<EditIcon />} onClick={() => handleEdit(info.row.original)} ariaLabel="Edit category" />
@@ -198,7 +192,7 @@ export const CategoryManagement: FC = () => {
             </Tooltip.Trigger>
             <Tooltip.Content>Delete category</Tooltip.Content>
           </Tooltip>
-        </ButtonGroup>
+        </div>
       ),
     }),
   ];
@@ -232,9 +226,6 @@ export const CategoryManagement: FC = () => {
       <Container>
         <Header>
           <h1>Shop Categories</h1>
-          <Button onClick={handleBack} variant="outline" icon={<BackIcon />}>
-            Back to shop
-          </Button>
         </Header>
         <EmptyPage>
           <Empty
@@ -255,14 +246,9 @@ export const CategoryManagement: FC = () => {
     <Container>
       <Header>
         <h1>Shop Categories</h1>
-        <ButtonGroup>
-          <Button onClick={handleCreate} icon={<AddIcon />}>
-            Create category
-          </Button>
-          <Button onClick={handleBack} variant="outline" icon={<BackIcon />}>
-            Back to shop
-          </Button>
-        </ButtonGroup>
+        <Button onClick={handleCreate} icon={<AddIcon />}>
+          Create category
+        </Button>
       </Header>
 
       <Table
@@ -270,8 +256,8 @@ export const CategoryManagement: FC = () => {
         data={flatCategories}
         columns={columnDefs}
         sorting={sorting}
-        columnFiltering={false}
-        columnSearch={false}
+        columnFiltering={columnFilters}
+        columnSearch={columnSearch}
       />
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
@@ -283,7 +269,7 @@ export const CategoryManagement: FC = () => {
                 <p>
                   Are you sure you want to delete the category "{selectedCategory.emoji} {selectedCategory.name}"?
                 </p>
-                {selectedCategory.listingCount && selectedCategory.listingCount > 0 && (
+                {selectedCategory.listingCount !== undefined && selectedCategory.listingCount > 0 && (
                   <p>
                     <strong>Warning:</strong> This category has {selectedCategory.listingCount} shop listing
                     {selectedCategory.listingCount > 1 ? 's' : ''} associated with it.
@@ -297,13 +283,15 @@ export const CategoryManagement: FC = () => {
                 )}
               </>
             )}
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+              <Button onClick={() => setDeleteDialogOpen(false)} variant="outline" fullWidth>
+                Cancel
+              </Button>
+              <Button onClick={handleDeleteConfirm} color="error" isLoading={isDeleting} fullWidth>
+                Delete
+              </Button>
+            </div>
           </Dialog.Body>
-          <Button onClick={() => setDeleteDialogOpen(false)} variant="outline">
-            Cancel
-          </Button>
-          <Button onClick={handleDeleteConfirm} color="error" isLoading={isDeleting}>
-            Delete
-          </Button>
         </Dialog.Content>
       </Dialog>
     </Container>

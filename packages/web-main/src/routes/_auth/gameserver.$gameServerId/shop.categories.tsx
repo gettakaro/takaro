@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, redirect, Outlet } from '@tanstack/react-router';
 import { hasPermission } from '../../../hooks/useHasPermission';
 import { CategoryManagement } from '../../../components/shop/CategoryManagement';
 
@@ -14,5 +14,10 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/categ
       throw redirect({ to: '/forbidden' });
     }
   },
-  component: CategoryManagement,
+  component: () => (
+    <>
+      <CategoryManagement />
+      <Outlet />
+    </>
+  ),
 });

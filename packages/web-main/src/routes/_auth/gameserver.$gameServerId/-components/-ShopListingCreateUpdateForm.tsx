@@ -80,11 +80,37 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
   const readOnly = onSubmit === undefined;
   const { history } = useRouter();
 
-  const { control, handleSubmit, formState, watch, setValue } = useForm<FormValues>({
+  const { control, handleSubmit, formState, watch, setValue, reset } = useForm<FormValues>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
-    ...(initialData && {
-      values: {
+    defaultValues: {
+      name: undefined,
+      price: 0,
+      draft: undefined,
+      categoryIds: [],
+      items: [{ itemId: '', amount: 1, quality: '' }],
+    },
+  });
+
+  const {
+    fields,
+    append: addItem,
+    remove: removeItem,
+    swap: moveItem,
+  } = useFieldArray({
+    control: control,
+    name: 'items',
+  });
+
+  useEffect(() => {
+    if (!open) {
+      history.go(-1);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (initialData) {
+      reset({
         name: initialData.name ? initialData.name : undefined,
         price: initialData.price,
         draft: initialData.draft !== undefined ? initialData.draft : undefined,
@@ -96,26 +122,9 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
             quality: shopListingItemMeta.quality,
           };
         }),
-      },
-    }),
-  });
-
-  const {
-    fields,
-    append: addItem,
-    remove: removeItem,
-    swap: moveItem,
-  } = useFieldArray({
-    control: control,
-    name: 'items',
-    shouldUnregister: true,
-  });
-
-  useEffect(() => {
-    if (!open) {
-      history.go(-1);
+      });
     }
-  }, [open]);
+  }, [initialData, reset]);
 
   return (
     <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={readOnly === false && formState.isDirty}>

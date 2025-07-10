@@ -1,5 +1,5 @@
 import { FC, useState, useMemo } from 'react';
-import { styled, Skeleton, Empty } from '@takaro/lib-components';
+import { styled, Skeleton, Empty, UnControlledCheckBox } from '@takaro/lib-components';
 import { ShopCategoryOutputDTO } from '@takaro/apiclient';
 import { useShopCategories } from '../../queries/shopCategories';
 import { AiOutlineSearch as SearchIcon } from 'react-icons/ai';
@@ -221,11 +221,13 @@ export const CategorySelector: FC<CategorySelectorProps> = ({
         ) : (
           flatCategories.map((category) => (
             <CategoryItem key={category.id} level={category.level}>
-              <input
-                type="checkbox"
+              <UnControlledCheckBox
                 id={`category-${category.id}`}
-                checked={selectedCategoryIds.includes(category.id)}
+                name={`category-${category.id}`}
+                value={selectedCategoryIds.includes(category.id)}
                 onChange={() => handleCategoryToggle(category.id)}
+                hasDescription={false}
+                hasError={false}
               />
               <CategoryLabel htmlFor={`category-${category.id}`}>
                 <EmojiSpan>{category.emoji}</EmojiSpan>

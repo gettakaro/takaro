@@ -1,0 +1,36 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "id": "9286d19f-b570-4106-94c0-cded5145a0d9",
+      "name": "Child Category",
+      "emoji": "👶",
+      "parentId": "5e2a839f-dffa-47e9-b379-763463b7d8ad",
+      "createdAt": "2025-07-10T16:24:43.661Z",
+      "updatedAt": "2025-07-10T16:24:43.662Z",
+      "listingCount": 0,
+      "parent": {
+        "id": "5e2a839f-dffa-47e9-b379-763463b7d8ad",
+        "name": "Weapons",
+        "emoji": "⚔️",
+        "parentId": null,
+        "createdAt": "2025-07-10T16:24:37.382Z",
+        "updatedAt": "2025-07-10T16:24:37.382Z"
+      },
+      "children": []
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ShopCategoryController",
+    "snapshot": true,
+    "name": "Create child category",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "updatedAt"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

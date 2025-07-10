@@ -75,6 +75,7 @@ class ShopCategorySearchInputDTO extends ITakaroQuery<ShopCategorySearchInputAll
 @JsonController('/shop/category')
 export class ShopCategoryController {
   @Post('/search')
+  @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(ShopCategoryOutputArrayDTOAPI)
   @OpenAPI({
     description: 'Search shop categories',
@@ -94,6 +95,7 @@ export class ShopCategoryController {
   }
 
   @Get('/:id')
+  @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(ShopCategoryOutputDTOAPI)
   @OpenAPI({
     description: 'Get a shop category by id',
@@ -104,6 +106,7 @@ export class ShopCategoryController {
   }
 
   @Get('/')
+  @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(ShopCategoryOutputArrayDTOAPI)
   @OpenAPI({
     description: 'Get all shop categories',

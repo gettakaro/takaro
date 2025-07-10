@@ -1,0 +1,22 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "success": true
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ShopCategoryController",
+    "snapshot": true,
+    "name": "Mixed bulk operations (add and remove)",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "updatedAt",
+      "domain"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

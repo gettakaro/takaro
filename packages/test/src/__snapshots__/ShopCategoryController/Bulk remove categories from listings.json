@@ -1,0 +1,22 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "success": true
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ShopCategoryController",
+    "snapshot": true,
+    "name": "Bulk remove categories from listings",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "updatedAt",
+      "domain"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

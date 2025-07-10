@@ -9,7 +9,6 @@ import {
   AiOutlineDownload as ExportShopListingsToFileIcon,
   AiOutlineCheck as CheckMarkIcon,
   AiOutlineBook as DocumentationIcon,
-  AiOutlineAppstore as ManageCategoriesIcon,
   AiOutlineTag as CategoryIcon,
   AiOutlineClose as ClearSelectionIcon,
 } from 'react-icons/ai';
@@ -141,10 +140,6 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
     navigate({ to: '/gameserver/$gameServerId/shop/listing/create' });
   };
 
-  const onClickManageCategories = () => {
-    navigate({ to: '/gameserver/$gameServerId/shop/categories' });
-  };
-
   const onClickImportShopListingsFromGameServer = () => {
     navigate({ to: '/gameserver/$gameServerId/shop/listing/import/gameserver' });
   };
@@ -217,12 +212,6 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
                     icon={<CreateNewShopListingIcon />}
                     label="New shop listing"
                     onClick={onClickCreateNewShopListing}
-                  />
-
-                  <DropdownMenu.Item
-                    icon={<ManageCategoriesIcon />}
-                    label="Manage categories"
-                    onClick={onClickManageCategories}
                   />
 
                   <DropdownMenu.Item

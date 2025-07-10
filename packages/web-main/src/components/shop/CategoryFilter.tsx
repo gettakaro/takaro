@@ -1,9 +1,8 @@
-import { FC, useState } from 'react';
-import { styled, Skeleton, Button } from '@takaro/lib-components';
+import { FC } from 'react';
+import { styled, Skeleton, Button, UnControlledCheckBox } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
 import { shopCategoriesQueryOptions } from '../../queries/shopCategories';
 import { ShopCategoryOutputDTO } from '@takaro/apiclient';
-import { AiOutlineDown as DownIcon, AiOutlineRight as RightIcon } from 'react-icons/ai';
 
 const Container = styled.div`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
@@ -17,7 +16,6 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: ${({ theme }) => theme.spacing['2']};
-  cursor: pointer;
 
   h3 {
     margin: 0;
@@ -87,19 +85,18 @@ const CategoryNode: FC<CategoryNodeProps> = ({ category, depth, selectedCategori
   const isSelected = selectedCategories.includes(category.id);
   const hasChildren = category.children && category.children.length > 0;
 
-  // TODO: Get actual listing count from API
-  const listingCount = 0;
+  const listingCount = category.listingCount || 0;
 
   return (
     <>
       <CategoryItem depth={depth}>
-        <input
-          type="checkbox"
+        <UnControlledCheckBox
           id={`category-${category.id}`}
-          value={category.id}
-          name="category"
-          checked={isSelected}
+          name={`category-${category.id}`}
+          value={isSelected}
           onChange={() => onToggle(category.id)}
+          hasDescription={false}
+          hasError={false}
         />
         <CategoryLabel htmlFor={`category-${category.id}`}>
           <span>{category.emoji}</span>
@@ -127,8 +124,6 @@ export const CategoryFilter: FC<CategoryFilterProps> = ({
   showUncategorized = false,
   onUncategorizedChange,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
-
   const { data: categoriesData, isLoading } = useQuery(
     shopCategoriesQueryOptions({
       limit: 100,
@@ -154,58 +149,56 @@ export const CategoryFilter: FC<CategoryFilterProps> = ({
 
   return (
     <Container>
-      <Header onClick={() => setIsExpanded(!isExpanded)}>
+      <Header>
         <h3>Categories</h3>
-        {isExpanded ? <DownIcon /> : <RightIcon />}
       </Header>
 
-      {isExpanded &&
-        (isLoading ? (
-          <>
-            <Skeleton height="30px" width="100%" variant="text" />
-            <Skeleton height="30px" width="100%" variant="text" />
-            <Skeleton height="30px" width="100%" variant="text" />
-          </>
-        ) : (
-          <>
-            <CategoryList>
-              {rootCategories.map((category) => (
-                <CategoryNode
-                  key={category.id}
-                  category={category}
-                  depth={0}
-                  selectedCategories={selectedCategories}
-                  onToggle={handleCategoryToggle}
+      {isLoading ? (
+        <>
+          <Skeleton height="30px" width="100%" variant="text" />
+          <Skeleton height="30px" width="100%" variant="text" />
+          <Skeleton height="30px" width="100%" variant="text" />
+        </>
+      ) : (
+        <>
+          <CategoryList>
+            {rootCategories.map((category) => (
+              <CategoryNode
+                key={category.id}
+                category={category}
+                depth={0}
+                selectedCategories={selectedCategories}
+                onToggle={handleCategoryToggle}
+              />
+            ))}
+          </CategoryList>
+
+          {onUncategorizedChange && (
+            <SpecialFilter>
+              <CategoryItem depth={0}>
+                <UnControlledCheckBox
+                  id="uncategorized"
+                  name="uncategorized"
+                  value={showUncategorized}
+                  onChange={(e) => onUncategorizedChange(e.target.checked)}
+                  hasDescription={false}
+                  hasError={false}
                 />
-              ))}
-            </CategoryList>
+                <CategoryLabel htmlFor="uncategorized">
+                  <span>📦</span>
+                  <span>Uncategorized</span>
+                </CategoryLabel>
+              </CategoryItem>
+            </SpecialFilter>
+          )}
 
-            {onUncategorizedChange && (
-              <SpecialFilter>
-                <CategoryItem depth={0}>
-                  <input
-                    type="checkbox"
-                    id="uncategorized"
-                    value="uncategorized"
-                    name="uncategorized"
-                    checked={showUncategorized}
-                    onChange={(e) => onUncategorizedChange(e.target.checked)}
-                  />
-                  <CategoryLabel htmlFor="uncategorized">
-                    <span>📦</span>
-                    <span>Uncategorized</span>
-                  </CategoryLabel>
-                </CategoryItem>
-              </SpecialFilter>
-            )}
-
-            {(selectedCategories.length > 0 || showUncategorized) && (
-              <ClearButton variant="outline" size="small" onClick={handleClearAll}>
-                Clear all filters
-              </ClearButton>
-            )}
-          </>
-        ))}
+          {(selectedCategories.length > 0 || showUncategorized) && (
+            <ClearButton variant="outline" size="small" onClick={handleClearAll}>
+              Clear all filters
+            </ClearButton>
+          )}
+        </>
+      )}
     </Container>
   );
 };

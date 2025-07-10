@@ -1,0 +1,24 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "NotFoundError",
+        "message": "Not found"
+      }
+    },
+    "data": {}
+  },
+  "status": 404,
+  "test": {
+    "group": "ShopCategoryController",
+    "snapshot": true,
+    "name": "Delete parent category with children",
+    "expectedStatus": 404,
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "updatedAt"
+    ],
+    "standardEnvironment": true
+  }
+}

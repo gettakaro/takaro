@@ -1,0 +1,40 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "id": "5c8fc2c4-410c-4dd5-8953-28bf9d0a7c51",
+      "name": "Melee Weapons",
+      "emoji": "⚔️",
+      "parentId": "3153e452-5485-438d-96c1-916ff48c78e0",
+      "createdAt": "2025-07-10T16:25:18.948Z",
+      "updatedAt": "2025-07-10T16:25:19.398Z",
+      "listingCount": 0,
+      "parent": {
+        "id": "3153e452-5485-438d-96c1-916ff48c78e0",
+        "name": "Tools",
+        "emoji": "🔧",
+        "parentId": null,
+        "createdAt": "2025-07-10T16:25:13.304Z",
+        "updatedAt": "2025-07-10T16:25:13.305Z"
+      },
+      "children": []
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ShopCategoryController",
+    "snapshot": true,
+    "name": "Move category to different parent",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "updatedAt",
+      "domain",
+      "parent",
+      "children",
+      "listingCount"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

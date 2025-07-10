@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { hasPermission } from '../../../hooks/useHasPermission';
-import { CategoryForm } from '../../../components/shop/CategoryForm';
+import { hasPermission } from '../../../../hooks/useHasPermission';
+import { CategoryForm } from '../../../../components/shop/CategoryForm';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/categories/create')({
   beforeLoad: async ({ context }) => {
@@ -14,5 +14,8 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/categ
       throw redirect({ to: '/forbidden' });
     }
   },
-  component: CategoryForm,
+  component: () => {
+    const { gameServerId } = Route.useParams();
+    return <CategoryForm gameServerId={gameServerId} />;
+  },
 });

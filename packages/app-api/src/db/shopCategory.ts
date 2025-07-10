@@ -106,78 +106,113 @@ export class ShopCategoryRepo extends ITakaroRepo<
     const { query } = await this.getModel();
     const knex = await this.getKnex();
 
-    // Add listing count as a virtual column
-    const queryWithCount = query
-      .select(`${SHOP_CATEGORY_TABLE_NAME}.*`)
-      .leftJoin(
-        SHOP_LISTING_CATEGORY_TABLE_NAME,
-        `${SHOP_CATEGORY_TABLE_NAME}.id`,
-        `${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`,
-      )
-      .groupBy(`${SHOP_CATEGORY_TABLE_NAME}.id`)
-      .select(knex.raw(`COUNT(DISTINCT ${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopListingId) as listingCount`));
-
-    const result = await new QueryBuilder<ShopCategoryModel, ShopCategoryOutputDTO>({
+    // First, get the basic results using QueryBuilder for pagination, filtering, etc.
+    const basicResult = await new QueryBuilder<ShopCategoryModel, ShopCategoryOutputDTO>({
       ...filters,
       extend: [...(filters.extend || []), 'parent', 'children'],
-    }).build(queryWithCount);
+    }).build(query);
+
+    // Then, for each category, get the listing count
+    const resultsWithCounts = await Promise.all(
+      basicResult.results.map(async (category) => {
+        let listingCount = 0;
+
+        if (category.children && category.children.length > 0) {
+          // For parent categories: count listings assigned to this category OR any of its children
+          const childIds = category.children.map((child) => child.id);
+          const allCategoryIds = [category.id, ...childIds];
+
+          const countResult = await knex
+            .select(knex.raw(`COUNT(DISTINCT "${SHOP_LISTING_CATEGORY_TABLE_NAME}"."shopListingId") as count`))
+            .from(SHOP_LISTING_CATEGORY_TABLE_NAME)
+            .whereIn(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`, allCategoryIds)
+            .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, category.domain)
+            .first();
+
+          listingCount = parseInt((countResult as any)?.count || '0', 10);
+        } else {
+          // For child/leaf categories: count only listings assigned directly to this category
+          const countResult = await knex
+            .select(knex.raw(`COUNT(DISTINCT "${SHOP_LISTING_CATEGORY_TABLE_NAME}"."shopListingId") as count`))
+            .from(SHOP_LISTING_CATEGORY_TABLE_NAME)
+            .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`, category.id)
+            .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, category.domain)
+            .first();
+
+          listingCount = parseInt((countResult as any)?.count || '0', 10);
+        }
+
+        return new ShopCategoryOutputDTO({
+          id: category.id,
+          name: category.name,
+          emoji: category.emoji,
+          parentId: category.parentId,
+          domain: category.domain,
+          createdAt: category.createdAt,
+          updatedAt: category.updatedAt,
+          listingCount,
+          parent: category.parent ? await this.modelToDTO(category.parent) : undefined,
+          children: category.children
+            ? await Promise.all(category.children.map((child) => this.modelToDTO(child)))
+            : undefined,
+        });
+      }),
+    );
 
     return {
-      total: result.total,
-      results: await Promise.all(
-        result.results.map(async (item) => {
-          const itemWithCount = item as ShopCategoryModel & { listingCount: number };
-          return new ShopCategoryOutputDTO({
-            id: itemWithCount.id,
-            name: itemWithCount.name,
-            emoji: itemWithCount.emoji,
-            parentId: itemWithCount.parentId,
-            domain: itemWithCount.domain,
-            createdAt: itemWithCount.createdAt,
-            updatedAt: itemWithCount.updatedAt,
-            listingCount: itemWithCount.listingCount || 0,
-            parent: itemWithCount.parent ? await this.modelToDTO(itemWithCount.parent) : undefined,
-            children: itemWithCount.children
-              ? await Promise.all(itemWithCount.children.map((child) => this.modelToDTO(child)))
-              : undefined,
-          });
-        }),
-      ),
+      total: basicResult.total,
+      results: resultsWithCounts,
     };
   }
 
   async findOne(id: string): Promise<ShopCategoryOutputDTO> {
     const { query } = await this.getModel();
     const knex = await this.getKnex();
-    const res = await query
-      .findById(id)
-      .withGraphFetched('[parent, children]')
-      .leftJoin(
-        SHOP_LISTING_CATEGORY_TABLE_NAME,
-        `${SHOP_CATEGORY_TABLE_NAME}.id`,
-        `${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`,
-      )
-      .groupBy(`${SHOP_CATEGORY_TABLE_NAME}.id`)
-      .select(
-        `${SHOP_CATEGORY_TABLE_NAME}.*`,
-        knex.raw(`COUNT(DISTINCT ${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopListingId) as listingCount`),
-      )
-      .first();
+
+    // Get the basic category with parent/children relationships
+    const res = await query.findById(id).withGraphFetched('[parent, children]');
+
     if (!res) throw new errors.NotFoundError();
-    const resWithCount = res as ShopCategoryModel & { listingCount: number };
+
+    // Get listing count separately with hierarchical logic
+    let listingCount = 0;
+
+    if (res.children && res.children.length > 0) {
+      // For parent categories: count listings assigned to this category OR any of its children
+      const childIds = res.children.map((child) => child.id);
+      const allCategoryIds = [res.id, ...childIds];
+
+      const countResult = await knex
+        .select(knex.raw(`COUNT(DISTINCT "${SHOP_LISTING_CATEGORY_TABLE_NAME}"."shopListingId") as count`))
+        .from(SHOP_LISTING_CATEGORY_TABLE_NAME)
+        .whereIn(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`, allCategoryIds)
+        .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, res.domain)
+        .first();
+
+      listingCount = parseInt((countResult as any)?.count || '0', 10);
+    } else {
+      // For child/leaf categories: count only listings assigned directly to this category
+      const countResult = await knex
+        .select(knex.raw(`COUNT(DISTINCT "${SHOP_LISTING_CATEGORY_TABLE_NAME}"."shopListingId") as count`))
+        .from(SHOP_LISTING_CATEGORY_TABLE_NAME)
+        .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`, res.id)
+        .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, res.domain)
+        .first();
+
+      listingCount = parseInt((countResult as any)?.count || '0', 10);
+    }
+
     return new ShopCategoryOutputDTO({
-      id: resWithCount.id,
-      name: resWithCount.name,
-      emoji: resWithCount.emoji,
-      parentId: resWithCount.parentId,
-      domain: resWithCount.domain,
-      createdAt: resWithCount.createdAt,
-      updatedAt: resWithCount.updatedAt,
-      listingCount: resWithCount.listingCount || 0,
-      parent: resWithCount.parent ? await this.modelToDTO(resWithCount.parent) : undefined,
-      children: resWithCount.children
-        ? await Promise.all(resWithCount.children.map((child) => this.modelToDTO(child)))
-        : undefined,
+      id: res.id,
+      name: res.name,
+      emoji: res.emoji,
+      parentId: res.parentId,
+      domain: res.domain,
+      createdAt: res.createdAt,
+      updatedAt: res.updatedAt,
+      listingCount,
+      parent: res.parent ? await this.modelToDTO(res.parent) : undefined,
+      children: res.children ? await Promise.all(res.children.map((child) => this.modelToDTO(child))) : undefined,
     });
   }
 
@@ -187,10 +222,10 @@ export class ShopCategoryRepo extends ITakaroRepo<
       throw new errors.BadRequestError('Category name must be 50 characters or less');
     }
 
-    // Validate name contains only alphanumeric and special characters (hyphens, underscores, spaces)
-    if (!/^[a-zA-Z0-9_\- ]+$/.test(item.name)) {
+    // Validate name contains only alphanumeric and special characters (hyphens, underscores, spaces, ampersands)
+    if (!/^[a-zA-Z0-9_\- &]+$/.test(item.name)) {
       throw new errors.BadRequestError(
-        'Category name can only contain letters, numbers, spaces, hyphens, and underscores',
+        'Category name can only contain letters, numbers, spaces, hyphens, underscores, and ampersands',
       );
     }
 
@@ -216,10 +251,9 @@ export class ShopCategoryRepo extends ITakaroRepo<
     // Check for case-insensitive uniqueness at the same parent level
     const existing = await query
       .whereRaw('LOWER(name) = LOWER(?)', [item.name])
-      .where('parentId', item.parentId || null)
-      .first();
+      .where('parentId', item.parentId || null);
 
-    if (existing) {
+    if (existing.length) {
       throw new errors.BadRequestError('A category with this name already exists at this level');
     }
 
@@ -245,9 +279,9 @@ export class ShopCategoryRepo extends ITakaroRepo<
         throw new errors.BadRequestError('Category name must be 50 characters or less');
       }
 
-      if (!/^[a-zA-Z0-9_\- ]+$/.test(data.name)) {
+      if (!/^[a-zA-Z0-9_\- &]+$/.test(data.name)) {
         throw new errors.BadRequestError(
-          'Category name can only contain letters, numbers, spaces, hyphens, and underscores',
+          'Category name can only contain letters, numbers, spaces, hyphens, underscores, and ampersands',
         );
       }
 
@@ -257,10 +291,9 @@ export class ShopCategoryRepo extends ITakaroRepo<
       const duplicate = await uniqueQuery
         .whereRaw('LOWER(name) = LOWER(?)', [data.name])
         .where('parentId', parentId || null)
-        .whereNot('id', id)
-        .first();
+        .whereNot('id', id);
 
-      if (duplicate) {
+      if (duplicate.length) {
         throw new errors.BadRequestError('A category with this name already exists at this level');
       }
     }

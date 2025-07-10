@@ -59,7 +59,10 @@ export const ShopTableView: FC<ShopViewProps> = ({
   // Convert selectedListingIds array to rowSelection object format
   const rowSelection = selectedListingIds.reduce((acc, id) => ({ ...acc, [id]: true }), {});
 
-  const handleRowSelectionChange = (newSelection: Record<string, boolean>) => {
+  const handleRowSelectionChange = (
+    updaterOrValue: Record<string, boolean> | ((old: Record<string, boolean>) => Record<string, boolean>),
+  ) => {
+    const newSelection = typeof updaterOrValue === 'function' ? updaterOrValue(rowSelection) : updaterOrValue;
     const selectedIds = Object.keys(newSelection).filter((id) => newSelection[id]);
     onSelectionChange?.(selectedIds);
   };
@@ -84,6 +87,7 @@ export const ShopTableView: FC<ShopViewProps> = ({
           quickSearchInput,
         ],
       },
+      extend: ['categories'],
     }),
   );
 
@@ -93,16 +97,26 @@ export const ShopTableView: FC<ShopViewProps> = ({
       ? [
           columnHelper.display({
             id: 'select',
-            header: ({ table }) => (
-              <input
-                type="checkbox"
-                checked={table.getIsAllRowsSelected()}
-                onChange={table.getToggleAllRowsSelectedHandler()}
-              />
-            ),
-            cell: ({ row }) => (
-              <input type="checkbox" checked={row.getIsSelected()} onChange={row.getToggleSelectedHandler()} />
-            ),
+            header: ({ table }) => {
+              // Check if table has the required methods before using them
+              if (!table.getIsAllRowsSelected || !table.getToggleAllRowsSelectedHandler) {
+                return null;
+              }
+              return (
+                <input
+                  type="checkbox"
+                  checked={table.getIsAllRowsSelected()}
+                  onChange={table.getToggleAllRowsSelectedHandler()}
+                />
+              );
+            },
+            cell: ({ row }) => {
+              // Check if row has the required methods before using them
+              if (!row.getIsSelected || !row.getToggleSelectedHandler) {
+                return null;
+              }
+              return <input type="checkbox" checked={row.getIsSelected()} onChange={row.getToggleSelectedHandler()} />;
+            },
             enableSorting: false,
             enableColumnFilter: false,
             size: 50,
@@ -146,6 +160,44 @@ export const ShopTableView: FC<ShopViewProps> = ({
       meta: {
         dataType: 'number',
       },
+    }),
+    columnHelper.accessor('categories', {
+      header: 'Categories',
+      id: 'categories',
+      cell: (info) => {
+        const categories = info.getValue();
+        if (!categories || categories.length === 0) {
+          return <span style={{ color: 'var(--color-text-secondary)' }}>Uncategorized</span>;
+        }
+        return (
+          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+            {categories.map((cat) => (
+              <Popover key={cat.id}>
+                <Popover.Trigger asChild>
+                  <span
+                    style={{
+                      fontSize: '1.2rem',
+                      cursor: 'help',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {cat.emoji}
+                  </span>
+                </Popover.Trigger>
+                <Popover.Content>
+                  <div style={{ padding: '0.5rem' }}>
+                    {cat.emoji} {cat.name}
+                  </div>
+                </Popover.Content>
+              </Popover>
+            ))}
+          </div>
+        );
+      },
+      enableSorting: false,
+      enableColumnFilter: false,
     }),
 
     columnHelper.accessor('createdAt', {
@@ -248,7 +300,7 @@ export const ShopTableView: FC<ShopViewProps> = ({
       columns={columnDefs}
       searchInputPlaceholder="Search shop listing by name"
       onSearchInputChanged={setQuickSearchInput}
-      data={data?.data as ShopListingOutputDTO[]}
+      data={(data?.data || []) as ShopListingOutputDTO[]}
       pagination={p}
       columnFiltering={columnFilters}
       columnSearch={columnSearch}
@@ -256,9 +308,10 @@ export const ShopTableView: FC<ShopViewProps> = ({
       canExpand={() => true}
       renderDetailPanel={(row) => detailsPanel(row)}
       isLoading={isLoading}
-      rowSelection={rowSelection}
-      onRowSelectionChange={handleRowSelectionChange}
-      getRowId={(row) => row.id}
+      rowSelection={{
+        rowSelectionState: rowSelection,
+        setRowSelectionState: handleRowSelectionChange,
+      }}
     />
   );
 };
