@@ -14,6 +14,7 @@ import {
 } from '@takaro/lib-components';
 import { useRouter } from '@tanstack/react-router';
 import { ItemSelectQueryField } from '../../../../components/selects/ItemSelectQueryField';
+import { CategorySelector } from '../../../../components/shop/CategorySelector';
 import { FC, useEffect, useState } from 'react';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
@@ -52,6 +53,7 @@ const validationSchema = z.object({
   name: z.string().optional().nullable(),
   price: z.number().min(0, 'Price is required.'),
   draft: z.boolean().optional(),
+  categoryIds: z.array(z.string()).optional(),
   items: z
     .array(
       z.object({
@@ -78,7 +80,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
   const readOnly = onSubmit === undefined;
   const { history } = useRouter();
 
-  const { control, handleSubmit, formState } = useForm<FormValues>({
+  const { control, handleSubmit, formState, watch, setValue } = useForm<FormValues>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
     ...(initialData && {
@@ -86,6 +88,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
         name: initialData.name ? initialData.name : undefined,
         price: initialData.price,
         draft: initialData.draft !== undefined ? initialData.draft : undefined,
+        categoryIds: initialData.categories ? initialData.categories.map((cat) => cat.id) : [],
         items: initialData.items.map((shopListingItemMeta) => {
           return {
             amount: shopListingItemMeta.amount,
@@ -145,6 +148,12 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
               label="Draft"
               loading={isLoading}
               description="The shop listing cannot be bought and will not be shown to users who don't have MANAGE_SHOP_LISTINGS permissions."
+            />
+            <CategorySelector
+              selectedCategoryIds={watch('categoryIds') || []}
+              onChange={(categoryIds) => setValue('categoryIds', categoryIds)}
+              label="Categories"
+              placeholder="Search categories..."
             />
             <CollapseList>
               <CollapseList.Item title="Items">

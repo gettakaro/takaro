@@ -6,6 +6,7 @@ import { ItemRepo, ItemsModel } from './items.js';
 import { RoleModel } from './role.js';
 import { ITakaroRepo } from './base.js';
 import { ShopListingOutputDTO, ShopListingUpdateDTO, ShopListingCreateDTO } from '../service/Shop/dto.js';
+import { ShopCategoryModel, SHOP_CATEGORY_TABLE_NAME, SHOP_LISTING_CATEGORY_TABLE_NAME } from './shopCategory.js';
 
 export const SHOP_LISTING_TABLE_NAME = 'shopListing';
 export const SHOP_LISTING_ITEMS_TABLE_NAME = 'itemOnShopListing';
@@ -83,6 +84,18 @@ export class ShopListingModel extends TakaroModel {
             to: `${SHOP_LISTING_ROLE_TABLE_NAME}.roleId`,
           },
           to: 'roles.id',
+        },
+      },
+      categories: {
+        relation: Model.ManyToManyRelation,
+        modelClass: ShopCategoryModel,
+        join: {
+          from: `${SHOP_LISTING_TABLE_NAME}.id`,
+          through: {
+            from: `${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopListingId`,
+            to: `${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`,
+          },
+          to: `${SHOP_CATEGORY_TABLE_NAME}.id`,
         },
       },
     };
@@ -180,6 +193,17 @@ export class ShopListingRepo extends ITakaroRepo<
       }),
     );
 
+    // Handle category assignments
+    if (item.categoryIds && item.categoryIds.length > 0) {
+      const categoryAssignments = item.categoryIds.map((categoryId) => ({
+        shopListingId: listing.id,
+        shopCategoryId: categoryId,
+        domain: this.domainId,
+      }));
+
+      await knex(SHOP_LISTING_CATEGORY_TABLE_NAME).insert(categoryAssignments);
+    }
+
     return this.findOne(listing.id);
   }
 
@@ -188,7 +212,7 @@ export class ShopListingRepo extends ITakaroRepo<
     query.where('deletedAt', null);
     const result = await new QueryBuilder<ShopListingModel, ShopListingOutputDTO>({
       ...filters,
-      extend: [...(filters.extend || []), 'items.item'],
+      extend: [...(filters.extend || []), 'items.item', 'categories'],
     }).build(query);
 
     return {
@@ -199,7 +223,7 @@ export class ShopListingRepo extends ITakaroRepo<
 
   async findOne(id: string): Promise<ShopListingOutputDTO> {
     const { query } = await this.getModel();
-    const res = await query.findById(id).withGraphFetched('items.item');
+    const res = await query.findById(id).withGraphFetched('[items.item, categories]');
     if (!res) throw new errors.NotFoundError();
     if (res.deletedAt) throw new errors.NotFoundError();
     return new ShopListingOutputDTO(res);
@@ -237,6 +261,23 @@ export class ShopListingRepo extends ITakaroRepo<
           await ItemOnShopListingModel.bindKnex(knex).query().insert(i);
         }),
       );
+    }
+
+    // Handle category assignments
+    if (data.categoryIds !== undefined) {
+      // Delete existing category assignments
+      await knex(SHOP_LISTING_CATEGORY_TABLE_NAME).where('shopListingId', id).delete();
+
+      // Add new category assignments
+      if (data.categoryIds.length > 0) {
+        const categoryAssignments = data.categoryIds.map((categoryId) => ({
+          shopListingId: id,
+          shopCategoryId: categoryId,
+          domain: this.domainId,
+        }));
+
+        await knex(SHOP_LISTING_CATEGORY_TABLE_NAME).insert(categoryAssignments);
+      }
     }
 
     return this.findOne(res.id);

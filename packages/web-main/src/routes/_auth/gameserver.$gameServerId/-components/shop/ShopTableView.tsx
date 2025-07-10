@@ -45,9 +45,24 @@ const ShopListingBuyFormContainer = styled.div`
   }
 `;
 
-export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, gameServerType, currency }) => {
+export const ShopTableView: FC<ShopViewProps> = ({
+  gameServerId,
+  currencyName,
+  gameServerType,
+  currency,
+  selectedListingIds = [],
+  onSelectionChange,
+}) => {
   const hasPermission = useHasPermission(['MANAGE_SHOP_LISTINGS']);
   const [quickSearchInput, setQuickSearchInput] = useState<string>('');
+
+  // Convert selectedListingIds array to rowSelection object format
+  const rowSelection = selectedListingIds.reduce((acc, id) => ({ ...acc, [id]: true }), {});
+
+  const handleRowSelectionChange = (newSelection: Record<string, boolean>) => {
+    const selectedIds = Object.keys(newSelection).filter((id) => newSelection[id]);
+    onSelectionChange?.(selectedIds);
+  };
 
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<ShopListingOutputDTO>({ pageSize: 25 });
   const { data, isLoading } = useQuery(
@@ -74,6 +89,26 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
 
   const columnHelper = createColumnHelper<ShopListingOutputDTO>();
   const columnDefs = [
+    ...(hasPermission
+      ? [
+          columnHelper.display({
+            id: 'select',
+            header: ({ table }) => (
+              <input
+                type="checkbox"
+                checked={table.getIsAllRowsSelected()}
+                onChange={table.getToggleAllRowsSelectedHandler()}
+              />
+            ),
+            cell: ({ row }) => (
+              <input type="checkbox" checked={row.getIsSelected()} onChange={row.getToggleSelectedHandler()} />
+            ),
+            enableSorting: false,
+            enableColumnFilter: false,
+            size: 50,
+          }),
+        ]
+      : []),
     columnHelper.accessor('id', {
       header: 'ID',
       id: 'id',
@@ -221,6 +256,9 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       canExpand={() => true}
       renderDetailPanel={(row) => detailsPanel(row)}
       isLoading={isLoading}
+      rowSelection={rowSelection}
+      onRowSelectionChange={handleRowSelectionChange}
+      getRowId={(row) => row.id}
     />
   );
 };

@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
 import { Alert, Button, Chip, Dropdown, styled, useLocalStorage } from '@takaro/lib-components';
 import {
@@ -9,6 +9,9 @@ import {
   AiOutlineDownload as ExportShopListingsToFileIcon,
   AiOutlineCheck as CheckMarkIcon,
   AiOutlineBook as DocumentationIcon,
+  AiOutlineAppstore as ManageCategoriesIcon,
+  AiOutlineTag as CategoryIcon,
+  AiOutlineClose as ClearSelectionIcon,
 } from 'react-icons/ai';
 import { ShopTableView } from './ShopTableView';
 import { ShopCardView } from './ShopCardView';
@@ -19,6 +22,8 @@ import { useQuery } from '@tanstack/react-query';
 import { shopListingsQueryOptions } from '../../../../../queries/shopListing';
 import { TableListToggleButton, ViewType } from '../../../../../components/TableListToggleButton';
 import { PermissionsGuard } from '../../../../../components/PermissionsGuard';
+import { CategoryFilter } from '../../../../../components/shop/CategoryFilter';
+import { BulkCategoryAssign } from '../../../../../components/shop/BulkCategoryAssign';
 
 const Header = styled.div`
   display: flex;
@@ -30,16 +35,99 @@ const Header = styled.div`
   }
 `;
 
+const ShopLayout = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing['2']};
+`;
+
+const ShopContent = styled.div`
+  flex: 1;
+`;
+
+const BulkActionBar = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: ${({ theme }) => theme.spacing['2']};
+  background: ${({ theme }) => theme.colors.backgroundAccent};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  margin-bottom: ${({ theme }) => theme.spacing['2']};
+  gap: ${({ theme }) => theme.spacing['2']};
+`;
+
+const SelectionInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing['1']};
+  font-size: ${({ theme }) => theme.fontSize.medium};
+`;
+
+const BulkActions = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing['1']};
+`;
+
 export interface ShopViewProps {
   gameServerId: string;
   gameServerType: GameServerOutputDTOTypeEnum;
   currencyName: string;
   currency?: number;
+  selectedCategories?: string[];
+  showUncategorized?: boolean;
+  onCategoryClick?: (categoryId: string) => void;
+  selectedListingIds?: string[];
+  onSelectionChange?: (selectedIds: string[]) => void;
 }
 
 export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyName, gameServerType }) => {
   const navigate = useNavigate({ from: '/gameserver/$gameServerId/shop' });
   const { enqueueSnackbar } = useSnackbar();
+
+  // Load filter state from sessionStorage
+  const sessionKey = `shop-filters-${gameServerId}`;
+  const loadSessionFilters = () => {
+    try {
+      const stored = sessionStorage.getItem(sessionKey);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return {
+          selectedCategories: parsed.selectedCategories || [],
+          showUncategorized: parsed.showUncategorized || false,
+        };
+      }
+    } catch (e) {
+      console.error('Failed to load session filters:', e);
+    }
+    return { selectedCategories: [], showUncategorized: false };
+  };
+
+  const { selectedCategories: initialCategories, showUncategorized: initialUncategorized } = loadSessionFilters();
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(initialCategories);
+  const [showUncategorized, setShowUncategorized] = useState(initialUncategorized);
+  const [selectedListingIds, setSelectedListingIds] = useState<string[]>([]);
+  const [bulkAssignOpen, setBulkAssignOpen] = useState(false);
+
+  // Save filters to sessionStorage whenever they change
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(
+        sessionKey,
+        JSON.stringify({
+          selectedCategories,
+          showUncategorized,
+        }),
+      );
+    } catch (e) {
+      console.error('Failed to save session filters:', e);
+    }
+  }, [selectedCategories, showUncategorized, sessionKey]);
+
+  const handleCategoryClick = (categoryId: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(categoryId) ? prev.filter((id) => id !== categoryId) : [...prev, categoryId],
+    );
+  };
+
   const { refetch } = useQuery({
     ...shopListingsQueryOptions({ filters: { gameServerId: [gameServerId] }, limit: 200 }),
     enabled: false,
@@ -51,6 +139,10 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
 
   const onClickCreateNewShopListing = () => {
     navigate({ to: '/gameserver/$gameServerId/shop/listing/create' });
+  };
+
+  const onClickManageCategories = () => {
+    navigate({ to: '/gameserver/$gameServerId/shop/categories' });
   };
 
   const onClickImportShopListingsFromGameServer = () => {
@@ -128,6 +220,12 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
                   />
 
                   <DropdownMenu.Item
+                    icon={<ManageCategoriesIcon />}
+                    label="Manage categories"
+                    onClick={onClickManageCategories}
+                  />
+
+                  <DropdownMenu.Item
                     icon={<ExportShopListingsToFileIcon />}
                     label="Export listings to file"
                     onClick={onClickExportShopListingsToFile}
@@ -157,22 +255,67 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
         </PermissionsGuard>
       </div>
 
-      {view === 'table' && (
-        <ShopTableView
-          gameServerId={gameServerId}
-          currencyName={currencyName}
-          currency={currency}
-          gameServerType={gameServerType}
+      <ShopLayout>
+        <CategoryFilter
+          selectedCategories={selectedCategories}
+          onCategoryChange={setSelectedCategories}
+          showUncategorized={showUncategorized}
+          onUncategorizedChange={setShowUncategorized}
         />
-      )}
-      {view === 'list' && (
-        <ShopCardView
-          gameServerType={gameServerType}
-          currencyName={currencyName}
-          currency={currency}
-          gameServerId={gameServerId}
-        />
-      )}
+
+        <ShopContent>
+          {view === 'table' && selectedListingIds.length > 0 && (
+            <BulkActionBar>
+              <SelectionInfo>
+                <strong>{selectedListingIds.length}</strong> listing{selectedListingIds.length > 1 ? 's' : ''} selected
+              </SelectionInfo>
+              <BulkActions>
+                <Button icon={<CategoryIcon />} onClick={() => setBulkAssignOpen(true)} size="small">
+                  Assign Categories
+                </Button>
+                <Button
+                  icon={<ClearSelectionIcon />}
+                  onClick={() => setSelectedListingIds([])}
+                  variant="outline"
+                  size="small"
+                >
+                  Clear Selection
+                </Button>
+              </BulkActions>
+            </BulkActionBar>
+          )}
+          {view === 'table' && (
+            <ShopTableView
+              gameServerId={gameServerId}
+              currencyName={currencyName}
+              currency={currency}
+              gameServerType={gameServerType}
+              selectedCategories={selectedCategories}
+              showUncategorized={showUncategorized}
+              selectedListingIds={selectedListingIds}
+              onSelectionChange={setSelectedListingIds}
+            />
+          )}
+          {view === 'list' && (
+            <ShopCardView
+              gameServerType={gameServerType}
+              currencyName={currencyName}
+              currency={currency}
+              gameServerId={gameServerId}
+              selectedCategories={selectedCategories}
+              showUncategorized={showUncategorized}
+              onCategoryClick={handleCategoryClick}
+            />
+          )}
+        </ShopContent>
+      </ShopLayout>
+
+      <BulkCategoryAssign
+        open={bulkAssignOpen}
+        onOpenChange={setBulkAssignOpen}
+        selectedListingIds={selectedListingIds}
+        onSuccess={() => setSelectedListingIds([])}
+      />
     </>
   );
 };

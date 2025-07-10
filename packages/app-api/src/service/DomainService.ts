@@ -16,6 +16,8 @@ import { ModuleService } from './Module/index.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { config } from '../config.js';
 import { EXECUTION_MODE } from '@takaro/config';
+import { ShopCategoryRepo } from '../db/shopCategory.js';
+import { ShopCategoryCreateDTO } from './Shop/dto.js';
 
 export { DOMAIN_STATES } from '../db/domain.js';
 
@@ -252,6 +254,29 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     await userService.assignRole(rootRole.id, rootUser.id);
 
     await moduleService.seedBuiltinModules();
+
+    // Create default shop categories
+    const categoryRepo = new ShopCategoryRepo(domain.id);
+    const DEFAULT_CATEGORIES = [
+      { name: 'Weapons', emoji: '⚔️' },
+      { name: 'Armor', emoji: '🛡️' },
+      { name: 'Building', emoji: '🏗️' },
+      { name: 'Tools', emoji: '🔧' },
+      { name: 'Consumables', emoji: '💊' },
+      { name: 'Resources', emoji: '📦' },
+      { name: 'Base', emoji: '🏠' },
+      { name: 'Vehicles', emoji: '🚗' },
+    ];
+
+    for (const category of DEFAULT_CATEGORIES) {
+      await categoryRepo.create(
+        new ShopCategoryCreateDTO({
+          name: category.name,
+          emoji: category.emoji,
+          parentId: null,
+        }),
+      );
+    }
 
     if (config.get('functions.executionMode') == EXECUTION_MODE.LAMBDA) {
       await createLambda({ domainId: domain.id });
