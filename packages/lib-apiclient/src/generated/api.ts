@@ -5377,7 +5377,13 @@ export interface IMessageOptsDTO {
    * @type {IPlayerReferenceDTO}
    * @memberof IMessageOptsDTO
    */
-  recipient: IPlayerReferenceDTO;
+  recipient?: IPlayerReferenceDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof IMessageOptsDTO
+   */
+  senderNameOverride?: string;
 }
 /**
  *
