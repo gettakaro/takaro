@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { ValidateNested, IsOptional, IsString, IsUUID } from 'class-validator';
+import { ValidateNested, IsOptional, IsString, IsUUID, IsEnum } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { ItemsOutputDTO, ItemsService } from '../service/ItemsService.js';
@@ -46,6 +46,9 @@ class ItemSearchInputAllowedSearch extends AllowedSearch {
   code!: string[];
 }
 
+const itemExtendOptions = ['gameServer'];
+type ItemExtendOptions = (typeof itemExtendOptions)[number];
+
 class ItemSearchInputDTO extends ITakaroQuery<ItemSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => ItemSearchInputAllowedFilters)
@@ -54,6 +57,10 @@ class ItemSearchInputDTO extends ITakaroQuery<ItemSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => ItemSearchInputAllowedSearch)
   declare search: ItemSearchInputAllowedSearch;
+
+  @IsOptional()
+  @IsEnum(itemExtendOptions, { each: true })
+  declare extend?: ItemExtendOptions[];
 }
 
 @OpenAPI({

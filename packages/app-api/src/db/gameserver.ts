@@ -63,7 +63,11 @@ export class GameServerRepo extends ITakaroRepo<
 
   async find(filters: ITakaroQuery<GameServerOutputDTO>) {
     const { query } = await this.getModel();
-    const qry = new QueryBuilder<GameServerModel, GameServerOutputDTO>(filters).build(query);
+    const extend = filters.extend || [];
+    const qry = new QueryBuilder<GameServerModel, GameServerOutputDTO>({
+      ...filters,
+      extend,
+    }).build(query);
     qry.andWhere('deletedAt', null);
     const result = await qry;
 

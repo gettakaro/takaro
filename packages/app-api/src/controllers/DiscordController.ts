@@ -4,7 +4,7 @@ import { DiscordService, GuildOutputDTO, SendMessageInputDTO } from '../service/
 import { Response } from 'express';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { ITakaroQuery } from '@takaro/db';
-import { Type } from 'class-transformer';
+import { Type, Exclude } from 'class-transformer';
 import { IsBoolean, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 import { ResponseSchema } from 'routing-controllers-openapi';
 import { TakaroDTO } from '@takaro/util';
@@ -40,6 +40,9 @@ class GuildSearchInputDTO extends ITakaroQuery<GuildOutputDTO> {
   @ValidateNested()
   @Type(() => GuildSearchInputAllowedSearch)
   declare search: GuildSearchInputAllowedSearch;
+
+  @Exclude()
+  declare extend?: string[];
 }
 
 class DiscordParamId {
