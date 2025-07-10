@@ -1,12 +1,11 @@
 # VariableOutputDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**VariableOutputDTO**](VariableOutputDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                          | Description | Notes                  |
+| -------- | --------------------------------------------- | ----------- | ---------------------- |
+| **data** | [**VariableOutputDTO**](VariableOutputDTO.md) |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md)       |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { VariableOutputDTOAPI } from './api';
 
 const instance: VariableOutputDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

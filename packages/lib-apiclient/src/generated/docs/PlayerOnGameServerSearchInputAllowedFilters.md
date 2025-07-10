@@ -1,15 +1,14 @@
 # PlayerOnGameServerSearchInputAllowedFilters
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**gameId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**gameServerId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**playerId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**online** | **Array&lt;boolean&gt;** |  | [optional] [default to undefined]
-**id** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name             | Type                     | Description | Notes                             |
+| ---------------- | ------------------------ | ----------- | --------------------------------- |
+| **gameId**       | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **gameServerId** | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **playerId**     | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **online**       | **Array&lt;boolean&gt;** |             | [optional] [default to undefined] |
+| **id**           | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { PlayerOnGameServerSearchInputAllowedFilters } from './api';
 
 const instance: PlayerOnGameServerSearchInputAllowedFilters = {
-    gameId,
-    gameServerId,
-    playerId,
-    online,
-    id,
+  gameId,
+  gameServerId,
+  playerId,
+  online,
+  id,
 };
 ```
 

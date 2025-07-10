@@ -1,16 +1,15 @@
 # SdtdConnectionInfo
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**host** | **string** |  | [default to undefined]
-**adminUser** | **string** |  | [default to undefined]
-**adminToken** | **string** |  | [default to undefined]
-**useTls** | **boolean** |  | [default to undefined]
-**useCPM** | **boolean** |  | [default to undefined]
-**useLegacy** | **boolean** |  | [default to undefined]
+| Name           | Type        | Description | Notes                  |
+| -------------- | ----------- | ----------- | ---------------------- |
+| **host**       | **string**  |             | [default to undefined] |
+| **adminUser**  | **string**  |             | [default to undefined] |
+| **adminToken** | **string**  |             | [default to undefined] |
+| **useTls**     | **boolean** |             | [default to undefined] |
+| **useCPM**     | **boolean** |             | [default to undefined] |
+| **useLegacy**  | **boolean** |             | [default to undefined] |
 
 ## Example
 
@@ -18,12 +17,12 @@ Name | Type | Description | Notes
 import { SdtdConnectionInfo } from './api';
 
 const instance: SdtdConnectionInfo = {
-    host,
-    adminUser,
-    adminToken,
-    useTls,
-    useCPM,
-    useLegacy,
+  host,
+  adminUser,
+  adminToken,
+  useTls,
+  useCPM,
+  useLegacy,
 };
 ```
 

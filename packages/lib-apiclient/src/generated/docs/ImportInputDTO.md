@@ -1,14 +1,13 @@
 # ImportInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**roles** | **boolean** |  | [default to undefined]
-**players** | **boolean** |  | [default to undefined]
-**currency** | **boolean** |  | [default to undefined]
-**shop** | **boolean** |  | [default to undefined]
+| Name         | Type        | Description | Notes                  |
+| ------------ | ----------- | ----------- | ---------------------- |
+| **roles**    | **boolean** |             | [default to undefined] |
+| **players**  | **boolean** |             | [default to undefined] |
+| **currency** | **boolean** |             | [default to undefined] |
+| **shop**     | **boolean** |             | [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { ImportInputDTO } from './api';
 
 const instance: ImportInputDTO = {
-    roles,
-    players,
-    currency,
-    shop,
+  roles,
+  players,
+  currency,
+  shop,
 };
 ```
 

@@ -1,20 +1,19 @@
 # PermissionOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**module** | [**PermissionModuleDTO**](PermissionModuleDTO.md) |  | [optional] [default to undefined]
-**version** | [**PermissionVersionDTO**](PermissionVersionDTO.md) |  | [optional] [default to undefined]
-**moduleVersionId** | **string** |  | [optional] [default to undefined]
-**permission** | **string** |  | [default to undefined]
-**friendlyName** | **string** |  | [default to undefined]
-**description** | **string** |  | [default to undefined]
-**canHaveCount** | **boolean** |  | [optional] [default to undefined]
-**id** | **string** |  | [default to undefined]
-**createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
-**updatedAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name                | Type                                                                                    | Description | Notes                             |
+| ------------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **module**          | [**PermissionModuleDTO**](PermissionModuleDTO.md)                                       |             | [optional] [default to undefined] |
+| **version**         | [**PermissionVersionDTO**](PermissionVersionDTO.md)                                     |             | [optional] [default to undefined] |
+| **moduleVersionId** | **string**                                                                              |             | [optional] [default to undefined] |
+| **permission**      | **string**                                                                              |             | [default to undefined]            |
+| **friendlyName**    | **string**                                                                              |             | [default to undefined]            |
+| **description**     | **string**                                                                              |             | [default to undefined]            |
+| **canHaveCount**    | **boolean**                                                                             |             | [optional] [default to undefined] |
+| **id**              | **string**                                                                              |             | [default to undefined]            |
+| **createdAt**       | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
+| **updatedAt**       | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
 
 ## Example
 
@@ -22,16 +21,16 @@ Name | Type | Description | Notes
 import { PermissionOutputDTO } from './api';
 
 const instance: PermissionOutputDTO = {
-    module,
-    version,
-    moduleVersionId,
-    permission,
-    friendlyName,
-    description,
-    canHaveCount,
-    id,
-    createdAt,
-    updatedAt,
+  module,
+  version,
+  moduleVersionId,
+  permission,
+  friendlyName,
+  description,
+  canHaveCount,
+  id,
+  createdAt,
+  updatedAt,
 };
 ```
 

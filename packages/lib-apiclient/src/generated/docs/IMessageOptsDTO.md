@@ -1,11 +1,10 @@
 # IMessageOptsDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**recipient** | [**IPlayerReferenceDTO**](IPlayerReferenceDTO.md) |  | [default to undefined]
+| Name          | Type                                              | Description | Notes                  |
+| ------------- | ------------------------------------------------- | ----------- | ---------------------- |
+| **recipient** | [**IPlayerReferenceDTO**](IPlayerReferenceDTO.md) |             | [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { IMessageOptsDTO } from './api';
 
 const instance: IMessageOptsDTO = {
-    recipient,
+  recipient,
 };
 ```
 

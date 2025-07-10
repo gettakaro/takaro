@@ -1,11 +1,10 @@
 # GenericConnectionInfo
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**identityToken** | **string** |  | [default to undefined]
+| Name              | Type       | Description | Notes                  |
+| ----------------- | ---------- | ----------- | ---------------------- |
+| **identityToken** | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { GenericConnectionInfo } from './api';
 
 const instance: GenericConnectionInfo = {
-    identityToken,
+  identityToken,
 };
 ```
 

@@ -1,13 +1,12 @@
 # ShopCategoryBulkAssignDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**listingIds** | **Array&lt;string&gt;** |  | [default to undefined]
-**addCategoryIds** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**removeCategoryIds** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name                  | Type                    | Description | Notes                             |
+| --------------------- | ----------------------- | ----------- | --------------------------------- |
+| **listingIds**        | **Array&lt;string&gt;** |             | [default to undefined]            |
+| **addCategoryIds**    | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **removeCategoryIds** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { ShopCategoryBulkAssignDTO } from './api';
 
 const instance: ShopCategoryBulkAssignDTO = {
-    listingIds,
-    addCategoryIds,
-    removeCategoryIds,
+  listingIds,
+  addCategoryIds,
+  removeCategoryIds,
 };
 ```
 

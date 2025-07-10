@@ -1,13 +1,12 @@
 # ErrorOutput
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**code** | **string** |  | [default to undefined]
-**message** | **string** |  | [default to undefined]
-**details** | **string** |  | [default to undefined]
+| Name        | Type       | Description | Notes                  |
+| ----------- | ---------- | ----------- | ---------------------- |
+| **code**    | **string** |             | [default to undefined] |
+| **message** | **string** |             | [default to undefined] |
+| **details** | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { ErrorOutput } from './api';
 
 const instance: ErrorOutput = {
-    code,
-    message,
-    details,
+  code,
+  message,
+  details,
 };
 ```
 

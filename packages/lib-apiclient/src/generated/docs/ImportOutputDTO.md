@@ -1,11 +1,10 @@
 # ImportOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **string** |  | [default to undefined]
+| Name   | Type       | Description | Notes                  |
+| ------ | ---------- | ----------- | ---------------------- |
+| **id** | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { ImportOutputDTO } from './api';
 
 const instance: ImportOutputDTO = {
-    id,
+  id,
 };
 ```
 

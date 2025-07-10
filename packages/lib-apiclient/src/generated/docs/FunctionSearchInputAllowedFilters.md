@@ -1,14 +1,13 @@
 # FunctionSearchInputAllowedFilters
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**moduleId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**versionId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**name** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**id** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name          | Type                    | Description | Notes                             |
+| ------------- | ----------------------- | ----------- | --------------------------------- |
+| **moduleId**  | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **versionId** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **name**      | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **id**        | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { FunctionSearchInputAllowedFilters } from './api';
 
 const instance: FunctionSearchInputAllowedFilters = {
-    moduleId,
-    versionId,
-    name,
-    id,
+  moduleId,
+  versionId,
+  name,
+  id,
 };
 ```
 

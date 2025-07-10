@@ -1,13 +1,12 @@
 # TakaroEventSettingsSet
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**key** | **string** |  | [default to undefined]
-**value** | **string** |  | [optional] [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                             |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **key**       | **string**                                                                              |             | [default to undefined]            |
+| **value**     | **string**                                                                              |             | [optional] [default to undefined] |
+| **timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { TakaroEventSettingsSet } from './api';
 
 const instance: TakaroEventSettingsSet = {
-    key,
-    value,
-    timestamp,
+  key,
+  value,
+  timestamp,
 };
 ```
 

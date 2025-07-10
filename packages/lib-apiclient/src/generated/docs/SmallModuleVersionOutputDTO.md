@@ -1,14 +1,13 @@
 # SmallModuleVersionOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **string** |  | [default to undefined]
-**tag** | **string** |  | [default to undefined]
-**createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
-**updatedAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                  |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | ---------------------- |
+| **id**        | **string**                                                                              |             | [default to undefined] |
+| **tag**       | **string**                                                                              |             | [default to undefined] |
+| **createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
+| **updatedAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { SmallModuleVersionOutputDTO } from './api';
 
 const instance: SmallModuleVersionOutputDTO = {
-    id,
-    tag,
-    createdAt,
-    updatedAt,
+  id,
+  tag,
+  createdAt,
+  updatedAt,
 };
 ```
 

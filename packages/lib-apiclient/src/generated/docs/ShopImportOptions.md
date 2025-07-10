@@ -1,13 +1,12 @@
 # ShopImportOptions
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**replace** | **boolean** |  | [optional] [default to undefined]
-**draft** | **boolean** |  | [optional] [default to undefined]
-**gameServerId** | **string** |  | [default to undefined]
+| Name             | Type        | Description | Notes                             |
+| ---------------- | ----------- | ----------- | --------------------------------- |
+| **replace**      | **boolean** |             | [optional] [default to undefined] |
+| **draft**        | **boolean** |             | [optional] [default to undefined] |
+| **gameServerId** | **string**  |             | [default to undefined]            |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { ShopImportOptions } from './api';
 
 const instance: ShopImportOptions = {
-    replace,
-    draft,
-    gameServerId,
+  replace,
+  draft,
+  gameServerId,
 };
 ```
 

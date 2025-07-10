@@ -1,15 +1,14 @@
 # BanSearchInputAllowedFilters
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**gameServerId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**playerId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**takaroManaged** | **Array&lt;boolean&gt;** |  | [optional] [default to undefined]
-**isGlobal** | **Array&lt;boolean&gt;** |  | [optional] [default to undefined]
-**id** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name              | Type                     | Description | Notes                             |
+| ----------------- | ------------------------ | ----------- | --------------------------------- |
+| **gameServerId**  | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **playerId**      | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **takaroManaged** | **Array&lt;boolean&gt;** |             | [optional] [default to undefined] |
+| **isGlobal**      | **Array&lt;boolean&gt;** |             | [optional] [default to undefined] |
+| **id**            | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { BanSearchInputAllowedFilters } from './api';
 
 const instance: BanSearchInputAllowedFilters = {
-    gameServerId,
-    playerId,
-    takaroManaged,
-    isGlobal,
-    id,
+  gameServerId,
+  playerId,
+  takaroManaged,
+  isGlobal,
+  id,
 };
 ```
 

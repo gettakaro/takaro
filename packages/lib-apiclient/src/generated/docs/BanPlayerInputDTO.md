@@ -1,12 +1,11 @@
 # BanPlayerInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**reason** | **string** |  | [optional] [default to undefined]
-**expiresAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                             |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **reason**    | **string**                                                                              |             | [optional] [default to undefined] |
+| **expiresAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { BanPlayerInputDTO } from './api';
 
 const instance: BanPlayerInputDTO = {
-    reason,
-    expiresAt,
+  reason,
+  expiresAt,
 };
 ```
 

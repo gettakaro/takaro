@@ -1,12 +1,11 @@
 # BaseTakaroEvent
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**msg** | **string** |  | [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                  |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | ---------------------- |
+| **msg**       | **string**                                                                              |             | [default to undefined] |
+| **timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { BaseTakaroEvent } from './api';
 
 const instance: BaseTakaroEvent = {
-    msg,
-    timestamp,
+  msg,
+  timestamp,
 };
 ```
 

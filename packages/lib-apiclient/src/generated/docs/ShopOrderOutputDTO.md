@@ -1,19 +1,18 @@
 # ShopOrderOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **string** |  | [default to undefined]
-**listingId** | **string** |  | [default to undefined]
-**playerId** | **string** |  | [default to undefined]
-**gameServerId** | **string** |  | [default to undefined]
-**amount** | **number** |  | [default to undefined]
-**status** | **string** |  | [default to undefined]
-**listing** | [**ShopListingOutputDTO**](ShopListingOutputDTO.md) |  | [optional] [default to undefined]
-**createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
-**updatedAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name             | Type                                                                                    | Description | Notes                             |
+| ---------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **id**           | **string**                                                                              |             | [default to undefined]            |
+| **listingId**    | **string**                                                                              |             | [default to undefined]            |
+| **playerId**     | **string**                                                                              |             | [default to undefined]            |
+| **gameServerId** | **string**                                                                              |             | [default to undefined]            |
+| **amount**       | **number**                                                                              |             | [default to undefined]            |
+| **status**       | **string**                                                                              |             | [default to undefined]            |
+| **listing**      | [**ShopListingOutputDTO**](ShopListingOutputDTO.md)                                     |             | [optional] [default to undefined] |
+| **createdAt**    | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
+| **updatedAt**    | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
 
 ## Example
 
@@ -21,15 +20,15 @@ Name | Type | Description | Notes
 import { ShopOrderOutputDTO } from './api';
 
 const instance: ShopOrderOutputDTO = {
-    id,
-    listingId,
-    playerId,
-    gameServerId,
-    amount,
-    status,
-    listing,
-    createdAt,
-    updatedAt,
+  id,
+  listingId,
+  playerId,
+  gameServerId,
+  amount,
+  status,
+  listing,
+  createdAt,
+  updatedAt,
 };
 ```
 

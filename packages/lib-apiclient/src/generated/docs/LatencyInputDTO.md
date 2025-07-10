@@ -1,13 +1,12 @@
 # LatencyInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**gameServerId** | **string** |  | [default to undefined]
-**startDate** | **string** |  | [optional] [default to undefined]
-**endDate** | **string** |  | [optional] [default to undefined]
+| Name             | Type       | Description | Notes                             |
+| ---------------- | ---------- | ----------- | --------------------------------- |
+| **gameServerId** | **string** |             | [default to undefined]            |
+| **startDate**    | **string** |             | [optional] [default to undefined] |
+| **endDate**      | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { LatencyInputDTO } from './api';
 
 const instance: LatencyInputDTO = {
-    gameServerId,
-    startDate,
-    endDate,
+  gameServerId,
+  startDate,
+  endDate,
 };
 ```
 

@@ -1,12 +1,11 @@
 # TakaroEventRoleDeleted
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**role** | [**TakaroEventRoleMeta**](TakaroEventRoleMeta.md) |  | [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                  |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | ---------------------- |
+| **role**      | [**TakaroEventRoleMeta**](TakaroEventRoleMeta.md)                                       |             | [default to undefined] |
+| **timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { TakaroEventRoleDeleted } from './api';
 
 const instance: TakaroEventRoleDeleted = {
-    role,
-    timestamp,
+  role,
+  timestamp,
 };
 ```
 

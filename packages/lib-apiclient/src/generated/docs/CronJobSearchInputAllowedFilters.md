@@ -1,14 +1,13 @@
 # CronJobSearchInputAllowedFilters
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**moduleId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**versionId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**name** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**id** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name          | Type                    | Description | Notes                             |
+| ------------- | ----------------------- | ----------- | --------------------------------- |
+| **moduleId**  | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **versionId** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **name**      | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **id**        | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { CronJobSearchInputAllowedFilters } from './api';
 
 const instance: CronJobSearchInputAllowedFilters = {
-    moduleId,
-    versionId,
-    name,
-    id,
+  moduleId,
+  versionId,
+  name,
+  id,
 };
 ```
 

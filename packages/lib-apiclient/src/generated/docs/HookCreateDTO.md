@@ -1,16 +1,15 @@
 # HookCreateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**description** | **string** |  | [optional] [default to undefined]
-**regex** | **string** |  | [default to undefined]
-**versionId** | **string** |  | [default to undefined]
-**eventType** | **string** |  | [default to undefined]
-**_function** | **string** |  | [optional] [default to undefined]
+| Name            | Type       | Description | Notes                             |
+| --------------- | ---------- | ----------- | --------------------------------- |
+| **name**        | **string** |             | [default to undefined]            |
+| **description** | **string** |             | [optional] [default to undefined] |
+| **regex**       | **string** |             | [default to undefined]            |
+| **versionId**   | **string** |             | [default to undefined]            |
+| **eventType**   | **string** |             | [default to undefined]            |
+| **\_function**  | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -18,12 +17,12 @@ Name | Type | Description | Notes
 import { HookCreateDTO } from './api';
 
 const instance: HookCreateDTO = {
-    name,
-    description,
-    regex,
-    versionId,
-    eventType,
-    _function,
+  name,
+  description,
+  regex,
+  versionId,
+  eventType,
+  _function,
 };
 ```
 

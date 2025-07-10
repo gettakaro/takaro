@@ -1,12 +1,11 @@
 # InviteOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**botInvite** | **string** |  | [default to undefined]
-**devServer** | **string** |  | [default to undefined]
+| Name          | Type       | Description | Notes                  |
+| ------------- | ---------- | ----------- | ---------------------- |
+| **botInvite** | **string** |             | [default to undefined] |
+| **devServer** | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { InviteOutputDTO } from './api';
 
 const instance: InviteOutputDTO = {
-    botInvite,
-    devServer,
+  botInvite,
+  devServer,
 };
 ```
 

@@ -1,14 +1,13 @@
 # FunctionCreateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**code** | **string** |  | [optional] [default to undefined]
-**name** | **string** |  | [optional] [default to undefined]
-**description** | **string** |  | [optional] [default to undefined]
-**versionId** | **string** |  | [optional] [default to undefined]
+| Name            | Type       | Description | Notes                             |
+| --------------- | ---------- | ----------- | --------------------------------- |
+| **code**        | **string** |             | [optional] [default to undefined] |
+| **name**        | **string** |             | [optional] [default to undefined] |
+| **description** | **string** |             | [optional] [default to undefined] |
+| **versionId**   | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { FunctionCreateDTO } from './api';
 
 const instance: FunctionCreateDTO = {
-    code,
-    name,
-    description,
-    versionId,
+  code,
+  name,
+  description,
+  versionId,
 };
 ```
 

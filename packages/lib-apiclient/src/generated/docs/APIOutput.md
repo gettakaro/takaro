@@ -1,11 +1,10 @@
 # APIOutput
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                    | Description | Notes                  |
+| -------- | --------------------------------------- | ----------- | ---------------------- |
+| **meta** | [**MetadataOutput**](MetadataOutput.md) |             | [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { APIOutput } from './api';
 
 const instance: APIOutput = {
-    meta,
+  meta,
 };
 ```
 

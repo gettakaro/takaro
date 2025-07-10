@@ -1,17 +1,16 @@
 # PlayerSearchInputAllowedRangeFilter
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**steamAccountCreated** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
-**steamsDaysSinceLastBan** | **number** |  | [optional] [default to undefined]
-**steamNumberOfVACBans** | **number** |  | [optional] [default to undefined]
-**steamLevel** | **number** |  | [optional] [default to undefined]
-**playtimeSeconds** | **number** |  | [optional] [default to undefined]
-**createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
-**updatedAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
+| Name                       | Type                                                                                    | Description | Notes                             |
+| -------------------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **steamAccountCreated**    | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
+| **steamsDaysSinceLastBan** | **number**                                                                              |             | [optional] [default to undefined] |
+| **steamNumberOfVACBans**   | **number**                                                                              |             | [optional] [default to undefined] |
+| **steamLevel**             | **number**                                                                              |             | [optional] [default to undefined] |
+| **playtimeSeconds**        | **number**                                                                              |             | [optional] [default to undefined] |
+| **createdAt**              | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
+| **updatedAt**              | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -19,13 +18,13 @@ Name | Type | Description | Notes
 import { PlayerSearchInputAllowedRangeFilter } from './api';
 
 const instance: PlayerSearchInputAllowedRangeFilter = {
-    steamAccountCreated,
-    steamsDaysSinceLastBan,
-    steamNumberOfVACBans,
-    steamLevel,
-    playtimeSeconds,
-    createdAt,
-    updatedAt,
+  steamAccountCreated,
+  steamsDaysSinceLastBan,
+  steamNumberOfVACBans,
+  steamLevel,
+  playtimeSeconds,
+  createdAt,
+  updatedAt,
 };
 ```
 

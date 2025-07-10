@@ -1,14 +1,13 @@
 # GameServerCreateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**connectionInfo** | **string** |  | [default to undefined]
-**type** | **string** |  | [default to undefined]
-**identityToken** | **string** |  | [optional] [default to undefined]
+| Name               | Type       | Description | Notes                             |
+| ------------------ | ---------- | ----------- | --------------------------------- |
+| **name**           | **string** |             | [default to undefined]            |
+| **connectionInfo** | **string** |             | [default to undefined]            |
+| **type**           | **string** |             | [default to undefined]            |
+| **identityToken**  | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { GameServerCreateDTO } from './api';
 
 const instance: GameServerCreateDTO = {
-    name,
-    connectionInfo,
-    type,
-    identityToken,
+  name,
+  connectionInfo,
+  type,
+  identityToken,
 };
 ```
 

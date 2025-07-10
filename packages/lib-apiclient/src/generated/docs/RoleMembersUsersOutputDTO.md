@@ -1,12 +1,11 @@
 # RoleMembersUsersOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**total** | **number** |  | [default to undefined]
-**results** | [**Array&lt;UserOutputWithRolesDTO&gt;**](UserOutputWithRolesDTO.md) |  | [default to undefined]
+| Name        | Type                                                                 | Description | Notes                  |
+| ----------- | -------------------------------------------------------------------- | ----------- | ---------------------- |
+| **total**   | **number**                                                           |             | [default to undefined] |
+| **results** | [**Array&lt;UserOutputWithRolesDTO&gt;**](UserOutputWithRolesDTO.md) |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { RoleMembersUsersOutputDTO } from './api';
 
 const instance: RoleMembersUsersOutputDTO = {
-    total,
-    results,
+  total,
+  results,
 };
 ```
 

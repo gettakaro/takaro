@@ -1,11 +1,10 @@
 # StatsOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**values** | **object** |  | [default to undefined]
+| Name       | Type       | Description | Notes                  |
+| ---------- | ---------- | ----------- | ---------------------- |
+| **values** | **object** |             | [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { StatsOutputDTO } from './api';
 
 const instance: StatsOutputDTO = {
-    values,
+  values,
 };
 ```
 

@@ -1,12 +1,11 @@
 # TakaroEventRoleMeta
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **string** |  | [default to undefined]
-**name** | **string** |  | [default to undefined]
+| Name     | Type       | Description | Notes                  |
+| -------- | ---------- | ----------- | ---------------------- |
+| **id**   | **string** |             | [default to undefined] |
+| **name** | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { TakaroEventRoleMeta } from './api';
 
 const instance: TakaroEventRoleMeta = {
-    id,
-    name,
+  id,
+  name,
 };
 ```
 

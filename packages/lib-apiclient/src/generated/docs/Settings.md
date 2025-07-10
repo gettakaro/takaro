@@ -1,20 +1,19 @@
 # Settings
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**commandPrefix** | **string** |  | [default to undefined]
-**serverChatName** | **string** |  | [default to undefined]
-**economyEnabled** | **string** |  | [default to undefined]
-**currencyName** | **string** |  | [default to undefined]
-**developerMode** | **string** |  | [default to undefined]
-**messagePrefix** | **string** |  | [default to undefined]
-**domainName** | **string** |  | [default to undefined]
-**id** | **string** |  | [default to undefined]
-**createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
-**updatedAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name               | Type                                                                                    | Description | Notes                  |
+| ------------------ | --------------------------------------------------------------------------------------- | ----------- | ---------------------- |
+| **commandPrefix**  | **string**                                                                              |             | [default to undefined] |
+| **serverChatName** | **string**                                                                              |             | [default to undefined] |
+| **economyEnabled** | **string**                                                                              |             | [default to undefined] |
+| **currencyName**   | **string**                                                                              |             | [default to undefined] |
+| **developerMode**  | **string**                                                                              |             | [default to undefined] |
+| **messagePrefix**  | **string**                                                                              |             | [default to undefined] |
+| **domainName**     | **string**                                                                              |             | [default to undefined] |
+| **id**             | **string**                                                                              |             | [default to undefined] |
+| **createdAt**      | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
+| **updatedAt**      | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
 
 ## Example
 
@@ -22,16 +21,16 @@ Name | Type | Description | Notes
 import { Settings } from './api';
 
 const instance: Settings = {
-    commandPrefix,
-    serverChatName,
-    economyEnabled,
-    currencyName,
-    developerMode,
-    messagePrefix,
-    domainName,
-    id,
-    createdAt,
-    updatedAt,
+  commandPrefix,
+  serverChatName,
+  economyEnabled,
+  currencyName,
+  developerMode,
+  messagePrefix,
+  domainName,
+  id,
+  createdAt,
+  updatedAt,
 };
 ```
 

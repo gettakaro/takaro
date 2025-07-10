@@ -1,12 +1,11 @@
 # PlayerOutputWithRolesDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**PlayerOutputWithRolesDTO**](PlayerOutputWithRolesDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                                        | Description | Notes                  |
+| -------- | ----------------------------------------------------------- | ----------- | ---------------------- |
+| **data** | [**PlayerOutputWithRolesDTO**](PlayerOutputWithRolesDTO.md) |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md)                     |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { PlayerOutputWithRolesDTOAPI } from './api';
 
 const instance: PlayerOutputWithRolesDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

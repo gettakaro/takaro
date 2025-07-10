@@ -1,15 +1,14 @@
 # GuildOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **string** |  | [default to undefined]
-**name** | **string** |  | [default to undefined]
-**discordId** | **string** |  | [default to undefined]
-**takaroEnabled** | **boolean** |  | [default to undefined]
-**icon** | **string** |  | [optional] [default to undefined]
+| Name              | Type        | Description | Notes                             |
+| ----------------- | ----------- | ----------- | --------------------------------- |
+| **id**            | **string**  |             | [default to undefined]            |
+| **name**          | **string**  |             | [default to undefined]            |
+| **discordId**     | **string**  |             | [default to undefined]            |
+| **takaroEnabled** | **boolean** |             | [default to undefined]            |
+| **icon**          | **string**  |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { GuildOutputDTO } from './api';
 
 const instance: GuildOutputDTO = {
-    id,
-    name,
-    discordId,
-    takaroEnabled,
-    icon,
+  id,
+  name,
+  discordId,
+  takaroEnabled,
+  icon,
 };
 ```
 

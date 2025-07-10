@@ -1,12 +1,11 @@
 # GameServerTestReachabilityDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**TestReachabilityOutputDTO**](TestReachabilityOutputDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                                          | Description | Notes                  |
+| -------- | ------------------------------------------------------------- | ----------- | ---------------------- |
+| **data** | [**TestReachabilityOutputDTO**](TestReachabilityOutputDTO.md) |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md)                       |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { GameServerTestReachabilityDTOAPI } from './api';
 
 const instance: GameServerTestReachabilityDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

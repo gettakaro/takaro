@@ -1,17 +1,16 @@
 # EventSearchInputAllowedFilters
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**eventName** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**moduleId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**playerId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**gameserverId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**actingUserId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**actingModuleId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name               | Type                    | Description | Notes                             |
+| ------------------ | ----------------------- | ----------- | --------------------------------- |
+| **id**             | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **eventName**      | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **moduleId**       | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **playerId**       | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **gameserverId**   | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **actingUserId**   | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **actingModuleId** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -19,13 +18,13 @@ Name | Type | Description | Notes
 import { EventSearchInputAllowedFilters } from './api';
 
 const instance: EventSearchInputAllowedFilters = {
-    id,
-    eventName,
-    moduleId,
-    playerId,
-    gameserverId,
-    actingUserId,
-    actingModuleId,
+  id,
+  eventName,
+  moduleId,
+  playerId,
+  gameserverId,
+  actingUserId,
+  actingModuleId,
 };
 ```
 

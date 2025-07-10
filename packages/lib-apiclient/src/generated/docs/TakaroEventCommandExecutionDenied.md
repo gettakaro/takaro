@@ -1,13 +1,12 @@
 # TakaroEventCommandExecutionDenied
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**command** | [**TakaroEventCommandDetails**](TakaroEventCommandDetails.md) |  | [default to undefined]
-**missingPermissions** | **Array&lt;string&gt;** |  | [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name                   | Type                                                                                    | Description | Notes                  |
+| ---------------------- | --------------------------------------------------------------------------------------- | ----------- | ---------------------- |
+| **command**            | [**TakaroEventCommandDetails**](TakaroEventCommandDetails.md)                           |             | [default to undefined] |
+| **missingPermissions** | **Array&lt;string&gt;**                                                                 |             | [default to undefined] |
+| **timestamp**          | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { TakaroEventCommandExecutionDenied } from './api';
 
 const instance: TakaroEventCommandExecutionDenied = {
-    command,
-    missingPermissions,
-    timestamp,
+  command,
+  missingPermissions,
+  timestamp,
 };
 ```
 

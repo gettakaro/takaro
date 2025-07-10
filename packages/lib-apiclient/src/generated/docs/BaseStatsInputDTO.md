@@ -1,12 +1,11 @@
 # BaseStatsInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**startDate** | **string** |  | [optional] [default to undefined]
-**endDate** | **string** |  | [optional] [default to undefined]
+| Name          | Type       | Description | Notes                             |
+| ------------- | ---------- | ----------- | --------------------------------- |
+| **startDate** | **string** |             | [optional] [default to undefined] |
+| **endDate**   | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { BaseStatsInputDTO } from './api';
 
 const instance: BaseStatsInputDTO = {
-    startDate,
-    endDate,
+  startDate,
+  endDate,
 };
 ```
 

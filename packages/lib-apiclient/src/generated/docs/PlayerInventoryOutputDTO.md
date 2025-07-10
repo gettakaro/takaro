@@ -1,18 +1,17 @@
 # PlayerInventoryOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**playerId** | **string** |  | [default to undefined]
-**itemId** | **string** |  | [default to undefined]
-**itemName** | **string** |  | [default to undefined]
-**itemCode** | **string** |  | [default to undefined]
-**quantity** | **number** |  | [default to undefined]
-**createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
-**id** | **string** |  | [default to undefined]
-**updatedAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                  |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | ---------------------- |
+| **playerId**  | **string**                                                                              |             | [default to undefined] |
+| **itemId**    | **string**                                                                              |             | [default to undefined] |
+| **itemName**  | **string**                                                                              |             | [default to undefined] |
+| **itemCode**  | **string**                                                                              |             | [default to undefined] |
+| **quantity**  | **number**                                                                              |             | [default to undefined] |
+| **createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
+| **id**        | **string**                                                                              |             | [default to undefined] |
+| **updatedAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
 
 ## Example
 
@@ -20,14 +19,14 @@ Name | Type | Description | Notes
 import { PlayerInventoryOutputDTO } from './api';
 
 const instance: PlayerInventoryOutputDTO = {
-    playerId,
-    itemId,
-    itemName,
-    itemCode,
-    quantity,
-    createdAt,
-    id,
-    updatedAt,
+  playerId,
+  itemId,
+  itemName,
+  itemCode,
+  quantity,
+  createdAt,
+  id,
+  updatedAt,
 };
 ```
 

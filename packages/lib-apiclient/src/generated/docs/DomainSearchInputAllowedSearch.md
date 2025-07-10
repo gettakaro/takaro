@@ -1,12 +1,11 @@
 # DomainSearchInputAllowedSearch
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**externalReference** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name                  | Type                    | Description | Notes                             |
+| --------------------- | ----------------------- | ----------- | --------------------------------- |
+| **name**              | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **externalReference** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { DomainSearchInputAllowedSearch } from './api';
 
 const instance: DomainSearchInputAllowedSearch = {
-    name,
-    externalReference,
+  name,
+  externalReference,
 };
 ```
 

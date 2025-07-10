@@ -1,12 +1,11 @@
 # BaseGameEvent
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**msg** | **string** |  | [optional] [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                             |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **msg**       | **string**                                                                              |             | [optional] [default to undefined] |
+| **timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { BaseGameEvent } from './api';
 
 const instance: BaseGameEvent = {
-    msg,
-    timestamp,
+  msg,
+  timestamp,
 };
 ```
 

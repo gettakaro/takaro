@@ -1,12 +1,11 @@
 # TakaroEventShopListingDeleted
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **string** |  | [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                  |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | ---------------------- |
+| **id**        | **string**                                                                              |             | [default to undefined] |
+| **timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { TakaroEventShopListingDeleted } from './api';
 
 const instance: TakaroEventShopListingDeleted = {
-    id,
-    timestamp,
+  id,
+  timestamp,
 };
 ```
 

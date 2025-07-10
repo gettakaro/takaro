@@ -1,13 +1,12 @@
 # TakaroEventShopOrderStatusChanged
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **string** |  | [default to undefined]
-**status** | **string** |  | [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                  |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | ---------------------- |
+| **id**        | **string**                                                                              |             | [default to undefined] |
+| **status**    | **string**                                                                              |             | [default to undefined] |
+| **timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { TakaroEventShopOrderStatusChanged } from './api';
 
 const instance: TakaroEventShopOrderStatusChanged = {
-    id,
-    status,
-    timestamp,
+  id,
+  status,
+  timestamp,
 };
 ```
 

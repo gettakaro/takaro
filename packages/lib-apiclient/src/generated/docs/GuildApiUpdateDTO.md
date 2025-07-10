@@ -1,11 +1,10 @@
 # GuildApiUpdateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**takaroEnabled** | **boolean** |  | [optional] [default to undefined]
+| Name              | Type        | Description | Notes                             |
+| ----------------- | ----------- | ----------- | --------------------------------- |
+| **takaroEnabled** | **boolean** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { GuildApiUpdateDTO } from './api';
 
 const instance: GuildApiUpdateDTO = {
-    takaroEnabled,
+  takaroEnabled,
 };
 ```
 

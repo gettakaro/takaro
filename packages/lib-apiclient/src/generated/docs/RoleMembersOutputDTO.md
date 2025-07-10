@@ -1,12 +1,11 @@
 # RoleMembersOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**players** | [**RoleMembersPlayersOutputDTO**](RoleMembersPlayersOutputDTO.md) |  | [default to undefined]
-**users** | [**RoleMembersUsersOutputDTO**](RoleMembersUsersOutputDTO.md) |  | [default to undefined]
+| Name        | Type                                                              | Description | Notes                  |
+| ----------- | ----------------------------------------------------------------- | ----------- | ---------------------- |
+| **players** | [**RoleMembersPlayersOutputDTO**](RoleMembersPlayersOutputDTO.md) |             | [default to undefined] |
+| **users**   | [**RoleMembersUsersOutputDTO**](RoleMembersUsersOutputDTO.md)     |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { RoleMembersOutputDTO } from './api';
 
 const instance: RoleMembersOutputDTO = {
-    players,
-    users,
+  players,
+  users,
 };
 ```
 

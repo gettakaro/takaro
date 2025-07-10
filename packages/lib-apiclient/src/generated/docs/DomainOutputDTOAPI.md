@@ -1,12 +1,11 @@
 # DomainOutputDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**DomainOutputDTO**](DomainOutputDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                      | Description | Notes                  |
+| -------- | ----------------------------------------- | ----------- | ---------------------- |
+| **data** | [**DomainOutputDTO**](DomainOutputDTO.md) |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md)   |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { DomainOutputDTOAPI } from './api';
 
 const instance: DomainOutputDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

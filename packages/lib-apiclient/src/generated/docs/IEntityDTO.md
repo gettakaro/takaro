@@ -1,15 +1,14 @@
 # IEntityDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**code** | **string** |  | [default to undefined]
-**name** | **string** |  | [default to undefined]
-**description** | **string** |  | [optional] [default to undefined]
-**type** | **string** |  | [optional] [default to undefined]
-**metadata** | **object** |  | [optional] [default to undefined]
+| Name            | Type       | Description | Notes                             |
+| --------------- | ---------- | ----------- | --------------------------------- |
+| **code**        | **string** |             | [default to undefined]            |
+| **name**        | **string** |             | [default to undefined]            |
+| **description** | **string** |             | [optional] [default to undefined] |
+| **type**        | **string** |             | [optional] [default to undefined] |
+| **metadata**    | **object** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { IEntityDTO } from './api';
 
 const instance: IEntityDTO = {
-    code,
-    name,
-    description,
-    type,
-    metadata,
+  code,
+  name,
+  description,
+  type,
+  metadata,
 };
 ```
 

@@ -1,13 +1,12 @@
 # JobStatusOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **string** |  | [default to undefined]
-**status** | **string** |  | [default to undefined]
-**failedReason** | **string** |  | [optional] [default to undefined]
+| Name             | Type       | Description | Notes                             |
+| ---------------- | ---------- | ----------- | --------------------------------- |
+| **id**           | **string** |             | [default to undefined]            |
+| **status**       | **string** |             | [default to undefined]            |
+| **failedReason** | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { JobStatusOutputDTO } from './api';
 
 const instance: JobStatusOutputDTO = {
-    id,
-    status,
-    failedReason,
+  id,
+  status,
+  failedReason,
 };
 ```
 

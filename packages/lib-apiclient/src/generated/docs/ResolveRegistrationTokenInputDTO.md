@@ -1,11 +1,10 @@
 # ResolveRegistrationTokenInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**registrationToken** | **string** |  | [default to undefined]
+| Name                  | Type       | Description | Notes                  |
+| --------------------- | ---------- | ----------- | ---------------------- |
+| **registrationToken** | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { ResolveRegistrationTokenInputDTO } from './api';
 
 const instance: ResolveRegistrationTokenInputDTO = {
-    registrationToken,
+  registrationToken,
 };
 ```
 

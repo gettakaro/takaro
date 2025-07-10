@@ -1,11 +1,10 @@
 # ShopCategoryMoveDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**parentId** | **string** |  | [optional] [default to undefined]
+| Name         | Type       | Description | Notes                             |
+| ------------ | ---------- | ----------- | --------------------------------- |
+| **parentId** | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { ShopCategoryMoveDTO } from './api';
 
 const instance: ShopCategoryMoveDTO = {
-    parentId,
+  parentId,
 };
 ```
 

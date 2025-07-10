@@ -1,12 +1,11 @@
 # ModuleCreateAPIDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**latestVersion** | [**ModuleCreateVersionInputDTO**](ModuleCreateVersionInputDTO.md) |  | [optional] [default to undefined]
+| Name              | Type                                                              | Description | Notes                             |
+| ----------------- | ----------------------------------------------------------------- | ----------- | --------------------------------- |
+| **name**          | **string**                                                        |             | [default to undefined]            |
+| **latestVersion** | [**ModuleCreateVersionInputDTO**](ModuleCreateVersionInputDTO.md) |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { ModuleCreateAPIDTO } from './api';
 
 const instance: ModuleCreateAPIDTO = {
-    name,
-    latestVersion,
+  name,
+  latestVersion,
 };
 ```
 

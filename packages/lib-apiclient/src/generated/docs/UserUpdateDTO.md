@@ -1,12 +1,11 @@
 # UserUpdateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [optional] [default to undefined]
-**isDashboardUser** | **boolean** |  | [optional] [default to undefined]
+| Name                | Type        | Description | Notes                             |
+| ------------------- | ----------- | ----------- | --------------------------------- |
+| **name**            | **string**  |             | [optional] [default to undefined] |
+| **isDashboardUser** | **boolean** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { UserUpdateDTO } from './api';
 
 const instance: UserUpdateDTO = {
-    name,
-    isDashboardUser,
+  name,
+  isDashboardUser,
 };
 ```
 

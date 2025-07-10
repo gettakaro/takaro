@@ -1,12 +1,11 @@
 # GameServerTestReachabilityInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**connectionInfo** | **string** |  | [default to undefined]
-**type** | **string** |  | [default to undefined]
+| Name               | Type       | Description | Notes                  |
+| ------------------ | ---------- | ----------- | ---------------------- |
+| **connectionInfo** | **string** |             | [default to undefined] |
+| **type**           | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { GameServerTestReachabilityInputDTO } from './api';
 
 const instance: GameServerTestReachabilityInputDTO = {
-    connectionInfo,
-    type,
+  connectionInfo,
+  type,
 };
 ```
 

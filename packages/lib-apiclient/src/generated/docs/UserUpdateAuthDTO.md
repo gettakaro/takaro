@@ -1,12 +1,11 @@
 # UserUpdateAuthDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**discordId** | **string** |  | [optional] [default to undefined]
-**lastSeen** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                             |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **discordId** | **string**                                                                              |             | [optional] [default to undefined] |
+| **lastSeen**  | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { UserUpdateAuthDTO } from './api';
 
 const instance: UserUpdateAuthDTO = {
-    discordId,
-    lastSeen,
+  discordId,
+  lastSeen,
 };
 ```
 

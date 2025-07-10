@@ -1,18 +1,17 @@
 # EventCreateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**eventName** | **string** |  | [default to undefined]
-**moduleId** | **string** |  | [optional] [default to undefined]
-**playerId** | **string** |  | [optional] [default to undefined]
-**userId** | **string** |  | [optional] [default to undefined]
-**gameserverId** | **string** |  | [optional] [default to undefined]
-**actingUserId** | **string** |  | [optional] [default to undefined]
-**actingModuleId** | **string** |  | [optional] [default to undefined]
-**meta** | **object** |  | [optional] [default to undefined]
+| Name               | Type       | Description | Notes                             |
+| ------------------ | ---------- | ----------- | --------------------------------- |
+| **eventName**      | **string** |             | [default to undefined]            |
+| **moduleId**       | **string** |             | [optional] [default to undefined] |
+| **playerId**       | **string** |             | [optional] [default to undefined] |
+| **userId**         | **string** |             | [optional] [default to undefined] |
+| **gameserverId**   | **string** |             | [optional] [default to undefined] |
+| **actingUserId**   | **string** |             | [optional] [default to undefined] |
+| **actingModuleId** | **string** |             | [optional] [default to undefined] |
+| **meta**           | **object** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -20,14 +19,14 @@ Name | Type | Description | Notes
 import { EventCreateDTO } from './api';
 
 const instance: EventCreateDTO = {
-    eventName,
-    moduleId,
-    playerId,
-    userId,
-    gameserverId,
-    actingUserId,
-    actingModuleId,
-    meta,
+  eventName,
+  moduleId,
+  playerId,
+  userId,
+  gameserverId,
+  actingUserId,
+  actingModuleId,
+  meta,
 };
 ```
 

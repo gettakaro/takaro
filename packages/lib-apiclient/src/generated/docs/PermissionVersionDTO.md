@@ -1,12 +1,11 @@
 # PermissionVersionDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **string** |  | [default to undefined]
-**tag** | **string** |  | [default to undefined]
+| Name    | Type       | Description | Notes                  |
+| ------- | ---------- | ----------- | ---------------------- |
+| **id**  | **string** |             | [default to undefined] |
+| **tag** | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { PermissionVersionDTO } from './api';
 
 const instance: PermissionVersionDTO = {
-    id,
-    tag,
+  id,
+  tag,
 };
 ```
 

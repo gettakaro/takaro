@@ -1,13 +1,12 @@
 # CommandOutput
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**rawResult** | **string** |  | [default to undefined]
-**success** | **boolean** |  | [default to undefined]
-**errorMessage** | **string** |  | [optional] [default to undefined]
+| Name             | Type        | Description | Notes                             |
+| ---------------- | ----------- | ----------- | --------------------------------- |
+| **rawResult**    | **string**  |             | [default to undefined]            |
+| **success**      | **boolean** |             | [default to undefined]            |
+| **errorMessage** | **string**  |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { CommandOutput } from './api';
 
 const instance: CommandOutput = {
-    rawResult,
-    success,
-    errorMessage,
+  rawResult,
+  success,
+  errorMessage,
 };
 ```
 

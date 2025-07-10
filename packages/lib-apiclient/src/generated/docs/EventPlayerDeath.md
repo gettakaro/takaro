@@ -1,15 +1,14 @@
 # EventPlayerDeath
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**player** | [**IGamePlayer**](IGamePlayer.md) |  | [default to undefined]
-**attacker** | [**IGamePlayer**](IGamePlayer.md) |  | [optional] [default to undefined]
-**position** | [**IPosition**](IPosition.md) |  | [optional] [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
-**msg** | **string** |  | [optional] [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                             |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **player**    | [**IGamePlayer**](IGamePlayer.md)                                                       |             | [default to undefined]            |
+| **attacker**  | [**IGamePlayer**](IGamePlayer.md)                                                       |             | [optional] [default to undefined] |
+| **position**  | [**IPosition**](IPosition.md)                                                           |             | [optional] [default to undefined] |
+| **timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
+| **msg**       | **string**                                                                              |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { EventPlayerDeath } from './api';
 
 const instance: EventPlayerDeath = {
-    player,
-    attacker,
-    position,
-    timestamp,
-    msg,
+  player,
+  attacker,
+  position,
+  timestamp,
+  msg,
 };
 ```
 

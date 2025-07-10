@@ -1,14 +1,13 @@
 # PlayerMovementHistoryInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**playerId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**startDate** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
-**endDate** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
-**limit** | **number** |  | [optional] [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                             |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **playerId**  | **Array&lt;string&gt;**                                                                 |             | [optional] [default to undefined] |
+| **startDate** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
+| **endDate**   | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
+| **limit**     | **number**                                                                              |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { PlayerMovementHistoryInputDTO } from './api';
 
 const instance: PlayerMovementHistoryInputDTO = {
-    playerId,
-    startDate,
-    endDate,
-    limit,
+  playerId,
+  startDate,
+  endDate,
+  limit,
 };
 ```
 

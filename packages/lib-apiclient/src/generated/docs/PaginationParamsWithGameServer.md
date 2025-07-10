@@ -1,13 +1,12 @@
 # PaginationParamsWithGameServer
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**gameServerId** | **string** |  | [optional] [default to undefined]
-**page** | **number** |  | [optional] [default to undefined]
-**limit** | **number** |  | [optional] [default to undefined]
+| Name             | Type       | Description | Notes                             |
+| ---------------- | ---------- | ----------- | --------------------------------- |
+| **gameServerId** | **string** |             | [optional] [default to undefined] |
+| **page**         | **number** |             | [optional] [default to undefined] |
+| **limit**        | **number** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { PaginationParamsWithGameServer } from './api';
 
 const instance: PaginationParamsWithGameServer = {
-    gameServerId,
-    page,
-    limit,
+  gameServerId,
+  page,
+  limit,
 };
 ```
 

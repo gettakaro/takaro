@@ -1,17 +1,16 @@
 # PlayerLocationOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **string** |  | [default to undefined]
-**playerId** | **string** |  | [default to undefined]
-**x** | **number** |  | [default to undefined]
-**y** | **number** |  | [default to undefined]
-**z** | **number** |  | [default to undefined]
-**createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
-**updatedAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                  |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | ---------------------- |
+| **id**        | **string**                                                                              |             | [default to undefined] |
+| **playerId**  | **string**                                                                              |             | [default to undefined] |
+| **x**         | **number**                                                                              |             | [default to undefined] |
+| **y**         | **number**                                                                              |             | [default to undefined] |
+| **z**         | **number**                                                                              |             | [default to undefined] |
+| **createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
+| **updatedAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
 
 ## Example
 
@@ -19,13 +18,13 @@ Name | Type | Description | Notes
 import { PlayerLocationOutputDTO } from './api';
 
 const instance: PlayerLocationOutputDTO = {
-    id,
-    playerId,
-    x,
-    y,
-    z,
-    createdAt,
-    updatedAt,
+  id,
+  playerId,
+  x,
+  y,
+  z,
+  createdAt,
+  updatedAt,
 };
 ```
 

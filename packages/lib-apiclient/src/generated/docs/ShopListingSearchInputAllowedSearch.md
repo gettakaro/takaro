@@ -1,11 +1,10 @@
 # ShopListingSearchInputAllowedSearch
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name     | Type                    | Description | Notes                             |
+| -------- | ----------------------- | ----------- | --------------------------------- |
+| **name** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { ShopListingSearchInputAllowedSearch } from './api';
 
 const instance: ShopListingSearchInputAllowedSearch = {
-    name,
+  name,
 };
 ```
 

@@ -1,12 +1,11 @@
 # ModuleInstallationOutputDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**ModuleInstallationOutputDTO**](ModuleInstallationOutputDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                                              | Description | Notes                  |
+| -------- | ----------------------------------------------------------------- | ----------- | ---------------------- |
+| **data** | [**ModuleInstallationOutputDTO**](ModuleInstallationOutputDTO.md) |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md)                           |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { ModuleInstallationOutputDTOAPI } from './api';
 
 const instance: ModuleInstallationOutputDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

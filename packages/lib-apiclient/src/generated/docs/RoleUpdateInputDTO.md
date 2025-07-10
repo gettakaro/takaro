@@ -1,12 +1,11 @@
 # RoleUpdateInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [optional] [default to undefined]
-**permissions** | [**Array&lt;PermissionInputDTO&gt;**](PermissionInputDTO.md) |  | [optional] [default to undefined]
+| Name            | Type                                                         | Description | Notes                             |
+| --------------- | ------------------------------------------------------------ | ----------- | --------------------------------- |
+| **name**        | **string**                                                   |             | [optional] [default to undefined] |
+| **permissions** | [**Array&lt;PermissionInputDTO&gt;**](PermissionInputDTO.md) |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { RoleUpdateInputDTO } from './api';
 
 const instance: RoleUpdateInputDTO = {
-    name,
-    permissions,
+  name,
+  permissions,
 };
 ```
 

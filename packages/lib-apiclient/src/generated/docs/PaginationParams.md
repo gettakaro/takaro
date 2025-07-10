@@ -1,12 +1,11 @@
 # PaginationParams
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**page** | **number** |  | [optional] [default to undefined]
-**limit** | **number** |  | [optional] [default to undefined]
+| Name      | Type       | Description | Notes                             |
+| --------- | ---------- | ----------- | --------------------------------- |
+| **page**  | **number** |             | [optional] [default to undefined] |
+| **limit** | **number** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { PaginationParams } from './api';
 
 const instance: PaginationParams = {
-    page,
-    limit,
+  page,
+  limit,
 };
 ```
 

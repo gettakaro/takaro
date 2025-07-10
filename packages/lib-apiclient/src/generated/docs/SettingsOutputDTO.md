@@ -1,13 +1,12 @@
 # SettingsOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**key** | **string** |  | [default to undefined]
-**value** | **string** |  | [default to undefined]
-**type** | **string** |  | [default to undefined]
+| Name      | Type       | Description | Notes                  |
+| --------- | ---------- | ----------- | ---------------------- |
+| **key**   | **string** |             | [default to undefined] |
+| **value** | **string** |             | [default to undefined] |
+| **type**  | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { SettingsOutputDTO } from './api';
 
 const instance: SettingsOutputDTO = {
-    key,
-    value,
-    type,
+  key,
+  value,
+  type,
 };
 ```
 

@@ -1,15 +1,14 @@
 # VariableSearchInputAllowedFilters
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**key** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**gameServerId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**playerId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**moduleId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**id** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name             | Type                    | Description | Notes                             |
+| ---------------- | ----------------------- | ----------- | --------------------------------- |
+| **key**          | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **gameServerId** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **playerId**     | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **moduleId**     | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **id**           | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { VariableSearchInputAllowedFilters } from './api';
 
 const instance: VariableSearchInputAllowedFilters = {
-    key,
-    gameServerId,
-    playerId,
-    moduleId,
-    id,
+  key,
+  gameServerId,
+  playerId,
+  moduleId,
+  id,
 };
 ```
 

@@ -1,12 +1,11 @@
 # UserSearchInputAllowedSearch
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**discordId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name          | Type                    | Description | Notes                             |
+| ------------- | ----------------------- | ----------- | --------------------------------- |
+| **name**      | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **discordId** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { UserSearchInputAllowedSearch } from './api';
 
 const instance: UserSearchInputAllowedSearch = {
-    name,
-    discordId,
+  name,
+  discordId,
 };
 ```
 

@@ -1,13 +1,12 @@
 # ModuleCreateInternalDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**builtin** | **string** |  | [optional] [default to undefined]
-**name** | **string** |  | [default to undefined]
-**latestVersion** | [**ModuleCreateVersionInputDTO**](ModuleCreateVersionInputDTO.md) |  | [default to undefined]
+| Name              | Type                                                              | Description | Notes                             |
+| ----------------- | ----------------------------------------------------------------- | ----------- | --------------------------------- |
+| **builtin**       | **string**                                                        |             | [optional] [default to undefined] |
+| **name**          | **string**                                                        |             | [default to undefined]            |
+| **latestVersion** | [**ModuleCreateVersionInputDTO**](ModuleCreateVersionInputDTO.md) |             | [default to undefined]            |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { ModuleCreateInternalDTO } from './api';
 
 const instance: ModuleCreateInternalDTO = {
-    builtin,
-    name,
-    latestVersion,
+  builtin,
+  name,
+  latestVersion,
 };
 ```
 

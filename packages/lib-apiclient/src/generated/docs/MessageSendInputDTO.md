@@ -1,12 +1,11 @@
 # MessageSendInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**message** | **string** |  | [default to undefined]
-**opts** | [**IMessageOptsDTO**](IMessageOptsDTO.md) |  | [optional] [default to undefined]
+| Name        | Type                                      | Description | Notes                             |
+| ----------- | ----------------------------------------- | ----------- | --------------------------------- |
+| **message** | **string**                                |             | [default to undefined]            |
+| **opts**    | [**IMessageOptsDTO**](IMessageOptsDTO.md) |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { MessageSendInputDTO } from './api';
 
 const instance: MessageSendInputDTO = {
-    message,
-    opts,
+  message,
+  opts,
 };
 ```
 

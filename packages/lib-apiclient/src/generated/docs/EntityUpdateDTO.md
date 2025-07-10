@@ -1,15 +1,14 @@
 # EntityUpdateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [optional] [default to undefined]
-**code** | **string** |  | [optional] [default to undefined]
-**description** | **string** |  | [optional] [default to undefined]
-**type** | **string** |  | [optional] [default to undefined]
-**metadata** | **object** |  | [optional] [default to undefined]
+| Name            | Type       | Description | Notes                             |
+| --------------- | ---------- | ----------- | --------------------------------- |
+| **name**        | **string** |             | [optional] [default to undefined] |
+| **code**        | **string** |             | [optional] [default to undefined] |
+| **description** | **string** |             | [optional] [default to undefined] |
+| **type**        | **string** |             | [optional] [default to undefined] |
+| **metadata**    | **object** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { EntityUpdateDTO } from './api';
 
 const instance: EntityUpdateDTO = {
-    name,
-    code,
-    description,
-    type,
-    metadata,
+  name,
+  code,
+  description,
+  type,
+  metadata,
 };
 ```
 

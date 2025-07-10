@@ -1,15 +1,14 @@
 # GameServerUpdateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**connectionInfo** | **string** |  | [default to undefined]
-**type** | **string** |  | [default to undefined]
-**reachable** | **boolean** |  | [optional] [default to undefined]
-**enabled** | **boolean** |  | [optional] [default to undefined]
+| Name               | Type        | Description | Notes                             |
+| ------------------ | ----------- | ----------- | --------------------------------- |
+| **name**           | **string**  |             | [default to undefined]            |
+| **connectionInfo** | **string**  |             | [default to undefined]            |
+| **type**           | **string**  |             | [default to undefined]            |
+| **reachable**      | **boolean** |             | [optional] [default to undefined] |
+| **enabled**        | **boolean** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { GameServerUpdateDTO } from './api';
 
 const instance: GameServerUpdateDTO = {
-    name,
-    connectionInfo,
-    type,
-    reachable,
-    enabled,
+  name,
+  connectionInfo,
+  type,
+  reachable,
+  enabled,
 };
 ```
 

@@ -1,12 +1,11 @@
 # ImportOutputDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**ImportOutputDTO**](ImportOutputDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                      | Description | Notes                  |
+| -------- | ----------------------------------------- | ----------- | ---------------------- |
+| **data** | [**ImportOutputDTO**](ImportOutputDTO.md) |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md)   |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { ImportOutputDTOAPI } from './api';
 
 const instance: ImportOutputDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

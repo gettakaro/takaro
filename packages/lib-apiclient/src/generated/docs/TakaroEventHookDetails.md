@@ -1,12 +1,11 @@
 # TakaroEventHookDetails
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **string** |  | [default to undefined]
-**name** | **string** |  | [default to undefined]
+| Name     | Type       | Description | Notes                  |
+| -------- | ---------- | ----------- | ---------------------- |
+| **id**   | **string** |             | [default to undefined] |
+| **name** | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { TakaroEventHookDetails } from './api';
 
 const instance: TakaroEventHookDetails = {
-    id,
-    name,
+  id,
+  name,
 };
 ```
 

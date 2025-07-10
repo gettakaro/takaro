@@ -1,15 +1,14 @@
 # HookSearchInputAllowedFilters
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**moduleId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**versionId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**name** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**eventType** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**id** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name          | Type                    | Description | Notes                             |
+| ------------- | ----------------------- | ----------- | --------------------------------- |
+| **moduleId**  | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **versionId** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **name**      | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **eventType** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **id**        | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { HookSearchInputAllowedFilters } from './api';
 
 const instance: HookSearchInputAllowedFilters = {
-    moduleId,
-    versionId,
-    name,
-    eventType,
-    id,
+  moduleId,
+  versionId,
+  name,
+  eventType,
+  id,
 };
 ```
 

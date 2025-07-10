@@ -1,11 +1,10 @@
 # VariableSearchInputAllowedSearch
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**key** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name    | Type                    | Description | Notes                             |
+| ------- | ----------------------- | ----------- | --------------------------------- |
+| **key** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { VariableSearchInputAllowedSearch } from './api';
 
 const instance: VariableSearchInputAllowedSearch = {
-    key,
+  key,
 };
 ```
 

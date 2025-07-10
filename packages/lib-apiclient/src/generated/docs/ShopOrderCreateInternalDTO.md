@@ -1,14 +1,13 @@
 # ShopOrderCreateInternalDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**playerId** | **string** |  | [optional] [default to undefined]
-**gameServerId** | **string** |  | [default to undefined]
-**listingId** | **string** |  | [default to undefined]
-**amount** | **number** |  | [default to undefined]
+| Name             | Type       | Description | Notes                             |
+| ---------------- | ---------- | ----------- | --------------------------------- |
+| **playerId**     | **string** |             | [optional] [default to undefined] |
+| **gameServerId** | **string** |             | [default to undefined]            |
+| **listingId**    | **string** |             | [default to undefined]            |
+| **amount**       | **number** |             | [default to undefined]            |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { ShopOrderCreateInternalDTO } from './api';
 
 const instance: ShopOrderCreateInternalDTO = {
-    playerId,
-    gameServerId,
-    listingId,
-    amount,
+  playerId,
+  gameServerId,
+  listingId,
+  amount,
 };
 ```
 

@@ -1,11 +1,10 @@
 # ParamKey
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**key** | **string** |  | [default to undefined]
+| Name    | Type       | Description | Notes                  |
+| ------- | ---------- | ----------- | ---------------------- |
+| **key** | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { ParamKey } from './api';
 
 const instance: ParamKey = {
-    key,
+  key,
 };
 ```
 

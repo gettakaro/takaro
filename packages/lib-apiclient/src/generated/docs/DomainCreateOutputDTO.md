@@ -1,14 +1,13 @@
 # DomainCreateOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**createdDomain** | [**DomainOutputDTO**](DomainOutputDTO.md) |  | [default to undefined]
-**rootUser** | [**UserOutputDTO**](UserOutputDTO.md) |  | [default to undefined]
-**rootRole** | [**RoleOutputDTO**](RoleOutputDTO.md) |  | [default to undefined]
-**password** | **string** |  | [default to undefined]
+| Name              | Type                                      | Description | Notes                  |
+| ----------------- | ----------------------------------------- | ----------- | ---------------------- |
+| **createdDomain** | [**DomainOutputDTO**](DomainOutputDTO.md) |             | [default to undefined] |
+| **rootUser**      | [**UserOutputDTO**](UserOutputDTO.md)     |             | [default to undefined] |
+| **rootRole**      | [**RoleOutputDTO**](RoleOutputDTO.md)     |             | [default to undefined] |
+| **password**      | **string**                                |             | [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { DomainCreateOutputDTO } from './api';
 
 const instance: DomainCreateOutputDTO = {
-    createdDomain,
-    rootUser,
-    rootRole,
-    password,
+  createdDomain,
+  rootUser,
+  rootRole,
+  password,
 };
 ```
 

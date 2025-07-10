@@ -1,11 +1,10 @@
 # CommandExecuteInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**command** | **string** |  | [default to undefined]
+| Name        | Type       | Description | Notes                  |
+| ----------- | ---------- | ----------- | ---------------------- |
+| **command** | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { CommandExecuteInputDTO } from './api';
 
 const instance: CommandExecuteInputDTO = {
-    command,
+  command,
 };
 ```
 

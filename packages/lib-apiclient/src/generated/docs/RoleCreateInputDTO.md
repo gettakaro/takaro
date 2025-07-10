@@ -1,12 +1,11 @@
 # RoleCreateInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**permissions** | [**Array&lt;PermissionInputDTO&gt;**](PermissionInputDTO.md) |  | [default to undefined]
+| Name            | Type                                                         | Description | Notes                  |
+| --------------- | ------------------------------------------------------------ | ----------- | ---------------------- |
+| **name**        | **string**                                                   |             | [default to undefined] |
+| **permissions** | [**Array&lt;PermissionInputDTO&gt;**](PermissionInputDTO.md) |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { RoleCreateInputDTO } from './api';
 
 const instance: RoleCreateInputDTO = {
-    name,
-    permissions,
+  name,
+  permissions,
 };
 ```
 

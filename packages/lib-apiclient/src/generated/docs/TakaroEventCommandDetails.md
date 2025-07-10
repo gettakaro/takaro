@@ -1,13 +1,12 @@
 # TakaroEventCommandDetails
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **string** |  | [default to undefined]
-**name** | **string** |  | [default to undefined]
-**arguments** | **object** |  | [default to undefined]
+| Name          | Type       | Description | Notes                  |
+| ------------- | ---------- | ----------- | ---------------------- |
+| **id**        | **string** |             | [default to undefined] |
+| **name**      | **string** |             | [default to undefined] |
+| **arguments** | **object** |             | [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { TakaroEventCommandDetails } from './api';
 
 const instance: TakaroEventCommandDetails = {
-    id,
-    name,
-    arguments,
+  id,
+  name,
+  arguments,
 };
 ```
 

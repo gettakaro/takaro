@@ -1,12 +1,11 @@
 # StatsOutputDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**StatsOutputDTO**](StatsOutputDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                    | Description | Notes                  |
+| -------- | --------------------------------------- | ----------- | ---------------------- |
+| **data** | [**StatsOutputDTO**](StatsOutputDTO.md) |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md) |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { StatsOutputDTOAPI } from './api';
 
 const instance: StatsOutputDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

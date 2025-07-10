@@ -1,15 +1,14 @@
 # EventEntityKilled
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**player** | [**IGamePlayer**](IGamePlayer.md) |  | [default to undefined]
-**entity** | **string** |  | [default to undefined]
-**weapon** | **string** |  | [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
-**msg** | **string** |  | [optional] [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                             |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **player**    | [**IGamePlayer**](IGamePlayer.md)                                                       |             | [default to undefined]            |
+| **entity**    | **string**                                                                              |             | [default to undefined]            |
+| **weapon**    | **string**                                                                              |             | [default to undefined]            |
+| **timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
+| **msg**       | **string**                                                                              |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { EventEntityKilled } from './api';
 
 const instance: EventEntityKilled = {
-    player,
-    entity,
-    weapon,
-    timestamp,
-    msg,
+  player,
+  entity,
+  weapon,
+  timestamp,
+  msg,
 };
 ```
 

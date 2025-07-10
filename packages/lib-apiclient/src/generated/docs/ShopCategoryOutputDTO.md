@@ -1,20 +1,19 @@
 # ShopCategoryOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **string** |  | [default to undefined]
-**name** | **string** |  | [default to undefined]
-**emoji** | **string** |  | [default to undefined]
-**parentId** | **string** |  | [optional] [default to undefined]
-**parent** | [**ShopCategoryOutputDTO**](ShopCategoryOutputDTO.md) |  | [optional] [default to undefined]
-**children** | [**Array&lt;ShopCategoryOutputDTO&gt;**](ShopCategoryOutputDTO.md) |  | [optional] [default to undefined]
-**listings** | [**Array&lt;ShopListingOutputDTO&gt;**](ShopListingOutputDTO.md) |  | [optional] [default to undefined]
-**listingCount** | **number** |  | [optional] [default to undefined]
-**createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
-**updatedAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name             | Type                                                                                    | Description | Notes                             |
+| ---------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **id**           | **string**                                                                              |             | [default to undefined]            |
+| **name**         | **string**                                                                              |             | [default to undefined]            |
+| **emoji**        | **string**                                                                              |             | [default to undefined]            |
+| **parentId**     | **string**                                                                              |             | [optional] [default to undefined] |
+| **parent**       | [**ShopCategoryOutputDTO**](ShopCategoryOutputDTO.md)                                   |             | [optional] [default to undefined] |
+| **children**     | [**Array&lt;ShopCategoryOutputDTO&gt;**](ShopCategoryOutputDTO.md)                      |             | [optional] [default to undefined] |
+| **listings**     | [**Array&lt;ShopListingOutputDTO&gt;**](ShopListingOutputDTO.md)                        |             | [optional] [default to undefined] |
+| **listingCount** | **number**                                                                              |             | [optional] [default to undefined] |
+| **createdAt**    | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
+| **updatedAt**    | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
 
 ## Example
 
@@ -22,16 +21,16 @@ Name | Type | Description | Notes
 import { ShopCategoryOutputDTO } from './api';
 
 const instance: ShopCategoryOutputDTO = {
-    id,
-    name,
-    emoji,
-    parentId,
-    parent,
-    children,
-    listings,
-    listingCount,
-    createdAt,
-    updatedAt,
+  id,
+  name,
+  emoji,
+  parentId,
+  parent,
+  children,
+  listings,
+  listingCount,
+  createdAt,
+  updatedAt,
 };
 ```
 

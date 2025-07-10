@@ -1,16 +1,15 @@
 # RadiusSearchInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**x** | **number** |  | [default to undefined]
-**y** | **number** |  | [default to undefined]
-**z** | **number** |  | [default to undefined]
-**radius** | **number** |  | [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
-**gameserverId** | **string** |  | [default to undefined]
+| Name             | Type                                                                                    | Description | Notes                             |
+| ---------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **x**            | **number**                                                                              |             | [default to undefined]            |
+| **y**            | **number**                                                                              |             | [default to undefined]            |
+| **z**            | **number**                                                                              |             | [default to undefined]            |
+| **radius**       | **number**                                                                              |             | [default to undefined]            |
+| **timestamp**    | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
+| **gameserverId** | **string**                                                                              |             | [default to undefined]            |
 
 ## Example
 
@@ -18,12 +17,12 @@ Name | Type | Description | Notes
 import { RadiusSearchInputDTO } from './api';
 
 const instance: RadiusSearchInputDTO = {
-    x,
-    y,
-    z,
-    radius,
-    timestamp,
-    gameserverId,
+  x,
+  y,
+  z,
+  radius,
+  timestamp,
+  gameserverId,
 };
 ```
 

@@ -1,11 +1,10 @@
 # ModuleExportOptionsDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**versionIds** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name           | Type                    | Description | Notes                             |
+| -------------- | ----------------------- | ----------- | --------------------------------- |
+| **versionIds** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { ModuleExportOptionsDTO } from './api';
 
 const instance: ModuleExportOptionsDTO = {
-    versionIds,
+  versionIds,
 };
 ```
 

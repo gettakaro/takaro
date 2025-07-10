@@ -1,14 +1,13 @@
 # ModuleInstallationSearchInputAllowedFilters
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**versionId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**moduleId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**gameserverId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**id** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name             | Type                    | Description | Notes                             |
+| ---------------- | ----------------------- | ----------- | --------------------------------- |
+| **versionId**    | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **moduleId**     | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **gameserverId** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **id**           | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { ModuleInstallationSearchInputAllowedFilters } from './api';
 
 const instance: ModuleInstallationSearchInputAllowedFilters = {
-    versionId,
-    moduleId,
-    gameserverId,
-    id,
+  versionId,
+  moduleId,
+  gameserverId,
+  id,
 };
 ```
 

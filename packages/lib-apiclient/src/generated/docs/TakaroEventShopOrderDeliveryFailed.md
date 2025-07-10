@@ -1,14 +1,13 @@
 # TakaroEventShopOrderDeliveryFailed
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **string** |  | [default to undefined]
-**error** | **string** |  | [default to undefined]
-**items** | [**Array&lt;TakaroEventShopItem&gt;**](TakaroEventShopItem.md) |  | [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                  |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | ---------------------- |
+| **id**        | **string**                                                                              |             | [default to undefined] |
+| **error**     | **string**                                                                              |             | [default to undefined] |
+| **items**     | [**Array&lt;TakaroEventShopItem&gt;**](TakaroEventShopItem.md)                          |             | [default to undefined] |
+| **timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { TakaroEventShopOrderDeliveryFailed } from './api';
 
 const instance: TakaroEventShopOrderDeliveryFailed = {
-    id,
-    error,
-    items,
-    timestamp,
+  id,
+  error,
+  items,
+  timestamp,
 };
 ```
 

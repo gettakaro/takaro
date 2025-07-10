@@ -1,14 +1,13 @@
 # PlayerOnGameServerSearchInputAllowedRangeFilter
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**lastSeen** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
-**playtimeSeconds** | **number** |  | [optional] [default to undefined]
-**createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
-**updatedAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
+| Name                | Type                                                                                    | Description | Notes                             |
+| ------------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **lastSeen**        | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
+| **playtimeSeconds** | **number**                                                                              |             | [optional] [default to undefined] |
+| **createdAt**       | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
+| **updatedAt**       | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { PlayerOnGameServerSearchInputAllowedRangeFilter } from './api';
 
 const instance: PlayerOnGameServerSearchInputAllowedRangeFilter = {
-    lastSeen,
-    playtimeSeconds,
-    createdAt,
-    updatedAt,
+  lastSeen,
+  playtimeSeconds,
+  createdAt,
+  updatedAt,
 };
 ```
 

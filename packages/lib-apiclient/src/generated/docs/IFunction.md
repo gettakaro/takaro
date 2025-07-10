@@ -1,13 +1,12 @@
 # IFunction
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**description** | **string** |  | [optional] [default to undefined]
-**_function** | **string** |  | [default to undefined]
+| Name            | Type       | Description | Notes                             |
+| --------------- | ---------- | ----------- | --------------------------------- |
+| **name**        | **string** |             | [default to undefined]            |
+| **description** | **string** |             | [optional] [default to undefined] |
+| **\_function**  | **string** |             | [default to undefined]            |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { IFunction } from './api';
 
 const instance: IFunction = {
-    name,
-    description,
-    _function,
+  name,
+  description,
+  _function,
 };
 ```
 

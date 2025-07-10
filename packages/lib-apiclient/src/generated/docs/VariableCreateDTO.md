@@ -1,16 +1,15 @@
 # VariableCreateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**key** | **string** |  | [default to undefined]
-**value** | **string** |  | [default to undefined]
-**expiresAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
-**gameServerId** | **string** |  | [optional] [default to undefined]
-**playerId** | **string** |  | [optional] [default to undefined]
-**moduleId** | **string** |  | [optional] [default to undefined]
+| Name             | Type                                                                                    | Description | Notes                             |
+| ---------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **key**          | **string**                                                                              |             | [default to undefined]            |
+| **value**        | **string**                                                                              |             | [default to undefined]            |
+| **expiresAt**    | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
+| **gameServerId** | **string**                                                                              |             | [optional] [default to undefined] |
+| **playerId**     | **string**                                                                              |             | [optional] [default to undefined] |
+| **moduleId**     | **string**                                                                              |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -18,12 +17,12 @@ Name | Type | Description | Notes
 import { VariableCreateDTO } from './api';
 
 const instance: VariableCreateDTO = {
-    key,
-    value,
-    expiresAt,
-    gameServerId,
-    playerId,
-    moduleId,
+  key,
+  value,
+  expiresAt,
+  gameServerId,
+  playerId,
+  moduleId,
 };
 ```
 

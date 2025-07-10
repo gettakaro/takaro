@@ -1,12 +1,11 @@
 # SettingsSetDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**gameServerId** | **string** |  | [optional] [default to undefined]
-**value** | **any** |  | [default to undefined]
+| Name             | Type       | Description | Notes                             |
+| ---------------- | ---------- | ----------- | --------------------------------- |
+| **gameServerId** | **string** |             | [optional] [default to undefined] |
+| **value**        | **any**    |             | [default to undefined]            |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { SettingsSetDTO } from './api';
 
 const instance: SettingsSetDTO = {
-    gameServerId,
-    value,
+  gameServerId,
+  value,
 };
 ```
 

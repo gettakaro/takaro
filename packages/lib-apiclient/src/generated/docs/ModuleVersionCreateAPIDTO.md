@@ -1,12 +1,11 @@
 # ModuleVersionCreateAPIDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**tag** | **string** |  | [default to undefined]
-**moduleId** | **string** |  | [default to undefined]
+| Name         | Type       | Description | Notes                  |
+| ------------ | ---------- | ----------- | ---------------------- |
+| **tag**      | **string** |             | [default to undefined] |
+| **moduleId** | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { ModuleVersionCreateAPIDTO } from './api';
 
 const instance: ModuleVersionCreateAPIDTO = {
-    tag,
-    moduleId,
+  tag,
+  moduleId,
 };
 ```
 

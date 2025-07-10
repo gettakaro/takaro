@@ -1,15 +1,14 @@
 # CommandSearchInputAllowedFilters
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**moduleId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**versionId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**name** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**enabled** | **Array&lt;boolean&gt;** |  | [optional] [default to undefined]
-**id** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name          | Type                     | Description | Notes                             |
+| ------------- | ------------------------ | ----------- | --------------------------------- |
+| **moduleId**  | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **versionId** | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **name**      | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **enabled**   | **Array&lt;boolean&gt;** |             | [optional] [default to undefined] |
+| **id**        | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { CommandSearchInputAllowedFilters } from './api';
 
 const instance: CommandSearchInputAllowedFilters = {
-    moduleId,
-    versionId,
-    name,
-    enabled,
-    id,
+  moduleId,
+  versionId,
+  name,
+  enabled,
+  id,
 };
 ```
 

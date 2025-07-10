@@ -1,12 +1,11 @@
 # GameServerTypesOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**type** | **string** |  | [default to undefined]
-**connectionInfoSchema** | **string** |  | [default to undefined]
+| Name                     | Type       | Description | Notes                  |
+| ------------------------ | ---------- | ----------- | ---------------------- |
+| **type**                 | **string** |             | [default to undefined] |
+| **connectionInfoSchema** | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { GameServerTypesOutputDTO } from './api';
 
 const instance: GameServerTypesOutputDTO = {
-    type,
-    connectionInfoSchema,
+  type,
+  connectionInfoSchema,
 };
 ```
 

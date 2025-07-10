@@ -1,12 +1,11 @@
 # TokenOutputDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**TokenOutputDTO**](TokenOutputDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                    | Description | Notes                  |
+| -------- | --------------------------------------- | ----------- | ---------------------- |
+| **data** | [**TokenOutputDTO**](TokenOutputDTO.md) |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md) |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { TokenOutputDTOAPI } from './api';
 
 const instance: TokenOutputDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

@@ -1,16 +1,15 @@
 # IpHistoryOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
-**ip** | **string** |  | [default to undefined]
-**country** | **string** |  | [optional] [default to undefined]
-**city** | **string** |  | [optional] [default to undefined]
-**latitude** | **string** |  | [optional] [default to undefined]
-**longitude** | **string** |  | [optional] [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                             |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
+| **ip**        | **string**                                                                              |             | [default to undefined]            |
+| **country**   | **string**                                                                              |             | [optional] [default to undefined] |
+| **city**      | **string**                                                                              |             | [optional] [default to undefined] |
+| **latitude**  | **string**                                                                              |             | [optional] [default to undefined] |
+| **longitude** | **string**                                                                              |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -18,12 +17,12 @@ Name | Type | Description | Notes
 import { IpHistoryOutputDTO } from './api';
 
 const instance: IpHistoryOutputDTO = {
-    createdAt,
-    ip,
-    country,
-    city,
-    latitude,
-    longitude,
+  createdAt,
+  ip,
+  country,
+  city,
+  latitude,
+  longitude,
 };
 ```
 

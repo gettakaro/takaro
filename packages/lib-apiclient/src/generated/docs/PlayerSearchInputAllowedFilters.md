@@ -1,19 +1,18 @@
 # PlayerSearchInputAllowedFilters
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**steamId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**epicOnlineServicesId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**xboxLiveId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**platformId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**steamCommunityBanned** | **Array&lt;boolean&gt;** |  | [optional] [default to undefined]
-**steamVacBanned** | **Array&lt;boolean&gt;** |  | [optional] [default to undefined]
-**roleId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**id** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name                     | Type                     | Description | Notes                             |
+| ------------------------ | ------------------------ | ----------- | --------------------------------- |
+| **name**                 | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **steamId**              | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **epicOnlineServicesId** | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **xboxLiveId**           | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **platformId**           | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **steamCommunityBanned** | **Array&lt;boolean&gt;** |             | [optional] [default to undefined] |
+| **steamVacBanned**       | **Array&lt;boolean&gt;** |             | [optional] [default to undefined] |
+| **roleId**               | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **id**                   | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -21,15 +20,15 @@ Name | Type | Description | Notes
 import { PlayerSearchInputAllowedFilters } from './api';
 
 const instance: PlayerSearchInputAllowedFilters = {
-    name,
-    steamId,
-    epicOnlineServicesId,
-    xboxLiveId,
-    platformId,
-    steamCommunityBanned,
-    steamVacBanned,
-    roleId,
-    id,
+  name,
+  steamId,
+  epicOnlineServicesId,
+  xboxLiveId,
+  platformId,
+  steamCommunityBanned,
+  steamVacBanned,
+  roleId,
+  id,
 };
 ```
 

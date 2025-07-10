@@ -1,13 +1,12 @@
 # TakaroEventPlayerUnbanned
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**isGlobal** | **boolean** |  | [default to undefined]
-**takaroManaged** | **boolean** |  | [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name              | Type                                                                                    | Description | Notes                  |
+| ----------------- | --------------------------------------------------------------------------------------- | ----------- | ---------------------- |
+| **isGlobal**      | **boolean**                                                                             |             | [default to undefined] |
+| **takaroManaged** | **boolean**                                                                             |             | [default to undefined] |
+| **timestamp**     | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { TakaroEventPlayerUnbanned } from './api';
 
 const instance: TakaroEventPlayerUnbanned = {
-    isGlobal,
-    takaroManaged,
-    timestamp,
+  isGlobal,
+  takaroManaged,
+  timestamp,
 };
 ```
 

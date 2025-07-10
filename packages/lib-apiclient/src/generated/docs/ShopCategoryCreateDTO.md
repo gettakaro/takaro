@@ -1,13 +1,12 @@
 # ShopCategoryCreateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**emoji** | **string** |  | [default to undefined]
-**parentId** | **string** |  | [optional] [default to undefined]
+| Name         | Type       | Description | Notes                             |
+| ------------ | ---------- | ----------- | --------------------------------- |
+| **name**     | **string** |             | [default to undefined]            |
+| **emoji**    | **string** |             | [default to undefined]            |
+| **parentId** | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { ShopCategoryCreateDTO } from './api';
 
 const instance: ShopCategoryCreateDTO = {
-    name,
-    emoji,
-    parentId,
+  name,
+  emoji,
+  parentId,
 };
 ```
 

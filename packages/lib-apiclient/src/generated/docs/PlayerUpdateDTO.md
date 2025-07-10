@@ -1,16 +1,15 @@
 # PlayerUpdateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**steamId** | **string** |  | [optional] [default to undefined]
-**xboxLiveId** | **string** |  | [optional] [default to undefined]
-**epicOnlineServicesId** | **string** |  | [optional] [default to undefined]
-**platformId** | **string** |  | [optional] [default to undefined]
-**playtimeSeconds** | **number** |  | [optional] [default to undefined]
+| Name                     | Type       | Description | Notes                             |
+| ------------------------ | ---------- | ----------- | --------------------------------- |
+| **name**                 | **string** |             | [default to undefined]            |
+| **steamId**              | **string** |             | [optional] [default to undefined] |
+| **xboxLiveId**           | **string** |             | [optional] [default to undefined] |
+| **epicOnlineServicesId** | **string** |             | [optional] [default to undefined] |
+| **platformId**           | **string** |             | [optional] [default to undefined] |
+| **playtimeSeconds**      | **number** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -18,12 +17,12 @@ Name | Type | Description | Notes
 import { PlayerUpdateDTO } from './api';
 
 const instance: PlayerUpdateDTO = {
-    name,
-    steamId,
-    xboxLiveId,
-    epicOnlineServicesId,
-    platformId,
-    playtimeSeconds,
+  name,
+  steamId,
+  xboxLiveId,
+  epicOnlineServicesId,
+  platformId,
+  playtimeSeconds,
 };
 ```
 

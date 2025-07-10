@@ -1,18 +1,17 @@
 # IGamePlayer
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**gameId** | **string** |  | [default to undefined]
-**name** | **string** |  | [default to undefined]
-**steamId** | **string** |  | [optional] [default to undefined]
-**epicOnlineServicesId** | **string** |  | [optional] [default to undefined]
-**xboxLiveId** | **string** |  | [optional] [default to undefined]
-**platformId** | **string** |  | [optional] [default to undefined]
-**ip** | **string** |  | [optional] [default to undefined]
-**ping** | **number** |  | [optional] [default to undefined]
+| Name                     | Type       | Description | Notes                             |
+| ------------------------ | ---------- | ----------- | --------------------------------- |
+| **gameId**               | **string** |             | [default to undefined]            |
+| **name**                 | **string** |             | [default to undefined]            |
+| **steamId**              | **string** |             | [optional] [default to undefined] |
+| **epicOnlineServicesId** | **string** |             | [optional] [default to undefined] |
+| **xboxLiveId**           | **string** |             | [optional] [default to undefined] |
+| **platformId**           | **string** |             | [optional] [default to undefined] |
+| **ip**                   | **string** |             | [optional] [default to undefined] |
+| **ping**                 | **number** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -20,14 +19,14 @@ Name | Type | Description | Notes
 import { IGamePlayer } from './api';
 
 const instance: IGamePlayer = {
-    gameId,
-    name,
-    steamId,
-    epicOnlineServicesId,
-    xboxLiveId,
-    platformId,
-    ip,
-    ping,
+  gameId,
+  name,
+  steamId,
+  epicOnlineServicesId,
+  xboxLiveId,
+  platformId,
+  ip,
+  ping,
 };
 ```
 

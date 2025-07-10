@@ -1,19 +1,18 @@
 # ModuleVersionSearchInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**filters** | [**ModuleVersionSearchInputAllowedFilters**](ModuleVersionSearchInputAllowedFilters.md) |  | [optional] [default to undefined]
-**search** | [**ModuleVersionSearchInputAllowedSearch**](ModuleVersionSearchInputAllowedSearch.md) |  | [optional] [default to undefined]
-**greaterThan** | [**RangeFilterCreatedAndUpdatedAt**](RangeFilterCreatedAndUpdatedAt.md) |  | [optional] [default to undefined]
-**lessThan** | [**RangeFilterCreatedAndUpdatedAt**](RangeFilterCreatedAndUpdatedAt.md) |  | [optional] [default to undefined]
-**page** | **number** |  | [optional] [default to undefined]
-**limit** | **number** |  | [optional] [default to undefined]
-**sortBy** | **string** |  | [optional] [default to undefined]
-**sortDirection** | **string** |  | [optional] [default to undefined]
-**extend** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name              | Type                                                                                    | Description | Notes                             |
+| ----------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **filters**       | [**ModuleVersionSearchInputAllowedFilters**](ModuleVersionSearchInputAllowedFilters.md) |             | [optional] [default to undefined] |
+| **search**        | [**ModuleVersionSearchInputAllowedSearch**](ModuleVersionSearchInputAllowedSearch.md)   |             | [optional] [default to undefined] |
+| **greaterThan**   | [**RangeFilterCreatedAndUpdatedAt**](RangeFilterCreatedAndUpdatedAt.md)                 |             | [optional] [default to undefined] |
+| **lessThan**      | [**RangeFilterCreatedAndUpdatedAt**](RangeFilterCreatedAndUpdatedAt.md)                 |             | [optional] [default to undefined] |
+| **page**          | **number**                                                                              |             | [optional] [default to undefined] |
+| **limit**         | **number**                                                                              |             | [optional] [default to undefined] |
+| **sortBy**        | **string**                                                                              |             | [optional] [default to undefined] |
+| **sortDirection** | **string**                                                                              |             | [optional] [default to undefined] |
+| **extend**        | **Array&lt;string&gt;**                                                                 |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -21,15 +20,15 @@ Name | Type | Description | Notes
 import { ModuleVersionSearchInputDTO } from './api';
 
 const instance: ModuleVersionSearchInputDTO = {
-    filters,
-    search,
-    greaterThan,
-    lessThan,
-    page,
-    limit,
-    sortBy,
-    sortDirection,
-    extend,
+  filters,
+  search,
+  greaterThan,
+  lessThan,
+  page,
+  limit,
+  sortBy,
+  sortDirection,
+  extend,
 };
 ```
 

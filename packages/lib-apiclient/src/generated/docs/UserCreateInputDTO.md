@@ -1,15 +1,14 @@
 # UserCreateInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**email** | **string** |  | [default to undefined]
-**password** | **string** |  | [default to undefined]
-**idpId** | **string** |  | [optional] [default to undefined]
-**isDashboardUser** | **boolean** |  | [optional] [default to undefined]
+| Name                | Type        | Description | Notes                             |
+| ------------------- | ----------- | ----------- | --------------------------------- |
+| **name**            | **string**  |             | [default to undefined]            |
+| **email**           | **string**  |             | [default to undefined]            |
+| **password**        | **string**  |             | [default to undefined]            |
+| **idpId**           | **string**  |             | [optional] [default to undefined] |
+| **isDashboardUser** | **boolean** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { UserCreateInputDTO } from './api';
 
 const instance: UserCreateInputDTO = {
-    name,
-    email,
-    password,
-    idpId,
-    isDashboardUser,
+  name,
+  email,
+  password,
+  idpId,
+  isDashboardUser,
 };
 ```
 

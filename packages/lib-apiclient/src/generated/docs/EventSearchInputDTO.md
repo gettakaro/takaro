@@ -1,19 +1,18 @@
 # EventSearchInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**filters** | [**EventSearchInputAllowedFilters**](EventSearchInputAllowedFilters.md) |  | [optional] [default to undefined]
-**greaterThan** | [**RangeFilterCreatedAndUpdatedAt**](RangeFilterCreatedAndUpdatedAt.md) |  | [optional] [default to undefined]
-**lessThan** | [**RangeFilterCreatedAndUpdatedAt**](RangeFilterCreatedAndUpdatedAt.md) |  | [optional] [default to undefined]
-**search** | **any** |  | [optional] [default to undefined]
-**page** | **number** |  | [optional] [default to undefined]
-**limit** | **number** |  | [optional] [default to undefined]
-**sortBy** | **string** |  | [optional] [default to undefined]
-**sortDirection** | **string** |  | [optional] [default to undefined]
-**extend** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name              | Type                                                                    | Description | Notes                             |
+| ----------------- | ----------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **filters**       | [**EventSearchInputAllowedFilters**](EventSearchInputAllowedFilters.md) |             | [optional] [default to undefined] |
+| **greaterThan**   | [**RangeFilterCreatedAndUpdatedAt**](RangeFilterCreatedAndUpdatedAt.md) |             | [optional] [default to undefined] |
+| **lessThan**      | [**RangeFilterCreatedAndUpdatedAt**](RangeFilterCreatedAndUpdatedAt.md) |             | [optional] [default to undefined] |
+| **search**        | **any**                                                                 |             | [optional] [default to undefined] |
+| **page**          | **number**                                                              |             | [optional] [default to undefined] |
+| **limit**         | **number**                                                              |             | [optional] [default to undefined] |
+| **sortBy**        | **string**                                                              |             | [optional] [default to undefined] |
+| **sortDirection** | **string**                                                              |             | [optional] [default to undefined] |
+| **extend**        | **Array&lt;string&gt;**                                                 |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -21,15 +20,15 @@ Name | Type | Description | Notes
 import { EventSearchInputDTO } from './api';
 
 const instance: EventSearchInputDTO = {
-    filters,
-    greaterThan,
-    lessThan,
-    search,
-    page,
-    limit,
-    sortBy,
-    sortDirection,
-    extend,
+  filters,
+  greaterThan,
+  lessThan,
+  search,
+  page,
+  limit,
+  sortBy,
+  sortDirection,
+  extend,
 };
 ```
 

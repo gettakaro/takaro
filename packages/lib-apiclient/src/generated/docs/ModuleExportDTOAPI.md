@@ -1,12 +1,11 @@
 # ModuleExportDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**ModuleTransferDTO**](ModuleTransferDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                          | Description | Notes                  |
+| -------- | --------------------------------------------- | ----------- | ---------------------- |
+| **data** | [**ModuleTransferDTO**](ModuleTransferDTO.md) |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md)       |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { ModuleExportDTOAPI } from './api';
 
 const instance: ModuleExportDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

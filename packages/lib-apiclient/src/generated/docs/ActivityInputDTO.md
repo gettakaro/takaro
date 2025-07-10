@@ -1,15 +1,14 @@
 # ActivityInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**gameServerId** | **string** |  | [optional] [default to undefined]
-**timeType** | **string** |  | [default to undefined]
-**dataType** | **string** |  | [default to undefined]
-**startDate** | **string** |  | [optional] [default to undefined]
-**endDate** | **string** |  | [optional] [default to undefined]
+| Name             | Type       | Description | Notes                             |
+| ---------------- | ---------- | ----------- | --------------------------------- |
+| **gameServerId** | **string** |             | [optional] [default to undefined] |
+| **timeType**     | **string** |             | [default to undefined]            |
+| **dataType**     | **string** |             | [default to undefined]            |
+| **startDate**    | **string** |             | [optional] [default to undefined] |
+| **endDate**      | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { ActivityInputDTO } from './api';
 
 const instance: ActivityInputDTO = {
-    gameServerId,
-    timeType,
-    dataType,
-    startDate,
-    endDate,
+  gameServerId,
+  timeType,
+  dataType,
+  startDate,
+  endDate,
 };
 ```
 

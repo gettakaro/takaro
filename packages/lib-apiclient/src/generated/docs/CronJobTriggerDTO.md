@@ -1,13 +1,12 @@
 # CronJobTriggerDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**gameServerId** | **string** |  | [default to undefined]
-**cronjobId** | **string** |  | [default to undefined]
-**moduleId** | **string** |  | [default to undefined]
+| Name             | Type       | Description | Notes                  |
+| ---------------- | ---------- | ----------- | ---------------------- |
+| **gameServerId** | **string** |             | [default to undefined] |
+| **cronjobId**    | **string** |             | [default to undefined] |
+| **moduleId**     | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { CronJobTriggerDTO } from './api';
 
 const instance: CronJobTriggerDTO = {
-    gameServerId,
-    cronjobId,
-    moduleId,
+  gameServerId,
+  cronjobId,
+  moduleId,
 };
 ```
 

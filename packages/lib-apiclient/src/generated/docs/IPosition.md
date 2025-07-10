@@ -1,14 +1,13 @@
 # IPosition
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**x** | **number** |  | [default to undefined]
-**y** | **number** |  | [default to undefined]
-**z** | **number** |  | [default to undefined]
-**dimension** | **string** |  | [optional] [default to undefined]
+| Name          | Type       | Description | Notes                             |
+| ------------- | ---------- | ----------- | --------------------------------- |
+| **x**         | **number** |             | [default to undefined]            |
+| **y**         | **number** |             | [default to undefined]            |
+| **z**         | **number** |             | [default to undefined]            |
+| **dimension** | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { IPosition } from './api';
 
 const instance: IPosition = {
-    x,
-    y,
-    z,
-    dimension,
+  x,
+  y,
+  z,
+  dimension,
 };
 ```
 

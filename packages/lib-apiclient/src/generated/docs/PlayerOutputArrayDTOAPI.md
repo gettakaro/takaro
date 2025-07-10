@@ -1,12 +1,11 @@
 # PlayerOutputArrayDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**Array&lt;PlayerOutputDTO&gt;**](PlayerOutputDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                                   | Description | Notes                  |
+| -------- | ------------------------------------------------------ | ----------- | ---------------------- |
+| **data** | [**Array&lt;PlayerOutputDTO&gt;**](PlayerOutputDTO.md) |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md)                |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { PlayerOutputArrayDTOAPI } from './api';
 
 const instance: PlayerOutputArrayDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

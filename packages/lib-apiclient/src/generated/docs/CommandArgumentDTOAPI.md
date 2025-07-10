@@ -1,12 +1,11 @@
 # CommandArgumentDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**CommandArgumentOutputDTO**](CommandArgumentOutputDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                                        | Description | Notes                  |
+| -------- | ----------------------------------------------------------- | ----------- | ---------------------- |
+| **data** | [**CommandArgumentOutputDTO**](CommandArgumentOutputDTO.md) |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md)                     |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { CommandArgumentDTOAPI } from './api';
 
 const instance: CommandArgumentDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

@@ -1,14 +1,13 @@
 # OptionalPogStatsInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**gameServerId** | **string** |  | [default to undefined]
-**playerId** | **string** |  | [optional] [default to undefined]
-**startDate** | **string** |  | [optional] [default to undefined]
-**endDate** | **string** |  | [optional] [default to undefined]
+| Name             | Type       | Description | Notes                             |
+| ---------------- | ---------- | ----------- | --------------------------------- |
+| **gameServerId** | **string** |             | [default to undefined]            |
+| **playerId**     | **string** |             | [optional] [default to undefined] |
+| **startDate**    | **string** |             | [optional] [default to undefined] |
+| **endDate**      | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { OptionalPogStatsInputDTO } from './api';
 
 const instance: OptionalPogStatsInputDTO = {
-    gameServerId,
-    playerId,
-    startDate,
-    endDate,
+  gameServerId,
+  playerId,
+  startDate,
+  endDate,
 };
 ```
 

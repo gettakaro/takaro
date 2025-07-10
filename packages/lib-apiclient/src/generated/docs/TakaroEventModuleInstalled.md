@@ -1,13 +1,12 @@
 # TakaroEventModuleInstalled
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**userConfig** | **string** |  | [default to undefined]
-**systemConfig** | **string** |  | [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name             | Type                                                                                    | Description | Notes                  |
+| ---------------- | --------------------------------------------------------------------------------------- | ----------- | ---------------------- |
+| **userConfig**   | **string**                                                                              |             | [default to undefined] |
+| **systemConfig** | **string**                                                                              |             | [default to undefined] |
+| **timestamp**    | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { TakaroEventModuleInstalled } from './api';
 
 const instance: TakaroEventModuleInstalled = {
-    userConfig,
-    systemConfig,
-    timestamp,
+  userConfig,
+  systemConfig,
+  timestamp,
 };
 ```
 

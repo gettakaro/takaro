@@ -1,12 +1,11 @@
 # ShopOrderOutputDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**ShopOrderOutputDTO**](ShopOrderOutputDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                            | Description | Notes                  |
+| -------- | ----------------------------------------------- | ----------- | ---------------------- |
+| **data** | [**ShopOrderOutputDTO**](ShopOrderOutputDTO.md) |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md)         |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { ShopOrderOutputDTOAPI } from './api';
 
 const instance: ShopOrderOutputDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

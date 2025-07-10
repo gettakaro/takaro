@@ -1,12 +1,11 @@
 # ParamIdAndRoleId
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**roleId** | **string** |  | [default to undefined]
-**id** | **string** |  | [default to undefined]
+| Name       | Type       | Description | Notes                  |
+| ---------- | ---------- | ----------- | ---------------------- |
+| **roleId** | **string** |             | [default to undefined] |
+| **id**     | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { ParamIdAndRoleId } from './api';
 
 const instance: ParamIdAndRoleId = {
-    roleId,
-    id,
+  roleId,
+  id,
 };
 ```
 

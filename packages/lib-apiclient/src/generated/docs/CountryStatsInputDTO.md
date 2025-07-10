@@ -1,11 +1,10 @@
 # CountryStatsInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**gameServerId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name             | Type                    | Description | Notes                             |
+| ---------------- | ----------------------- | ----------- | --------------------------------- |
+| **gameServerId** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { CountryStatsInputDTO } from './api';
 
 const instance: CountryStatsInputDTO = {
-    gameServerId,
+  gameServerId,
 };
 ```
 

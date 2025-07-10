@@ -1,13 +1,12 @@
 # ParamSenderReceiver
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**gameServerId** | **string** |  | [default to undefined]
-**sender** | **string** |  | [default to undefined]
-**receiver** | **string** |  | [default to undefined]
+| Name             | Type       | Description | Notes                  |
+| ---------------- | ---------- | ----------- | ---------------------- |
+| **gameServerId** | **string** |             | [default to undefined] |
+| **sender**       | **string** |             | [default to undefined] |
+| **receiver**     | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { ParamSenderReceiver } from './api';
 
 const instance: ParamSenderReceiver = {
-    gameServerId,
-    sender,
-    receiver,
+  gameServerId,
+  sender,
+  receiver,
 };
 ```
 

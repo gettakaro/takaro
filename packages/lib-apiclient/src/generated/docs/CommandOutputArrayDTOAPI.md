@@ -1,12 +1,11 @@
 # CommandOutputArrayDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**Array&lt;CommandOutputDTO&gt;**](CommandOutputDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                                     | Description | Notes                  |
+| -------- | -------------------------------------------------------- | ----------- | ---------------------- |
+| **data** | [**Array&lt;CommandOutputDTO&gt;**](CommandOutputDTO.md) |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md)                  |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { CommandOutputArrayDTOAPI } from './api';
 
 const instance: CommandOutputArrayDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

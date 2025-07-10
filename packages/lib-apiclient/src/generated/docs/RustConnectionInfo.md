@@ -1,14 +1,13 @@
 # RustConnectionInfo
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**host** | **string** |  | [default to undefined]
-**rconPort** | **number** |  | [default to undefined]
-**rconPassword** | **string** |  | [default to undefined]
-**useTls** | **boolean** |  | [default to undefined]
+| Name             | Type        | Description | Notes                  |
+| ---------------- | ----------- | ----------- | ---------------------- |
+| **host**         | **string**  |             | [default to undefined] |
+| **rconPort**     | **number**  |             | [default to undefined] |
+| **rconPassword** | **string**  |             | [default to undefined] |
+| **useTls**       | **boolean** |             | [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { RustConnectionInfo } from './api';
 
 const instance: RustConnectionInfo = {
-    host,
-    rconPort,
-    rconPassword,
-    useTls,
+  host,
+  rconPort,
+  rconPassword,
+  useTls,
 };
 ```
 

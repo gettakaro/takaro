@@ -1,13 +1,12 @@
 # PlayerSearchInputAllowedSearch
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**steamId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**platformId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name           | Type                    | Description | Notes                             |
+| -------------- | ----------------------- | ----------- | --------------------------------- |
+| **name**       | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **steamId**    | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **platformId** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { PlayerSearchInputAllowedSearch } from './api';
 
 const instance: PlayerSearchInputAllowedSearch = {
-    name,
-    steamId,
-    platformId,
+  name,
+  steamId,
+  platformId,
 };
 ```
 

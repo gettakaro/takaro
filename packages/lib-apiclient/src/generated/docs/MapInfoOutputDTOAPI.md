@@ -1,12 +1,11 @@
 # MapInfoOutputDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**MapInfoDTO**](MapInfoDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                    | Description | Notes                  |
+| -------- | --------------------------------------- | ----------- | ---------------------- |
+| **data** | [**MapInfoDTO**](MapInfoDTO.md)         |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md) |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { MapInfoOutputDTOAPI } from './api';
 
 const instance: MapInfoOutputDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

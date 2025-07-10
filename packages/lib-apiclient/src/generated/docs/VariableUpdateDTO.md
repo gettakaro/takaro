@@ -1,16 +1,15 @@
 # VariableUpdateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**key** | **string** |  | [optional] [default to undefined]
-**value** | **string** |  | [default to undefined]
-**expiresAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
-**gameServerId** | **string** |  | [optional] [default to undefined]
-**playerId** | **string** |  | [optional] [default to undefined]
-**moduleId** | **string** |  | [optional] [default to undefined]
+| Name             | Type                                                                                    | Description | Notes                             |
+| ---------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **key**          | **string**                                                                              |             | [optional] [default to undefined] |
+| **value**        | **string**                                                                              |             | [default to undefined]            |
+| **expiresAt**    | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
+| **gameServerId** | **string**                                                                              |             | [optional] [default to undefined] |
+| **playerId**     | **string**                                                                              |             | [optional] [default to undefined] |
+| **moduleId**     | **string**                                                                              |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -18,12 +17,12 @@ Name | Type | Description | Notes
 import { VariableUpdateDTO } from './api';
 
 const instance: VariableUpdateDTO = {
-    key,
-    value,
-    expiresAt,
-    gameServerId,
-    playerId,
-    moduleId,
+  key,
+  value,
+  expiresAt,
+  gameServerId,
+  playerId,
+  moduleId,
 };
 ```
 

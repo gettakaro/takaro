@@ -1,13 +1,12 @@
 # ModuleTransferDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**takaroVersion** | **string** |  | [optional] [default to undefined]
-**versions** | [**Array&lt;ModuleTransferVersionDTO&gt;**](ModuleTransferVersionDTO.md) |  | [default to undefined]
+| Name              | Type                                                                     | Description | Notes                             |
+| ----------------- | ------------------------------------------------------------------------ | ----------- | --------------------------------- |
+| **name**          | **string**                                                               |             | [default to undefined]            |
+| **takaroVersion** | **string**                                                               |             | [optional] [default to undefined] |
+| **versions**      | [**Array&lt;ModuleTransferVersionDTO&gt;**](ModuleTransferVersionDTO.md) |             | [default to undefined]            |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { ModuleTransferDTO } from './api';
 
 const instance: ModuleTransferDTO = {
-    name,
-    takaroVersion,
-    versions,
+  name,
+  takaroVersion,
+  versions,
 };
 ```
 

@@ -1,15 +1,16 @@
 # DiscordApi
 
-All URIs are relative to *http://localhost*
+All URIs are relative to _http://localhost_
 
-|Method | HTTP request | Description|
-|------------- | ------------- | -------------|
-|[**discordControllerGetInvite**](#discordcontrollergetinvite) | **GET** /discord/invite | Get invite|
-|[**discordControllerSearch**](#discordcontrollersearch) | **POST** /discord/guilds/search | Search|
-|[**discordControllerSendMessage**](#discordcontrollersendmessage) | **POST** /discord/channels/{id}/message | Send message|
-|[**discordControllerUpdateGuild**](#discordcontrollerupdateguild) | **PUT** /discord/guilds/{id} | Update guild|
+| Method                                                            | HTTP request                            | Description  |
+| ----------------------------------------------------------------- | --------------------------------------- | ------------ |
+| [**discordControllerGetInvite**](#discordcontrollergetinvite)     | **GET** /discord/invite                 | Get invite   |
+| [**discordControllerSearch**](#discordcontrollersearch)           | **POST** /discord/guilds/search         | Search       |
+| [**discordControllerSendMessage**](#discordcontrollersendmessage) | **POST** /discord/channels/{id}/message | Send message |
+| [**discordControllerUpdateGuild**](#discordcontrollerupdateguild) | **PUT** /discord/guilds/{id}            | Update guild |
 
 # **discordControllerGetInvite**
+
 > DiscordInviteOutputDTO discordControllerGetInvite()
 
 <br> OperationId: `DiscordControllerGetInvite`
@@ -17,10 +18,7 @@ All URIs are relative to *http://localhost*
 ### Example
 
 ```typescript
-import {
-    DiscordApi,
-    Configuration
-} from './api';
+import { DiscordApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DiscordApi(configuration);
@@ -29,8 +27,8 @@ const { status, data } = await apiInstance.discordControllerGetInvite();
 ```
 
 ### Parameters
-This endpoint does not have any parameters.
 
+This endpoint does not have any parameters.
 
 ### Return type
 
@@ -42,18 +40,19 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **discordControllerSearch**
+
 > GuildOutputArrayDTOAPI discordControllerSearch()
 
 <br> OperationId: `DiscordControllerSearch`
@@ -61,28 +60,21 @@ No authorization required
 ### Example
 
 ```typescript
-import {
-    DiscordApi,
-    Configuration,
-    GuildSearchInputDTO
-} from './api';
+import { DiscordApi, Configuration, GuildSearchInputDTO } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DiscordApi(configuration);
 
 let guildSearchInputDTO: GuildSearchInputDTO; //GuildSearchInputDTO (optional)
 
-const { status, data } = await apiInstance.discordControllerSearch(
-    guildSearchInputDTO
-);
+const { status, data } = await apiInstance.discordControllerSearch(guildSearchInputDTO);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **guildSearchInputDTO** | **GuildSearchInputDTO**| GuildSearchInputDTO | |
-
+| Name                    | Type                    | Description         | Notes |
+| ----------------------- | ----------------------- | ------------------- | ----- |
+| **guildSearchInputDTO** | **GuildSearchInputDTO** | GuildSearchInputDTO |       |
 
 ### Return type
 
@@ -94,18 +86,19 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
-
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **discordControllerSendMessage**
+
 > APIOutput discordControllerSendMessage()
 
 <br> OperationId: `DiscordControllerSendMessage`
@@ -113,11 +106,7 @@ No authorization required
 ### Example
 
 ```typescript
-import {
-    DiscordApi,
-    Configuration,
-    SendMessageInputDTO
-} from './api';
+import { DiscordApi, Configuration, SendMessageInputDTO } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DiscordApi(configuration);
@@ -125,19 +114,15 @@ const apiInstance = new DiscordApi(configuration);
 let id: string; // (default to undefined)
 let sendMessageInputDTO: SendMessageInputDTO; //SendMessageInputDTO (optional)
 
-const { status, data } = await apiInstance.discordControllerSendMessage(
-    id,
-    sendMessageInputDTO
-);
+const { status, data } = await apiInstance.discordControllerSendMessage(id, sendMessageInputDTO);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **sendMessageInputDTO** | **SendMessageInputDTO**| SendMessageInputDTO | |
-| **id** | [**string**] |  | defaults to undefined|
-
+| Name                    | Type                    | Description         | Notes                 |
+| ----------------------- | ----------------------- | ------------------- | --------------------- |
+| **sendMessageInputDTO** | **SendMessageInputDTO** | SendMessageInputDTO |                       |
+| **id**                  | [**string**]            |                     | defaults to undefined |
 
 ### Return type
 
@@ -149,18 +134,19 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
-
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **discordControllerUpdateGuild**
+
 > GuildOutputDTOAPI discordControllerUpdateGuild()
 
 <br> OperationId: `DiscordControllerUpdateGuild`
@@ -168,11 +154,7 @@ No authorization required
 ### Example
 
 ```typescript
-import {
-    DiscordApi,
-    Configuration,
-    GuildApiUpdateDTO
-} from './api';
+import { DiscordApi, Configuration, GuildApiUpdateDTO } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DiscordApi(configuration);
@@ -180,19 +162,15 @@ const apiInstance = new DiscordApi(configuration);
 let id: string; // (default to undefined)
 let guildApiUpdateDTO: GuildApiUpdateDTO; //GuildApiUpdateDTO (optional)
 
-const { status, data } = await apiInstance.discordControllerUpdateGuild(
-    id,
-    guildApiUpdateDTO
-);
+const { status, data } = await apiInstance.discordControllerUpdateGuild(id, guildApiUpdateDTO);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **guildApiUpdateDTO** | **GuildApiUpdateDTO**| GuildApiUpdateDTO | |
-| **id** | [**string**] |  | defaults to undefined|
-
+| Name                  | Type                  | Description       | Notes                 |
+| --------------------- | --------------------- | ----------------- | --------------------- |
+| **guildApiUpdateDTO** | **GuildApiUpdateDTO** | GuildApiUpdateDTO |                       |
+| **id**                | [**string**]          |                   | defaults to undefined |
 
 ### Return type
 
@@ -204,14 +182,13 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
-
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-

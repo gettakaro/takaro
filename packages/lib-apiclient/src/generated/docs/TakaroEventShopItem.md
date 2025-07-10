@@ -1,14 +1,13 @@
 # TakaroEventShopItem
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**code** | **string** |  | [default to undefined]
-**amount** | **number** |  | [default to undefined]
-**quality** | **string** |  | [optional] [default to undefined]
+| Name        | Type       | Description | Notes                             |
+| ----------- | ---------- | ----------- | --------------------------------- |
+| **name**    | **string** |             | [default to undefined]            |
+| **code**    | **string** |             | [default to undefined]            |
+| **amount**  | **number** |             | [default to undefined]            |
+| **quality** | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { TakaroEventShopItem } from './api';
 
 const instance: TakaroEventShopItem = {
-    name,
-    code,
-    amount,
-    quality,
+  name,
+  code,
+  amount,
+  quality,
 };
 ```
 

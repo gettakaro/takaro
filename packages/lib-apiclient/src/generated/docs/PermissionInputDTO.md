@@ -1,12 +1,11 @@
 # PermissionInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**permissionId** | **string** |  | [default to undefined]
-**count** | **number** |  | [optional] [default to undefined]
+| Name             | Type       | Description | Notes                             |
+| ---------------- | ---------- | ----------- | --------------------------------- |
+| **permissionId** | **string** |             | [default to undefined]            |
+| **count**        | **number** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { PermissionInputDTO } from './api';
 
 const instance: PermissionInputDTO = {
-    permissionId,
-    count,
+  permissionId,
+  count,
 };
 ```
 

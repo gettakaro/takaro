@@ -1,18 +1,17 @@
 # CommandArgumentOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**type** | **string** |  | [default to undefined]
-**helpText** | **string** |  | [default to undefined]
-**defaultValue** | **string** |  | [optional] [default to undefined]
-**position** | **number** |  | [default to undefined]
-**id** | **string** |  | [default to undefined]
-**createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
-**updatedAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name             | Type                                                                                    | Description | Notes                             |
+| ---------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **name**         | **string**                                                                              |             | [default to undefined]            |
+| **type**         | **string**                                                                              |             | [default to undefined]            |
+| **helpText**     | **string**                                                                              |             | [default to undefined]            |
+| **defaultValue** | **string**                                                                              |             | [optional] [default to undefined] |
+| **position**     | **number**                                                                              |             | [default to undefined]            |
+| **id**           | **string**                                                                              |             | [default to undefined]            |
+| **createdAt**    | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
+| **updatedAt**    | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
 
 ## Example
 
@@ -20,14 +19,14 @@ Name | Type | Description | Notes
 import { CommandArgumentOutputDTO } from './api';
 
 const instance: CommandArgumentOutputDTO = {
-    name,
-    type,
-    helpText,
-    defaultValue,
-    position,
-    id,
-    createdAt,
-    updatedAt,
+  name,
+  type,
+  helpText,
+  defaultValue,
+  position,
+  id,
+  createdAt,
+  updatedAt,
 };
 ```
 

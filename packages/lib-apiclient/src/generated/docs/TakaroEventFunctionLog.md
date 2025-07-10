@@ -1,12 +1,11 @@
 # TakaroEventFunctionLog
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**msg** | **string** |  | [default to undefined]
-**details** | **any** |  | [optional] [default to undefined]
+| Name        | Type       | Description | Notes                             |
+| ----------- | ---------- | ----------- | --------------------------------- |
+| **msg**     | **string** |             | [default to undefined]            |
+| **details** | **any**    |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { TakaroEventFunctionLog } from './api';
 
 const instance: TakaroEventFunctionLog = {
-    msg,
-    details,
+  msg,
+  details,
 };
 ```
 

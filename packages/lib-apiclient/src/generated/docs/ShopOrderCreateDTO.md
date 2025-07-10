@@ -1,13 +1,12 @@
 # ShopOrderCreateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**listingId** | **string** |  | [default to undefined]
-**playerId** | **string** |  | [optional] [default to undefined]
-**amount** | **number** |  | [default to undefined]
+| Name          | Type       | Description | Notes                             |
+| ------------- | ---------- | ----------- | --------------------------------- |
+| **listingId** | **string** |             | [default to undefined]            |
+| **playerId**  | **string** |             | [optional] [default to undefined] |
+| **amount**    | **number** |             | [default to undefined]            |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { ShopOrderCreateDTO } from './api';
 
 const instance: ShopOrderCreateDTO = {
-    listingId,
-    playerId,
-    amount,
+  listingId,
+  playerId,
+  amount,
 };
 ```
 

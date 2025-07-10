@@ -1,11 +1,10 @@
 # HealthOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**healthy** | **boolean** |  | [default to undefined]
+| Name        | Type        | Description | Notes                  |
+| ----------- | ----------- | ----------- | ---------------------- |
+| **healthy** | **boolean** |             | [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { HealthOutputDTO } from './api';
 
 const instance: HealthOutputDTO = {
-    healthy,
+  healthy,
 };
 ```
 

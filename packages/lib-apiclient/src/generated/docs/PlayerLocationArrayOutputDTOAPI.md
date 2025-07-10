@@ -1,12 +1,11 @@
 # PlayerLocationArrayOutputDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**Array&lt;PlayerLocationOutputDTO&gt;**](PlayerLocationOutputDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                                                   | Description | Notes                  |
+| -------- | ---------------------------------------------------------------------- | ----------- | ---------------------- |
+| **data** | [**Array&lt;PlayerLocationOutputDTO&gt;**](PlayerLocationOutputDTO.md) |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md)                                |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { PlayerLocationArrayOutputDTOAPI } from './api';
 
 const instance: PlayerLocationArrayOutputDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

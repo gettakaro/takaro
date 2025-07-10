@@ -1,12 +1,11 @@
 # ModuleInstallParamId
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**moduleId** | **string** |  | [default to undefined]
-**gameServerId** | **string** |  | [default to undefined]
+| Name             | Type       | Description | Notes                  |
+| ---------------- | ---------- | ----------- | ---------------------- |
+| **moduleId**     | **string** |             | [default to undefined] |
+| **gameServerId** | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { ModuleInstallParamId } from './api';
 
 const instance: ModuleInstallParamId = {
-    moduleId,
-    gameServerId,
+  moduleId,
+  gameServerId,
 };
 ```
 

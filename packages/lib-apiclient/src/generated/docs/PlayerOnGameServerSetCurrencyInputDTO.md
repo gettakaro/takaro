@@ -1,11 +1,10 @@
 # PlayerOnGameServerSetCurrencyInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**currency** | **number** |  | [default to undefined]
+| Name         | Type       | Description | Notes                  |
+| ------------ | ---------- | ----------- | ---------------------- |
+| **currency** | **number** |             | [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { PlayerOnGameServerSetCurrencyInputDTO } from './api';
 
 const instance: PlayerOnGameServerSetCurrencyInputDTO = {
-    currency,
+  currency,
 };
 ```
 

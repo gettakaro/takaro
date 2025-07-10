@@ -1,14 +1,13 @@
 # DomainSearchInputAllowedFilters
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**name** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**state** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**externalReference** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name                  | Type                    | Description | Notes                             |
+| --------------------- | ----------------------- | ----------- | --------------------------------- |
+| **id**                | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **name**              | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **state**             | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **externalReference** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { DomainSearchInputAllowedFilters } from './api';
 
 const instance: DomainSearchInputAllowedFilters = {
-    id,
-    name,
-    state,
-    externalReference,
+  id,
+  name,
+  state,
+  externalReference,
 };
 ```
 

@@ -1,13 +1,12 @@
 # GuildCreateInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**discordId** | **string** |  | [default to undefined]
-**icon** | **string** |  | [optional] [default to undefined]
+| Name          | Type       | Description | Notes                             |
+| ------------- | ---------- | ----------- | --------------------------------- |
+| **name**      | **string** |             | [default to undefined]            |
+| **discordId** | **string** |             | [default to undefined]            |
+| **icon**      | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { GuildCreateInputDTO } from './api';
 
 const instance: GuildCreateInputDTO = {
-    name,
-    discordId,
-    icon,
+  name,
+  discordId,
+  icon,
 };
 ```
 

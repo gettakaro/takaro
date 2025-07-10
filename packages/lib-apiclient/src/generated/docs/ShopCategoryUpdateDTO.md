@@ -1,13 +1,12 @@
 # ShopCategoryUpdateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [optional] [default to undefined]
-**emoji** | **string** |  | [optional] [default to undefined]
-**parentId** | **string** |  | [optional] [default to undefined]
+| Name         | Type       | Description | Notes                             |
+| ------------ | ---------- | ----------- | --------------------------------- |
+| **name**     | **string** |             | [optional] [default to undefined] |
+| **emoji**    | **string** |             | [optional] [default to undefined] |
+| **parentId** | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { ShopCategoryUpdateDTO } from './api';
 
 const instance: ShopCategoryUpdateDTO = {
-    name,
-    emoji,
-    parentId,
+  name,
+  emoji,
+  parentId,
 };
 ```
 

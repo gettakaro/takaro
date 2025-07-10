@@ -1,11 +1,10 @@
 # AllowedFilters
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name   | Type                    | Description | Notes                             |
+| ------ | ----------------------- | ----------- | --------------------------------- |
+| **id** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { AllowedFilters } from './api';
 
 const instance: AllowedFilters = {
-    id,
+  id,
 };
 ```
 

@@ -1,12 +1,11 @@
 # HookOutputDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**HookOutputDTO**](HookOutputDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                    | Description | Notes                  |
+| -------- | --------------------------------------- | ----------- | ---------------------- |
+| **data** | [**HookOutputDTO**](HookOutputDTO.md)   |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md) |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { HookOutputDTOAPI } from './api';
 
 const instance: HookOutputDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

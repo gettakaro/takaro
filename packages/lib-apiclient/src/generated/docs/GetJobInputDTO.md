@@ -1,12 +1,11 @@
 # GetJobInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**type** | **string** |  | [default to undefined]
-**id** | **string** |  | [default to undefined]
+| Name     | Type       | Description | Notes                  |
+| -------- | ---------- | ----------- | ---------------------- |
+| **type** | **string** |             | [default to undefined] |
+| **id**   | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { GetJobInputDTO } from './api';
 
 const instance: GetJobInputDTO = {
-    type,
-    id,
+  type,
+  id,
 };
 ```
 

@@ -1,18 +1,17 @@
 # ILocationDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**position** | [**IPosition**](IPosition.md) |  | [default to undefined]
-**radius** | **number** |  | [optional] [default to undefined]
-**sizeX** | **number** |  | [optional] [default to undefined]
-**sizeY** | **number** |  | [optional] [default to undefined]
-**sizeZ** | **number** |  | [optional] [default to undefined]
-**name** | **string** |  | [default to undefined]
-**code** | **string** |  | [optional] [default to undefined]
-**metadata** | **object** |  | [optional] [default to undefined]
+| Name         | Type                          | Description | Notes                             |
+| ------------ | ----------------------------- | ----------- | --------------------------------- |
+| **position** | [**IPosition**](IPosition.md) |             | [default to undefined]            |
+| **radius**   | **number**                    |             | [optional] [default to undefined] |
+| **sizeX**    | **number**                    |             | [optional] [default to undefined] |
+| **sizeY**    | **number**                    |             | [optional] [default to undefined] |
+| **sizeZ**    | **number**                    |             | [optional] [default to undefined] |
+| **name**     | **string**                    |             | [default to undefined]            |
+| **code**     | **string**                    |             | [optional] [default to undefined] |
+| **metadata** | **object**                    |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -20,14 +19,14 @@ Name | Type | Description | Notes
 import { ILocationDTO } from './api';
 
 const instance: ILocationDTO = {
-    position,
-    radius,
-    sizeX,
-    sizeY,
-    sizeZ,
-    name,
-    code,
-    metadata,
+  position,
+  radius,
+  sizeX,
+  sizeY,
+  sizeZ,
+  name,
+  code,
+  metadata,
 };
 ```
 

@@ -1,14 +1,13 @@
 # CommandArgumentUpdateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [optional] [default to undefined]
-**type** | **string** |  | [optional] [default to undefined]
-**helpText** | **string** |  | [optional] [default to undefined]
-**defaultValue** | **string** |  | [optional] [default to undefined]
+| Name             | Type       | Description | Notes                             |
+| ---------------- | ---------- | ----------- | --------------------------------- |
+| **name**         | **string** |             | [optional] [default to undefined] |
+| **type**         | **string** |             | [optional] [default to undefined] |
+| **helpText**     | **string** |             | [optional] [default to undefined] |
+| **defaultValue** | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { CommandArgumentUpdateDTO } from './api';
 
 const instance: CommandArgumentUpdateDTO = {
-    name,
-    type,
-    helpText,
-    defaultValue,
+  name,
+  type,
+  helpText,
+  defaultValue,
 };
 ```
 

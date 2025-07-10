@@ -1,12 +1,11 @@
 # PlayerOnGameserverOutputArrayDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**Array&lt;PlayerOnGameserverOutputWithRolesDTO&gt;**](PlayerOnGameserverOutputWithRolesDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                                                                             | Description | Notes                  |
+| -------- | ------------------------------------------------------------------------------------------------ | ----------- | ---------------------- |
+| **data** | [**Array&lt;PlayerOnGameserverOutputWithRolesDTO&gt;**](PlayerOnGameserverOutputWithRolesDTO.md) |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md)                                                          |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { PlayerOnGameserverOutputArrayDTOAPI } from './api';
 
 const instance: PlayerOnGameserverOutputArrayDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

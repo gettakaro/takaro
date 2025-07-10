@@ -1,12 +1,11 @@
 # ShopCategorySearchInputAllowedFilters
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**parentId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name         | Type                    | Description | Notes                             |
+| ------------ | ----------------------- | ----------- | --------------------------------- |
+| **id**       | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **parentId** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { ShopCategorySearchInputAllowedFilters } from './api';
 
 const instance: ShopCategorySearchInputAllowedFilters = {
-    id,
-    parentId,
+  id,
+  parentId,
 };
 ```
 

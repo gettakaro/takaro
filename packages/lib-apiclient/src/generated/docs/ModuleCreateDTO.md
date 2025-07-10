@@ -1,12 +1,11 @@
 # ModuleCreateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**builtin** | **string** |  | [optional] [default to undefined]
+| Name        | Type       | Description | Notes                             |
+| ----------- | ---------- | ----------- | --------------------------------- |
+| **name**    | **string** |             | [default to undefined]            |
+| **builtin** | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { ModuleCreateDTO } from './api';
 
 const instance: ModuleCreateDTO = {
-    name,
-    builtin,
+  name,
+  builtin,
 };
 ```
 

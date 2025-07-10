@@ -1,14 +1,13 @@
 # ICronJob
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**description** | **string** |  | [optional] [default to undefined]
-**_function** | **string** |  | [default to undefined]
-**temporalValue** | **string** |  | [default to undefined]
+| Name              | Type       | Description | Notes                             |
+| ----------------- | ---------- | ----------- | --------------------------------- |
+| **name**          | **string** |             | [default to undefined]            |
+| **description**   | **string** |             | [optional] [default to undefined] |
+| **\_function**    | **string** |             | [default to undefined]            |
+| **temporalValue** | **string** |             | [default to undefined]            |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { ICronJob } from './api';
 
 const instance: ICronJob = {
-    name,
-    description,
-    _function,
-    temporalValue,
+  name,
+  description,
+  _function,
+  temporalValue,
 };
 ```
 

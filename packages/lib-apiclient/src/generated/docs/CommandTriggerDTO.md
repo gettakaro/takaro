@@ -1,12 +1,11 @@
 # CommandTriggerDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**playerId** | **string** |  | [default to undefined]
-**msg** | **string** |  | [default to undefined]
+| Name         | Type       | Description | Notes                  |
+| ------------ | ---------- | ----------- | ---------------------- |
+| **playerId** | **string** |             | [default to undefined] |
+| **msg**      | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { CommandTriggerDTO } from './api';
 
 const instance: CommandTriggerDTO = {
-    playerId,
-    msg,
+  playerId,
+  msg,
 };
 ```
 

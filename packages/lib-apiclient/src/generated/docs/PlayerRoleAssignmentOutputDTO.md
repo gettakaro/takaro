@@ -1,18 +1,17 @@
 # PlayerRoleAssignmentOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**playerId** | **string** |  | [default to undefined]
-**roleId** | **string** |  | [default to undefined]
-**gameServerId** | **string** |  | [optional] [default to undefined]
-**role** | [**RoleOutputDTO**](RoleOutputDTO.md) |  | [default to undefined]
-**expiresAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
-**id** | **string** |  | [default to undefined]
-**createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
-**updatedAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name             | Type                                                                                    | Description | Notes                             |
+| ---------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **playerId**     | **string**                                                                              |             | [default to undefined]            |
+| **roleId**       | **string**                                                                              |             | [default to undefined]            |
+| **gameServerId** | **string**                                                                              |             | [optional] [default to undefined] |
+| **role**         | [**RoleOutputDTO**](RoleOutputDTO.md)                                                   |             | [default to undefined]            |
+| **expiresAt**    | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
+| **id**           | **string**                                                                              |             | [default to undefined]            |
+| **createdAt**    | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
+| **updatedAt**    | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
 
 ## Example
 
@@ -20,14 +19,14 @@ Name | Type | Description | Notes
 import { PlayerRoleAssignmentOutputDTO } from './api';
 
 const instance: PlayerRoleAssignmentOutputDTO = {
-    playerId,
-    roleId,
-    gameServerId,
-    role,
-    expiresAt,
-    id,
-    createdAt,
-    updatedAt,
+  playerId,
+  roleId,
+  gameServerId,
+  role,
+  expiresAt,
+  id,
+  createdAt,
+  updatedAt,
 };
 ```
 

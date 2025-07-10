@@ -1,12 +1,11 @@
 # PlayerRoleAssignChangeDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**gameServerId** | **string** |  | [optional] [default to undefined]
-**expiresAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
+| Name             | Type                                                                                    | Description | Notes                             |
+| ---------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **gameServerId** | **string**                                                                              |             | [optional] [default to undefined] |
+| **expiresAt**    | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { PlayerRoleAssignChangeDTO } from './api';
 
 const instance: PlayerRoleAssignChangeDTO = {
-    gameServerId,
-    expiresAt,
+  gameServerId,
+  expiresAt,
 };
 ```
 

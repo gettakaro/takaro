@@ -1,14 +1,13 @@
 # CronJobUpdateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [optional] [default to undefined]
-**description** | **string** |  | [optional] [default to undefined]
-**temporalValue** | **string** |  | [optional] [default to undefined]
-**_function** | **string** |  | [optional] [default to undefined]
+| Name              | Type       | Description | Notes                             |
+| ----------------- | ---------- | ----------- | --------------------------------- |
+| **name**          | **string** |             | [optional] [default to undefined] |
+| **description**   | **string** |             | [optional] [default to undefined] |
+| **temporalValue** | **string** |             | [optional] [default to undefined] |
+| **\_function**    | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { CronJobUpdateDTO } from './api';
 
 const instance: CronJobUpdateDTO = {
-    name,
-    description,
-    temporalValue,
-    _function,
+  name,
+  description,
+  temporalValue,
+  _function,
 };
 ```
 

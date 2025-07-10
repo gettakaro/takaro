@@ -1,16 +1,15 @@
 # GameServerSearchInputAllowedFilters
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**type** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**reachable** | **Array&lt;boolean&gt;** |  | [optional] [default to undefined]
-**enabled** | **Array&lt;boolean&gt;** |  | [optional] [default to undefined]
-**identityToken** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**id** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name              | Type                     | Description | Notes                             |
+| ----------------- | ------------------------ | ----------- | --------------------------------- |
+| **name**          | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **type**          | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **reachable**     | **Array&lt;boolean&gt;** |             | [optional] [default to undefined] |
+| **enabled**       | **Array&lt;boolean&gt;** |             | [optional] [default to undefined] |
+| **identityToken** | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **id**            | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -18,12 +17,12 @@ Name | Type | Description | Notes
 import { GameServerSearchInputAllowedFilters } from './api';
 
 const instance: GameServerSearchInputAllowedFilters = {
-    name,
-    type,
-    reachable,
-    enabled,
-    identityToken,
-    id,
+  name,
+  type,
+  reachable,
+  enabled,
+  identityToken,
+  id,
 };
 ```
 

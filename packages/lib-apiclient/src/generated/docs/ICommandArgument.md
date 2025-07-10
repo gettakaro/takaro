@@ -1,15 +1,14 @@
 # ICommandArgument
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**type** | **string** |  | [default to undefined]
-**helpText** | **string** |  | [optional] [default to undefined]
-**defaultValue** | **string** |  | [optional] [default to undefined]
-**position** | **number** |  | [optional] [default to undefined]
+| Name             | Type       | Description | Notes                             |
+| ---------------- | ---------- | ----------- | --------------------------------- |
+| **name**         | **string** |             | [default to undefined]            |
+| **type**         | **string** |             | [default to undefined]            |
+| **helpText**     | **string** |             | [optional] [default to undefined] |
+| **defaultValue** | **string** |             | [optional] [default to undefined] |
+| **position**     | **number** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { ICommandArgument } from './api';
 
 const instance: ICommandArgument = {
-    name,
-    type,
-    helpText,
-    defaultValue,
-    position,
+  name,
+  type,
+  helpText,
+  defaultValue,
+  position,
 };
 ```
 

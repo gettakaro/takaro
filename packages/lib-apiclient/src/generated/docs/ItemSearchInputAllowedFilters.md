@@ -1,14 +1,13 @@
 # ItemSearchInputAllowedFilters
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**code** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**gameserverId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**id** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name             | Type                    | Description | Notes                             |
+| ---------------- | ----------------------- | ----------- | --------------------------------- |
+| **name**         | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **code**         | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **gameserverId** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **id**           | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { ItemSearchInputAllowedFilters } from './api';
 
 const instance: ItemSearchInputAllowedFilters = {
-    name,
-    code,
-    gameserverId,
-    id,
+  name,
+  code,
+  gameserverId,
+  id,
 };
 ```
 

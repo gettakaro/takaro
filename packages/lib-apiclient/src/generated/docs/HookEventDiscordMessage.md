@@ -1,14 +1,13 @@
 # HookEventDiscordMessage
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**msg** | **string** |  | [default to undefined]
-**author** | [**EventDiscordUser**](EventDiscordUser.md) |  | [default to undefined]
-**channel** | [**EventDiscordChannel**](EventDiscordChannel.md) |  | [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                  |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | ---------------------- |
+| **msg**       | **string**                                                                              |             | [default to undefined] |
+| **author**    | [**EventDiscordUser**](EventDiscordUser.md)                                             |             | [default to undefined] |
+| **channel**   | [**EventDiscordChannel**](EventDiscordChannel.md)                                       |             | [default to undefined] |
+| **timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { HookEventDiscordMessage } from './api';
 
 const instance: HookEventDiscordMessage = {
-    msg,
-    author,
-    channel,
-    timestamp,
+  msg,
+  author,
+  channel,
+  timestamp,
 };
 ```
 

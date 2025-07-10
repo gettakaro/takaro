@@ -1,14 +1,13 @@
 # InstallModuleDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**versionId** | **string** |  | [default to undefined]
-**gameServerId** | **string** |  | [default to undefined]
-**userConfig** | **string** |  | [optional] [default to undefined]
-**systemConfig** | **string** |  | [optional] [default to undefined]
+| Name             | Type       | Description | Notes                             |
+| ---------------- | ---------- | ----------- | --------------------------------- |
+| **versionId**    | **string** |             | [default to undefined]            |
+| **gameServerId** | **string** |             | [default to undefined]            |
+| **userConfig**   | **string** |             | [optional] [default to undefined] |
+| **systemConfig** | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { InstallModuleDTO } from './api';
 
 const instance: InstallModuleDTO = {
-    versionId,
-    gameServerId,
-    userConfig,
-    systemConfig,
+  versionId,
+  gameServerId,
+  userConfig,
+  systemConfig,
 };
 ```
 

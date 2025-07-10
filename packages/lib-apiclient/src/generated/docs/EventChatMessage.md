@@ -1,15 +1,14 @@
 # EventChatMessage
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**player** | [**IGamePlayer**](IGamePlayer.md) |  | [default to undefined]
-**channel** | **string** |  | [default to undefined]
-**recipient** | [**IGamePlayer**](IGamePlayer.md) |  | [optional] [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
-**msg** | **string** |  | [optional] [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                             |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **player**    | [**IGamePlayer**](IGamePlayer.md)                                                       |             | [default to undefined]            |
+| **channel**   | **string**                                                                              |             | [default to undefined]            |
+| **recipient** | [**IGamePlayer**](IGamePlayer.md)                                                       |             | [optional] [default to undefined] |
+| **timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
+| **msg**       | **string**                                                                              |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { EventChatMessage } from './api';
 
 const instance: EventChatMessage = {
-    player,
-    channel,
-    recipient,
-    timestamp,
-    msg,
+  player,
+  channel,
+  recipient,
+  timestamp,
+  msg,
 };
 ```
 

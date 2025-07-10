@@ -1,13 +1,12 @@
 # TakaroEventCommandExecuted
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**result** | [**TakaroEventFunctionResult**](TakaroEventFunctionResult.md) |  | [default to undefined]
-**command** | [**TakaroEventCommandDetails**](TakaroEventCommandDetails.md) |  | [optional] [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                             |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **result**    | [**TakaroEventFunctionResult**](TakaroEventFunctionResult.md)                           |             | [default to undefined]            |
+| **command**   | [**TakaroEventCommandDetails**](TakaroEventCommandDetails.md)                           |             | [optional] [default to undefined] |
+| **timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { TakaroEventCommandExecuted } from './api';
 
 const instance: TakaroEventCommandExecuted = {
-    result,
-    command,
-    timestamp,
+  result,
+  command,
+  timestamp,
 };
 ```
 

@@ -1,12 +1,11 @@
 # EventOutputArrayDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**Array&lt;EventOutputDTO&gt;**](EventOutputDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                                 | Description | Notes                  |
+| -------- | ---------------------------------------------------- | ----------- | ---------------------- |
+| **data** | [**Array&lt;EventOutputDTO&gt;**](EventOutputDTO.md) |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md)              |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { EventOutputArrayDTOAPI } from './api';
 
 const instance: EventOutputArrayDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 

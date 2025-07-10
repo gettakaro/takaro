@@ -1,13 +1,12 @@
 # TakaroEventHookExecuted
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**result** | [**TakaroEventFunctionResult**](TakaroEventFunctionResult.md) |  | [default to undefined]
-**hook** | [**TakaroEventHookDetails**](TakaroEventHookDetails.md) |  | [optional] [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                             |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **result**    | [**TakaroEventFunctionResult**](TakaroEventFunctionResult.md)                           |             | [default to undefined]            |
+| **hook**      | [**TakaroEventHookDetails**](TakaroEventHookDetails.md)                                 |             | [optional] [default to undefined] |
+| **timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { TakaroEventHookExecuted } from './api';
 
 const instance: TakaroEventHookExecuted = {
-    result,
-    hook,
-    timestamp,
+  result,
+  hook,
+  timestamp,
 };
 ```
 

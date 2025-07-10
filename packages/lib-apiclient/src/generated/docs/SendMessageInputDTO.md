@@ -1,11 +1,10 @@
 # SendMessageInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**message** | **string** |  | [default to undefined]
+| Name        | Type       | Description | Notes                  |
+| ----------- | ---------- | ----------- | ---------------------- |
+| **message** | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { SendMessageInputDTO } from './api';
 
 const instance: SendMessageInputDTO = {
-    message,
+  message,
 };
 ```
 

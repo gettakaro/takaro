@@ -1,12 +1,11 @@
 # ModuleUpdateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [optional] [default to undefined]
-**latestVersion** | [**ModuleVersionUpdateDTO**](ModuleVersionUpdateDTO.md) |  | [optional] [default to undefined]
+| Name              | Type                                                    | Description | Notes                             |
+| ----------------- | ------------------------------------------------------- | ----------- | --------------------------------- |
+| **name**          | **string**                                              |             | [optional] [default to undefined] |
+| **latestVersion** | [**ModuleVersionUpdateDTO**](ModuleVersionUpdateDTO.md) |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { ModuleUpdateDTO } from './api';
 
 const instance: ModuleUpdateDTO = {
-    name,
-    latestVersion,
+  name,
+  latestVersion,
 };
 ```
 

@@ -1,11 +1,10 @@
 # RedirectQs
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**redirect** | **string** |  | [default to undefined]
+| Name         | Type       | Description | Notes                  |
+| ------------ | ---------- | ----------- | ---------------------- |
+| **redirect** | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { RedirectQs } from './api';
 
 const instance: RedirectQs = {
-    redirect,
+  redirect,
 };
 ```
 

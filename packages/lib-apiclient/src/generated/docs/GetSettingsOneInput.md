@@ -1,11 +1,10 @@
 # GetSettingsOneInput
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**gameServerId** | **string** |  | [optional] [default to undefined]
+| Name             | Type       | Description | Notes                             |
+| ---------------- | ---------- | ----------- | --------------------------------- |
+| **gameServerId** | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { GetSettingsOneInput } from './api';
 
 const instance: GetSettingsOneInput = {
-    gameServerId,
+  gameServerId,
 };
 ```
 

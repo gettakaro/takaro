@@ -1,11 +1,10 @@
 # TokenInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**domainId** | **string** |  | [default to undefined]
+| Name         | Type       | Description | Notes                  |
+| ------------ | ---------- | ----------- | ---------------------- |
+| **domainId** | **string** |             | [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { TokenInputDTO } from './api';
 
 const instance: TokenInputDTO = {
-    domainId,
+  domainId,
 };
 ```
 

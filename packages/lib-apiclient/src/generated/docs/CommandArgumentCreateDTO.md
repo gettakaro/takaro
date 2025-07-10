@@ -1,16 +1,15 @@
 # CommandArgumentCreateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**type** | **string** |  | [default to undefined]
-**helpText** | **string** |  | [optional] [default to undefined]
-**defaultValue** | **string** |  | [optional] [default to undefined]
-**position** | **number** |  | [default to undefined]
-**commandId** | **string** |  | [optional] [default to undefined]
+| Name             | Type       | Description | Notes                             |
+| ---------------- | ---------- | ----------- | --------------------------------- |
+| **name**         | **string** |             | [default to undefined]            |
+| **type**         | **string** |             | [default to undefined]            |
+| **helpText**     | **string** |             | [optional] [default to undefined] |
+| **defaultValue** | **string** |             | [optional] [default to undefined] |
+| **position**     | **number** |             | [default to undefined]            |
+| **commandId**    | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -18,12 +17,12 @@ Name | Type | Description | Notes
 import { CommandArgumentCreateDTO } from './api';
 
 const instance: CommandArgumentCreateDTO = {
-    name,
-    type,
-    helpText,
-    defaultValue,
-    position,
-    commandId,
+  name,
+  type,
+  helpText,
+  defaultValue,
+  position,
+  commandId,
 };
 ```
 

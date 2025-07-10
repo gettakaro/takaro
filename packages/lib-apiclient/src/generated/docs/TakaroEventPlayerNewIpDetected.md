@@ -1,16 +1,15 @@
 # TakaroEventPlayerNewIpDetected
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**country** | **string** |  | [default to undefined]
-**city** | **string** |  | [default to undefined]
-**longitude** | **string** |  | [default to undefined]
-**latitude** | **string** |  | [default to undefined]
-**ip** | **string** |  | [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                  |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | ---------------------- |
+| **country**   | **string**                                                                              |             | [default to undefined] |
+| **city**      | **string**                                                                              |             | [default to undefined] |
+| **longitude** | **string**                                                                              |             | [default to undefined] |
+| **latitude**  | **string**                                                                              |             | [default to undefined] |
+| **ip**        | **string**                                                                              |             | [default to undefined] |
+| **timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
 
 ## Example
 
@@ -18,12 +17,12 @@ Name | Type | Description | Notes
 import { TakaroEventPlayerNewIpDetected } from './api';
 
 const instance: TakaroEventPlayerNewIpDetected = {
-    country,
-    city,
-    longitude,
-    latitude,
-    ip,
-    timestamp,
+  country,
+  city,
+  longitude,
+  latitude,
+  ip,
+  timestamp,
 };
 ```
 

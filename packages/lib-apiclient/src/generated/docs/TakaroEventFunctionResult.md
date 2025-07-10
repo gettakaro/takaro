@@ -1,14 +1,13 @@
 # TakaroEventFunctionResult
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**logs** | [**Array&lt;TakaroEventFunctionLog&gt;**](TakaroEventFunctionLog.md) |  | [default to undefined]
-**success** | **boolean** |  | [default to undefined]
-**reason** | **string** |  | [optional] [default to undefined]
-**tryAgainIn** | **number** |  | [optional] [default to undefined]
+| Name           | Type                                                                 | Description | Notes                             |
+| -------------- | -------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **logs**       | [**Array&lt;TakaroEventFunctionLog&gt;**](TakaroEventFunctionLog.md) |             | [default to undefined]            |
+| **success**    | **boolean**                                                          |             | [default to undefined]            |
+| **reason**     | **string**                                                           |             | [optional] [default to undefined] |
+| **tryAgainIn** | **number**                                                           |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { TakaroEventFunctionResult } from './api';
 
 const instance: TakaroEventFunctionResult = {
-    logs,
-    success,
-    reason,
-    tryAgainIn,
+  logs,
+  success,
+  reason,
+  tryAgainIn,
 };
 ```
 

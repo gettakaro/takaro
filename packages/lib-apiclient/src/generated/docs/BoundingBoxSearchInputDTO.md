@@ -1,18 +1,17 @@
 # BoundingBoxSearchInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**minX** | **number** |  | [default to undefined]
-**maxX** | **number** |  | [default to undefined]
-**minY** | **number** |  | [default to undefined]
-**maxY** | **number** |  | [default to undefined]
-**minZ** | **number** |  | [default to undefined]
-**maxZ** | **number** |  | [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
-**gameserverId** | **string** |  | [default to undefined]
+| Name             | Type                                                                                    | Description | Notes                             |
+| ---------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **minX**         | **number**                                                                              |             | [default to undefined]            |
+| **maxX**         | **number**                                                                              |             | [default to undefined]            |
+| **minY**         | **number**                                                                              |             | [default to undefined]            |
+| **maxY**         | **number**                                                                              |             | [default to undefined]            |
+| **minZ**         | **number**                                                                              |             | [default to undefined]            |
+| **maxZ**         | **number**                                                                              |             | [default to undefined]            |
+| **timestamp**    | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
+| **gameserverId** | **string**                                                                              |             | [default to undefined]            |
 
 ## Example
 
@@ -20,14 +19,14 @@ Name | Type | Description | Notes
 import { BoundingBoxSearchInputDTO } from './api';
 
 const instance: BoundingBoxSearchInputDTO = {
-    minX,
-    maxX,
-    minY,
-    maxY,
-    minZ,
-    maxZ,
-    timestamp,
-    gameserverId,
+  minX,
+  maxX,
+  minY,
+  maxY,
+  minZ,
+  maxZ,
+  timestamp,
+  gameserverId,
 };
 ```
 

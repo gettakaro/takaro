@@ -1,15 +1,14 @@
 # PlayerItemHistoryOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**playerId** | **string** |  | [default to undefined]
-**quantity** | **number** |  | [default to undefined]
-**createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
-**id** | **string** |  | [default to undefined]
-**updatedAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                  |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | ---------------------- |
+| **playerId**  | **string**                                                                              |             | [default to undefined] |
+| **quantity**  | **number**                                                                              |             | [default to undefined] |
+| **createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
+| **id**        | **string**                                                                              |             | [default to undefined] |
+| **updatedAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { PlayerItemHistoryOutputDTO } from './api';
 
 const instance: PlayerItemHistoryOutputDTO = {
-    playerId,
-    quantity,
-    createdAt,
-    id,
-    updatedAt,
+  playerId,
+  quantity,
+  createdAt,
+  id,
+  updatedAt,
 };
 ```
 

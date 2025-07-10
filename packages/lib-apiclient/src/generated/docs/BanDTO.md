@@ -1,13 +1,12 @@
 # BanDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**player** | [**IGamePlayer**](IGamePlayer.md) |  | [default to undefined]
-**reason** | **string** |  | [default to undefined]
-**expiresAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                             |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **player**    | [**IGamePlayer**](IGamePlayer.md)                                                       |             | [default to undefined]            |
+| **reason**    | **string**                                                                              |             | [default to undefined]            |
+| **expiresAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { BanDTO } from './api';
 
 const instance: BanDTO = {
-    player,
-    reason,
-    expiresAt,
+  player,
+  reason,
+  expiresAt,
 };
 ```
 

@@ -1,14 +1,13 @@
 # MapTileInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**id** | **string** |  | [default to undefined]
-**z** | **number** |  | [default to undefined]
-**x** | **number** |  | [default to undefined]
-**y** | **number** |  | [default to undefined]
+| Name   | Type       | Description | Notes                  |
+| ------ | ---------- | ----------- | ---------------------- |
+| **id** | **string** |             | [default to undefined] |
+| **z**  | **number** |             | [default to undefined] |
+| **x**  | **number** |             | [default to undefined] |
+| **y**  | **number** |             | [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { MapTileInputDTO } from './api';
 
 const instance: MapTileInputDTO = {
-    id,
-    z,
-    x,
-    y,
+  id,
+  z,
+  x,
+  y,
 };
 ```
 

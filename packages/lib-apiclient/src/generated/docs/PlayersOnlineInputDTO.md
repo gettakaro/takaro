@@ -1,13 +1,12 @@
 # PlayersOnlineInputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**gameServerId** | **string** |  | [optional] [default to undefined]
-**startDate** | **string** |  | [optional] [default to undefined]
-**endDate** | **string** |  | [optional] [default to undefined]
+| Name             | Type       | Description | Notes                             |
+| ---------------- | ---------- | ----------- | --------------------------------- |
+| **gameServerId** | **string** |             | [optional] [default to undefined] |
+| **startDate**    | **string** |             | [optional] [default to undefined] |
+| **endDate**      | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { PlayersOnlineInputDTO } from './api';
 
 const instance: PlayersOnlineInputDTO = {
-    gameServerId,
-    startDate,
-    endDate,
+  gameServerId,
+  startDate,
+  endDate,
 };
 ```
 

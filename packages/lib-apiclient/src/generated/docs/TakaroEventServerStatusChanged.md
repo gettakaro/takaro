@@ -1,13 +1,12 @@
 # TakaroEventServerStatusChanged
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**status** | **string** |  | [default to undefined]
-**details** | **any** |  | [optional] [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                             |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **status**    | **string**                                                                              |             | [default to undefined]            |
+| **details**   | **any**                                                                                 |             | [optional] [default to undefined] |
+| **timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { TakaroEventServerStatusChanged } from './api';
 
 const instance: TakaroEventServerStatusChanged = {
-    status,
-    details,
-    timestamp,
+  status,
+  details,
+  timestamp,
 };
 ```
 

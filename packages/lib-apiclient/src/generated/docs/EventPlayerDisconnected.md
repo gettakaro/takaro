@@ -1,13 +1,12 @@
 # EventPlayerDisconnected
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**player** | [**IGamePlayer**](IGamePlayer.md) |  | [default to undefined]
-**timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
-**msg** | **string** |  | [optional] [default to undefined]
+| Name          | Type                                                                                    | Description | Notes                             |
+| ------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **player**    | [**IGamePlayer**](IGamePlayer.md)                                                       |             | [default to undefined]            |
+| **timestamp** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
+| **msg**       | **string**                                                                              |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { EventPlayerDisconnected } from './api';
 
 const instance: EventPlayerDisconnected = {
-    player,
-    timestamp,
-    msg,
+  player,
+  timestamp,
+  msg,
 };
 ```
 

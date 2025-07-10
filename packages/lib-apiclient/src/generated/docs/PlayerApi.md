@@ -1,50 +1,44 @@
 # PlayerApi
 
-All URIs are relative to *http://localhost*
+All URIs are relative to _http://localhost_
 
-|Method | HTTP request | Description|
-|------------- | ------------- | -------------|
-|[**banControllerCreate**](#bancontrollercreate) | **POST** /player/ban | Ban player|
-|[**banControllerDelete**](#bancontrollerdelete) | **DELETE** /player/ban/{id} | Unban player|
-|[**banControllerGetOne**](#bancontrollergetone) | **GET** /player/ban/{id} | Get a single ban|
-|[**banControllerSearch**](#bancontrollersearch) | **POST** /player/ban/search | Search for bans|
-|[**banControllerUpdate**](#bancontrollerupdate) | **PUT** /player/ban/{id} | Update ban|
-|[**playerControllerAssignRole**](#playercontrollerassignrole) | **POST** /player/{id}/role/{roleId} | Assign role|
-|[**playerControllerGetMe**](#playercontrollergetme) | **GET** /player/me | Get current player|
-|[**playerControllerGetOne**](#playercontrollergetone) | **GET** /player/{id} | Get one|
-|[**playerControllerRemoveRole**](#playercontrollerremoverole) | **DELETE** /player/{id}/role/{roleId} | Remove role|
-|[**playerControllerSearch**](#playercontrollersearch) | **POST** /player/search | Search|
+| Method                                                        | HTTP request                          | Description        |
+| ------------------------------------------------------------- | ------------------------------------- | ------------------ |
+| [**banControllerCreate**](#bancontrollercreate)               | **POST** /player/ban                  | Ban player         |
+| [**banControllerDelete**](#bancontrollerdelete)               | **DELETE** /player/ban/{id}           | Unban player       |
+| [**banControllerGetOne**](#bancontrollergetone)               | **GET** /player/ban/{id}              | Get a single ban   |
+| [**banControllerSearch**](#bancontrollersearch)               | **POST** /player/ban/search           | Search for bans    |
+| [**banControllerUpdate**](#bancontrollerupdate)               | **PUT** /player/ban/{id}              | Update ban         |
+| [**playerControllerAssignRole**](#playercontrollerassignrole) | **POST** /player/{id}/role/{roleId}   | Assign role        |
+| [**playerControllerGetMe**](#playercontrollergetme)           | **GET** /player/me                    | Get current player |
+| [**playerControllerGetOne**](#playercontrollergetone)         | **GET** /player/{id}                  | Get one            |
+| [**playerControllerRemoveRole**](#playercontrollerremoverole) | **DELETE** /player/{id}/role/{roleId} | Remove role        |
+| [**playerControllerSearch**](#playercontrollersearch)         | **POST** /player/search               | Search             |
 
 # **banControllerCreate**
+
 > BanOutputDTOAPI banControllerCreate()
 
-Create a new ban, creating a ban via the API will always make it takaro managed.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `BanControllerCreate`
+Create a new ban, creating a ban via the API will always make it takaro managed. Required permissions: `MANAGE_PLAYERS`<br> OperationId: `BanControllerCreate`
 
 ### Example
 
 ```typescript
-import {
-    PlayerApi,
-    Configuration,
-    BanCreateDTO
-} from './api';
+import { PlayerApi, Configuration, BanCreateDTO } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new PlayerApi(configuration);
 
 let banCreateDTO: BanCreateDTO; //BanCreateDTO (optional)
 
-const { status, data } = await apiInstance.banControllerCreate(
-    banCreateDTO
-);
+const { status, data } = await apiInstance.banControllerCreate(banCreateDTO);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **banCreateDTO** | **BanCreateDTO**| BanCreateDTO | |
-
+| Name             | Type             | Description  | Notes |
+| ---------------- | ---------------- | ------------ | ----- |
+| **banCreateDTO** | **BanCreateDTO** | BanCreateDTO |       |
 
 ### Return type
 
@@ -56,46 +50,41 @@ const { status, data } = await apiInstance.banControllerCreate(
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
-
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **banControllerDelete**
+
 > APIOutput banControllerDelete()
 
-Unban player. This will remove the ban from Takaro and the gameserver(s)   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `BanControllerDelete`
+Unban player. This will remove the ban from Takaro and the gameserver(s) Required permissions: `MANAGE_PLAYERS`<br> OperationId: `BanControllerDelete`
 
 ### Example
 
 ```typescript
-import {
-    PlayerApi,
-    Configuration
-} from './api';
+import { PlayerApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new PlayerApi(configuration);
 
 let id: string; // (default to undefined)
 
-const { status, data } = await apiInstance.banControllerDelete(
-    id
-);
+const { status, data } = await apiInstance.banControllerDelete(id);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **id** | [**string**] |  | defaults to undefined|
-
+| Name   | Type         | Description | Notes                 |
+| ------ | ------------ | ----------- | --------------------- |
+| **id** | [**string**] |             | defaults to undefined |
 
 ### Return type
 
@@ -107,46 +96,41 @@ const { status, data } = await apiInstance.banControllerDelete(
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **banControllerGetOne**
+
 > BanOutputDTOAPI banControllerGetOne()
 
-Get a single ban   Required permissions: `READ_PLAYERS`<br> OperationId: `BanControllerGetOne`
+Get a single ban Required permissions: `READ_PLAYERS`<br> OperationId: `BanControllerGetOne`
 
 ### Example
 
 ```typescript
-import {
-    PlayerApi,
-    Configuration
-} from './api';
+import { PlayerApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new PlayerApi(configuration);
 
 let id: string; // (default to undefined)
 
-const { status, data } = await apiInstance.banControllerGetOne(
-    id
-);
+const { status, data } = await apiInstance.banControllerGetOne(id);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **id** | [**string**] |  | defaults to undefined|
-
+| Name   | Type         | Description | Notes                 |
+| ------ | ------------ | ----------- | --------------------- |
+| **id** | [**string**] |             | defaults to undefined |
 
 ### Return type
 
@@ -158,47 +142,41 @@ const { status, data } = await apiInstance.banControllerGetOne(
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **banControllerSearch**
+
 > BanOutputArrayDTOAPI banControllerSearch()
 
-Search for bans   Required permissions: `READ_PLAYERS`<br> OperationId: `BanControllerSearch`
+Search for bans Required permissions: `READ_PLAYERS`<br> OperationId: `BanControllerSearch`
 
 ### Example
 
 ```typescript
-import {
-    PlayerApi,
-    Configuration,
-    BanSearchInputDTO
-} from './api';
+import { PlayerApi, Configuration, BanSearchInputDTO } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new PlayerApi(configuration);
 
 let banSearchInputDTO: BanSearchInputDTO; //BanSearchInputDTO (optional)
 
-const { status, data } = await apiInstance.banControllerSearch(
-    banSearchInputDTO
-);
+const { status, data } = await apiInstance.banControllerSearch(banSearchInputDTO);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **banSearchInputDTO** | **BanSearchInputDTO**| BanSearchInputDTO | |
-
+| Name                  | Type                  | Description       | Notes |
+| --------------------- | --------------------- | ----------------- | ----- |
+| **banSearchInputDTO** | **BanSearchInputDTO** | BanSearchInputDTO |       |
 
 ### Return type
 
@@ -210,30 +188,27 @@ const { status, data } = await apiInstance.banControllerSearch(
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
-
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **banControllerUpdate**
+
 > BanOutputDTOAPI banControllerUpdate()
 
-Update an existing ban, updating a ban via the API will always make it takaro managed.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `BanControllerUpdate`
+Update an existing ban, updating a ban via the API will always make it takaro managed. Required permissions: `MANAGE_PLAYERS`<br> OperationId: `BanControllerUpdate`
 
 ### Example
 
 ```typescript
-import {
-    PlayerApi,
-    Configuration,
-    BanUpdateDTO
-} from './api';
+import { PlayerApi, Configuration, BanUpdateDTO } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new PlayerApi(configuration);
@@ -241,19 +216,15 @@ const apiInstance = new PlayerApi(configuration);
 let id: string; // (default to undefined)
 let banUpdateDTO: BanUpdateDTO; //BanUpdateDTO (optional)
 
-const { status, data } = await apiInstance.banControllerUpdate(
-    id,
-    banUpdateDTO
-);
+const { status, data } = await apiInstance.banControllerUpdate(id, banUpdateDTO);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **banUpdateDTO** | **BanUpdateDTO**| BanUpdateDTO | |
-| **id** | [**string**] |  | defaults to undefined|
-
+| Name             | Type             | Description  | Notes                 |
+| ---------------- | ---------------- | ------------ | --------------------- |
+| **banUpdateDTO** | **BanUpdateDTO** | BanUpdateDTO |                       |
+| **id**           | [**string**]     |              | defaults to undefined |
 
 ### Return type
 
@@ -265,30 +236,27 @@ const { status, data } = await apiInstance.banControllerUpdate(
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
-
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **playerControllerAssignRole**
+
 > APIOutput playerControllerAssignRole()
 
-   Required permissions: `MANAGE_PLAYERS`, `MANAGE_ROLES`<br> OperationId: `PlayerControllerAssignRole`
+Required permissions: `MANAGE_PLAYERS`, `MANAGE_ROLES`<br> OperationId: `PlayerControllerAssignRole`
 
 ### Example
 
 ```typescript
-import {
-    PlayerApi,
-    Configuration,
-    PlayerRoleAssignChangeDTO
-} from './api';
+import { PlayerApi, Configuration, PlayerRoleAssignChangeDTO } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new PlayerApi(configuration);
@@ -297,21 +265,16 @@ let id: string; // (default to undefined)
 let roleId: string; // (default to undefined)
 let playerRoleAssignChangeDTO: PlayerRoleAssignChangeDTO; //PlayerRoleAssignChangeDTO (optional)
 
-const { status, data } = await apiInstance.playerControllerAssignRole(
-    id,
-    roleId,
-    playerRoleAssignChangeDTO
-);
+const { status, data } = await apiInstance.playerControllerAssignRole(id, roleId, playerRoleAssignChangeDTO);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **playerRoleAssignChangeDTO** | **PlayerRoleAssignChangeDTO**| PlayerRoleAssignChangeDTO | |
-| **id** | [**string**] |  | defaults to undefined|
-| **roleId** | [**string**] |  | defaults to undefined|
-
+| Name                          | Type                          | Description               | Notes                 |
+| ----------------------------- | ----------------------------- | ------------------------- | --------------------- |
+| **playerRoleAssignChangeDTO** | **PlayerRoleAssignChangeDTO** | PlayerRoleAssignChangeDTO |                       |
+| **id**                        | [**string**]                  |                           | defaults to undefined |
+| **roleId**                    | [**string**]                  |                           | defaults to undefined |
 
 ### Return type
 
@@ -323,18 +286,19 @@ const { status, data } = await apiInstance.playerControllerAssignRole(
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
-
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **playerControllerGetMe**
+
 > PlayerMeOutputDTO playerControllerGetMe()
 
 Get the player that is currently authenticated. This is a low-privilege route, returning limited data.<br> OperationId: `PlayerControllerGetMe`
@@ -342,10 +306,7 @@ Get the player that is currently authenticated. This is a low-privilege route, r
 ### Example
 
 ```typescript
-import {
-    PlayerApi,
-    Configuration
-} from './api';
+import { PlayerApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new PlayerApi(configuration);
@@ -354,8 +315,8 @@ const { status, data } = await apiInstance.playerControllerGetMe();
 ```
 
 ### Parameters
-This endpoint does not have any parameters.
 
+This endpoint does not have any parameters.
 
 ### Return type
 
@@ -367,46 +328,41 @@ This endpoint does not have any parameters.
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **playerControllerGetOne**
+
 > PlayerOutputWithRolesDTOAPI playerControllerGetOne()
 
-   Required permissions: `READ_PLAYERS`<br> OperationId: `PlayerControllerGetOne`
+Required permissions: `READ_PLAYERS`<br> OperationId: `PlayerControllerGetOne`
 
 ### Example
 
 ```typescript
-import {
-    PlayerApi,
-    Configuration
-} from './api';
+import { PlayerApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new PlayerApi(configuration);
 
 let id: string; // (default to undefined)
 
-const { status, data } = await apiInstance.playerControllerGetOne(
-    id
-);
+const { status, data } = await apiInstance.playerControllerGetOne(id);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **id** | [**string**] |  | defaults to undefined|
-
+| Name   | Type         | Description | Notes                 |
+| ------ | ------------ | ----------- | --------------------- |
+| **id** | [**string**] |             | defaults to undefined |
 
 ### Return type
 
@@ -418,30 +374,27 @@ const { status, data } = await apiInstance.playerControllerGetOne(
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **playerControllerRemoveRole**
+
 > APIOutput playerControllerRemoveRole()
 
-   Required permissions: `MANAGE_PLAYERS`, `MANAGE_ROLES`<br> OperationId: `PlayerControllerRemoveRole`
+Required permissions: `MANAGE_PLAYERS`, `MANAGE_ROLES`<br> OperationId: `PlayerControllerRemoveRole`
 
 ### Example
 
 ```typescript
-import {
-    PlayerApi,
-    Configuration,
-    PlayerRoleAssignChangeDTO
-} from './api';
+import { PlayerApi, Configuration, PlayerRoleAssignChangeDTO } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new PlayerApi(configuration);
@@ -450,21 +403,16 @@ let id: string; // (default to undefined)
 let roleId: string; // (default to undefined)
 let playerRoleAssignChangeDTO: PlayerRoleAssignChangeDTO; //PlayerRoleAssignChangeDTO (optional)
 
-const { status, data } = await apiInstance.playerControllerRemoveRole(
-    id,
-    roleId,
-    playerRoleAssignChangeDTO
-);
+const { status, data } = await apiInstance.playerControllerRemoveRole(id, roleId, playerRoleAssignChangeDTO);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **playerRoleAssignChangeDTO** | **PlayerRoleAssignChangeDTO**| PlayerRoleAssignChangeDTO | |
-| **id** | [**string**] |  | defaults to undefined|
-| **roleId** | [**string**] |  | defaults to undefined|
-
+| Name                          | Type                          | Description               | Notes                 |
+| ----------------------------- | ----------------------------- | ------------------------- | --------------------- |
+| **playerRoleAssignChangeDTO** | **PlayerRoleAssignChangeDTO** | PlayerRoleAssignChangeDTO |                       |
+| **id**                        | [**string**]                  |                           | defaults to undefined |
+| **roleId**                    | [**string**]                  |                           | defaults to undefined |
 
 ### Return type
 
@@ -476,47 +424,41 @@ const { status, data } = await apiInstance.playerControllerRemoveRole(
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
-
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **playerControllerSearch**
+
 > PlayerOutputArrayDTOAPI playerControllerSearch()
 
-   Required permissions: `READ_PLAYERS`<br> OperationId: `PlayerControllerSearch`
+Required permissions: `READ_PLAYERS`<br> OperationId: `PlayerControllerSearch`
 
 ### Example
 
 ```typescript
-import {
-    PlayerApi,
-    Configuration,
-    PlayerSearchInputDTO
-} from './api';
+import { PlayerApi, Configuration, PlayerSearchInputDTO } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new PlayerApi(configuration);
 
 let playerSearchInputDTO: PlayerSearchInputDTO; //PlayerSearchInputDTO (optional)
 
-const { status, data } = await apiInstance.playerControllerSearch(
-    playerSearchInputDTO
-);
+const { status, data } = await apiInstance.playerControllerSearch(playerSearchInputDTO);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **playerSearchInputDTO** | **PlayerSearchInputDTO**| PlayerSearchInputDTO | |
-
+| Name                     | Type                     | Description          | Notes |
+| ------------------------ | ------------------------ | -------------------- | ----- |
+| **playerSearchInputDTO** | **PlayerSearchInputDTO** | PlayerSearchInputDTO |       |
 
 ### Return type
 
@@ -528,14 +470,13 @@ const { status, data } = await apiInstance.playerControllerSearch(
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
-
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-

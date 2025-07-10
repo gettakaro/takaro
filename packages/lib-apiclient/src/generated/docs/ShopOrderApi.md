@@ -1,16 +1,17 @@
 # ShopOrderApi
 
-All URIs are relative to *http://localhost*
+All URIs are relative to _http://localhost_
 
-|Method | HTTP request | Description|
-|------------- | ------------- | -------------|
-|[**shopOrderControllerCancel**](#shopordercontrollercancel) | **POST** /shop/order/{id}/cancel | Cancel|
-|[**shopOrderControllerClaim**](#shopordercontrollerclaim) | **POST** /shop/order/{id}/claim | Claim an order|
-|[**shopOrderControllerCreate**](#shopordercontrollercreate) | **POST** /shop/order/ | Create|
-|[**shopOrderControllerGetOne**](#shopordercontrollergetone) | **GET** /shop/order/{id} | Get order by ID|
-|[**shopOrderControllerSearch**](#shopordercontrollersearch) | **POST** /shop/order/search | Search orders|
+| Method                                                      | HTTP request                     | Description     |
+| ----------------------------------------------------------- | -------------------------------- | --------------- |
+| [**shopOrderControllerCancel**](#shopordercontrollercancel) | **POST** /shop/order/{id}/cancel | Cancel          |
+| [**shopOrderControllerClaim**](#shopordercontrollerclaim)   | **POST** /shop/order/{id}/claim  | Claim an order  |
+| [**shopOrderControllerCreate**](#shopordercontrollercreate) | **POST** /shop/order/            | Create          |
+| [**shopOrderControllerGetOne**](#shopordercontrollergetone) | **GET** /shop/order/{id}         | Get order by ID |
+| [**shopOrderControllerSearch**](#shopordercontrollersearch) | **POST** /shop/order/search      | Search orders   |
 
 # **shopOrderControllerCancel**
+
 > ShopOrderOutputDTOAPI shopOrderControllerCancel()
 
 <br> OperationId: `ShopOrderControllerCancel`
@@ -18,27 +19,21 @@ All URIs are relative to *http://localhost*
 ### Example
 
 ```typescript
-import {
-    ShopOrderApi,
-    Configuration
-} from './api';
+import { ShopOrderApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new ShopOrderApi(configuration);
 
 let id: string; // (default to undefined)
 
-const { status, data } = await apiInstance.shopOrderControllerCancel(
-    id
-);
+const { status, data } = await apiInstance.shopOrderControllerCancel(id);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **id** | [**string**] |  | defaults to undefined|
-
+| Name   | Type         | Description | Notes                 |
+| ------ | ------------ | ----------- | --------------------- |
+| **id** | [**string**] |             | defaults to undefined |
 
 ### Return type
 
@@ -50,18 +45,19 @@ const { status, data } = await apiInstance.shopOrderControllerCancel(
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **shopOrderControllerClaim**
+
 > ShopOrderOutputDTOAPI shopOrderControllerClaim()
 
 Claiming an order will mark it as completed and give the user the item in-game<br> OperationId: `ShopOrderControllerClaim`
@@ -69,27 +65,21 @@ Claiming an order will mark it as completed and give the user the item in-game<b
 ### Example
 
 ```typescript
-import {
-    ShopOrderApi,
-    Configuration
-} from './api';
+import { ShopOrderApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new ShopOrderApi(configuration);
 
 let id: string; // (default to undefined)
 
-const { status, data } = await apiInstance.shopOrderControllerClaim(
-    id
-);
+const { status, data } = await apiInstance.shopOrderControllerClaim(id);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **id** | [**string**] |  | defaults to undefined|
-
+| Name   | Type         | Description | Notes                 |
+| ------ | ------------ | ----------- | --------------------- |
+| **id** | [**string**] |             | defaults to undefined |
 
 ### Return type
 
@@ -101,18 +91,19 @@ const { status, data } = await apiInstance.shopOrderControllerClaim(
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **shopOrderControllerCreate**
+
 > ShopOrderOutputDTOAPI shopOrderControllerCreate()
 
 <br> OperationId: `ShopOrderControllerCreate`
@@ -120,28 +111,21 @@ const { status, data } = await apiInstance.shopOrderControllerClaim(
 ### Example
 
 ```typescript
-import {
-    ShopOrderApi,
-    Configuration,
-    ShopOrderCreateDTO
-} from './api';
+import { ShopOrderApi, Configuration, ShopOrderCreateDTO } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new ShopOrderApi(configuration);
 
 let shopOrderCreateDTO: ShopOrderCreateDTO; //ShopOrderCreateDTO (optional)
 
-const { status, data } = await apiInstance.shopOrderControllerCreate(
-    shopOrderCreateDTO
-);
+const { status, data } = await apiInstance.shopOrderControllerCreate(shopOrderCreateDTO);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **shopOrderCreateDTO** | **ShopOrderCreateDTO**| ShopOrderCreateDTO | |
-
+| Name                   | Type                   | Description        | Notes |
+| ---------------------- | ---------------------- | ------------------ | ----- |
+| **shopOrderCreateDTO** | **ShopOrderCreateDTO** | ShopOrderCreateDTO |       |
 
 ### Return type
 
@@ -153,18 +137,19 @@ const { status, data } = await apiInstance.shopOrderControllerCreate(
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
-
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **shopOrderControllerGetOne**
+
 > ShopOrderOutputDTOAPI shopOrderControllerGetOne()
 
 Get an order by its ID. This endpoint only returns orders that belong to the caller. When the caller has permission to view all orders, they can get any order.<br> OperationId: `ShopOrderControllerGetOne`
@@ -172,27 +157,21 @@ Get an order by its ID. This endpoint only returns orders that belong to the cal
 ### Example
 
 ```typescript
-import {
-    ShopOrderApi,
-    Configuration
-} from './api';
+import { ShopOrderApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new ShopOrderApi(configuration);
 
 let id: string; // (default to undefined)
 
-const { status, data } = await apiInstance.shopOrderControllerGetOne(
-    id
-);
+const { status, data } = await apiInstance.shopOrderControllerGetOne(id);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **id** | [**string**] |  | defaults to undefined|
-
+| Name   | Type         | Description | Notes                 |
+| ------ | ------------ | ----------- | --------------------- |
+| **id** | [**string**] |             | defaults to undefined |
 
 ### Return type
 
@@ -204,18 +183,19 @@ const { status, data } = await apiInstance.shopOrderControllerGetOne(
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **shopOrderControllerSearch**
+
 > ShopOrderOutputArrayDTOAPI shopOrderControllerSearch()
 
 Search for orders. By default, this endpoint only returns your own orders. When the caller has permission to view all orders, they can search for all orders.<br> OperationId: `ShopOrderControllerSearch`
@@ -223,28 +203,21 @@ Search for orders. By default, this endpoint only returns your own orders. When 
 ### Example
 
 ```typescript
-import {
-    ShopOrderApi,
-    Configuration,
-    ShopOrderSearchInputDTO
-} from './api';
+import { ShopOrderApi, Configuration, ShopOrderSearchInputDTO } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new ShopOrderApi(configuration);
 
 let shopOrderSearchInputDTO: ShopOrderSearchInputDTO; //ShopOrderSearchInputDTO (optional)
 
-const { status, data } = await apiInstance.shopOrderControllerSearch(
-    shopOrderSearchInputDTO
-);
+const { status, data } = await apiInstance.shopOrderControllerSearch(shopOrderSearchInputDTO);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **shopOrderSearchInputDTO** | **ShopOrderSearchInputDTO**| ShopOrderSearchInputDTO | |
-
+| Name                        | Type                        | Description             | Notes |
+| --------------------------- | --------------------------- | ----------------------- | ----- |
+| **shopOrderSearchInputDTO** | **ShopOrderSearchInputDTO** | ShopOrderSearchInputDTO |       |
 
 ### Return type
 
@@ -256,14 +229,13 @@ const { status, data } = await apiInstance.shopOrderControllerSearch(
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
-
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-

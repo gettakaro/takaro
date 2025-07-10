@@ -1,18 +1,19 @@
 # DomainApi
 
-All URIs are relative to *http://localhost*
+All URIs are relative to _http://localhost_
 
-|Method | HTTP request | Description|
-|------------- | ------------- | -------------|
-|[**domainControllerCreate**](#domaincontrollercreate) | **POST** /domain | Create|
-|[**domainControllerGetOne**](#domaincontrollergetone) | **GET** /domain/{id} | Get one|
-|[**domainControllerGetToken**](#domaincontrollergettoken) | **POST** /token | Get token|
-|[**domainControllerRemove**](#domaincontrollerremove) | **DELETE** /domain/{id} | Remove|
-|[**domainControllerResolveRegistrationToken**](#domaincontrollerresolveregistrationtoken) | **POST** /resolve-registration-token | Resolve registration token|
-|[**domainControllerSearch**](#domaincontrollersearch) | **POST** /domain/search | Search|
-|[**domainControllerUpdate**](#domaincontrollerupdate) | **PUT** /domain/{id} | Update|
+| Method                                                                                    | HTTP request                         | Description                |
+| ----------------------------------------------------------------------------------------- | ------------------------------------ | -------------------------- |
+| [**domainControllerCreate**](#domaincontrollercreate)                                     | **POST** /domain                     | Create                     |
+| [**domainControllerGetOne**](#domaincontrollergetone)                                     | **GET** /domain/{id}                 | Get one                    |
+| [**domainControllerGetToken**](#domaincontrollergettoken)                                 | **POST** /token                      | Get token                  |
+| [**domainControllerRemove**](#domaincontrollerremove)                                     | **DELETE** /domain/{id}              | Remove                     |
+| [**domainControllerResolveRegistrationToken**](#domaincontrollerresolveregistrationtoken) | **POST** /resolve-registration-token | Resolve registration token |
+| [**domainControllerSearch**](#domaincontrollersearch)                                     | **POST** /domain/search              | Search                     |
+| [**domainControllerUpdate**](#domaincontrollerupdate)                                     | **PUT** /domain/{id}                 | Update                     |
 
 # **domainControllerCreate**
+
 > DomainCreateOutputDTOAPI domainControllerCreate()
 
 <br> OperationId: `DomainControllerCreate`
@@ -20,28 +21,21 @@ All URIs are relative to *http://localhost*
 ### Example
 
 ```typescript
-import {
-    DomainApi,
-    Configuration,
-    DomainCreateInputDTO
-} from './api';
+import { DomainApi, Configuration, DomainCreateInputDTO } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DomainApi(configuration);
 
 let domainCreateInputDTO: DomainCreateInputDTO; //DomainCreateInputDTO (optional)
 
-const { status, data } = await apiInstance.domainControllerCreate(
-    domainCreateInputDTO
-);
+const { status, data } = await apiInstance.domainControllerCreate(domainCreateInputDTO);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **domainCreateInputDTO** | **DomainCreateInputDTO**| DomainCreateInputDTO | |
-
+| Name                     | Type                     | Description          | Notes |
+| ------------------------ | ------------------------ | -------------------- | ----- |
+| **domainCreateInputDTO** | **DomainCreateInputDTO** | DomainCreateInputDTO |       |
 
 ### Return type
 
@@ -53,18 +47,19 @@ const { status, data } = await apiInstance.domainControllerCreate(
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
-
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **domainControllerGetOne**
+
 > DomainOutputDTOAPI domainControllerGetOne()
 
 <br> OperationId: `DomainControllerGetOne`
@@ -72,27 +67,21 @@ const { status, data } = await apiInstance.domainControllerCreate(
 ### Example
 
 ```typescript
-import {
-    DomainApi,
-    Configuration
-} from './api';
+import { DomainApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DomainApi(configuration);
 
 let id: string; // (default to undefined)
 
-const { status, data } = await apiInstance.domainControllerGetOne(
-    id
-);
+const { status, data } = await apiInstance.domainControllerGetOne(id);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **id** | [**string**] |  | defaults to undefined|
-
+| Name   | Type         | Description | Notes                 |
+| ------ | ------------ | ----------- | --------------------- |
+| **id** | [**string**] |             | defaults to undefined |
 
 ### Return type
 
@@ -104,18 +93,19 @@ const { status, data } = await apiInstance.domainControllerGetOne(
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **domainControllerGetToken**
+
 > TokenOutputDTOAPI domainControllerGetToken()
 
 <br> OperationId: `DomainControllerGetToken`
@@ -123,28 +113,21 @@ const { status, data } = await apiInstance.domainControllerGetOne(
 ### Example
 
 ```typescript
-import {
-    DomainApi,
-    Configuration,
-    TokenInputDTO
-} from './api';
+import { DomainApi, Configuration, TokenInputDTO } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DomainApi(configuration);
 
 let tokenInputDTO: TokenInputDTO; //TokenInputDTO (optional)
 
-const { status, data } = await apiInstance.domainControllerGetToken(
-    tokenInputDTO
-);
+const { status, data } = await apiInstance.domainControllerGetToken(tokenInputDTO);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **tokenInputDTO** | **TokenInputDTO**| TokenInputDTO | |
-
+| Name              | Type              | Description   | Notes |
+| ----------------- | ----------------- | ------------- | ----- |
+| **tokenInputDTO** | **TokenInputDTO** | TokenInputDTO |       |
 
 ### Return type
 
@@ -156,18 +139,19 @@ const { status, data } = await apiInstance.domainControllerGetToken(
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
-
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **domainControllerRemove**
+
 > APIOutput domainControllerRemove()
 
 <br> OperationId: `DomainControllerRemove`
@@ -175,27 +159,21 @@ const { status, data } = await apiInstance.domainControllerGetToken(
 ### Example
 
 ```typescript
-import {
-    DomainApi,
-    Configuration
-} from './api';
+import { DomainApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DomainApi(configuration);
 
 let id: string; // (default to undefined)
 
-const { status, data } = await apiInstance.domainControllerRemove(
-    id
-);
+const { status, data } = await apiInstance.domainControllerRemove(id);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **id** | [**string**] |  | defaults to undefined|
-
+| Name   | Type         | Description | Notes                 |
+| ------ | ------------ | ----------- | --------------------- |
+| **id** | [**string**] |             | defaults to undefined |
 
 ### Return type
 
@@ -207,18 +185,19 @@ const { status, data } = await apiInstance.domainControllerRemove(
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **domainControllerResolveRegistrationToken**
+
 > DomainOutputDTOAPI domainControllerResolveRegistrationToken()
 
 <br> OperationId: `DomainControllerResolveRegistrationToken`
@@ -226,28 +205,21 @@ const { status, data } = await apiInstance.domainControllerRemove(
 ### Example
 
 ```typescript
-import {
-    DomainApi,
-    Configuration,
-    ResolveRegistrationTokenInputDTO
-} from './api';
+import { DomainApi, Configuration, ResolveRegistrationTokenInputDTO } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DomainApi(configuration);
 
 let resolveRegistrationTokenInputDTO: ResolveRegistrationTokenInputDTO; //ResolveRegistrationTokenInputDTO (optional)
 
-const { status, data } = await apiInstance.domainControllerResolveRegistrationToken(
-    resolveRegistrationTokenInputDTO
-);
+const { status, data } = await apiInstance.domainControllerResolveRegistrationToken(resolveRegistrationTokenInputDTO);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **resolveRegistrationTokenInputDTO** | **ResolveRegistrationTokenInputDTO**| ResolveRegistrationTokenInputDTO | |
-
+| Name                                 | Type                                 | Description                      | Notes |
+| ------------------------------------ | ------------------------------------ | -------------------------------- | ----- |
+| **resolveRegistrationTokenInputDTO** | **ResolveRegistrationTokenInputDTO** | ResolveRegistrationTokenInputDTO |       |
 
 ### Return type
 
@@ -259,18 +231,19 @@ const { status, data } = await apiInstance.domainControllerResolveRegistrationTo
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
-
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **domainControllerSearch**
+
 > DomainOutputArrayDTOAPI domainControllerSearch()
 
 <br> OperationId: `DomainControllerSearch`
@@ -278,28 +251,21 @@ const { status, data } = await apiInstance.domainControllerResolveRegistrationTo
 ### Example
 
 ```typescript
-import {
-    DomainApi,
-    Configuration,
-    DomainSearchInputDTO
-} from './api';
+import { DomainApi, Configuration, DomainSearchInputDTO } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DomainApi(configuration);
 
 let domainSearchInputDTO: DomainSearchInputDTO; //DomainSearchInputDTO (optional)
 
-const { status, data } = await apiInstance.domainControllerSearch(
-    domainSearchInputDTO
-);
+const { status, data } = await apiInstance.domainControllerSearch(domainSearchInputDTO);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **domainSearchInputDTO** | **DomainSearchInputDTO**| DomainSearchInputDTO | |
-
+| Name                     | Type                     | Description          | Notes |
+| ------------------------ | ------------------------ | -------------------- | ----- |
+| **domainSearchInputDTO** | **DomainSearchInputDTO** | DomainSearchInputDTO |       |
 
 ### Return type
 
@@ -311,18 +277,19 @@ const { status, data } = await apiInstance.domainControllerSearch(
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
-
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **domainControllerUpdate**
+
 > DomainOutputDTOAPI domainControllerUpdate()
 
 <br> OperationId: `DomainControllerUpdate`
@@ -330,11 +297,7 @@ const { status, data } = await apiInstance.domainControllerSearch(
 ### Example
 
 ```typescript
-import {
-    DomainApi,
-    Configuration,
-    DomainUpdateInputDTO
-} from './api';
+import { DomainApi, Configuration, DomainUpdateInputDTO } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DomainApi(configuration);
@@ -342,19 +305,15 @@ const apiInstance = new DomainApi(configuration);
 let id: string; // (default to undefined)
 let domainUpdateInputDTO: DomainUpdateInputDTO; //DomainUpdateInputDTO (optional)
 
-const { status, data } = await apiInstance.domainControllerUpdate(
-    id,
-    domainUpdateInputDTO
-);
+const { status, data } = await apiInstance.domainControllerUpdate(id, domainUpdateInputDTO);
 ```
 
 ### Parameters
 
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **domainUpdateInputDTO** | **DomainUpdateInputDTO**| DomainUpdateInputDTO | |
-| **id** | [**string**] |  | defaults to undefined|
-
+| Name                     | Type                     | Description          | Notes                 |
+| ------------------------ | ------------------------ | -------------------- | --------------------- |
+| **domainUpdateInputDTO** | **DomainUpdateInputDTO** | DomainUpdateInputDTO |                       |
+| **id**                   | [**string**]             |                      | defaults to undefined |
 
 ### Return type
 
@@ -366,14 +325,13 @@ const { status, data } = await apiInstance.domainControllerUpdate(
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
-
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 ### HTTP response details
+
 | Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
+| ----------- | ----------- | ---------------- |
+| **200**     |             | -                |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-

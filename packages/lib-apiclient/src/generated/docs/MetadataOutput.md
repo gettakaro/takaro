@@ -1,15 +1,14 @@
 # MetadataOutput
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**serverTime** | **string** |  | [default to undefined]
-**error** | [**ErrorOutput**](ErrorOutput.md) |  | [default to undefined]
-**page** | **number** |  | [optional] [default to undefined]
-**limit** | **number** |  | [optional] [default to undefined]
-**total** | **number** |  | [optional] [default to undefined]
+| Name           | Type                              | Description | Notes                             |
+| -------------- | --------------------------------- | ----------- | --------------------------------- |
+| **serverTime** | **string**                        |             | [default to undefined]            |
+| **error**      | [**ErrorOutput**](ErrorOutput.md) |             | [default to undefined]            |
+| **page**       | **number**                        |             | [optional] [default to undefined] |
+| **limit**      | **number**                        |             | [optional] [default to undefined] |
+| **total**      | **number**                        |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { MetadataOutput } from './api';
 
 const instance: MetadataOutput = {
-    serverTime,
-    error,
-    page,
-    limit,
-    total,
+  serverTime,
+  error,
+  page,
+  limit,
+  total,
 };
 ```
 

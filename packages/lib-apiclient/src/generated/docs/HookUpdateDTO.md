@@ -1,15 +1,14 @@
 # HookUpdateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [optional] [default to undefined]
-**description** | **string** |  | [optional] [default to undefined]
-**regex** | **string** |  | [optional] [default to undefined]
-**eventType** | **string** |  | [optional] [default to undefined]
-**_function** | **string** |  | [optional] [default to undefined]
+| Name            | Type       | Description | Notes                             |
+| --------------- | ---------- | ----------- | --------------------------------- |
+| **name**        | **string** |             | [optional] [default to undefined] |
+| **description** | **string** |             | [optional] [default to undefined] |
+| **regex**       | **string** |             | [optional] [default to undefined] |
+| **eventType**   | **string** |             | [optional] [default to undefined] |
+| **\_function**  | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -17,11 +16,11 @@ Name | Type | Description | Notes
 import { HookUpdateDTO } from './api';
 
 const instance: HookUpdateDTO = {
-    name,
-    description,
-    regex,
-    eventType,
-    _function,
+  name,
+  description,
+  regex,
+  eventType,
+  _function,
 };
 ```
 

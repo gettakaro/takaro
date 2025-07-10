@@ -1,12 +1,11 @@
 # PlayerMeOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**player** | [**PlayerOutputWithRolesDTO**](PlayerOutputWithRolesDTO.md) |  | [default to undefined]
-**pogs** | [**Array&lt;PlayerOnGameserverOutputArrayDTOAPI&gt;**](PlayerOnGameserverOutputArrayDTOAPI.md) |  | [default to undefined]
+| Name       | Type                                                                                           | Description | Notes                  |
+| ---------- | ---------------------------------------------------------------------------------------------- | ----------- | ---------------------- |
+| **player** | [**PlayerOutputWithRolesDTO**](PlayerOutputWithRolesDTO.md)                                    |             | [default to undefined] |
+| **pogs**   | [**Array&lt;PlayerOnGameserverOutputArrayDTOAPI&gt;**](PlayerOnGameserverOutputArrayDTOAPI.md) |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { PlayerMeOutputDTO } from './api';
 
 const instance: PlayerMeOutputDTO = {
-    player,
-    pogs,
+  player,
+  pogs,
 };
 ```
 

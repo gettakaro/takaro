@@ -1,11 +1,10 @@
 # ModuleVersionSearchInputAllowedSearch
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**tag** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name    | Type                    | Description | Notes                             |
+| ------- | ----------------------- | ----------- | --------------------------------- |
+| **tag** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -13,7 +12,7 @@ Name | Type | Description | Notes
 import { ModuleVersionSearchInputAllowedSearch } from './api';
 
 const instance: ModuleVersionSearchInputAllowedSearch = {
-    tag,
+  tag,
 };
 ```
 

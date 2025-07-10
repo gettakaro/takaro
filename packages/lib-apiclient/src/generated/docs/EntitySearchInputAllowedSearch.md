@@ -1,13 +1,12 @@
 # EntitySearchInputAllowedSearch
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**code** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**description** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name            | Type                    | Description | Notes                             |
+| --------------- | ----------------------- | ----------- | --------------------------------- |
+| **name**        | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **code**        | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **description** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { EntitySearchInputAllowedSearch } from './api';
 
 const instance: EntitySearchInputAllowedSearch = {
-    name,
-    code,
-    description,
+  name,
+  code,
+  description,
 };
 ```
 

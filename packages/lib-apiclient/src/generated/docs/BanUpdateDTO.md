@@ -1,16 +1,15 @@
 # BanUpdateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**gameServerId** | **string** |  | [default to undefined]
-**playerId** | **string** |  | [default to undefined]
-**takaroManaged** | **boolean** |  | [optional] [default to undefined]
-**isGlobal** | **boolean** |  | [optional] [default to undefined]
-**until** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [optional] [default to undefined]
-**reason** | **string** |  | [optional] [default to undefined]
+| Name              | Type                                                                                    | Description | Notes                             |
+| ----------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **gameServerId**  | **string**                                                                              |             | [default to undefined]            |
+| **playerId**      | **string**                                                                              |             | [default to undefined]            |
+| **takaroManaged** | **boolean**                                                                             |             | [optional] [default to undefined] |
+| **isGlobal**      | **boolean**                                                                             |             | [optional] [default to undefined] |
+| **until**         | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [optional] [default to undefined] |
+| **reason**        | **string**                                                                              |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -18,12 +17,12 @@ Name | Type | Description | Notes
 import { BanUpdateDTO } from './api';
 
 const instance: BanUpdateDTO = {
-    gameServerId,
-    playerId,
-    takaroManaged,
-    isGlobal,
-    until,
-    reason,
+  gameServerId,
+  playerId,
+  takaroManaged,
+  isGlobal,
+  until,
+  reason,
 };
 ```
 

@@ -1,14 +1,13 @@
 # ModuleVersionSearchInputAllowedFilters
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**version** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**moduleId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**tag** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**id** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name         | Type                    | Description | Notes                             |
+| ------------ | ----------------------- | ----------- | --------------------------------- |
+| **version**  | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **moduleId** | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **tag**      | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
+| **id**       | **Array&lt;string&gt;** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -16,10 +15,10 @@ Name | Type | Description | Notes
 import { ModuleVersionSearchInputAllowedFilters } from './api';
 
 const instance: ModuleVersionSearchInputAllowedFilters = {
-    version,
-    moduleId,
-    tag,
-    id,
+  version,
+  moduleId,
+  tag,
+  id,
 };
 ```
 

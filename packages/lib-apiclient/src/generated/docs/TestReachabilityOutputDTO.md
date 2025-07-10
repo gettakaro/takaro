@@ -1,13 +1,12 @@
 # TestReachabilityOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**connectable** | **boolean** |  | [default to undefined]
-**reason** | **string** |  | [optional] [default to undefined]
-**latency** | **number** |  | [optional] [default to undefined]
+| Name            | Type        | Description | Notes                             |
+| --------------- | ----------- | ----------- | --------------------------------- |
+| **connectable** | **boolean** |             | [default to undefined]            |
+| **reason**      | **string**  |             | [optional] [default to undefined] |
+| **latency**     | **number**  |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { TestReachabilityOutputDTO } from './api';
 
 const instance: TestReachabilityOutputDTO = {
-    connectable,
-    reason,
-    latency,
+  connectable,
+  reason,
+  latency,
 };
 ```
 

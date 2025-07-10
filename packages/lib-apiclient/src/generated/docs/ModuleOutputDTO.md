@@ -1,16 +1,15 @@
 # ModuleOutputDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**builtin** | **string** |  | [optional] [default to undefined]
-**latestVersion** | [**ModuleVersionOutputDTO**](ModuleVersionOutputDTO.md) |  | [default to undefined]
-**id** | **string** |  | [default to undefined]
-**createdAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
-**updatedAt** | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |  | [default to undefined]
+| Name              | Type                                                                                    | Description | Notes                             |
+| ----------------- | --------------------------------------------------------------------------------------- | ----------- | --------------------------------- |
+| **name**          | **string**                                                                              |             | [default to undefined]            |
+| **builtin**       | **string**                                                                              |             | [optional] [default to undefined] |
+| **latestVersion** | [**ModuleVersionOutputDTO**](ModuleVersionOutputDTO.md)                                 |             | [default to undefined]            |
+| **id**            | **string**                                                                              |             | [default to undefined]            |
+| **createdAt**     | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
+| **updatedAt**     | [**NOTDOMAINSCOPEDTakaroModelDTOCreatedAt**](NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md) |             | [default to undefined]            |
 
 ## Example
 
@@ -18,12 +17,12 @@ Name | Type | Description | Notes
 import { ModuleOutputDTO } from './api';
 
 const instance: ModuleOutputDTO = {
-    name,
-    builtin,
-    latestVersion,
-    id,
-    createdAt,
-    updatedAt,
+  name,
+  builtin,
+  latestVersion,
+  id,
+  createdAt,
+  updatedAt,
 };
 ```
 

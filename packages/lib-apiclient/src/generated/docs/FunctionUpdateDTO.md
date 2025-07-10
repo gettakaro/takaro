@@ -1,13 +1,12 @@
 # FunctionUpdateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [optional] [default to undefined]
-**description** | **string** |  | [optional] [default to undefined]
-**code** | **string** |  | [optional] [default to undefined]
+| Name            | Type       | Description | Notes                             |
+| --------------- | ---------- | ----------- | --------------------------------- |
+| **name**        | **string** |             | [optional] [default to undefined] |
+| **description** | **string** |             | [optional] [default to undefined] |
+| **code**        | **string** |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -15,9 +14,9 @@ Name | Type | Description | Notes
 import { FunctionUpdateDTO } from './api';
 
 const instance: FunctionUpdateDTO = {
-    name,
-    description,
-    code,
+  name,
+  description,
+  code,
 };
 ```
 

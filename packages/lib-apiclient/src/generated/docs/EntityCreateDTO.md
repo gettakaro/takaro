@@ -1,16 +1,15 @@
 # EntityCreateDTO
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**code** | **string** |  | [default to undefined]
-**description** | **string** |  | [optional] [default to undefined]
-**type** | **string** |  | [optional] [default to undefined]
-**metadata** | **object** |  | [optional] [default to undefined]
-**gameserverId** | **string** |  | [default to undefined]
+| Name             | Type       | Description | Notes                             |
+| ---------------- | ---------- | ----------- | --------------------------------- |
+| **name**         | **string** |             | [default to undefined]            |
+| **code**         | **string** |             | [default to undefined]            |
+| **description**  | **string** |             | [optional] [default to undefined] |
+| **type**         | **string** |             | [optional] [default to undefined] |
+| **metadata**     | **object** |             | [optional] [default to undefined] |
+| **gameserverId** | **string** |             | [default to undefined]            |
 
 ## Example
 
@@ -18,12 +17,12 @@ Name | Type | Description | Notes
 import { EntityCreateDTO } from './api';
 
 const instance: EntityCreateDTO = {
-    name,
-    code,
-    description,
-    type,
-    metadata,
-    gameserverId,
+  name,
+  code,
+  description,
+  type,
+  metadata,
+  gameserverId,
 };
 ```
 

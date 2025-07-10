@@ -1,17 +1,16 @@
 # UserSearchInputAllowedFilters
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**name** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**idpId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**discordId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**playerId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**roleId** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
-**isDashboardUser** | **Array&lt;boolean&gt;** |  | [optional] [default to undefined]
-**id** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+| Name                | Type                     | Description | Notes                             |
+| ------------------- | ------------------------ | ----------- | --------------------------------- |
+| **name**            | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **idpId**           | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **discordId**       | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **playerId**        | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **roleId**          | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
+| **isDashboardUser** | **Array&lt;boolean&gt;** |             | [optional] [default to undefined] |
+| **id**              | **Array&lt;string&gt;**  |             | [optional] [default to undefined] |
 
 ## Example
 
@@ -19,13 +18,13 @@ Name | Type | Description | Notes
 import { UserSearchInputAllowedFilters } from './api';
 
 const instance: UserSearchInputAllowedFilters = {
-    name,
-    idpId,
-    discordId,
-    playerId,
-    roleId,
-    isDashboardUser,
-    id,
+  name,
+  idpId,
+  discordId,
+  playerId,
+  roleId,
+  isDashboardUser,
+  id,
 };
 ```
 

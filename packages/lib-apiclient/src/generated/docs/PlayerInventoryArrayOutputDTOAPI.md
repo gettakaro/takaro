@@ -1,12 +1,11 @@
 # PlayerInventoryArrayOutputDTOAPI
 
-
 ## Properties
 
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**data** | [**Array&lt;PlayerInventoryOutputDTO&gt;**](PlayerInventoryOutputDTO.md) |  | [default to undefined]
-**meta** | [**MetadataOutput**](MetadataOutput.md) |  | [default to undefined]
+| Name     | Type                                                                     | Description | Notes                  |
+| -------- | ------------------------------------------------------------------------ | ----------- | ---------------------- |
+| **data** | [**Array&lt;PlayerInventoryOutputDTO&gt;**](PlayerInventoryOutputDTO.md) |             | [default to undefined] |
+| **meta** | [**MetadataOutput**](MetadataOutput.md)                                  |             | [default to undefined] |
 
 ## Example
 
@@ -14,8 +13,8 @@ Name | Type | Description | Notes
 import { PlayerInventoryArrayOutputDTOAPI } from './api';
 
 const instance: PlayerInventoryArrayOutputDTOAPI = {
-    data,
-    meta,
+  data,
+  meta,
 };
 ```
 
