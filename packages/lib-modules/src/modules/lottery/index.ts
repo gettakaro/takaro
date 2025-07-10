@@ -7,7 +7,7 @@ export class Lottery extends ModuleTransferDTO<Lottery> {
     this.name = 'lottery';
     this.versions = [
       new ModuleTransferVersionDTO({
-        tag: '0.0.1',
+        tag: '0.0.2',
         description: 'Players can buy tickets for a lottery, and the winner is chosen at random.',
         configSchema: JSON.stringify({
           $schema: 'http://json-schema.org/draft-07/schema#',
@@ -51,6 +51,7 @@ export class Lottery extends ModuleTransferDTO<Lottery> {
             name: 'buyTicket',
             trigger: 'buyTicket',
             helpText: 'Buy a lottery ticket.',
+            requiredPermissions: ['LOTTERY_BUY'],
             arguments: [
               {
                 name: 'amount',
@@ -66,6 +67,7 @@ export class Lottery extends ModuleTransferDTO<Lottery> {
             name: 'viewTickets',
             trigger: 'viewTickets',
             helpText: 'View your lottery tickets.',
+            requiredPermissions: ['LOTTERY_VIEW_TICKETS'],
             arguments: [],
           }),
           new ICommand({

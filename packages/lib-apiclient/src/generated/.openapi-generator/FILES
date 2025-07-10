@@ -331,6 +331,7 @@ docs/StatsOutputDTO.md
 docs/StatsOutputDTOAPI.md
 docs/TakaroEventCommandDetails.md
 docs/TakaroEventCommandExecuted.md
+docs/TakaroEventCommandExecutionDenied.md
 docs/TakaroEventCronjobDetails.md
 docs/TakaroEventCronjobExecuted.md
 docs/TakaroEventCurrencyAdded.md

@@ -833,6 +833,12 @@ export interface CommandCreateDTO {
    * @memberof CommandCreateDTO
    */
   arguments?: Array<CommandArgumentCreateDTO>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof CommandCreateDTO
+   */
+  requiredPermissions?: Array<string>;
 }
 /**
  *
@@ -964,6 +970,12 @@ export interface CommandOutputDTO {
    * @memberof CommandOutputDTO
    */
   arguments: Array<CommandArgumentOutputDTO>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof CommandOutputDTO
+   */
+  requiredPermissions?: Array<string>;
   /**
    *
    * @type {string}
@@ -1183,6 +1195,12 @@ export interface CommandUpdateDTO {
    * @memberof CommandUpdateDTO
    */
   arguments?: Array<CommandArgumentCreateDTO>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof CommandUpdateDTO
+   */
+  requiredPermissions?: Array<string>;
 }
 /**
  *
@@ -2485,6 +2503,7 @@ export const EventCreateDTOEventNameEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -2756,6 +2775,7 @@ export const EventOutputDTOEventNameEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -2804,6 +2824,7 @@ export type EventOutputDTOMeta =
   | EventPlayerDisconnected
   | HookEventDiscordMessage
   | TakaroEventCommandExecuted
+  | TakaroEventCommandExecutionDenied
   | TakaroEventCronjobExecuted
   | TakaroEventCurrencyAdded
   | TakaroEventCurrencyDeducted
@@ -2979,6 +3000,7 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -3153,6 +3175,7 @@ export const EventsCountInputDTOEventNameEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -4354,6 +4377,7 @@ export const HookCreateDTOEventTypeEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -4509,6 +4533,7 @@ export const HookOutputDTOEventTypeEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -4609,6 +4634,7 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -4774,6 +4800,7 @@ export const HookTriggerDTOEventTypeEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -4856,6 +4883,7 @@ export const HookUpdateDTOEventTypeEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -4927,6 +4955,12 @@ export interface ICommand {
    * @memberof ICommand
    */
   arguments?: Array<ICommandArgument>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ICommand
+   */
+  requiredPermissions?: Array<string>;
 }
 /**
  *
@@ -5174,6 +5208,7 @@ export const IHookEventTypeEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -10770,6 +10805,31 @@ export interface TakaroEventCommandExecuted {
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof TakaroEventCommandExecuted
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventCommandExecutionDenied
+ */
+export interface TakaroEventCommandExecutionDenied {
+  /**
+   *
+   * @type {TakaroEventCommandDetails}
+   * @memberof TakaroEventCommandExecutionDenied
+   */
+  command: TakaroEventCommandDetails;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof TakaroEventCommandExecutionDenied
+   */
+  missingPermissions: Array<string>;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventCommandExecutionDenied
    */
   timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
@@ -26570,6 +26630,7 @@ export const StatsControllerGetEventsCountEventNameEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
