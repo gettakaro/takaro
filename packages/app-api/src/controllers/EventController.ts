@@ -10,6 +10,7 @@ import { Response } from 'express';
 import { EVENT_TYPES, EventCreateDTO, EventOutputDTO, EventService } from '../service/EventService.js';
 import { ParamId } from '../lib/validators.js';
 import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from './shared.js';
+import { logger } from '@takaro/util';
 
 class EventSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
@@ -65,6 +66,7 @@ export class EventOutputArrayDTOAPI extends APIOutput<EventOutputDTO[]> {
 })
 @JsonController()
 export class EventController {
+  private log = logger('EventController');
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_EVENTS]))
   @ResponseSchema(EventOutputArrayDTOAPI)
   @Post('/event/search')
@@ -80,6 +82,18 @@ export class EventController {
       req,
       res,
     });
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_EVENTS]))
+  @Post('/event/export')
+  @OpenAPI({
+    summary: 'Export events to CSV',
+    description:
+      'Export events matching the search criteria to CSV format. Accepts the same parameters as the search endpoint. Maximum time range is 90 days.',
+  })
+  async export(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: EventSearchInputDTO) {
+    const service = new EventService(req.domainId);
+    await service.exportToCsv(query, res);
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_EVENTS]))
