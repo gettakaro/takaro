@@ -40,7 +40,10 @@ export abstract class NOT_DOMAIN_SCOPED_TakaroService<
       }
 
       // If we've reached the last page, stop iteration
-      if (currentPage >= paginatedResults.total) {
+      // Check if the current page has fewer results than the limit (indicating it's the last page)
+      // OR if we've processed all records (page * limit >= total)
+      const pageSize = filters.limit || paginatedResults.results.length;
+      if (paginatedResults.results.length < pageSize || (currentPage + 1) * pageSize >= paginatedResults.total) {
         break;
       }
 
