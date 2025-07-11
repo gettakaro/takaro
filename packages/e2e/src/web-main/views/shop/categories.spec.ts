@@ -22,7 +22,7 @@ test.describe('Shop Categories Management', () => {
     await shopCategoriesPage.verifyCategoryHierarchy('Ranged', 'Weapons');
   });
 
-  test('Can create root category', async ({ takaro, _page }) => {
+  test('Can create root category', async ({ takaro }) => {
     const { shopCategoriesPage } = takaro;
     await shopCategoriesPage.goto();
 
@@ -37,7 +37,7 @@ test.describe('Shop Categories Management', () => {
     await shopCategoriesPage.verifyCategoryExists(categoryData.name, categoryData.emoji);
   });
 
-  test('Can create child category', async ({ takaro, _page }) => {
+  test('Can create child category', async ({ takaro }) => {
     const { shopCategoriesPage } = takaro;
     await shopCategoriesPage.goto();
 
@@ -53,7 +53,7 @@ test.describe('Shop Categories Management', () => {
     await shopCategoriesPage.verifyCategoryHierarchy(categoryData.name, categoryData.parentId);
   });
 
-  test('Can edit category', async ({ takaro, _page }) => {
+  test('Can edit category', async ({ takaro }) => {
     const { shopCategoriesPage } = takaro;
     await shopCategoriesPage.goto();
 
@@ -179,7 +179,7 @@ test.describe('Shop Categories Management', () => {
     await expect(page.getByText('Emoji is required')).toBeVisible();
   });
 
-  test('Category listing count updates', async ({ takaro, _page }) => {
+  test('Category listing count updates', async ({ takaro }) => {
     const { shopCategoriesPage, shopListingPage } = takaro;
 
     // Create a test category
@@ -209,7 +209,7 @@ test.describe('Shop Categories Management', () => {
     expect(updatedCount).toBe(1);
   });
 
-  test('Hierarchical category counting', async ({ takaro, _page }) => {
+  test('Hierarchical category counting', async ({ takaro }) => {
     const { shopCategoriesPage, shopListingPage } = takaro;
 
     // Create parent and child categories

@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 import { test } from '../../fixtures/index.js';
 
 test.describe('Shop Listing Categories Integration', () => {
-  test('Can assign categories when creating listing', async ({ takaro, _page }) => {
+  test('Can assign categories when creating listing', async ({ takaro }) => {
     const { shopListingPage, shopPage } = takaro;
 
     await shopListingPage.goto();
@@ -20,7 +20,7 @@ test.describe('Shop Listing Categories Integration', () => {
     await shopPage.verifyListingHasCategories(listingData.name, listingData.categories);
   });
 
-  test('Can update listing categories', async ({ takaro, _page }) => {
+  test('Can update listing categories', async ({ takaro }) => {
     const { shopListingPage, shopPage } = takaro;
 
     // Create a listing first
@@ -46,7 +46,7 @@ test.describe('Shop Listing Categories Integration', () => {
     await shopPage.verifyListingHasCategories(listingData.name, newCategories);
   });
 
-  test('Can bulk assign categories', async ({ takaro, _page }) => {
+  test('Can bulk assign categories', async ({ takaro }) => {
     const { shopListingPage, shopPage } = takaro;
 
     // Create multiple listings
@@ -74,7 +74,7 @@ test.describe('Shop Listing Categories Integration', () => {
     }
   });
 
-  test('Can filter by category', async ({ takaro, _page }) => {
+  test('Can filter by category', async ({ takaro }) => {
     const { shopListingPage, shopPage } = takaro;
 
     // Create listings with different categories
@@ -128,7 +128,7 @@ test.describe('Shop Listing Categories Integration', () => {
     expect(toolNames).not.toContain('Sword');
   });
 
-  test('Can filter by multiple categories', async ({ takaro, _page }) => {
+  test('Can filter by multiple categories', async ({ takaro }) => {
     const { shopPage } = takaro;
 
     await shopPage.goto();
@@ -149,7 +149,7 @@ test.describe('Shop Listing Categories Integration', () => {
     }
   });
 
-  test('Can filter uncategorized items', async ({ takaro, _page }) => {
+  test('Can filter uncategorized items', async ({ takaro }) => {
     const { shopListingPage, shopPage } = takaro;
 
     // Create an uncategorized item
@@ -183,7 +183,7 @@ test.describe('Shop Listing Categories Integration', () => {
     expect(names).not.toContain('Categorized Item');
   });
 
-  test('Category counts update in filter', async ({ takaro, _page }) => {
+  test('Category counts update in filter', async ({ takaro }) => {
     const { shopListingPage, shopPage } = takaro;
 
     // Get initial count for a category
@@ -205,7 +205,7 @@ test.describe('Shop Listing Categories Integration', () => {
     expect(updatedCount).toBe(initialCount + 1);
   });
 
-  test('Category search in listing form', async ({ takaro, _page }) => {
+  test('Category search in listing form', async ({ takaro }) => {
     const { shopListingPage } = takaro;
 
     await shopListingPage.goto();
@@ -218,7 +218,7 @@ test.describe('Shop Listing Categories Integration', () => {
     await shopListingPage.verifyCategorySearchWorks('armor', ['Armor']);
   });
 
-  test('Category hierarchy displayed in selector', async ({ takaro, _page }) => {
+  test('Category hierarchy displayed in selector', async ({ takaro }) => {
     const { shopListingPage } = takaro;
 
     await shopListingPage.goto();
@@ -228,7 +228,7 @@ test.describe('Shop Listing Categories Integration', () => {
     await shopListingPage.verifyCategoryHierarchyInSelector('Armor', 'Helmet');
   });
 
-  test('Selected categories persist on form errors', async ({ takaro, _page }) => {
+  test('Selected categories persist on form errors', async ({ takaro }) => {
     const { shopListingPage } = takaro;
 
     await shopListingPage.goto();
