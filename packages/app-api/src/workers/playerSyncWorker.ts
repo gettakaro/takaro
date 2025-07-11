@@ -39,54 +39,55 @@ export async function processJob(job: Job<IGameServerQueueData>) {
     log.debug('Processing playerSync job for all domains');
 
     const domainsService = new DomainService();
-    const domains = await domainsService.find({});
-
     const domainPromises = [];
 
-    domainPromises.push(
-      ...domains.results.map(async (domain) => {
-        const promises = [];
+    for await (const domain of domainsService.getIterator()) {
+      domainPromises.push(
+        (async () => {
+          const promises = [];
 
-        const trackingService = new TrackingService(domain.id);
-        await trackingService.repo.ensureLocationPartition();
+          const trackingService = new TrackingService(domain.id);
+          await trackingService.repo.ensureLocationPartition();
 
-        const gameserverService = new GameServerService(domain.id);
-        const gameServers = await gameserverService.find({ filters: { enabled: [true] } });
-        promises.push(
-          ...gameServers.results.map(async (gs) => {
-            const reachable = await gameserverService.testReachability(gs.id);
-            if (reachable.connectable) {
-              await queueService.queues.playerSync.queue.add(
-                { domainId: domain.id, gameServerId: gs.id },
-                { jobId: `playerSync-${domain.id}-${gs.id}-${Date.now()}` },
-              );
-              log.debug(`Added playerSync job for domain: ${domain.id} and game server: ${gs.id}`);
-            } else {
-              log.debug(`Game server ${gs.id} from domain ${domain.id} is not reachable, skipping...`);
-            }
+          const gameserverService = new GameServerService(domain.id);
+          for await (const gs of gameserverService.getIterator({ filters: { enabled: [true] } })) {
+            promises.push(
+              (async () => {
+                const reachable = await gameserverService.testReachability(gs.id);
+                if (reachable.connectable) {
+                  await queueService.queues.playerSync.queue.add(
+                    { domainId: domain.id, gameServerId: gs.id },
+                    { jobId: `playerSync-${domain.id}-${gs.id}-${Date.now()}` },
+                  );
+                  log.debug(`Added playerSync job for domain: ${domain.id} and game server: ${gs.id}`);
+                } else {
+                  log.debug(`Game server ${gs.id} from domain ${domain.id} is not reachable, skipping...`);
+                }
 
-            // If the server is unreachable and it was reachable before, set all players offline
-            if (!reachable.connectable && reachable.connectable !== gs.reachable) {
-              const playerOnGameServerService = new PlayerOnGameServerService(domain.id);
-              await playerOnGameServerService.setOnlinePlayers(gs.id, []);
-            }
-          }),
-        );
-
-        const res = await Promise.allSettled(promises);
-
-        for (const r of res) {
-          if (r.status === 'rejected') {
-            log.error(r.reason);
-            await job.log(r.reason);
+                // If the server is unreachable and it was reachable before, set all players offline
+                if (!reachable.connectable && reachable.connectable !== gs.reachable) {
+                  const playerOnGameServerService = new PlayerOnGameServerService(domain.id);
+                  await playerOnGameServerService.setOnlinePlayers(gs.id, []);
+                }
+              })(),
+            );
           }
-        }
 
-        if (res.some((r) => r.status === 'rejected')) {
-          throw new Error('Some promises failed');
-        }
-      }),
-    );
+          const res = await Promise.allSettled(promises);
+
+          for (const r of res) {
+            if (r.status === 'rejected') {
+              log.error(r.reason);
+              await job.log(r.reason);
+            }
+          }
+
+          if (res.some((r) => r.status === 'rejected')) {
+            throw new Error('Some promises failed');
+          }
+        })(),
+      );
+    }
 
     const domainRes = await Promise.allSettled(domainPromises);
 

@@ -133,7 +133,11 @@ async function process(job: Job<ICSMMImportData>) {
     }
   }
 
-  const roles = await roleService.find({});
+  // Collect all roles for lookup
+  const allRoles = [];
+  for await (const role of roleService.getIterator()) {
+    allRoles.push(role);
+  }
 
   // Sync the players
   if (job.data.options.players) {
@@ -170,7 +174,7 @@ async function process(job: Job<ICSMMImportData>) {
           continue;
         }
 
-        const takaroRole = roles.results.find((r) => r.name === CSMMRole.name);
+        const takaroRole = allRoles.find((r) => r.name === CSMMRole.name);
 
         if (!takaroRole) {
           log.warn(`Player ${csmmPlayer.name} has no role with name ${CSMMRole.name}, skipping role assignment`);

@@ -195,18 +195,20 @@ export class DiscordService extends TakaroService<
     });
 
     const gameServerService = new GameServerService(this.domainId);
-    const gameServers = await gameServerService.find({});
 
-    await Promise.all(
-      gameServers.results.map((gameServer) => {
-        const hookService = new HookService(this.domainId);
-        return hookService.handleEvent({
+    const hookPromises = [];
+    for await (const gameServer of gameServerService.getIterator()) {
+      const hookService = new HookService(this.domainId);
+      hookPromises.push(
+        hookService.handleEvent({
           eventType: messageDTO.type,
           eventData: messageDTO,
           gameServerId: gameServer.id,
-        });
-      }),
-    );
+        }),
+      );
+    }
+
+    await Promise.all(hookPromises);
   }
 
   static async NOT_DOMAIN_SCOPED_resolveDomainFromGuildId(guildId: string): Promise<string | null> {
