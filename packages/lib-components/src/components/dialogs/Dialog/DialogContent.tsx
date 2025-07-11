@@ -23,7 +23,14 @@ export const DialogContent = forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivE
     return (
       <FloatingPortal root={root}>
         {context.open && (
-          <StyledFloatingOverlay lockScroll>
+          <StyledFloatingOverlay
+            lockScroll
+            onClick={(e) => {
+              // Prevent clicks within dialog to bubble up to parent element with click event.
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+          >
             <FloatingFocusManager context={floatingContext}>
               <Card
                 ref={ref}
