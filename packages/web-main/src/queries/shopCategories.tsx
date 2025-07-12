@@ -63,14 +63,12 @@ export const useShopCategory = ({ categoryId }: { categoryId: string }, options?
 
 export const useShopCategoryCreate = () => {
   const queryClient = useQueryClient();
-  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<ShopCategoryOutputDTO, ShopCategoryCreateDTO>(
     useMutation<ShopCategoryOutputDTO, AxiosError<ShopCategoryOutputDTO>, ShopCategoryCreateDTO>({
       mutationFn: async (shopCategory) =>
         (await getApiClient().shopCategory.shopCategoryControllerCreate(shopCategory)).data.data,
       onSuccess: (newShopCategory) => {
-        enqueueSnackbar('Category created!', { variant: 'default', type: 'success' });
         queryClient.invalidateQueries({ queryKey: shopCategoryKeys.list() });
         queryClient.setQueryData(shopCategoryKeys.detail(newShopCategory.id), newShopCategory);
       },
