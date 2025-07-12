@@ -57,6 +57,12 @@ class ShopListingSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsBoolean()
   draft: boolean;
+  @IsOptional()
+  @IsUUID(4, { each: true })
+  categoryIds: string[];
+  @IsOptional()
+  @IsBoolean()
+  uncategorized: boolean;
 }
 
 class ShopListingSearchInputAllowedSearch extends AllowedSearch {

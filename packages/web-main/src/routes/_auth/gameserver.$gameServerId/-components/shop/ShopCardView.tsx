@@ -8,13 +8,33 @@ import { ShopListingCard } from '../../../../../components/cards/ShopListingCard
 import { Button, Empty, EmptyPage, InfiniteScroll } from '@takaro/lib-components';
 import { useNavigate } from '@tanstack/react-router';
 import { ShopViewProps } from './ShopView';
+import { ShopListingSearchInputDTO } from '@takaro/apiclient';
 
-export const ShopCardView: FC<ShopViewProps> = ({ gameServerId, currency, currencyName, gameServerType }) => {
+export const ShopCardView: FC<ShopViewProps> = ({
+  gameServerId,
+  currency,
+  currencyName,
+  gameServerType,
+  selectedCategories = [],
+  showUncategorized = false,
+  onCategoryClick,
+}) => {
   const hasPermission = useHasPermission(['MANAGE_SHOP_LISTINGS']);
   const navigate = useNavigate();
 
   const onCreateShopListingClicked = () => {
     navigate({ to: '/gameserver/$gameServerId/shop/listing/create', params: { gameServerId } });
+  };
+
+  // Build query filters based on selected categories
+  const queryFilters: ShopListingSearchInputDTO = {
+    filters: {
+      gameServerId: [gameServerId],
+      ...(selectedCategories.length > 0 && { categoryIds: selectedCategories }),
+      ...(showUncategorized && { uncategorized: true }),
+    },
+    sortBy: 'draft',
+    sortDirection: 'desc',
   };
 
   const {
@@ -23,13 +43,7 @@ export const ShopCardView: FC<ShopViewProps> = ({ gameServerId, currency, curren
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useInfiniteQuery(
-    shopListingInfiniteQueryOptions({
-      filters: { gameServerId: [gameServerId] },
-      sortBy: 'draft',
-      sortDirection: 'desc',
-    }),
-  );
+  } = useInfiniteQuery(shopListingInfiniteQueryOptions(queryFilters));
 
   if (
     !shopListings ||
@@ -71,6 +85,7 @@ export const ShopCardView: FC<ShopViewProps> = ({ gameServerId, currency, curren
               shopListing={shopListing}
               gameServerId={gameServerId}
               gameServerType={gameServerType}
+              onCategoryClick={onCategoryClick}
             />
           )),
         )}

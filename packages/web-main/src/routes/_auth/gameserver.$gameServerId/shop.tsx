@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link, Outlet, createFileRoute } from '@tanstack/react-router';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { shopOrdersQueryOptions } from '../../../queries/shopOrder';
+import { useHasPermission } from '../../../hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop')({
   component: Component,
@@ -28,6 +29,7 @@ const Container = styled.div`
 function Component() {
   const { gameServerId } = Route.useParams();
   const loaderData = Route.useLoaderData();
+  const hasManagePermission = useHasPermission(['MANAGE_SHOP_LISTINGS']);
 
   const { data: shopOrders } = useQuery({
     ...shopOrdersQueryOptions({
@@ -67,6 +69,15 @@ function Component() {
               Orders
             </span>
           </Link>
+          {hasManagePermission && (
+            <Link
+              activeOptions={{ exact: true }}
+              to="/gameserver/$gameServerId/shop/categories"
+              params={{ gameServerId }}
+            >
+              Categories
+            </Link>
+          )}
         </HorizontalNav>
       </Container>
       <ErrorBoundary>

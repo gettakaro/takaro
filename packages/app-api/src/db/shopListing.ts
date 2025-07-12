@@ -6,6 +6,7 @@ import { ItemRepo, ItemsModel } from './items.js';
 import { RoleModel } from './role.js';
 import { ITakaroRepo } from './base.js';
 import { ShopListingOutputDTO, ShopListingUpdateDTO, ShopListingCreateDTO } from '../service/Shop/dto.js';
+import { ShopCategoryModel, SHOP_CATEGORY_TABLE_NAME, SHOP_LISTING_CATEGORY_TABLE_NAME } from './shopCategory.js';
 
 export const SHOP_LISTING_TABLE_NAME = 'shopListing';
 export const SHOP_LISTING_ITEMS_TABLE_NAME = 'itemOnShopListing';
@@ -83,6 +84,18 @@ export class ShopListingModel extends TakaroModel {
             to: `${SHOP_LISTING_ROLE_TABLE_NAME}.roleId`,
           },
           to: 'roles.id',
+        },
+      },
+      categories: {
+        relation: Model.ManyToManyRelation,
+        modelClass: ShopCategoryModel,
+        join: {
+          from: `${SHOP_LISTING_TABLE_NAME}.id`,
+          through: {
+            from: `${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopListingId`,
+            to: `${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`,
+          },
+          to: `${SHOP_CATEGORY_TABLE_NAME}.id`,
         },
       },
     };
@@ -180,16 +193,56 @@ export class ShopListingRepo extends ITakaroRepo<
       }),
     );
 
+    // Handle category assignments
+    if (item.categoryIds && item.categoryIds.length > 0) {
+      const categoryAssignments = item.categoryIds.map((categoryId) => ({
+        shopListingId: listing.id,
+        shopCategoryId: categoryId,
+        domain: this.domainId,
+      }));
+
+      await knex(SHOP_LISTING_CATEGORY_TABLE_NAME).insert(categoryAssignments);
+    }
+
     return this.findOne(listing.id);
   }
 
   async find(filters: ITakaroQuery<ShopListingOutputDTO>) {
     const { query } = await this.getModel();
     query.where('deletedAt', null);
-    const result = await new QueryBuilder<ShopListingModel, ShopListingOutputDTO>({
+
+    // Handle category filters
+    if (
+      filters.filters?.categoryIds &&
+      Array.isArray(filters.filters.categoryIds) &&
+      filters.filters.categoryIds.length > 0
+    ) {
+      const domainId = this.domainId;
+      query.whereIn('id', function () {
+        this.select('shopListingId')
+          .from(SHOP_LISTING_CATEGORY_TABLE_NAME)
+          .whereIn('shopCategoryId', filters.filters!.categoryIds as string[])
+          .andWhere('domain', '=', domainId);
+      });
+    }
+
+    // Handle uncategorized filter
+    if (filters.filters?.uncategorized === true) {
+      const domainId = this.domainId;
+      query.whereNotIn('id', function () {
+        this.select('shopListingId').from(SHOP_LISTING_CATEGORY_TABLE_NAME).where('domain', '=', domainId);
+      });
+    }
+
+    // Remove categoryIds and uncategorized from filters before passing to QueryBuilder
+    const { categoryIds: _categoryIds, uncategorized: _uncategorized, ...otherFilters } = filters.filters || {};
+    const cleanedFilters = {
       ...filters,
-      extend: [...(filters.extend || []), 'items.item'],
-    }).build(query);
+      filters: otherFilters,
+      extend: [...(filters.extend || []), 'items.item', 'categories'],
+    };
+
+    const result = await new QueryBuilder<ShopListingModel, ShopListingOutputDTO>(cleanedFilters).build(query);
 
     return {
       total: result.total,
@@ -199,7 +252,7 @@ export class ShopListingRepo extends ITakaroRepo<
 
   async findOne(id: string): Promise<ShopListingOutputDTO> {
     const { query } = await this.getModel();
-    const res = await query.findById(id).withGraphFetched('items.item');
+    const res = await query.findById(id).withGraphFetched('[items.item, categories]');
     if (!res) throw new errors.NotFoundError();
     if (res.deletedAt) throw new errors.NotFoundError();
     return new ShopListingOutputDTO(res);
@@ -211,7 +264,9 @@ export class ShopListingRepo extends ITakaroRepo<
     const knex = await this.getKnex();
 
     const { query } = await this.getModel();
-    const res = await query.updateAndFetchById(id, data.toJSON()).returning('*');
+    // Extract categoryIds from data to handle separately
+    const { categoryIds, ...updateData } = data.toJSON();
+    const res = await query.updateAndFetchById(id, updateData).returning('*');
 
     if (data.items) {
       const itemRepo = new ItemRepo(this.domainId);
@@ -237,6 +292,23 @@ export class ShopListingRepo extends ITakaroRepo<
           await ItemOnShopListingModel.bindKnex(knex).query().insert(i);
         }),
       );
+    }
+
+    // Handle category assignments
+    if (categoryIds !== undefined) {
+      // Delete existing category assignments
+      await knex(SHOP_LISTING_CATEGORY_TABLE_NAME).where('shopListingId', id).delete();
+
+      // Add new category assignments
+      if (categoryIds.length > 0) {
+        const categoryAssignments = categoryIds.map((categoryId: string) => ({
+          shopListingId: id,
+          shopCategoryId: categoryId,
+          domain: this.domainId,
+        }));
+
+        await knex(SHOP_LISTING_CATEGORY_TABLE_NAME).insert(categoryAssignments);
+      }
     }
 
     return this.findOne(res.id);

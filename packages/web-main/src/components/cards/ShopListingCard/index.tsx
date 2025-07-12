@@ -5,6 +5,7 @@ import { GameServerOutputDTOTypeEnum, ShopListingOutputDTO } from '@takaro/apicl
 import { useHasPermission } from '../../../hooks/useHasPermission';
 import { ShopListingActions } from '../../../routes/_auth/gameserver.$gameServerId/-components/shop/ShopListingActions';
 import { ShopListingBuyForm } from '../../../routes/_auth/gameserver.$gameServerId/-components/shop/ShopListingBuyForm';
+import { CategoryBadge } from '../../shop/CategoryBadge';
 
 const gameServerTypeToIconFolderMap = {
   [GameServerOutputDTOTypeEnum.Mock]: 'rust',
@@ -19,6 +20,7 @@ interface ShopListingCard {
   gameServerId: string;
   gameServerType: GameServerOutputDTOTypeEnum;
   playerCurrencyAmount: number;
+  onCategoryClick?: (categoryId: string) => void;
 }
 
 export const ShopListingCard: FC<ShopListingCard> = ({
@@ -27,6 +29,7 @@ export const ShopListingCard: FC<ShopListingCard> = ({
   shopListing,
   gameServerType,
   playerCurrencyAmount,
+  onCategoryClick,
 }) => {
   const firstItem = shopListing.items[0]?.item || { name: 'Unknown', code: 'unknown' };
   const shopListingName = shopListing.name || firstItem.name;
@@ -56,6 +59,17 @@ export const ShopListingCard: FC<ShopListingCard> = ({
                 <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
               </Avatar>
               <h2>{shopListingName}</h2>
+              {shopListing.categories && shopListing.categories.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+                  {shopListing.categories.map((category) => (
+                    <CategoryBadge
+                      key={category.id}
+                      category={category}
+                      onClick={onCategoryClick ? () => onCategoryClick(category.id) : undefined}
+                    />
+                  ))}
+                </div>
+              )}
               <div
                 style={{ display: 'flex', flexWrap: 'wrap', textAlign: 'left', width: '100%', marginBottom: '1.5rem' }}
               >

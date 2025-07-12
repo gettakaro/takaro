@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Category name must be 50 characters or less"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "ShopCategoryController",
+    "snapshot": true,
+    "name": "Create category with invalid name (too long)",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

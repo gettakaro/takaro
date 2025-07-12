@@ -196,7 +196,7 @@
     "@hookform/devtools": "4.3.1",
     "@mdx-js/react": "3.0.1",
     "@openapitools/openapi-generator-cli": "2.16.3",
-    "@playwright/test": "1.47.2",
+    "@playwright/test": "^1.54.0",
     "@reporters/github": "1.7.2",
     "@storybook/addon-a11y": "8.5.8",
     "@storybook/addon-essentials": "8.5.8",

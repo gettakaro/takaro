@@ -1,0 +1,36 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "id": "81e6e18c-bae9-49e1-87ad-864386ff98d7",
+      "name": "Updated Melee",
+      "emoji": "🗡️",
+      "parentId": "94d83e5a-643f-4c8f-8305-6cd0fd8f3b2e",
+      "createdAt": "2025-07-10T16:24:51.693Z",
+      "updatedAt": "2025-07-10T16:24:52.139Z",
+      "listingCount": 0,
+      "parent": {
+        "id": "94d83e5a-643f-4c8f-8305-6cd0fd8f3b2e",
+        "name": "Weapons",
+        "emoji": "⚔️",
+        "parentId": null,
+        "createdAt": "2025-07-10T16:24:45.797Z",
+        "updatedAt": "2025-07-10T16:24:45.797Z"
+      },
+      "children": []
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ShopCategoryController",
+    "snapshot": true,
+    "name": "Update category",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "updatedAt"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

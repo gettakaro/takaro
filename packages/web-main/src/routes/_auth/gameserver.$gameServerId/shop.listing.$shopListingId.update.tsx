@@ -45,7 +45,7 @@ function Component() {
     ],
   });
 
-  const onSubmit: SubmitHandler<FormValues> = ({ items, price, name, draft }) => {
+  const onSubmit: SubmitHandler<FormValues> = ({ items, price, name, draft, categoryIds }) => {
     mutate({
       shopListingId,
       shopListingDetails: {
@@ -54,6 +54,7 @@ function Component() {
         gameServerId,
         name: name ? name : undefined,
         draft: draft !== undefined ? draft : undefined,
+        categoryIds: categoryIds !== undefined ? categoryIds : undefined,
       },
     });
 

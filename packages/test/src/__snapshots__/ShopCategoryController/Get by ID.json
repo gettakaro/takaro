@@ -1,0 +1,49 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "id": "2c4ebf69-62bd-4c39-9065-b9b3ff564fdb",
+      "name": "Weapons",
+      "emoji": "⚔️",
+      "parentId": null,
+      "createdAt": "2025-07-10T16:24:11.384Z",
+      "updatedAt": "2025-07-10T16:24:11.385Z",
+      "listingCount": 0,
+      "children": [
+        {
+          "id": "09d03254-f52d-41d3-9d2f-7bde02af0ec9",
+          "name": "Ranged Weapons",
+          "emoji": "🏹",
+          "parentId": "2c4ebf69-62bd-4c39-9065-b9b3ff564fdb",
+          "createdAt": "2025-07-10T16:24:17.702Z",
+          "updatedAt": "2025-07-10T16:24:17.702Z"
+        },
+        {
+          "id": "227aeeb1-bbab-4cd0-9a77-fc1cca969f91",
+          "name": "Melee Weapons",
+          "emoji": "⚔️",
+          "parentId": "2c4ebf69-62bd-4c39-9065-b9b3ff564fdb",
+          "createdAt": "2025-07-10T16:24:17.666Z",
+          "updatedAt": "2025-07-10T16:24:17.666Z"
+        }
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ShopCategoryController",
+    "snapshot": true,
+    "name": "Get by ID",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "updatedAt",
+      "domain",
+      "parent",
+      "children",
+      "listingCount"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

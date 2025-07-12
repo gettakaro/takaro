@@ -55,6 +55,10 @@ export class ShopListingOutputDTO extends TakaroModelDTO<ShopListingOutputDTO> {
   deletedAt?: Date;
   @IsBoolean()
   draft: boolean;
+  @ValidateNested({ each: true })
+  @Type(() => ShopCategoryOutputDTO)
+  @IsOptional()
+  categories?: ShopCategoryOutputDTO[];
 }
 
 export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
@@ -70,6 +74,9 @@ export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
   @IsBoolean()
   @IsOptional()
   draft?: boolean;
+  @IsUUID('4', { each: true })
+  @IsOptional()
+  categoryIds?: string[];
 }
 
 export class ShopListingUpdateDTO extends TakaroDTO<ShopListingUpdateDTO> {
@@ -89,6 +96,9 @@ export class ShopListingUpdateDTO extends TakaroDTO<ShopListingUpdateDTO> {
   @IsBoolean()
   @IsOptional()
   draft?: boolean;
+  @IsUUID('4', { each: true })
+  @IsOptional()
+  categoryIds?: string[];
 }
 
 export enum ShopOrderStatus {
@@ -147,4 +157,70 @@ export class ShopImportOptions extends TakaroDTO<ShopImportOptions> {
   draft: boolean;
   @IsUUID('4')
   gameServerId: string;
+}
+
+export class ShopCategoryOutputDTO extends TakaroModelDTO<ShopCategoryOutputDTO> {
+  @IsUUID()
+  id: string;
+  @IsString()
+  name: string;
+  @IsString()
+  emoji: string;
+  @IsUUID()
+  @IsOptional()
+  parentId?: string | null;
+  @ValidateNested()
+  @Type(() => ShopCategoryOutputDTO)
+  @IsOptional()
+  parent?: ShopCategoryOutputDTO;
+  @ValidateNested({ each: true })
+  @Type(() => ShopCategoryOutputDTO)
+  @IsOptional()
+  children?: ShopCategoryOutputDTO[];
+  @ValidateNested({ each: true })
+  @Type(() => ShopListingOutputDTO)
+  @IsOptional()
+  listings?: ShopListingOutputDTO[];
+  @IsNumber()
+  @IsOptional()
+  listingCount?: number;
+}
+
+export class ShopCategoryCreateDTO extends TakaroDTO<ShopCategoryCreateDTO> {
+  @IsString()
+  name: string;
+  @IsString()
+  emoji: string;
+  @IsUUID()
+  @IsOptional()
+  parentId?: string | null;
+}
+
+export class ShopCategoryUpdateDTO extends TakaroDTO<ShopCategoryUpdateDTO> {
+  @IsString()
+  @IsOptional()
+  name?: string;
+  @IsString()
+  @IsOptional()
+  emoji?: string;
+  @IsUUID()
+  @IsOptional()
+  parentId?: string | null;
+}
+
+export class ShopCategoryMoveDTO extends TakaroDTO<ShopCategoryMoveDTO> {
+  @IsUUID()
+  @IsOptional()
+  parentId?: string | null;
+}
+
+export class ShopCategoryBulkAssignDTO extends TakaroDTO<ShopCategoryBulkAssignDTO> {
+  @IsUUID('4', { each: true })
+  listingIds: string[];
+  @IsUUID('4', { each: true })
+  @IsOptional()
+  addCategoryIds?: string[];
+  @IsUUID('4', { each: true })
+  @IsOptional()
+  removeCategoryIds?: string[];
 }

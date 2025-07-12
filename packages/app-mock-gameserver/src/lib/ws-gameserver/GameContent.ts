@@ -14,6 +14,31 @@ export const GAME_ITEMS: IItemDTO[] = [
     name: 'Stone',
     description: 'Stone can get you stoned',
   }),
+  new IItemDTO({
+    code: 'iron',
+    name: 'Iron',
+    description: 'Iron is strong',
+  }),
+  new IItemDTO({
+    code: 'gold',
+    name: 'Gold',
+    description: 'Gold is shiny',
+  }),
+  new IItemDTO({
+    code: 'adminGun',
+    name: 'Admin Gun',
+    description: 'A powerful gun for admins',
+  }),
+  new IItemDTO({
+    code: 'healingPotion',
+    name: 'Healing Potion',
+    description: 'Restores health over time',
+  }),
+  new IItemDTO({
+    code: 'magicWand',
+    name: 'Magic Wand',
+    description: 'A wand that casts spells',
+  }),
 ];
 
 export const GAME_ENTITIES: IEntityDTO[] = [

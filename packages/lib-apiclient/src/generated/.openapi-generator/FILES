@@ -301,6 +301,17 @@ docs/SettingsOutputArrayDTOAPI.md
 docs/SettingsOutputDTO.md
 docs/SettingsOutputDTOAPI.md
 docs/SettingsSetDTO.md
+docs/ShopCategoryApi.md
+docs/ShopCategoryBulkAssignDTO.md
+docs/ShopCategoryCreateDTO.md
+docs/ShopCategoryMoveDTO.md
+docs/ShopCategoryOutputArrayDTOAPI.md
+docs/ShopCategoryOutputDTO.md
+docs/ShopCategoryOutputDTOAPI.md
+docs/ShopCategorySearchInputAllowedFilters.md
+docs/ShopCategorySearchInputAllowedSearch.md
+docs/ShopCategorySearchInputDTO.md
+docs/ShopCategoryUpdateDTO.md
 docs/ShopImportOptions.md
 docs/ShopListingApi.md
 docs/ShopListingCreateDTO.md

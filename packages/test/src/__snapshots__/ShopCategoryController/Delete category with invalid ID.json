@@ -1,0 +1,33 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "ValidationError",
+        "details": [
+          {
+            "target": {
+              "id": "invalid-id"
+            },
+            "value": "invalid-id",
+            "property": "id",
+            "children": [],
+            "constraints": {
+              "isUuid": "id must be a UUID"
+            }
+          }
+        ],
+        "message": "Validation error"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "ShopCategoryController",
+    "snapshot": true,
+    "name": "Delete category with invalid ID",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

@@ -25,6 +25,7 @@ export class TakaroModel extends NOT_DOMAIN_SCOPED_TakaroModel {
     return {
       domainScoped(query: Objection.QueryBuilder<Model>, domainId: string) {
         const tableName = query.modelClass().tableName;
+        if (!domainId) throw new Error('Domain ID is required for domainScoped modifier');
         query.where(`${tableName}.domain`, domainId);
       },
     };
