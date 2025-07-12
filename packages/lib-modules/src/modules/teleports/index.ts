@@ -15,7 +15,7 @@ export class Teleports extends ModuleTransferDTO<Teleports> {
     this.name = 'teleports';
     this.versions = [
       new ModuleTransferVersionDTO({
-        tag: '0.0.3',
+        tag: '0.0.4',
         description: 'A set of commands to allow players to set their own teleport points and teleport to them.',
         configSchema: JSON.stringify({
           $schema: 'http://json-schema.org/draft-07/schema#',
@@ -73,6 +73,7 @@ export class Teleports extends ModuleTransferDTO<Teleports> {
             name: 'teleport',
             trigger: 'tp',
             helpText: 'Teleports to one of your set locations.',
+            requiredPermissions: ['TELEPORTS_USE'],
             arguments: [
               {
                 name: 'tp',
@@ -88,6 +89,7 @@ export class Teleports extends ModuleTransferDTO<Teleports> {
             name: 'tplist',
             trigger: 'tplist',
             helpText: 'Lists all your set locations.',
+            requiredPermissions: ['TELEPORTS_USE'],
             arguments: [],
           }),
           new ICommand({
@@ -95,6 +97,7 @@ export class Teleports extends ModuleTransferDTO<Teleports> {
             name: 'settp',
             trigger: 'settp',
             helpText: 'Sets a location to teleport to.',
+            requiredPermissions: ['TELEPORTS_USE'],
             arguments: [
               {
                 name: 'tp',
@@ -125,6 +128,7 @@ export class Teleports extends ModuleTransferDTO<Teleports> {
             name: 'setpublic',
             trigger: 'setpublic',
             helpText: 'Sets a teleport to be public, allowing other players to teleport to it.',
+            requiredPermissions: ['TELEPORTS_CREATE_PUBLIC'],
             arguments: [
               {
                 name: 'tp',
@@ -155,6 +159,7 @@ export class Teleports extends ModuleTransferDTO<Teleports> {
             name: 'setwaypoint',
             trigger: 'setwaypoint',
             helpText: 'Creates a new waypoint.',
+            requiredPermissions: ['TELEPORTS_MANAGE_WAYPOINTS'],
             arguments: [
               {
                 name: 'waypoint',
@@ -170,6 +175,7 @@ export class Teleports extends ModuleTransferDTO<Teleports> {
             name: 'deletewaypoint',
             trigger: 'deletewaypoint',
             helpText: 'Deletes a waypoint.',
+            requiredPermissions: ['TELEPORTS_MANAGE_WAYPOINTS'],
             arguments: [
               {
                 name: 'waypoint',

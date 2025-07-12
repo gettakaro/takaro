@@ -5,7 +5,7 @@ import { ModuleService } from '../../service/Module/index.js';
 import { AuthenticatedRequest, AuthService } from '../../service/AuthService.js';
 import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
-import { Type } from 'class-transformer';
+import { Type, Exclude } from 'class-transformer';
 import { ParamId } from '../../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
@@ -55,6 +55,9 @@ class ModuleVersionSearchInputDTO extends ITakaroQuery<ModuleVersionSearchInputA
   @ValidateNested()
   @Type(() => RangeFilterCreatedAndUpdatedAt)
   declare lessThan: RangeFilterCreatedAndUpdatedAt;
+
+  @Exclude()
+  declare extend?: string[];
 }
 
 @OpenAPI({

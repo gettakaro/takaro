@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Type, Exclude } from 'class-transformer';
 import { ValidateNested, IsOptional, IsString, IsUUID, IsEnum } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
@@ -61,6 +61,9 @@ class EntitySearchInputDTO extends ITakaroQuery<EntitySearchInputAllowedFilters>
   @ValidateNested()
   @Type(() => EntitySearchInputAllowedSearch)
   declare search: EntitySearchInputAllowedSearch;
+
+  @Exclude()
+  declare extend?: string[];
 }
 
 @OpenAPI({

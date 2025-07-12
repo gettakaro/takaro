@@ -64,8 +64,14 @@ export class IItemDTO extends TakaroDTO<IItemDTO> {
 export class IMessageOptsDTO extends TakaroDTO<IMessageOptsDTO> {
   @Type(() => IPlayerReferenceDTO)
   @ValidateNested()
+  @IsOptional()
   /** When specified, will send a DM to this player instead of a global message */
   recipient?: IPlayerReferenceDTO;
+
+  @IsString()
+  @IsOptional()
+  /** When specified, overrides the server chat name from settings */
+  senderNameOverride?: string;
 }
 
 export class BanDTO extends TakaroDTO<BanDTO> {

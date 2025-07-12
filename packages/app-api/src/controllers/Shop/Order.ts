@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsNumber, IsOptional, IsString, IsUUID, ValidateNested, IsEnum } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { ShopListingService } from '../../service/Shop/index.js';
@@ -50,6 +50,9 @@ class ShopOrderSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdate
   amount: number;
 }
 
+const shopOrderExtendOptions = ['listing', 'listing.items', 'listing.items.item', 'player'];
+type ShopOrderExtendOptions = (typeof shopOrderExtendOptions)[number];
+
 class ShopOrderSearchInputDTO extends ITakaroQuery<ShopOrderSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => ShopOrderSearchInputAllowedFilters)
@@ -62,6 +65,10 @@ class ShopOrderSearchInputDTO extends ITakaroQuery<ShopOrderSearchInputAllowedFi
   @ValidateNested()
   @Type(() => ShopOrderSearchInputAllowedRangeFilter)
   declare lessThan: ShopOrderSearchInputAllowedRangeFilter;
+
+  @IsOptional()
+  @IsEnum(shopOrderExtendOptions, { each: true })
+  declare extend?: ShopOrderExtendOptions[];
 }
 
 @OpenAPI({

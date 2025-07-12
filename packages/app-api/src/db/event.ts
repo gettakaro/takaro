@@ -105,7 +105,7 @@ export class EventRepo extends ITakaroRepo<EventModel, EventOutputDTO, EventCrea
     const data = await query.findById(id);
 
     if (!data) {
-      throw new errors.NotFoundError(`Record with id ${id} not found`);
+      throw new errors.NotFoundError(`Event with id ${id} not found`);
     }
 
     return new EventOutputDTO(data);

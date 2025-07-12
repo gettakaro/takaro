@@ -1,4 +1,4 @@
-import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, IsUUID, ValidateNested, IsEnum } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { ShopListingService } from '../../service/Shop/index.js';
@@ -74,6 +74,9 @@ class ShopSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
   deletedAt!: string;
 }
 
+const shopListingExtendOptions = ['gameServer', 'item'];
+type ShopListingExtendOptions = (typeof shopListingExtendOptions)[number];
+
 class ShopListingSearchInputDTO extends ITakaroQuery<ShopListingSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => ShopListingSearchInputAllowedFilters)
@@ -90,6 +93,10 @@ class ShopListingSearchInputDTO extends ITakaroQuery<ShopListingSearchInputAllow
   @ValidateNested()
   @Type(() => ShopSearchInputAllowedRangeFilter)
   declare lessThan: ShopSearchInputAllowedRangeFilter;
+
+  @IsOptional()
+  @IsEnum(shopListingExtendOptions, { each: true })
+  declare extend?: ShopListingExtendOptions[];
 }
 
 @OpenAPI({

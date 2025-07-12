@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsBoolean,
   IsEnum,
   IsIP,
@@ -23,6 +24,7 @@ export const TakaroEvents = {
   ROLE_UPDATED: 'role-updated',
   ROLE_DELETED: 'role-deleted',
   COMMAND_EXECUTED: 'command-executed',
+  COMMAND_EXECUTION_DENIED: 'command-execution-denied',
   HOOK_EXECUTED: 'hook-executed',
   CRONJOB_EXECUTED: 'cronjob-executed',
   CURRENCY_ADDED: 'currency-added',
@@ -154,6 +156,19 @@ export class TakaroEventCommandExecuted extends BaseEvent<TakaroEventCommandExec
   @ValidateNested()
   @Type(() => TakaroEventCommandDetails)
   command: TakaroEventCommandDetails;
+}
+
+export class TakaroEventCommandExecutionDenied extends BaseEvent<TakaroEventCommandExecutionDenied> {
+  @IsString()
+  type = TakaroEvents.COMMAND_EXECUTION_DENIED;
+
+  @ValidateNested()
+  @Type(() => TakaroEventCommandDetails)
+  command: TakaroEventCommandDetails;
+
+  @IsArray()
+  @IsString({ each: true })
+  missingPermissions: string[];
 }
 
 export class TakaroEventHookExecuted extends BaseEvent<TakaroEventHookExecuted> {
@@ -423,6 +438,7 @@ export const TakaroEventsMapping = {
   [TakaroEvents.CURRENCY_DEDUCTED]: TakaroEventCurrencyDeducted,
   [TakaroEvents.CURRENCY_ADDED]: TakaroEventCurrencyAdded,
   [TakaroEvents.COMMAND_EXECUTED]: TakaroEventCommandExecuted,
+  [TakaroEvents.COMMAND_EXECUTION_DENIED]: TakaroEventCommandExecutionDenied,
   [TakaroEvents.ROLE_REMOVED]: TakaroEventRoleRemoved,
   [TakaroEvents.ROLE_CREATED]: TakaroEventRoleCreated,
   [TakaroEvents.ROLE_UPDATED]: TakaroEventRoleUpdated,

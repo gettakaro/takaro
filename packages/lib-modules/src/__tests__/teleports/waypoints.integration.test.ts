@@ -171,7 +171,9 @@ const tests = [
       });
 
       expect((await firstEvents).length).to.be.eq(1);
-      expect((await firstEvents)[0].data.meta.msg).to.be.eq('You do not have permission to manage waypoints.');
+      expect((await firstEvents)[0].data.meta.msg).to.be.eq(
+        "⚠️ You need the 'Teleports Manage Waypoints' permission to use this command. Please contact an admin if you need access.",
+      );
 
       await this.client.player.playerControllerAssignRole(
         this.setupData.player.id,
@@ -278,7 +280,9 @@ const tests = [
       });
 
       expect((await secondEvents).length).to.be.eq(1);
-      expect((await secondEvents)[0].data.meta.msg).to.be.eq('You do not have permission to manage waypoints.');
+      expect((await secondEvents)[0].data.meta.msg).to.be.eq(
+        "⚠️ You need the 'Teleports Manage Waypoints' permission to use this command. Please contact an admin if you need access.",
+      );
 
       const thirdEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 

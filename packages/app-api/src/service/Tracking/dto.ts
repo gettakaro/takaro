@@ -46,7 +46,10 @@ export class BoundingBoxSearchInputDTO extends TakaroDTO<BoundingBoxSearchInputD
   maxZ: number;
   @IsISO8601()
   @IsOptional()
-  timestamp?: string;
+  startDate?: string;
+  @IsISO8601()
+  @IsOptional()
+  endDate?: string;
   @IsUUID('4')
   gameserverId: string;
 }
@@ -62,7 +65,10 @@ export class RadiusSearchInputDTO extends TakaroDTO<RadiusSearchInputDTO> {
   radius: number;
   @IsISO8601()
   @IsOptional()
-  timestamp?: string;
+  startDate?: string;
+  @IsISO8601()
+  @IsOptional()
+  endDate?: string;
   @IsUUID('4')
   gameserverId: string;
 }

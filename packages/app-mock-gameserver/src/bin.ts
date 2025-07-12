@@ -35,7 +35,45 @@ async function main() {
     config.get('mockserver.identityToken') !== 'default-mock'
   ) {
     log.info('✅ Registration and identity tokens provided, will register with the Takaro server');
-    await getMockServer();
+
+    // Retry connection with exponential backoff
+    const maxRetries = 30; // Max 30 attempts (about 15 minutes with exponential backoff)
+    let retryDelay = 5000; // Start with 5 seconds
+    const maxDelay = 60000; // Max 60 seconds between retries
+    let attempt = 0;
+
+    while (attempt < maxRetries) {
+      try {
+        await getMockServer();
+        log.info('✅ Successfully connected to Takaro server');
+        break;
+      } catch (error) {
+        attempt++;
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
+        if (errorMessage.includes('ECONNREFUSED')) {
+          log.warn(
+            `⚠️  Cannot connect to Takaro server (attempt ${attempt}/${maxRetries}). The connector service might not be ready yet.`,
+          );
+          log.warn(`   Retrying in ${retryDelay / 1000} seconds...`);
+
+          if (attempt < maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, retryDelay));
+            // Exponential backoff with jitter
+            retryDelay = Math.min(retryDelay * 1.5 + Math.random() * 1000, maxDelay);
+          } else {
+            log.error(
+              "❌ Failed to connect to Takaro server after maximum retries. The mock server will continue running but won't be registered.",
+            );
+            log.error('   Please ensure the connector service is running and accessible.');
+          }
+        } else {
+          // For non-connection errors, don't retry
+          log.error('❌ Failed to register with Takaro server:', errorMessage);
+          throw error;
+        }
+      }
+    }
   } else {
     log.info('❌ No registration and identity tokens provided, will not register with the Takaro server');
   }

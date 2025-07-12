@@ -90,7 +90,7 @@ export class FunctionRepo extends ITakaroRepo<FunctionModel, FunctionOutputDTO, 
     const data = await query.findById(id);
 
     if (!data) {
-      throw new errors.NotFoundError(`Record with id ${id} not found`);
+      throw new errors.NotFoundError(`Function with id ${id} not found`);
     }
 
     return new FunctionOutputDTO(data);

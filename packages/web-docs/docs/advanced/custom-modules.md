@@ -104,6 +104,41 @@ await main();
 
 Using `TakaroUserError` ensures the error message is displayed nicely to the player.
 
+### Command Permissions
+
+You can restrict commands to players with specific permissions by setting the `requiredPermissions` field when defining your command:
+
+```javascript
+// In your module definition
+{
+  name: 'adminTeleport',
+  trigger: 'admintp',
+  helpText: 'Teleport any player to any location',
+  requiredPermissions: ['ADMIN_TELEPORT'],
+  arguments: [
+    {
+      name: 'player',
+      type: 'player',
+      helpText: 'Player to teleport',
+      position: 0
+    },
+    {
+      name: 'location',
+      type: 'string',
+      helpText: 'Location name',
+      position: 1
+    }
+  ]
+}
+```
+
+When a player without the required permission tries to use the command:
+- They receive an automatic permission denied message
+- The command function is never executed
+- A `COMMAND_EXECUTION_DENIED` event is logged
+
+This is more secure than checking permissions inside your command function, as it prevents the code from running at all.
+
 ## Responding to Events with Hooks
 
 Sometimes you want your module to react to things that happen in the game automatically. That's where hooks come in. Let's look at a hook that welcomes players when they join the server:

@@ -12,10 +12,6 @@ async function main() {
 
   const hasPermission = checkPermission(pog, 'TELEPORTS_CREATE_PUBLIC');
 
-  if (!hasPermission) {
-    throw new TakaroUserError('You do not have permission to create public teleports.');
-  }
-
   const existingPublicTeleportsForPlayerRes = await takaro.variable.variableControllerSearch({
     search: {
       key: ['pubtp_'],
@@ -29,7 +25,7 @@ async function main() {
 
   if (existingPublicTeleportsForPlayerRes.data.data.length >= hasPermission.count) {
     throw new TakaroUserError(
-      `You have reached the maximum number of public teleports for your role, maximum allowed is ${hasPermission.count}`
+      `You have reached the maximum number of public teleports for your role, maximum allowed is ${hasPermission.count}`,
     );
   }
 

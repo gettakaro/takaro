@@ -250,7 +250,7 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
 
   async getBoundingBoxPlayers(input: BoundingBoxSearchInputDTO): Promise<PlayerLocationOutputDTO[]> {
     const { query } = await this.getModel();
-    const { minX, maxX, minY, maxY, minZ, maxZ, timestamp, gameserverId } = input;
+    const { minX, maxX, minY, maxY, minZ, maxZ, startDate, endDate, gameserverId } = input;
 
     const qb = query
       .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerLocation.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
@@ -262,12 +262,11 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
       .andWhere('z', '>=', minZ)
       .andWhere('z', '<=', maxZ);
 
-    if (timestamp) {
-      // Find records within 1 minute of the specified timestamp
-      const timestampDate = new Date(timestamp);
-      const startTime = new Date(timestampDate.getTime() - 60000).toISOString(); // 1 minute before
-      const endTime = new Date(timestampDate.getTime() + 60000).toISOString(); // 1 minute after
-      qb.andWhere('playerLocation.createdAt', '>=', startTime).andWhere('playerLocation.createdAt', '<=', endTime);
+    if (startDate) {
+      qb.andWhere('playerLocation.createdAt', '>=', startDate);
+    }
+    if (endDate) {
+      qb.andWhere('playerLocation.createdAt', '<=', endDate);
     }
 
     const result = await qb;
@@ -278,19 +277,18 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
 
   async getRadiusPlayers(input: RadiusSearchInputDTO): Promise<PlayerLocationOutputDTO[]> {
     const { query } = await this.getModel();
-    const { x, y, z, radius, timestamp, gameserverId } = input;
+    const { x, y, z, radius, startDate, endDate, gameserverId } = input;
 
     const qb = query
       .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerLocation.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
       .where(`${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`, gameserverId)
       .andWhereRaw('sqrt((x - ?) ^ 2 + (y - ?) ^ 2 + (z - ?) ^ 2) <= ?', [x, y, z, radius]);
 
-    if (timestamp) {
-      // Find records within 1 minute of the specified timestamp
-      const timestampDate = new Date(timestamp);
-      const startTime = new Date(timestampDate.getTime() - 60000).toISOString(); // 1 minute before
-      const endTime = new Date(timestampDate.getTime() + 60000).toISOString(); // 1 minute after
-      qb.andWhere('playerLocation.createdAt', '>=', startTime).andWhere('playerLocation.createdAt', '<=', endTime);
+    if (startDate) {
+      qb.andWhere('playerLocation.createdAt', '>=', startDate);
+    }
+    if (endDate) {
+      qb.andWhere('playerLocation.createdAt', '<=', endDate);
     }
 
     const result = await qb;

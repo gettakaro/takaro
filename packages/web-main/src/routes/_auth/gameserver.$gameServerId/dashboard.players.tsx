@@ -4,6 +4,7 @@ import {
   PlayerOnGameServerSearchInputDTOSortDirectionEnum,
   PlayerOutputDTO,
   EventOutputDTO,
+  PlayerOnGameServerSearchInputDTOExtendEnum,
 } from '@takaro/apiclient';
 import { Card, styled, Table, useTableActions, Chip, CopyId, DateFormatter, Skeleton } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
@@ -148,7 +149,7 @@ function Component() {
   const queryParams = {
     page: pagination.paginationState.pageIndex,
     limit: pagination.paginationState.pageSize,
-    extend: ['player'],
+    extend: [PlayerOnGameServerSearchInputDTOExtendEnum.Player],
     sortBy: sorting.sortingState[0]?.id,
     sortDirection: sorting.sortingState[0]?.desc
       ? PlayerOnGameServerSearchInputDTOSortDirectionEnum.Desc

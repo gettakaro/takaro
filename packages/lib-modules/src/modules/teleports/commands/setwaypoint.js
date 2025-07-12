@@ -1,12 +1,8 @@
-import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';
+import { takaro, data, TakaroUserError } from '@takaro/helpers';
 import { getWaypointName, waypointReconciler } from './utils.js';
 
 async function main() {
   const { pog, gameServerId, arguments: args, module: mod } = data;
-
-  if (!checkPermission(pog, 'TELEPORTS_MANAGE_WAYPOINTS')) {
-    throw new TakaroUserError('You do not have permission to manage waypoints.');
-  }
 
   try {
     await takaro.variable.variableControllerCreate({

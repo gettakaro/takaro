@@ -46,7 +46,8 @@
             "trigger": "help",
             "helpText": "The text you are reading right now, displays information about commands.",
             "versionId": "4e945c36-208c-4d0c-b94f-12e90ebc959a",
-            "description": null
+            "description": null,
+            "requiredPermissions": []
           },
           {
             "createdAt": "2024-12-07T17:35:49.917Z",
@@ -57,7 +58,8 @@
             "trigger": "ping",
             "helpText": "Replies with pong, useful for testing if the connection works.",
             "versionId": "4e945c36-208c-4d0c-b94f-12e90ebc959a",
-            "description": null
+            "description": null,
+            "requiredPermissions": []
           }
         ],
         "permissions": [],

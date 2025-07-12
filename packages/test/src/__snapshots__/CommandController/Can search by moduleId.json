@@ -25,7 +25,8 @@
           "versionId": null,
           "description": null
         },
-        "arguments": []
+        "arguments": [],
+        "requiredPermissions": []
       }
     ]
   },

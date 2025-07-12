@@ -20,11 +20,12 @@ import {
 
 import { ArgumentCard, ArgumentList, Column, ContentContainer, Fields, Flex } from './style';
 import { globalGameServerSetingQueryOptions } from '../../../../../queries/setting';
-import { commandQueryOptions, useCommandUpdate } from '../../../../../queries/module';
+import { commandQueryOptions, useCommandUpdate, moduleVersionQueryOptions } from '../../../../../queries/module';
+import { permissionsQueryOptions } from '../../../../../queries/role';
 import { FC } from 'react';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
-import { CommandOutputDTO, CommandUpdateDTO } from '@takaro/apiclient';
+import { CommandOutputDTO } from '@takaro/apiclient';
 import { ConfigLoading } from './ConfigLoading';
 import { useQuery } from '@tanstack/react-query';
 
@@ -32,6 +33,7 @@ const validationSchema = z.object({
   trigger: z.string().min(1, { message: 'Trigger is required' }),
   description: z.string().optional(),
   helpText: z.string(),
+  requiredPermissions: z.array(z.string()).optional(),
   arguments: z.array(
     z.object({
       commandId: z.string().min(1, { message: 'Command ID is required' }),
@@ -90,7 +92,7 @@ export const CommandConfig: FC<CommandConfigProps> = ({ itemId, readOnly, module
   // fallback to `/`
   const prefix = (settings && settings?.value) ?? '/';
 
-  return <CommandConfigForm commandPrefix={prefix} command={command} readOnly={readOnly} moduleId={moduleId} />;
+  return <CommandConfigForm commandPrefix={prefix} command={command!} readOnly={readOnly} moduleId={moduleId} />;
 };
 
 interface CommandConfigFormProps {
@@ -102,6 +104,23 @@ interface CommandConfigFormProps {
 
 export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnly, commandPrefix, moduleId }) => {
   const { mutateAsync, error, isPending } = useCommandUpdate();
+  const { data: moduleVersion } = useQuery(moduleVersionQueryOptions(command.versionId));
+  const { data: allPermissions } = useQuery(permissionsQueryOptions());
+
+  // Filter permissions into system and module permissions
+  const systemPermissions =
+    allPermissions?.filter((permission) => {
+      // System permissions are those that don't belong to any module
+      // Module permissions typically have underscores in their permission code
+      // System permissions are single words or simple combinations
+      const permissionCode = permission.permission || '';
+      const isModulePermission =
+        permissionCode.includes('_') &&
+        !permissionCode.startsWith('MANAGE_') &&
+        !permissionCode.startsWith('READ_') &&
+        permissionCode !== 'ROOT';
+      return !isModulePermission;
+    }) || [];
 
   const { control, handleSubmit, formState, reset } = useForm<z.infer<typeof validationSchema>>({
     mode: 'onSubmit',
@@ -110,6 +129,7 @@ export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnl
       trigger: command.trigger,
       helpText: command.helpText,
       description: command.description,
+      requiredPermissions: command.requiredPermissions || [],
       arguments: command.arguments
         .sort((a, b) => a.position - b.position)
         .map((arg) => {
@@ -136,20 +156,21 @@ export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnl
   });
 
   const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async (data) => {
-    data.arguments = data.arguments.map((arg, index) => {
-      return {
+    const commandData = {
+      ...data,
+      requiredPermissions: data.requiredPermissions || [],
+      arguments: data.arguments.map((arg, index) => ({
         name: arg.name,
         type: arg.type,
         helpText: arg.helpText,
-        commandId: command.id,
-        defaultValue: arg.defaultValue,
+        defaultValue: arg.defaultValue ?? undefined,
         position: index,
-      };
-    });
+      })),
+    };
 
     await mutateAsync({
       commandId: command.id,
-      command: data as CommandUpdateDTO,
+      command: commandData,
       versionId: command.versionId,
       moduleId: moduleId,
     });
@@ -180,6 +201,48 @@ export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnl
         description="Description of what the command does, this can be displayed to users in-game."
         readOnly={readOnly}
       />
+      <SelectField
+        control={control}
+        name="requiredPermissions"
+        label="Required Permissions"
+        description="Select permissions required to execute this command"
+        multiple
+        canClear
+        readOnly={readOnly}
+        render={(selectedItems) => {
+          if (selectedItems.length === 0) {
+            return <div>No permissions required</div>;
+          }
+          return <div>{selectedItems.map((item) => item.label).join(', ')}</div>;
+        }}
+      >
+        {systemPermissions.length > 0 && (
+          <SelectField.OptionGroup label="System Permissions">
+            {systemPermissions.map((permission) => (
+              <SelectField.Option
+                key={permission.permission}
+                value={permission.permission}
+                label={permission.permission}
+              >
+                {permission.friendlyName || permission.permission}
+              </SelectField.Option>
+            ))}
+          </SelectField.OptionGroup>
+        )}
+        {moduleVersion && moduleVersion.permissions.length > 0 && (
+          <SelectField.OptionGroup label="Module Permissions">
+            {moduleVersion.permissions.map((permission) => (
+              <SelectField.Option
+                key={permission.permission}
+                value={permission.permission}
+                label={permission.permission}
+              >
+                {permission.friendlyName || permission.permission}
+              </SelectField.Option>
+            ))}
+          </SelectField.OptionGroup>
+        )}
+      </SelectField>
       <CollapseList.Item title="Arguments">
         <Collapsible>
           <Collapsible.Trigger>What are arguments?</Collapsible.Trigger>

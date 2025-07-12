@@ -37,3 +37,23 @@ The root role is the most powerful role in Takaro. It has **all permissions** an
 #### User and Player
 
 The "User" and "Player" roles are automatically assigned to all users and players respectively. These roles cannot be deleted but permissions in the roles can be modified. These roles are intended to be used as a base for all users and players. "User" is used for any API-based checks while "Player" is used inside modules.
+
+## Command Permissions
+
+Module commands can require specific permissions to execute. This provides fine-grained control over who can use administrative or powerful commands.
+
+### How it works
+
+1. **Permission Check**: Before executing a command, Takaro checks if the player has all required permissions
+2. **Access Denied**: Players without required permissions receive a message like: "You need the 'Permission Name' permission to use this command"
+3. **Event Logging**: Failed attempts trigger a `COMMAND_EXECUTION_DENIED` event for monitoring
+4. **ROOT Bypass**: Players with the ROOT permission can execute any command regardless of requirements
+
+### Example
+
+The `economyUtils` module uses command permissions:
+- `/balance` - No permission required (anyone can check their balance)
+- `/grantcurrency` - Requires `ECONOMY_UTILS_MANAGE_CURRENCY` permission
+- `/revokecurrency` - Requires `ECONOMY_UTILS_MANAGE_CURRENCY` permission
+
+This ensures only authorized staff can modify player currencies while allowing all players to view their balance.

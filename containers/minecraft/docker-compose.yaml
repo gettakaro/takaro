@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  minecraft-spigot:
+    image: itzg/minecraft-server
+    ports:
+      - "25565:25565"
+      - "25575:25575"
+    environment:
+      EULA: "TRUE"
+      TYPE: SPIGOT
+      VERSION: 1.21.5
+      MEMORY: 2G
+      MAX_MEMORY: 4G
+      SERVER_NAME: "Minecraft Spigot Server"
+      MOTD: "Welcome to Minecraft Spigot Server"
+      DIFFICULTY: normal
+      GAMEMODE: survival
+      MAX_PLAYERS: 20
+      VIEW_DISTANCE: 10
+      SPAWN_PROTECTION: 16
+      ENABLE_COMMAND_BLOCK: "true"
+      ONLINE_MODE: "true"
+      ENABLE_RCON: "true"
+      RCON_PASSWORD: "takaro123"
+      RCON_PORT: 25575
+    volumes:
+      - ./_data:/data
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    networks:
+      - minecraft-net
+
+networks:
+  minecraft-net:
+    driver: bridge

@@ -251,7 +251,7 @@ const tests = [
 
       expect((await setPublicEvent).length).to.be.eq(1);
       expect((await setPublicEvent)[0].data.meta.msg).to.be.eq(
-        'You do not have permission to create public teleports.',
+        "⚠️ You need the 'Teleports Create Public' permission to use this command. Please contact an admin if you need access.",
       );
     },
   }),

@@ -307,13 +307,14 @@ export class MockGameserver implements IMockGameServer {
 
   async sendMessage(message: string, opts: IMessageOptsDTO) {
     const options = { ...opts };
-    const fullMessage = `[🗨️ Chat] Server: ${options.recipient ? '[DM]' : ''} ${message}`;
+    const senderName = options.senderNameOverride || 'Server';
+    const fullMessage = `[🗨️ Chat] ${senderName}: ${options.recipient ? '[DM]' : ''} ${message}`;
 
     this.emitEvent(
       GameEvents.CHAT_MESSAGE,
       new EventChatMessage({
         msg: message,
-        channel: ChatChannel.GLOBAL,
+        channel: options.recipient ? ChatChannel.WHISPER : ChatChannel.GLOBAL,
       }),
     );
     await this.sendLog(fullMessage);

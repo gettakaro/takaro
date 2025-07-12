@@ -29,7 +29,9 @@ const tests = [
       });
 
       expect((await eventsBeforeRole).length).to.be.eq(1);
-      expect((await eventsBeforeRole)[0].data.meta.msg).to.match(/You do not have permission to use teleports/);
+      expect((await eventsBeforeRole)[0].data.meta.msg).to.match(
+        /⚠️ You need the 'Teleports Use' permission to use this command. Please contact an admin if you need access/,
+      );
 
       // Assign the role with expiry 10 minutes from now
       await this.client.player.playerControllerAssignRole(this.setupData.players[0].id, this.setupData.role.id, {
@@ -62,7 +64,9 @@ const tests = [
       });
 
       expect((await eventsAfterExpire).length).to.be.eq(1);
-      expect((await eventsAfterExpire)[0].data.meta.msg).to.match(/You do not have permission to use teleports/);
+      expect((await eventsAfterExpire)[0].data.meta.msg).to.match(
+        /⚠️ You need the 'Teleports Use' permission to use this command. Please contact an admin if you need access/,
+      );
     },
   }),
 ];

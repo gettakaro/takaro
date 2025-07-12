@@ -478,8 +478,12 @@ const tests = [
       });
 
       const messages = (await events).sort(chatMessageSorter).map((e) => e.data.meta.msg as string);
-      expect(messages[0]).to.be.eq('You do not have permission to use grant currency command.');
-      expect(messages[1]).to.be.eq('You do not have permission to use revoke currency command.');
+      expect(messages[0]).to.be.eq(
+        "⚠️ You need the 'Economy Utils Manage Currency' permission to use this command. Please contact an admin if you need access.",
+      );
+      expect(messages[1]).to.be.eq(
+        "⚠️ You need the 'Economy Utils Manage Currency' permission to use this command. Please contact an admin if you need access.",
+      );
     },
   }),
 ];

@@ -1,12 +1,8 @@
-import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';
+import { takaro, data, TakaroUserError } from '@takaro/helpers';
 import { findTp } from './utils.js';
 
 async function main() {
   const { pog, gameServerId, arguments: args, module: mod } = data;
-
-  if (!checkPermission(pog, 'TELEPORTS_USE')) {
-    throw new TakaroUserError('You do not have permission to use teleports.');
-  }
 
   const ownedTeleportRes = await findTp(args.tp, pog.playerId);
 

@@ -8,6 +8,7 @@ import {
   IGameServer,
   IItemDTO,
   ILocationDTO,
+  IMessageOptsDTO,
   IPlayerReferenceDTO,
   MapInfoDTO,
   TestReachabilityOutputDTO,
@@ -143,7 +144,9 @@ export class Rust implements IGameServer {
     });
   }
 
-  async sendMessage(message: string) {
+  async sendMessage(message: string, _opts?: IMessageOptsDTO) {
+    // Note: Rust's say command doesn't support custom sender names
+    // The senderNameOverride parameter is ignored for Rust servers
     await this.executeConsoleCommand(`say "${message}"`);
   }
 
