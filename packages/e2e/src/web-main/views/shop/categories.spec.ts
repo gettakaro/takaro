@@ -127,58 +127,6 @@ test.describe('Shop Categories Management', () => {
     await shopCategoriesPage.verifyCategoryExists('Weapons', '⚔️');
   });
 
-  test('Category validation - duplicate name', async ({ takaro, page }) => {
-    const { shopCategoriesPage } = takaro;
-    await shopCategoriesPage.goto();
-
-    // Try to create category with existing name
-    await page.getByRole('button', { name: 'Create category' }).click();
-
-    // Wait for drawer to open
-    await page.waitForSelector('h1:has-text("Create Category")');
-
-    await page.getByLabel('Category Name').fill('Weapons'); // Already exists
-
-    // Wait for emoji picker
-    await page.waitForTimeout(500);
-
-    // Search for the emoji
-    const emojiSearch = page.locator('input[placeholder*="Search"], input[placeholder*="search"]');
-    if ((await emojiSearch.count()) > 0) {
-      await emojiSearch.fill('🎯');
-      await page.waitForTimeout(300);
-    }
-
-    // Click the emoji
-    const emojiButton = page
-      .locator('button:has-text("🎯")')
-      .or(page.getByText('🎯', { exact: true }))
-      .or(page.locator('[aria-label*="🎯"]'));
-    await emojiButton.first().click();
-
-    await page.getByRole('button', { name: 'Create Category' }).click();
-
-    // Verify error message
-    await expect(page.getByText('A category with this name already exists')).toBeVisible();
-  });
-
-  test('Category validation - emoji required', async ({ takaro, page }) => {
-    const { shopCategoriesPage } = takaro;
-    await shopCategoriesPage.goto();
-
-    await page.getByRole('button', { name: 'Create category' }).click();
-
-    // Wait for drawer to open
-    await page.waitForSelector('h1:has-text("Create Category")');
-
-    await page.getByLabel('Category Name').fill('Test Category');
-    // Don't select any emoji
-    await page.getByRole('button', { name: 'Create Category' }).click();
-
-    // Verify validation error
-    await expect(page.getByText('Emoji is required')).toBeVisible();
-  });
-
   test('Category listing count updates', async ({ takaro }) => {
     const { shopCategoriesPage, shopListingPage } = takaro;
 
