@@ -2,35 +2,36 @@
   "body": {
     "meta": {},
     "data": {
-      "createdAt": "2024-07-18T15:25:43.183Z",
-      "updatedAt": "2024-07-18T15:25:43.184Z",
-      "id": "98d2bb8b-5636-4ecc-8af4-bed1db9c1926",
-      "gameServerId": "5e9a1ef1-2ee4-4419-ae8f-b8579bbc8d9f",
+      "createdAt": "2025-07-13T11:25:47.562Z",
+      "updatedAt": "2025-07-13T11:25:47.562Z",
+      "id": "00f203b1-1dea-478c-bba1-3c7fed7ae8a4",
+      "gameServerId": "7dd87b9e-9f0b-4ea5-889e-fb98c09c349d",
       "price": 100,
       "name": "Test item",
       "deletedAt": null,
       "draft": false,
       "items": [
         {
-          "createdAt": "2024-07-18T15:25:43.186Z",
-          "updatedAt": "2024-07-18T15:25:43.187Z",
-          "id": "f7be5b3f-5e04-4018-bfa1-ebd3cf4aa9cf",
-          "listingId": "98d2bb8b-5636-4ecc-8af4-bed1db9c1926",
-          "itemId": "7235cfac-5fa8-48d5-b48f-cea7bee3f576",
+          "createdAt": "2025-07-13T11:25:47.563Z",
+          "updatedAt": "2025-07-13T11:25:47.563Z",
+          "id": "95520bda-44a4-400d-89ed-162147d270b2",
+          "listingId": "00f203b1-1dea-478c-bba1-3c7fed7ae8a4",
+          "itemId": "82289523-5949-4d03-b371-7089955a30d0",
           "amount": 1,
           "quality": null,
           "item": {
-            "id": "7235cfac-5fa8-48d5-b48f-cea7bee3f576",
-            "createdAt": "2024-07-18T15:25:41.219Z",
-            "updatedAt": "2024-07-18T15:25:41.219Z",
-            "gameserverId": "5e9a1ef1-2ee4-4419-ae8f-b8579bbc8d9f",
+            "id": "82289523-5949-4d03-b371-7089955a30d0",
+            "createdAt": "2025-07-13T11:25:47.085Z",
+            "updatedAt": "2025-07-13T11:25:47.085Z",
+            "gameserverId": "7dd87b9e-9f0b-4ea5-889e-fb98c09c349d",
             "name": "Stone",
             "code": "stone",
             "description": "Stone can get you stoned",
             "icon": null
           }
         }
-      ]
+      ],
+      "categories": []
     }
   },
   "status": 200,

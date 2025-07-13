@@ -3,16 +3,16 @@
     "meta": {
       "error": {
         "code": "BadRequestError",
-        "message": "Can only claim paid, unclaimed orders. Current status: COMPLETED"
+        "message": "Can only claim paid, unclaimed orders. Current status: CANCELED"
       }
     },
     "data": {}
   },
   "status": 400,
   "test": {
-    "group": "ShopOrderController",
+    "group": "Shop/ShopOrderController",
     "snapshot": true,
-    "name": "Claim order that is already claimed -> error",
+    "name": "Claim order that is canceled -> error",
     "filteredFields": [
       "listingId",
       "playerId"

@@ -13,7 +13,7 @@
   },
   "status": 200,
   "test": {
-    "group": "ShopOrderController",
+    "group": "Shop/ShopOrderController",
     "snapshot": true,
     "name": "High priv user cancel order that is not yours -> success",
     "filteredFields": [

@@ -2,7 +2,7 @@ import { IntegrationTest, expect, IShopSetup, shopSetup } from '@takaro/test';
 import { ShopOrderOutputDTOStatusEnum, isAxiosError } from '@takaro/apiclient';
 import { describe } from 'node:test';
 import { EventChatMessage } from '@takaro/modules';
-const group = 'ShopOrderController';
+const group = 'Shop/ShopOrderController';
 
 const tests = [
   new IntegrationTest<IShopSetup>({

@@ -19,7 +19,7 @@
   },
   "status": 200,
   "test": {
-    "group": "ShopOrderController",
+    "group": "Shop/ShopOrderController",
     "snapshot": true,
     "name": "Search orders",
     "filteredFields": [

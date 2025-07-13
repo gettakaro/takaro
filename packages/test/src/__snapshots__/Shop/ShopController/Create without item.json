@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "At least one item is required"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "Shop/ShopController",
+    "snapshot": true,
+    "name": "Create without item",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

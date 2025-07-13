@@ -9,9 +9,9 @@
   },
   "status": 200,
   "test": {
-    "group": "ShopOrderController",
+    "group": "Shop/ShopOrderController",
     "snapshot": true,
-    "name": "Search orders returns only own orders",
+    "name": "Cannot search orders of another user",
     "filteredFields": [
       "listingId",
       "playerId"

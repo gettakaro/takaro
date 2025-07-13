@@ -3,21 +3,18 @@
     "meta": {
       "error": {
         "code": "BadRequestError",
-        "message": "Not enough currency"
+        "message": "Invalid data provided"
       }
     },
     "data": {}
   },
   "status": 400,
   "test": {
-    "group": "ShopOrderController",
+    "group": "Shop/ShopController",
     "snapshot": true,
-    "name": "Create a new order when not enough money",
-    "filteredFields": [
-      "listingId",
-      "playerId"
-    ],
+    "name": "Create with negative price",
     "expectedStatus": 400,
+    "filteredFields": [],
     "standardEnvironment": true
   }
 }

@@ -1,7 +1,7 @@
 import { IntegrationTest, expect, IShopSetup, shopSetup } from '@takaro/test';
 import { describe } from 'node:test';
 
-const group = 'ShopController';
+const group = 'Shop/ShopController';
 
 const tests = [
   new IntegrationTest<IShopSetup>({

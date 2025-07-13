@@ -13,7 +13,7 @@
   },
   "status": 200,
   "test": {
-    "group": "ShopOrderController",
+    "group": "Shop/ShopOrderController",
     "snapshot": true,
     "name": "Get order by ID that is not yours but you have high privileges -> success",
     "filteredFields": [

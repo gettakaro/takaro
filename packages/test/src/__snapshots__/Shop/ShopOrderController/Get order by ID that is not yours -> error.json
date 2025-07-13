@@ -10,7 +10,7 @@
   },
   "status": 404,
   "test": {
-    "group": "ShopOrderController",
+    "group": "Shop/ShopOrderController",
     "snapshot": true,
     "name": "Get order by ID that is not yours -> error",
     "filteredFields": [

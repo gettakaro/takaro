@@ -28,7 +28,7 @@
   },
   "status": 200,
   "test": {
-    "group": "ShopOrderController",
+    "group": "Shop/ShopOrderController",
     "snapshot": true,
     "name": "Search orders returns all orders when called by high privileged user",
     "filteredFields": [
