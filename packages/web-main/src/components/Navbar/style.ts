@@ -1,7 +1,7 @@
 import { styled } from '@takaro/lib-components';
 import { motion } from 'framer-motion';
 
-export const Container = styled(motion.div)`
+export const Container = styled(motion.div)<{ $isCollapsed?: boolean }>`
   width: 0;
   position: relative;
   height: 100vh;
@@ -10,8 +10,12 @@ export const Container = styled(motion.div)`
   align-items: flex-start;
   flex-direction: column;
   justify-content: space-between;
-  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[1]} ${theme.spacing['1_5']} ${theme.spacing[1]}`};
+  padding: ${({ theme, $isCollapsed }) =>
+    $isCollapsed
+      ? `${theme.spacing[2]} ${theme.spacing['0_5']} ${theme.spacing['1_5']} ${theme.spacing['0_5']}`
+      : `${theme.spacing[2]} ${theme.spacing[1]} ${theme.spacing['1_5']} ${theme.spacing[1]}`};
   gap: ${({ theme }) => theme.spacing[2]};
+  overflow: hidden;
 
   .company-icon {
     margin: 0 auto;
@@ -50,9 +54,10 @@ export const IconNavContainer = styled.div`
   align-items: center;
   justify-content: center;
   gap: ${({ theme }) => theme.spacing[2]};
+  padding-top: ${({ theme }) => theme.spacing[5]};
 `;
 
-export const Nav = styled.nav`
+export const Nav = styled.nav<{ $isCollapsed?: boolean }>`
   display: flex;
   gap: ${({ theme }) => theme.spacing['0_75']};
   width: 100%;
@@ -69,10 +74,13 @@ export const Nav = styled.nav`
   a {
     width: 100%;
     border-radius: ${({ theme }) => theme.borderRadius.medium};
-    padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['1']}`};
+    padding: ${({ theme, $isCollapsed }) =>
+      $isCollapsed
+        ? `${theme.spacing['0_75']} ${theme.spacing['0_5']}`
+        : `${theme.spacing['0_75']} ${theme.spacing['1']}`};
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: ${({ $isCollapsed }) => ($isCollapsed ? 'center' : 'space-between')};
     transition: 0.2s transform ease-in-out;
     font-weight: 500;
     white-space: nowrap;
@@ -81,6 +89,7 @@ export const Nav = styled.nav`
     span {
       display: flex;
       align-items: center;
+      justify-content: ${({ $isCollapsed }) => ($isCollapsed ? 'center' : 'flex-start')};
     }
 
     &:hover {

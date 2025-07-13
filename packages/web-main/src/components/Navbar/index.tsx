@@ -1,6 +1,6 @@
-import { FC, ReactElement } from 'react';
+import { FC, ReactElement, useState, useEffect } from 'react';
 import { LinkProps } from '@tanstack/react-router';
-import { Chip, RequiredPermissions, Tooltip, useTheme } from '@takaro/lib-components';
+import { Chip, RequiredPermissions, Tooltip, useTheme, IconButton } from '@takaro/lib-components';
 import { UserDropdown } from './UserDropdown';
 import { Nav, IconNav, Container, IconNavContainer } from './style';
 import { PERMISSIONS } from '@takaro/apiclient';
@@ -14,6 +14,8 @@ import {
   AiOutlineUser as RolesIcon,
   AiOutlineEdit as VariablesIcon,
   AiOutlineClockCircle as EventsIcon,
+  AiOutlineLeft as CollapseIcon,
+  AiOutlineRight as ExpandIcon,
 
   // icon nav
   AiOutlineBook as DocumentationIcon,
@@ -126,59 +128,103 @@ interface NavbarProps {
 export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
   const theme = useTheme();
   const { version } = getTakaroVersionComponents(getConfigVar('takaroVersion'));
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Load collapsed state from localStorage on mount
+  useEffect(() => {
+    const savedState = localStorage.getItem('navbar-collapsed');
+    if (savedState !== null) {
+      setIsCollapsed(JSON.parse(savedState));
+    }
+  }, []);
+
+  // Save collapsed state to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('navbar-collapsed', JSON.stringify(isCollapsed));
+  }, [isCollapsed]);
+
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
 
   return (
-    <Container animate={{ width: 325 }} transition={{ duration: 1, type: 'spring', bounce: 0.5 }}>
+    <Container
+      animate={{ width: isCollapsed ? 60 : 325 }}
+      transition={{ duration: 0.3, type: 'spring', bounce: 0.3 }}
+      $isCollapsed={isCollapsed}
+    >
+      <div style={{ position: 'absolute', top: theme.spacing['1'], right: theme.spacing['0_5'], zIndex: 10 }}>
+        <Tooltip>
+          <Tooltip.Trigger asChild>
+            <IconButton
+              icon={isCollapsed ? <ExpandIcon /> : <CollapseIcon />}
+              onClick={toggleCollapse}
+              size="small"
+              ariaLabel={isCollapsed ? 'Expand navbar' : 'Collapse navbar'}
+            />
+          </Tooltip.Trigger>
+          <Tooltip.Content>{isCollapsed ? 'Expand' : 'Collapse'}</Tooltip.Content>
+        </Tooltip>
+      </div>
       <IconNavContainer data-testid="takaro-icon-nav">
-        {showGameServerNav && <GameServerNav />}
-        <Nav data-testid="global-nav">
-          {domainLinks.length > 0 && <h3>Global</h3>}
-          {domainLinks.map((link) => renderLink(link))}
+        {showGameServerNav && <GameServerNav isCollapsed={isCollapsed} />}
+        <Nav data-testid="global-nav" $isCollapsed={isCollapsed}>
+          {domainLinks.length > 0 && <h3 style={{ visibility: isCollapsed ? 'hidden' : 'visible' }}>Global</h3>}
+          {domainLinks.map((link) => renderLink(link, isCollapsed))}
         </Nav>
       </IconNavContainer>
-      <div style={{ width: '100%' }}>
-        <UserDropdown />
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: theme.spacing['1'], alignItems: 'center' }}>
-          <span style={{ marginRight: theme.spacing['0_5'] }}>Domain: </span>
-          <Chip
-            showIcon="hover"
-            color="secondary"
-            variant="outline"
-            label={`${document.cookie.replace(TAKARO_DOMAIN_COOKIE_REGEX, '$1')}`}
-          />
+      {!isCollapsed && (
+        <div style={{ width: '100%' }}>
+          <UserDropdown />
+          <div
+            style={{ display: 'flex', justifyContent: 'center', marginTop: theme.spacing['1'], alignItems: 'center' }}
+          >
+            <span style={{ marginRight: theme.spacing['0_5'] }}>Domain: </span>
+            <Chip
+              showIcon="hover"
+              color="secondary"
+              variant="outline"
+              label={`${document.cookie.replace(TAKARO_DOMAIN_COOKIE_REGEX, '$1')}`}
+            />
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: theme.spacing['0_75'],
+            }}
+          >
+            Version: <Chip showIcon="hover" color="secondary" variant="outline" label={version} />
+          </div>
+          <IconNav>
+            <Tooltip>
+              <Tooltip.Trigger asChild>
+                <a href="https://aka.takaro.io/github" target="_blank" rel="noreferrer">
+                  <GithubIcon size={18} />
+                </a>
+              </Tooltip.Trigger>
+              <Tooltip.Content>Github</Tooltip.Content>
+            </Tooltip>
+            <Tooltip>
+              <Tooltip.Trigger asChild>
+                <a href="https://docs.takaro.io" target="_blank" rel="noreferrer">
+                  <DocumentationIcon size={18} />
+                </a>
+              </Tooltip.Trigger>
+              <Tooltip.Content>Documentation</Tooltip.Content>
+            </Tooltip>
+            <Tooltip>
+              <Tooltip.Trigger asChild>
+                <a href="https://aka.takaro.io/discord" target="_blank" rel="noreferrer">
+                  <DiscordIcon size={18} />
+                </a>
+              </Tooltip.Trigger>
+              <Tooltip.Content>Discord</Tooltip.Content>
+            </Tooltip>
+          </IconNav>
         </div>
-        <div
-          style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: theme.spacing['0_75'] }}
-        >
-          Version: <Chip showIcon="hover" color="secondary" variant="outline" label={version} />
-        </div>
-        <IconNav>
-          <Tooltip>
-            <Tooltip.Trigger asChild>
-              <a href="https://aka.takaro.io/github" target="_blank" rel="noreferrer">
-                <GithubIcon size={18} />
-              </a>
-            </Tooltip.Trigger>
-            <Tooltip.Content>Github</Tooltip.Content>
-          </Tooltip>
-          <Tooltip>
-            <Tooltip.Trigger asChild>
-              <a href="https://docs.takaro.io" target="_blank" rel="noreferrer">
-                <DocumentationIcon size={18} />
-              </a>
-            </Tooltip.Trigger>
-            <Tooltip.Content>Documentation</Tooltip.Content>
-          </Tooltip>
-          <Tooltip>
-            <Tooltip.Trigger asChild>
-              <a href="https://aka.takaro.io/discord" target="_blank" rel="noreferrer">
-                <DiscordIcon size={18} />
-              </a>
-            </Tooltip.Trigger>
-            <Tooltip.Content>Discord</Tooltip.Content>
-          </Tooltip>
-        </IconNav>
-      </div>
+      )}
     </Container>
   );
 };
