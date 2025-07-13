@@ -234,7 +234,9 @@ const tests = [
       // Now we should only have 1 message with 15 items total
       const messages = (await this.client.event.eventControllerSearch({ filters: { eventName: ['chat-message'] } }))
         .data.data;
-      const containsItemMessage = messages.some((msg) => (msg.meta as EventChatMessage)?.msg?.includes(`15x Wood`));
+      const containsItemMessage = messages.some((msg) =>
+        (msg.meta as EventChatMessage)?.msg?.includes(`15x ${testItem.name}`),
+      );
       expect(containsItemMessage).to.be.true;
 
       return res;
