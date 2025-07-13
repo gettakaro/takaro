@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsBoolean,
   IsEnum,
   IsIP,
@@ -23,6 +24,7 @@ export const TakaroEvents = {
   ROLE_UPDATED: 'role-updated',
   ROLE_DELETED: 'role-deleted',
   COMMAND_EXECUTED: 'command-executed',
+  COMMAND_EXECUTION_DENIED: 'command-execution-denied',
   HOOK_EXECUTED: 'hook-executed',
   CRONJOB_EXECUTED: 'cronjob-executed',
   CURRENCY_ADDED: 'currency-added',
@@ -41,10 +43,13 @@ export const TakaroEvents = {
   SHOP_LISTING_DELETED: 'shop-listing-deleted',
   SHOP_ORDER_CREATED: 'shop-order-created',
   SHOP_ORDER_STATUS_CHANGED: 'shop-order-status-changed',
+  SHOP_ORDER_DELIVERY_FAILED: 'shop-order-delivery-failed',
   PLAYER_LINKED: 'player-linked',
   GAMESERVER_CREATED: 'gameserver-created',
   GAMESERVER_UPDATED: 'gameserver-updated',
   GAMESERVER_DELETED: 'gameserver-deleted',
+  PLAYER_BANNED: 'player-banned',
+  PLAYER_UNBANNED: 'player-unbanned',
 } as const;
 
 export class BaseTakaroEvent<T> extends BaseEvent<T> {
@@ -151,6 +156,19 @@ export class TakaroEventCommandExecuted extends BaseEvent<TakaroEventCommandExec
   @ValidateNested()
   @Type(() => TakaroEventCommandDetails)
   command: TakaroEventCommandDetails;
+}
+
+export class TakaroEventCommandExecutionDenied extends BaseEvent<TakaroEventCommandExecutionDenied> {
+  @IsString()
+  type = TakaroEvents.COMMAND_EXECUTION_DENIED;
+
+  @ValidateNested()
+  @Type(() => TakaroEventCommandDetails)
+  command: TakaroEventCommandDetails;
+
+  @IsArray()
+  @IsString({ each: true })
+  missingPermissions: string[];
 }
 
 export class TakaroEventHookExecuted extends BaseEvent<TakaroEventHookExecuted> {
@@ -317,6 +335,30 @@ export class TakaroEventShopOrderCreated extends BaseEvent<TakaroEventShopOrderC
   type = TakaroEvents.SHOP_ORDER_CREATED;
   @IsUUID()
   id: string;
+  @IsString()
+  listingName: string;
+  @IsNumber()
+  price: number;
+  @IsNumber()
+  amount: number;
+  @IsNumber()
+  totalPrice: number;
+  @ValidateNested({ each: true })
+  @Type(() => TakaroEventShopItem)
+  @IsOptional()
+  items?: TakaroEventShopItem[];
+}
+
+export class TakaroEventShopItem extends TakaroDTO<TakaroEventShopItem> {
+  @IsString()
+  name: string;
+  @IsString()
+  code: string;
+  @IsNumber()
+  amount: number;
+  @IsString()
+  @IsOptional()
+  quality?: string;
 }
 
 export class TakaroEventShopOrderStatusChanged extends BaseEvent<TakaroEventShopOrderStatusChanged> {
@@ -326,6 +368,18 @@ export class TakaroEventShopOrderStatusChanged extends BaseEvent<TakaroEventShop
   id: string;
   @IsString()
   status: string;
+}
+
+export class TakaroEventShopOrderDeliveryFailed extends BaseEvent<TakaroEventShopOrderDeliveryFailed> {
+  @IsString()
+  type = TakaroEvents.SHOP_ORDER_DELIVERY_FAILED;
+  @IsUUID()
+  id: string;
+  @IsString()
+  error: string;
+  @ValidateNested({ each: true })
+  @Type(() => TakaroEventShopItem)
+  items: TakaroEventShopItem[];
 }
 
 export class TakaroEventPlayerLinked extends BaseEvent<TakaroEventPlayerLinked> {
@@ -348,12 +402,43 @@ export class TakaroEventGameserverDeleted extends BaseEvent<TakaroEventGameserve
   type = TakaroEvents.GAMESERVER_DELETED;
 }
 
+export class TakaroEventPlayerBanned extends BaseEvent<TakaroEventPlayerBanned> {
+  @IsString()
+  type = TakaroEvents.PLAYER_BANNED;
+
+  @IsString()
+  @IsOptional()
+  reason?: string;
+
+  @IsString()
+  @IsOptional()
+  until?: string;
+
+  @IsBoolean()
+  isGlobal: boolean;
+
+  @IsBoolean()
+  takaroManaged: boolean;
+}
+
+export class TakaroEventPlayerUnbanned extends BaseEvent<TakaroEventPlayerUnbanned> {
+  @IsString()
+  type = TakaroEvents.PLAYER_UNBANNED;
+
+  @IsBoolean()
+  isGlobal: boolean;
+
+  @IsBoolean()
+  takaroManaged: boolean;
+}
+
 export const TakaroEventsMapping = {
   [TakaroEvents.ROLE_ASSIGNED]: TakaroEventRoleAssigned,
   [TakaroEvents.PLAYER_NEW_IP_DETECTED]: TakaroEventPlayerNewIpDetected,
   [TakaroEvents.CURRENCY_DEDUCTED]: TakaroEventCurrencyDeducted,
   [TakaroEvents.CURRENCY_ADDED]: TakaroEventCurrencyAdded,
   [TakaroEvents.COMMAND_EXECUTED]: TakaroEventCommandExecuted,
+  [TakaroEvents.COMMAND_EXECUTION_DENIED]: TakaroEventCommandExecutionDenied,
   [TakaroEvents.ROLE_REMOVED]: TakaroEventRoleRemoved,
   [TakaroEvents.ROLE_CREATED]: TakaroEventRoleCreated,
   [TakaroEvents.ROLE_UPDATED]: TakaroEventRoleUpdated,
@@ -373,8 +458,11 @@ export const TakaroEventsMapping = {
   [TakaroEvents.SHOP_LISTING_DELETED]: TakaroEventShopListingDeleted,
   [TakaroEvents.SHOP_ORDER_CREATED]: TakaroEventShopOrderCreated,
   [TakaroEvents.SHOP_ORDER_STATUS_CHANGED]: TakaroEventShopOrderStatusChanged,
+  [TakaroEvents.SHOP_ORDER_DELIVERY_FAILED]: TakaroEventShopOrderDeliveryFailed,
   [TakaroEvents.PLAYER_LINKED]: TakaroEventPlayerLinked,
   [TakaroEvents.GAMESERVER_CREATED]: TakaroEventGameserverCreated,
   [TakaroEvents.GAMESERVER_UPDATED]: TakaroEventGameserverUpdated,
   [TakaroEvents.GAMESERVER_DELETED]: TakaroEventGameserverDeleted,
+  [TakaroEvents.PLAYER_BANNED]: TakaroEventPlayerBanned,
+  [TakaroEvents.PLAYER_UNBANNED]: TakaroEventPlayerUnbanned,
 } as const;

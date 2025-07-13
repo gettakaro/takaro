@@ -2,8 +2,21 @@
   "body": {
     "meta": {
       "error": {
-        "code": "BadRequestError",
-        "message": "Currency must be positive"
+        "code": "ValidationError",
+        "details": [
+          {
+            "target": {
+              "currency": -100
+            },
+            "value": -100,
+            "property": "currency",
+            "children": [],
+            "constraints": {
+              "min": "currency must not be less than 0.01"
+            }
+          }
+        ],
+        "message": "Validation error"
       }
     },
     "data": {}

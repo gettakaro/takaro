@@ -1,4 +1,14 @@
-import { IsBoolean, IsEmail, IsISO8601, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsEmail,
+  IsISO8601,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+  ValidateNested,
+  IsEnum,
+} from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { UserCreateInputDTO, UserOutputDTO, UserOutputWithRolesDTO, UserUpdateDTO } from '../service/User/dto.js';
@@ -17,6 +27,7 @@ import { config } from '../config.js';
 import { PlayerService } from '../service/Player/index.js';
 import { PlayerOnGameserverOutputDTO } from '../service/PlayerOnGameserverService.js';
 import { PlayerOutputWithRolesDTO } from '../service/Player/dto.js';
+import { SettingsService, SETTINGS_KEYS } from '../service/SettingsService.js';
 
 export class GetUserDTO {
   @Length(3, 50)
@@ -121,6 +132,9 @@ class UserSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
   lastSeen?: string | undefined;
 }
 
+const userExtendOptions = ['roles'];
+type UserExtendOptions = (typeof userExtendOptions)[number];
+
 export class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   @ValidateNested()
   @Type(() => UserSearchInputAllowedFilters)
@@ -137,6 +151,10 @@ export class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   @ValidateNested()
   @Type(() => UserSearchInputAllowedRangeFilter)
   declare lessThan: Partial<UserSearchInputAllowedRangeFilter>;
+
+  @IsOptional()
+  @IsEnum(userExtendOptions, { each: true })
+  declare extend?: UserExtendOptions[];
 }
 
 class LinkPlayerUnauthedInputDTO extends TakaroDTO<LinkPlayerUnauthedInputDTO> {
@@ -184,6 +202,23 @@ export class UserController {
         return d;
       });
     }
+
+    // Apply custom domain names from settings
+    domains = await Promise.all(
+      domains.map(async (domain) => {
+        try {
+          const settingsService = new SettingsService(domain.id);
+          const domainNameSetting = await settingsService.get(SETTINGS_KEYS.domainName);
+
+          if (domainNameSetting.value && domainNameSetting.value.trim() !== '') {
+            domain.name = domainNameSetting.value;
+          }
+        } catch {
+          // If settings lookup fails, continue with original domain name
+        }
+        return domain;
+      }),
+    );
 
     const response = new MeOutputDTO({ user, domains, domain: req.domainId, pogs: [] });
 

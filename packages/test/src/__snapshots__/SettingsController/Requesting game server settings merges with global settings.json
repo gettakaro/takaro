@@ -26,6 +26,16 @@
         "key": "developerMode",
         "value": "false",
         "type": "default"
+      },
+      {
+        "key": "messagePrefix",
+        "value": "",
+        "type": "default"
+      },
+      {
+        "key": "domainName",
+        "value": "",
+        "type": "default"
       }
     ]
   },

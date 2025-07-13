@@ -40,6 +40,9 @@ function Component() {
         <Link to="/gameserver/$gameServerId/dashboard/statistics" params={{ gameServerId }}>
           Statistics
         </Link>
+        <Link to="/gameserver/$gameServerId/dashboard/players" params={{ gameServerId }}>
+          Players
+        </Link>
       </HorizontalNav>
 
       <ErrorBoundary>

@@ -1,4 +1,4 @@
-import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, IsUUID, ValidateNested, IsEnum } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { PlayerService } from '../service/Player/index.js';
@@ -90,6 +90,9 @@ class PlayerSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt
   playtimeSeconds?: number | undefined;
 }
 
+const extendOptions = ['playerOnGameServers', 'roles', 'gameServers', 'roleAssignments'];
+type PlayerExtendOptions = (typeof extendOptions)[number];
+
 export class PlayerSearchInputDTO extends ITakaroQuery<PlayerSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => PlayerSearchInputAllowedFilters)
@@ -103,6 +106,9 @@ export class PlayerSearchInputDTO extends ITakaroQuery<PlayerSearchInputAllowedF
   @ValidateNested()
   @Type(() => PlayerSearchInputAllowedRangeFilter)
   declare lessThan: Partial<PlayerSearchInputAllowedRangeFilter>;
+  @IsOptional()
+  @IsEnum(extendOptions, { each: true })
+  declare extend?: PlayerExtendOptions[];
 }
 
 class PlayerRoleAssignChangeDTO {

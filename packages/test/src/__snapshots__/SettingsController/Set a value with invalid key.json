@@ -13,7 +13,7 @@
             "property": "key",
             "children": [],
             "constraints": {
-              "isEnum": "key must be one of: commandPrefix, serverChatName, economyEnabled, currencyName, developerMode"
+              "isEnum": "key must be one of: commandPrefix, serverChatName, economyEnabled, currencyName, developerMode, messagePrefix, domainName"
             }
           }
         ]

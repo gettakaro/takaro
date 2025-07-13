@@ -58,7 +58,6 @@ export class SevenDaysToDie implements IGameServer {
           ip: p.ip,
           name: p.name,
           epicOnlineServicesId: p.crossplatformid.replace('EOS_', ''),
-          platformId: p.steamid.replace('Steam_', ''),
           ping: p.ping,
         };
 
@@ -174,7 +173,7 @@ export class SevenDaysToDie implements IGameServer {
     }
 
     if (this.connectionInfo.useCPM) {
-      const sender = this.settings.serverChatName || 'Takaro';
+      const sender = opts?.senderNameOverride || this.settings.serverChatName || 'Takaro';
       command = `say2 "${sender}" "${escapedMessage}"`;
 
       if (opts?.recipient?.gameId) {

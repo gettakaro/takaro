@@ -9,6 +9,7 @@ import { IoSwapHorizontal as SwitchDomainIcon } from 'react-icons/io5';
 import { useNavigate } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { userMeQueryOptions } from '../../queries/user';
+import { setLastUsedDomainId } from '../../util/lastUsedDomain';
 
 const User = styled.div`
   display: grid;
@@ -83,7 +84,13 @@ export const UserDropdown = () => {
           icon={<ProfileIcon />}
         />
         <Dropdown.Menu.Item
-          onClick={() => navigate({ to: '/domain/select' })}
+          onClick={() => {
+            // Save current domain as last used before switching
+            if (data.domain) {
+              setLastUsedDomainId(data.domain);
+            }
+            navigate({ to: '/domain/select' });
+          }}
           label="Switch domain"
           disabled={!hasMultipleDomains}
           icon={<SwitchDomainIcon />}

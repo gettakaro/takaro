@@ -41,6 +41,10 @@ export class ICommand extends TakaroDTO<ICommand> {
   @Type(() => ICommandArgument)
   @IsOptional()
   arguments: ICommandArgument[];
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  requiredPermissions?: string[];
 }
 
 export class IHook extends TakaroDTO<IHook> {

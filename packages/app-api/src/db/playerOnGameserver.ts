@@ -1,4 +1,4 @@
-import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
+import { ITakaroQuery, QueryBuilder, TakaroModel, Redis } from '@takaro/db';
 import { Model } from 'objection';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
@@ -39,6 +39,8 @@ export class PlayerOnGameServerModel extends TakaroModel {
   currency: number;
 
   online: boolean;
+
+  ip?: string;
 
   static get relationMappings() {
     return {
@@ -102,11 +104,58 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
   async find(filters: ITakaroQuery<PlayerOnGameserverOutputDTO>) {
     const { query } = await this.getModel();
     const result = await new QueryBuilder<PlayerOnGameServerModel, PlayerOnGameserverOutputDTO>(filters).build(query);
+
+    // Batch load all the related data to avoid N+1 queries
+    const playerIds = result.results.map((item) => item.playerId);
+    const pogIds = result.results.map((item) => item.id);
+
+    if (result.results.length === 0) {
+      return { total: result.total, results: [] };
+    }
+
+    // Batch load roles for all players
+    const knex = await this.getKnex();
+    const roleOnPlayerModel = RoleOnPlayerModel.bindKnex(knex);
+    const allRoles = await roleOnPlayerModel
+      .query()
+      .whereIn('playerId', playerIds)
+      .withGraphFetched('role.permissions.permission');
+
+    // Batch load inventories
+    const inventories = await Promise.all(pogIds.map((id) => this.getInventory(id)));
+
+    // Group roles by player
+    const rolesByPlayer = allRoles.reduce(
+      (acc, role) => {
+        if (!acc[role.playerId]) acc[role.playerId] = [];
+        acc[role.playerId].push(role);
+        return acc;
+      },
+      {} as Record<string, any[]>,
+    );
+
+    // Build results with batched data
+    const results = result.results.map((item, index) => {
+      const playerRoles = rolesByPlayer[item.playerId] || [];
+      const globalRoles = playerRoles.filter((role) => role.gameServerId === null);
+      const gameServerRoles = playerRoles.filter((role) => role.gameServerId === item.gameServerId);
+      const filteredRoles = [...globalRoles, ...gameServerRoles];
+      const uniqueRoles = filteredRoles.filter(
+        (role, idx, self) => self.findIndex((r) => r.roleId === role.roleId) === idx,
+      );
+
+      const data = {
+        ...item,
+        roles: uniqueRoles.map((role) => new PlayerRoleAssignmentOutputDTO(role)),
+        inventory: inventories[index],
+      };
+
+      return new PlayerOnGameserverOutputWithRolesDTO(data);
+    });
+
     return {
       total: result.total,
-      results: await Promise.all(
-        result.results.map(async (item) => new PlayerOnGameserverOutputWithRolesDTO(await this.findOne(item.id))),
-      ),
+      results,
     };
   }
 
@@ -175,6 +224,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
       currency: data.currency,
       online: data.online,
       playtimeSeconds: data.playtimeSeconds,
+      ip: data.ip,
     });
 
     return this.findOne(res.id);
@@ -316,6 +366,34 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
   }
 
   async getInventory(pogId: string): Promise<IItemDTO[]> {
+    const redis = await Redis.getClient('inventory');
+    const cacheKey = `inventory:${this.domainId}:${pogId}`;
+
+    // Try cache first
+    try {
+      const cached = await redis.get(cacheKey);
+      if (cached) {
+        this.log.debug('Inventory cache hit', { pogId });
+        return JSON.parse(cached);
+      }
+    } catch (error) {
+      this.log.warn('Redis cache error, falling back to database', { error, pogId });
+    }
+
+    // Fall back to database query
+    const inventory = await this.getInventoryFromDB(pogId);
+
+    // Cache for 30 minutes
+    try {
+      await redis.set(cacheKey, JSON.stringify(inventory), { EX: 1800 });
+    } catch (error) {
+      this.log.warn('Failed to cache inventory', { error, pogId });
+    }
+
+    return inventory;
+  }
+
+  private async getInventoryFromDB(pogId: string): Promise<IItemDTO[]> {
     const knex = await this.getKnex();
     const model = PlayerInventoryTrackingModel.bindKnex(knex);
     const query = model.query().modify('domainScoped', this.domainId);

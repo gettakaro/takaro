@@ -1,13 +1,21 @@
 import { TakaroService } from './Base.js';
 
 import { CommandModel, CommandRepo } from '../db/command.js';
-import { IsNumber, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
+import { IsNumber, IsOptional, IsString, IsUUID, Length, ValidateNested, IsArray } from 'class-validator';
 import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDTO } from './FunctionService.js';
 import { IMessageOptsDTO } from '@takaro/gameserver';
 import { ICommandJobData, IParsedCommand, queueService } from '@takaro/queues';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
-import { ICommand, ICommandArgument, EventChatMessage, ChatChannel, TakaroEventCommandExecuted } from '@takaro/modules';
+import {
+  ICommand,
+  ICommandArgument,
+  EventChatMessage,
+  ChatChannel,
+  TakaroEventCommandExecuted,
+  TakaroEventCommandExecutionDenied,
+  TakaroEventCommandDetails,
+} from '@takaro/modules';
 import { Redis } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
@@ -20,7 +28,8 @@ import { ModuleService } from './Module/index.js';
 import { InstallModuleDTO } from './Module/dto.js';
 import { CommandSearchInputDTO } from '../controllers/CommandController.js';
 import { PartialDeep } from 'type-fest/index.js';
-import { EventCreateDTO, EventService } from './EventService.js';
+import { EventCreateDTO, EventService, EVENT_TYPES } from './EventService.js';
+import { checkPermission } from '@takaro/helpers';
 
 export function commandsRunningKey(data: ICommandJobData) {
   return `commands-running:${data.pog.id}:${data.itemId}`;
@@ -47,6 +56,10 @@ export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @Type(() => CommandArgumentOutputDTO)
   @ValidateNested({ each: true })
   arguments: CommandArgumentOutputDTO[];
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  requiredPermissions?: string[];
 }
 
 export class CommandArgumentOutputDTO extends TakaroModelDTO<CommandArgumentOutputDTO> {
@@ -89,6 +102,10 @@ export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> implements ICo
   @ValidateNested({ each: true })
   @IsOptional()
   arguments: ICommandArgument[];
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  requiredPermissions?: string[];
 }
 
 export class CommandArgumentCreateDTO extends TakaroDTO<CommandArgumentCreateDTO> implements ICommandArgument {
@@ -141,6 +158,11 @@ export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
   @ValidateNested({ each: true })
   @IsOptional()
   arguments?: ICommandArgument[];
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  requiredPermissions?: string[];
 }
 
 export class CommandArgumentUpdateDTO extends TakaroDTO<CommandArgumentUpdateDTO> {
@@ -288,6 +310,12 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
   }
 
   async handleChatMessage(chatMessage: EventChatMessage, gameServerId: string) {
+    this.log.debug('handleChatMessage: Starting to process chat message', {
+      gameServerId,
+      msgLength: chatMessage.msg.length,
+      player: chatMessage.player?.gameId,
+    });
+
     const prefix = await new SettingsService(this.domainId, gameServerId).get(SETTINGS_KEYS.commandPrefix);
     if (!chatMessage.msg.startsWith(prefix.value)) {
       // Message doesn't start with configured prefix
@@ -301,6 +329,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
     }
 
     const commandName = chatMessage.msg.slice(prefix.value.length).split(' ')[0];
+    this.log.debug('handleChatMessage: Extracted command name', { commandName });
 
     if (commandName === 'link') {
       const { player, pog } = await this.playerService.resolveRef(chatMessage.player, gameServerId);
@@ -322,6 +351,10 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
     }
 
     const triggeredCommands = await this.repo.getTriggeredCommands(commandName, gameServerId);
+    this.log.debug('handleChatMessage: Queried for triggered commands', {
+      commandName,
+      foundCount: triggeredCommands.length,
+    });
 
     if (triggeredCommands.length) {
       this.log.debug(`Found ${triggeredCommands.length} commands that match the event`);
@@ -333,8 +366,77 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       const userRes = await userService.find({ filters: { playerId: [player.id] } });
       const user = userRes.results[0];
 
+      // Get player with roles for permission checking
+      const pogService = new PlayerOnGameServerService(this.domainId);
+      const pogWithRoles = await pogService.findOne(pog.id);
+
+      this.log.debug('handleChatMessage: Starting to parse commands');
       const parsedCommands = await Promise.all(
         triggeredCommands.map(async (c) => {
+          // Check permissions before parsing command
+          if (c.requiredPermissions && c.requiredPermissions.length > 0) {
+            const missingPermissions: string[] = [];
+
+            for (const permission of c.requiredPermissions) {
+              const hasPermission = checkPermission(pogWithRoles, permission);
+              if (!hasPermission) {
+                missingPermissions.push(permission);
+              }
+            }
+
+            if (missingPermissions.length > 0) {
+              // Create event for permission denied
+              const eventService = new EventService(this.domainId);
+              const moduleVersion = await this.moduleService.findOneVersion(c.versionId);
+              if (!moduleVersion)
+                throw new errors.NotFoundError('Module version not found for command execution denied event');
+
+              await eventService.create(
+                new EventCreateDTO({
+                  eventName: EVENT_TYPES.COMMAND_EXECUTION_DENIED,
+                  playerId: player.id,
+                  gameserverId: gameServerId,
+                  moduleId: moduleVersion.moduleId,
+                  meta: new TakaroEventCommandExecutionDenied({
+                    command: new TakaroEventCommandDetails({
+                      id: c.id,
+                      name: c.name,
+                      arguments: {}, // No arguments parsed since permission was denied
+                    }),
+                    missingPermissions: missingPermissions,
+                  }),
+                }),
+              );
+
+              // Format permission names to be user-friendly
+              const formatPermission = (perm: string) => {
+                // Convert CONSTANT_CASE to Title Case
+                return perm
+                  .split('_')
+                  .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+                  .join(' ');
+              };
+
+              const formattedPermissions = missingPermissions.map(formatPermission);
+
+              let errorMessage: string;
+              if (missingPermissions.length === 1) {
+                errorMessage = `⚠️ You need the '${formattedPermissions[0]}' permission to use this command. Please contact an admin if you need access.`;
+              } else {
+                errorMessage = `⚠️ You need the following permissions to use this command: ${formattedPermissions.join(', ')}. Please contact an admin if you need access.`;
+              }
+
+              await gameServerService.sendMessage(
+                gameServerId,
+                errorMessage,
+                new IMessageOptsDTO({
+                  recipient: chatMessage.player,
+                }),
+              );
+              return;
+            }
+          }
+
           let parsedCommand: IParsedCommand | null = null;
 
           try {
@@ -375,6 +477,11 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
           if (!commandConfig.enabled) return;
 
           const delay = commandConfig ? commandConfig.delay * 1000 : 0;
+          this.log.debug('handleChatMessage: Command delay configuration', {
+            commandName: db.name,
+            delay,
+            announceDelay: commandConfig?.announceDelay,
+          });
 
           if (delay && commandConfig.announceDelay) {
             await gameServerService.sendMessage(
@@ -406,7 +513,15 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
           // Also set an expiration for this lock of 2 minutes
           // This prevents the lock from being held forever if the job fails
           await redisClient.expire(commandsRunningKey(jobData), 120);
+
+          this.log.debug('handleChatMessage: Adding command job to queue', {
+            commandId: db.id,
+            commandName: db.name,
+            delay,
+            playerId: player.id,
+          });
           await queueService.queues.commands.queue.add(jobData, { delay });
+          this.log.debug('handleChatMessage: Command job added to queue successfully');
         }
       });
 

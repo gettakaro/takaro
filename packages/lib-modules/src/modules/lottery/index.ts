@@ -51,6 +51,7 @@ export class Lottery extends ModuleTransferDTO<Lottery> {
             name: 'buyTicket',
             trigger: 'buyTicket',
             helpText: 'Buy a lottery ticket.',
+            requiredPermissions: ['LOTTERY_BUY'],
             arguments: [
               {
                 name: 'amount',
@@ -66,6 +67,7 @@ export class Lottery extends ModuleTransferDTO<Lottery> {
             name: 'viewTickets',
             trigger: 'viewTickets',
             helpText: 'View your lottery tickets.',
+            requiredPermissions: ['LOTTERY_VIEW_TICKETS'],
             arguments: [],
           }),
           new ICommand({

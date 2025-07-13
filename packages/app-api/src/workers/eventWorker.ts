@@ -33,11 +33,15 @@ async function processJob(job: Job<IEventQueueData>) {
 
   if (type === HookEvents.LOG_LINE) {
     const hooksService = new HookService(domainId);
-    await hooksService.handleEvent({
-      eventType: HookEvents.LOG_LINE,
-      eventData: event,
-      gameServerId,
-    });
+    hooksService
+      .handleEvent({
+        eventType: HookEvents.LOG_LINE,
+        eventData: event,
+        gameServerId,
+      })
+      .catch((err) => {
+        log.error('Failed to handle log line event', { error: err, event });
+      });
   }
 
   const socketServer = await getSocketServer();
@@ -53,8 +57,13 @@ async function processJob(job: Job<IEventQueueData>) {
 
     if (type === HookEvents.CHAT_MESSAGE) {
       const chatMessage = event as EventChatMessage;
+      log.debug('Received chat message event, checking for commands', {
+        player: chatMessage.player?.gameId,
+        msgPreview: chatMessage.msg.substring(0, 50),
+      });
       const commandService = new CommandService(domainId);
       await commandService.handleChatMessage(chatMessage, gameServerId);
+      log.debug('Finished handling chat message for potential commands');
 
       await eventService.create(
         new EventCreateDTO({

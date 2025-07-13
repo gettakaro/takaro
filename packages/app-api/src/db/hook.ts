@@ -79,7 +79,7 @@ export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDT
     const data = await query.findById(id).withGraphJoined('function');
 
     if (!data) {
-      throw new errors.NotFoundError(`Record with id ${id} not found`);
+      throw new errors.NotFoundError(`Hook with id ${id} not found`);
     }
 
     return new HookOutputDTO(data);

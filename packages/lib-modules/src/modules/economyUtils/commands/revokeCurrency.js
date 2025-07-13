@@ -1,4 +1,4 @@
-import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';
+import { takaro, data } from '@takaro/helpers';
 
 async function main() {
   const { pog: revoker, arguments: args, gameServerId } = data;
@@ -6,10 +6,6 @@ async function main() {
   // args.receiver has an argument type of "player". Arguments of this type are automatically resolved to the player's id.
   // If the player doesn't exist or multiple players with the same name where found, it will have thrown an error before this command is executed.
   const receiver = args.receiver;
-
-  if (!checkPermission(revoker, 'ECONOMY_UTILS_MANAGE_CURRENCY')) {
-    throw new TakaroUserError('You do not have permission to use revoke currency command.');
-  }
 
   const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;
   const revokerName = (await takaro.player.playerControllerGetOne(revoker.playerId)).data.data.name;

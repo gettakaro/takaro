@@ -1,0 +1,33 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "ValidationError",
+        "details": [
+          {
+            "target": {
+              "currency": -50
+            },
+            "value": -50,
+            "property": "currency",
+            "children": [],
+            "constraints": {
+              "min": "currency must not be less than 0.01"
+            }
+          }
+        ],
+        "message": "Validation error"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "PlayerOnGameserverController",
+    "snapshot": true,
+    "name": "Rejects negative amount for deductCurrency",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

@@ -34,8 +34,10 @@ function addSearchExamples(original: OpenAPIObject): OpenAPIObject {
           },
           advanced: {
             summary: 'Advanced search',
-            description: dedent`All /search endpoints allow you to combine different filters, search terms and ranges.
-            Filters are exact matches, search terms are partial matches and ranges are greater than or less than comparisons.
+            description: dedent`All /search endpoints allow you to combine different filters, search terms, ranges, and extend options.
+            Filters are exact matches, search terms are partial matches, ranges are greater than or less than comparisons, 
+            and extend allows you to include related entities in the response.
+            
             Ranges allow you to make queries like "all records created in the last 7 days" or "all records with an age greater than 18".
 
             In search and filter sections, you pass an array of values for each property 
@@ -46,13 +48,29 @@ function addSearchExamples(original: OpenAPIObject): OpenAPIObject {
             Different filters will be AND'ed together.
             This will return all records where the name is John and the age is 19.
 
-            Eg: \`{"filters": {"name": "John", "age": 19}}\`            
+            Eg: \`{"filters": {"name": "John", "age": 19}}\`
+            
+            The extend parameter allows including related data:
+            Eg: \`{"extend": ["roles", "gameServers"]}\`
             `,
             value: {
               filters: {
                 id: ['ea85ddf4-2885-482f-adc6-548fbe3fd8af'],
               },
               greaterThan: { createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() },
+            },
+          },
+          withRelations: {
+            summary: 'Search with related data',
+            description:
+              'Use the extend parameter to include related entities in the response, reducing the need for multiple API calls.',
+            value: {
+              filters: {
+                name: ['admin'],
+              },
+              extend: ['roles', 'gameServers'],
+              page: 1,
+              limit: 10,
             },
           },
         };

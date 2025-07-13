@@ -12,6 +12,7 @@ export const categorizedEventNames = [
       e.CronjobExecuted,
       e.HookExecuted,
       e.CommandExecuted,
+      e.CommandExecutionDenied,
     ],
   },
   {
@@ -23,6 +24,8 @@ export const categorizedEventNames = [
       e.PlayerNewIpDetected,
       e.PlayerDeath,
       e.PlayerLinked,
+      e.PlayerBanned,
+      e.PlayerUnbanned,
     ],
   },
   {
@@ -46,6 +49,7 @@ export const categorizedEventNames = [
       e.CurrencyDeducted,
       e.ShopOrderCreated,
       e.ShopOrderStatusChanged,
+      e.ShopOrderDeliveryFailed,
       e.ShopListingCreated,
       e.ShopListingUpdated,
       e.ShopListingDeleted,

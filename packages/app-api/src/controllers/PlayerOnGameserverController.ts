@@ -1,4 +1,14 @@
-import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsISO8601,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  ValidateNested,
+  Min,
+  IsEnum,
+} from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
@@ -55,6 +65,9 @@ class PlayerOnGameServerSearchInputAllowedRangeFilter extends RangeFilterCreated
   playtimeSeconds: number;
 }
 
+const playerOnGameServerExtendOptions = ['gameServer', 'player'];
+type PlayerOnGameServerExtendOptions = (typeof playerOnGameServerExtendOptions)[number];
+
 class PlayerOnGameServerSearchInputDTO extends ITakaroQuery<PlayerOnGameserverOutputDTO> {
   @ValidateNested()
   @Type(() => PlayerOnGameServerSearchInputAllowedFilters)
@@ -67,10 +80,15 @@ class PlayerOnGameServerSearchInputDTO extends ITakaroQuery<PlayerOnGameserverOu
   @ValidateNested()
   @Type(() => PlayerOnGameServerSearchInputAllowedRangeFilter)
   declare lessThan: PlayerOnGameServerSearchInputAllowedRangeFilter;
+
+  @IsOptional()
+  @IsEnum(playerOnGameServerExtendOptions, { each: true })
+  declare extend?: PlayerOnGameServerExtendOptions[];
 }
 
 class PlayerOnGameServerSetCurrencyInputDTO {
   @IsNumber()
+  @Min(0.01)
   currency!: number;
 }
 

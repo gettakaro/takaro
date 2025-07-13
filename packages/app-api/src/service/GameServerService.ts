@@ -1,6 +1,6 @@
 import { TakaroService } from './Base.js';
 import { GameServerModel, GameServerRepo } from '../db/gameserver.js';
-import { IsBoolean, IsEnum, IsJSON, IsObject, IsOptional, IsString, Length } from 'class-validator';
+import { IsBoolean, IsEnum, IsJSON, IsObject, IsOptional, IsString, Length, isUUID } from 'class-validator';
 import {
   IMessageOptsDTO,
   IGameServer,
@@ -14,7 +14,7 @@ import {
   TakaroConnector,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO, traceableClass, TakaroDTO } from '@takaro/util';
-import { SettingsService } from './SettingsService.js';
+import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 import { queueService } from '@takaro/queues';
 import {
   HookEvents,
@@ -403,6 +403,15 @@ export class GameServerService extends TakaroService<
   }
 
   async sendMessage(gameServerId: string, message: string, opts: IMessageOptsDTO) {
+    // Get settings to check for message prefix
+    const settingsService = new SettingsService(this.domainId, gameServerId);
+    const messagePrefixSetting = await settingsService.get(SETTINGS_KEYS.messagePrefix);
+
+    // Apply prefix if it exists
+    if (messagePrefixSetting.value && messagePrefixSetting.value.trim() !== '') {
+      message = messagePrefixSetting.value + message;
+    }
+
     // Limit message length to 300 characters
     // Longer than this and gameservers start acting _weird_
     message = message.substring(0, 300);
@@ -424,6 +433,19 @@ export class GameServerService extends TakaroService<
       channel: isPrivateMessage ? ChatChannel.WHISPER : ChatChannel.GLOBAL,
       timestamp: new Date().toISOString(),
     });
+
+    // If there's a recipient, get their player information
+    if (opts && opts.recipient) {
+      try {
+        const recipientPlayer = await this.getPlayer(gameServerId, opts.recipient);
+        if (recipientPlayer) {
+          meta.recipient = recipientPlayer;
+        }
+      } catch (error) {
+        // If we can't get the recipient info, continue without it
+        this.log.warn('Failed to get recipient player information', { error, recipient: opts.recipient });
+      }
+    }
 
     await eventService.create(
       new EventCreateDTO({
@@ -477,12 +499,24 @@ export class GameServerService extends TakaroService<
     const gameInstance = await this.getGame(gameServerId);
     return gameInstance.listBans();
   }
-  async giveItem(gameServerId: string, playerId: string, itemId: string, amount: number, quality?: string) {
-    const itemsService = new ItemsService(this.domainId);
+  async giveItem(gameServerId: string, playerId: string, itemIdentifier: string, amount: number, quality?: string) {
     const gameInstance = await this.getGame(gameServerId);
     const pog = await this.pogService.getPog(playerId, gameServerId);
-    const resolvedItem = await itemsService.findOne(itemId);
-    return gameInstance.giveItem(pog, resolvedItem.code, amount, quality);
+
+    let itemCode: string;
+
+    // Check if input is a UUID (new way) or item code (old way)
+    if (isUUID(itemIdentifier)) {
+      // UUID: lookup in database to get item code
+      const itemsService = new ItemsService(this.domainId);
+      const resolvedItem = await itemsService.findOne(itemIdentifier);
+      itemCode = resolvedItem.code;
+    } else {
+      // Item code: use directly (old way)
+      itemCode = itemIdentifier;
+    }
+
+    return gameInstance.giveItem(pog, itemCode, amount, quality);
   }
 
   async shutdown(gameServerId: string) {
@@ -516,13 +550,17 @@ export class GameServerService extends TakaroService<
       }),
     );
 
-    await trackingService.repo.observePlayerLocation(
-      pog.id,
-      Math.round(location.x),
-      Math.round(location.y),
-      Math.round(location.z),
-      location.dimension,
-    );
+    trackingService.repo
+      .observePlayerLocation(
+        pog.id,
+        Math.round(location.x),
+        Math.round(location.y),
+        Math.round(location.z),
+        location.dimension,
+      )
+      .catch((err) => {
+        this.log.error('Failed to observe player location', { error: err });
+      });
 
     return location;
   }

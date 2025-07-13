@@ -13,19 +13,7 @@ import { useCallback } from 'react';
 import { localPoint } from '@visx/event';
 import { ZoomControls } from '../ZoomControls';
 import { alpha2ToAlpha3 } from './iso3166-alpha2-to-alpha3';
-
-const getCountryFlag = (countryCode: string): string => {
-  if (!countryCode || countryCode.length !== 2) {
-    return '';
-  }
-
-  const codePoints = countryCode
-    .toUpperCase()
-    .split('')
-    .map((char) => 127397 + char.charCodeAt(0));
-
-  return String.fromCodePoint(...codePoints);
-};
+import { Flag } from '../../visual/Flag';
 
 const alpha3ToAlpha2: Record<string, string> = Object.entries(alpha2ToAlpha3).reduce(
   (acc, [alpha2, alpha3]) => {
@@ -92,9 +80,8 @@ const CountryCell = styled.div`
 `;
 
 const FlagCell = styled(CountryCell)`
-  width: 16px;
+  width: 20px;
   text-align: center;
-  font-size: 10px;
   padding-right: 4px;
 `;
 
@@ -151,13 +138,12 @@ const CountrySidebar = <T,>({ data, xAccessor, yAccessor }: CountrySidebarProps<
         const countryCode = xAccessor(item);
         const playerCount = yAccessor(item);
         const alpha2Code = countryCode.length === 3 ? alpha3ToAlpha2[countryCode] : countryCode;
-        const flag = getCountryFlag(alpha2Code);
         // Prefer 2-letter country codes for display if available
         const displayCode = alpha2Code || countryCode;
 
         return (
           <CountryRow key={`${countryCode}-${index}`}>
-            <FlagCell>{flag}</FlagCell>
+            <FlagCell>{alpha2Code && <Flag countryCode={alpha2Code} size={1} />}</FlagCell>
             <CountryCell2>{displayCode}</CountryCell2>
             <CountCell>{playerCount}</CountCell>
           </CountryRow>

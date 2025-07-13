@@ -1,4 +1,4 @@
-import { ITakaroQuery, TakaroModel } from '@takaro/db';
+import { ITakaroQuery, TakaroModel, Redis } from '@takaro/db';
 import { errors, traceableClass } from '@takaro/util';
 import { Model, ModelClass, QueryBuilder } from 'objection';
 import { ITakaroRepo, PaginatedOutput, voidDTO } from './base.js';
@@ -153,6 +153,31 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
 
     const { query } = await this.getInventoryModel();
     await query.insert(toInsert);
+
+    // Invalidate and update the cache
+    try {
+      const redis = await Redis.getClient('inventory');
+      const cacheKey = `inventory:${this.domainId}:${playerId}`;
+
+      // Delete the old cache
+      await redis.del(cacheKey);
+
+      // Pre-populate cache with new data
+      const inventoryItems = items.map((item) => {
+        const itemDef = itemDefs.find((def) => def.code === item.code);
+        return new IItemDTO({
+          code: item.code,
+          name: itemDef?.name || item.name,
+          description: itemDef?.description || item.description,
+          amount: item.amount,
+        });
+      });
+
+      await redis.set(cacheKey, JSON.stringify(inventoryItems), { EX: 1800 });
+      this.log.debug('Inventory cache updated', { playerId, itemCount: items.length });
+    } catch (error) {
+      this.log.warn('Failed to update inventory cache', { error, playerId });
+    }
   }
 
   /**
@@ -225,15 +250,24 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
 
   async getBoundingBoxPlayers(input: BoundingBoxSearchInputDTO): Promise<PlayerLocationOutputDTO[]> {
     const { query } = await this.getModel();
-    const { minX, maxX, minY, maxY, minZ, maxZ } = input;
+    const { minX, maxX, minY, maxY, minZ, maxZ, startDate, endDate, gameserverId } = input;
 
     const qb = query
-      .where('x', '>=', minX)
+      .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerLocation.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
+      .where(`${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`, gameserverId)
+      .andWhere('x', '>=', minX)
       .andWhere('x', '<=', maxX)
       .andWhere('y', '>=', minY)
       .andWhere('y', '<=', maxY)
       .andWhere('z', '>=', minZ)
       .andWhere('z', '<=', maxZ);
+
+    if (startDate) {
+      qb.andWhere('playerLocation.createdAt', '>=', startDate);
+    }
+    if (endDate) {
+      qb.andWhere('playerLocation.createdAt', '<=', endDate);
+    }
 
     const result = await qb;
     return result.map((item) => {
@@ -243,9 +277,19 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
 
   async getRadiusPlayers(input: RadiusSearchInputDTO): Promise<PlayerLocationOutputDTO[]> {
     const { query } = await this.getModel();
-    const { x, y, z, radius } = input;
+    const { x, y, z, radius, startDate, endDate, gameserverId } = input;
 
-    const qb = query.whereRaw('sqrt((x - ?) ^ 2 + (y - ?) ^ 2 + (z - ?) ^ 2) <= ?', [x, y, z, radius]);
+    const qb = query
+      .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerLocation.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
+      .where(`${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`, gameserverId)
+      .andWhereRaw('sqrt((x - ?) ^ 2 + (y - ?) ^ 2 + (z - ?) ^ 2) <= ?', [x, y, z, radius]);
+
+    if (startDate) {
+      qb.andWhere('playerLocation.createdAt', '>=', startDate);
+    }
+    if (endDate) {
+      qb.andWhere('playerLocation.createdAt', '<=', endDate);
+    }
 
     const result = await qb;
     return result.map((item) => {
