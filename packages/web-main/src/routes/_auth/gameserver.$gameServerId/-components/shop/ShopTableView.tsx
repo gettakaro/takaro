@@ -2,6 +2,7 @@ import {
   GameServerOutputDTOTypeEnum,
   ShopListingItemMetaOutputDTO,
   ShopListingOutputDTO,
+  ShopListingSearchInputDTOExtendEnum,
   ShopListingSearchInputDTOSortDirectionEnum,
 } from '@takaro/apiclient';
 import {
@@ -87,7 +88,7 @@ export const ShopTableView: FC<ShopViewProps> = ({
           quickSearchInput,
         ],
       },
-      extend: ['categories'],
+      extend: [ShopListingSearchInputDTOExtendEnum.Categories],
     }),
   );
 

@@ -10575,6 +10575,18 @@ export interface ShopListingSearchInputAllowedFilters {
    * @memberof ShopListingSearchInputAllowedFilters
    */
   draft?: boolean;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopListingSearchInputAllowedFilters
+   */
+  categoryIds?: Array<string>;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ShopListingSearchInputAllowedFilters
+   */
+  uncategorized?: boolean;
 }
 /**
  *
@@ -10654,6 +10666,7 @@ export interface ShopListingSearchInputDTO {
 export const ShopListingSearchInputDTOExtendEnum = {
   GameServer: 'gameServer',
   Item: 'item',
+  Categories: 'categories',
 } as const;
 
 export type ShopListingSearchInputDTOExtendEnum =

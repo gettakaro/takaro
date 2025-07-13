@@ -80,7 +80,7 @@ class ShopSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
   deletedAt!: string;
 }
 
-const shopListingExtendOptions = ['gameServer', 'item'];
+const shopListingExtendOptions = ['gameServer', 'item', 'categories'] as const;
 type ShopListingExtendOptions = (typeof shopListingExtendOptions)[number];
 
 class ShopListingSearchInputDTO extends ITakaroQuery<ShopListingSearchInputAllowedFilters> {
