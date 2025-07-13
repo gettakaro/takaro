@@ -5,7 +5,7 @@ import { ModuleService } from '../../service/Module/index.js';
 import { AuthenticatedRequest, AuthService } from '../../service/AuthService.js';
 import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
-import { Type } from 'class-transformer';
+import { Type, Exclude } from 'class-transformer';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { AllowedFilters } from '../shared.js';
@@ -39,6 +39,9 @@ class ModuleInstallationSearchInputDTO extends ITakaroQuery<ModuleInstallationSe
   @ValidateNested()
   @Type(() => ModuleInstallationSearchInputAllowedFilters)
   declare filters: ModuleInstallationSearchInputAllowedFilters;
+
+  @Exclude()
+  declare extend?: string[];
 }
 
 class ModuleInstallParamId {

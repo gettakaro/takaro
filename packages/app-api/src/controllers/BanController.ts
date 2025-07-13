@@ -1,4 +1,4 @@
-import { IsBoolean, IsISO8601, IsOptional, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsISO8601, IsOptional, IsUUID, ValidateNested, IsEnum } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { BanCreateDTO, BanOutputDTO, BanUpdateDTO } from '../service/Ban/dto.js';
@@ -45,6 +45,9 @@ class BanSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
   until?: string | undefined;
 }
 
+const banExtendOptions = ['player', 'gameServer'];
+type BanExtendOptions = (typeof banExtendOptions)[number];
+
 export class BanSearchInputDTO extends ITakaroQuery<BanOutputDTO> {
   @ValidateNested()
   @Type(() => BanSearchInputAllowedFilters)
@@ -55,6 +58,10 @@ export class BanSearchInputDTO extends ITakaroQuery<BanOutputDTO> {
   @ValidateNested()
   @Type(() => BanSearchInputAllowedRangeFilter)
   declare lessThan: Partial<BanSearchInputAllowedRangeFilter>;
+
+  @IsOptional()
+  @IsEnum(banExtendOptions, { each: true })
+  declare extend?: BanExtendOptions[];
 }
 
 @OpenAPI({

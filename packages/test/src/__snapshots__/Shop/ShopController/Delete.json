@@ -1,0 +1,25 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "NotFoundError",
+        "message": "Not found"
+      }
+    },
+    "data": {}
+  },
+  "status": 404,
+  "test": {
+    "group": "Shop/ShopController",
+    "snapshot": true,
+    "name": "Delete",
+    "filteredFields": [
+      "itemId",
+      "gameServerId",
+      "gameserverId",
+      "listingId"
+    ],
+    "expectedStatus": 404,
+    "standardEnvironment": true
+  }
+}

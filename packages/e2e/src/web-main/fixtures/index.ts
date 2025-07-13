@@ -13,12 +13,22 @@ import {
   UserOutputDTO,
 } from '@takaro/apiclient';
 import { humanId } from 'human-id';
-import { ModuleDefinitionsPage, ModuleBuilderPage, GameServersPage, UsersPage, RolesPage } from '../pages/index.js';
+import {
+  ModuleDefinitionsPage,
+  ModuleBuilderPage,
+  GameServersPage,
+  UsersPage,
+  RolesPage,
+  ShopCategoriesPage,
+  ShopPage,
+  ShopListingPage,
+} from '../pages/index.js';
 import { getAdminClient, login } from '../helpers.js';
 import { PlayerProfilePage } from '../pages/PlayerProfile.js';
 import { ModuleInstallationsPage } from '../pages/ModuleInstallationsPage.js';
 import { randomUUID } from 'crypto';
 import { getMockServer } from '@takaro/mock-gameserver';
+import { setupShopCategories } from './shopCategoriesSetup.js';
 
 global.afterEach = () => {};
 globalThis.afterEach = () => {};
@@ -36,6 +46,9 @@ export interface IBaseFixtures {
     builtinModule: ModuleOutputDTO;
     gameServer: GameServerOutputDTO;
     rolesPage: RolesPage;
+    shopCategoriesPage: ShopCategoriesPage;
+    shopPage: ShopPage;
+    shopListingPage: ShopListingPage;
     mailhog: MailhogAPI;
     rootUser: UserOutputDTO;
     testUser: UserOutputDTO & { password: string; role: RoleOutputDTO };
@@ -129,6 +142,9 @@ const main = pwTest.extend<IBaseFixtures>({
       // assign role to user
       await client.user.userControllerAssignRole(user.data.data.id, emptyRole.data.data.id);
 
+      // Setup shop categories for tests
+      await setupShopCategories(client);
+
       await use({
         rootClient: client,
         adminClient,
@@ -140,6 +156,9 @@ const main = pwTest.extend<IBaseFixtures>({
         moduleDefinitionsPage: new ModuleDefinitionsPage(page),
         usersPage: new UsersPage(page),
         rolesPage: new RolesPage(page),
+        shopCategoriesPage: new ShopCategoriesPage(page, gameServer.id),
+        shopPage: new ShopPage(page, gameServer.id),
+        shopListingPage: new ShopListingPage(page, gameServer.id),
         mailhog: new MailhogAPI({
           baseURL: 'http://127.0.0.1:8025',
         }),

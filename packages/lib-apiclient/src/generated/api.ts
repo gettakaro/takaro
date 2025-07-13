@@ -406,6 +406,12 @@ export interface BanSearchInputDTO {
   lessThan?: BanSearchInputAllowedRangeFilter;
   /**
    *
+   * @type {Array<string>}
+   * @memberof BanSearchInputDTO
+   */
+  extend?: Array<BanSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof BanSearchInputDTO
    */
@@ -434,14 +440,15 @@ export interface BanSearchInputDTO {
    * @memberof BanSearchInputDTO
    */
   sortDirection?: BanSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof BanSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const BanSearchInputDTOExtendEnum = {
+  Player: 'player',
+  GameServer: 'gameServer',
+} as const;
+
+export type BanSearchInputDTOExtendEnum =
+  (typeof BanSearchInputDTOExtendEnum)[keyof typeof BanSearchInputDTOExtendEnum];
 export const BanSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -629,7 +636,13 @@ export interface BoundingBoxSearchInputDTO {
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof BoundingBoxSearchInputDTO
    */
-  timestamp?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  startDate?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof BoundingBoxSearchInputDTO
+   */
+  endDate?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
@@ -833,6 +846,12 @@ export interface CommandCreateDTO {
    * @memberof CommandCreateDTO
    */
   arguments?: Array<CommandArgumentCreateDTO>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof CommandCreateDTO
+   */
+  requiredPermissions?: Array<string>;
 }
 /**
  *
@@ -966,6 +985,12 @@ export interface CommandOutputDTO {
   arguments: Array<CommandArgumentOutputDTO>;
   /**
    *
+   * @type {Array<string>}
+   * @memberof CommandOutputDTO
+   */
+  requiredPermissions?: Array<string>;
+  /**
+   *
    * @type {string}
    * @memberof CommandOutputDTO
    */
@@ -1072,6 +1097,12 @@ export interface CommandSearchInputDTO {
   search?: CommandSearchInputAllowedSearch;
   /**
    *
+   * @type {Array<string>}
+   * @memberof CommandSearchInputDTO
+   */
+  extend?: Array<CommandSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof CommandSearchInputDTO
    */
@@ -1106,14 +1137,16 @@ export interface CommandSearchInputDTO {
    * @memberof CommandSearchInputDTO
    */
   sortDirection?: CommandSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof CommandSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const CommandSearchInputDTOExtendEnum = {
+  Module: 'module',
+  GameServer: 'gameServer',
+  Permissions: 'permissions',
+} as const;
+
+export type CommandSearchInputDTOExtendEnum =
+  (typeof CommandSearchInputDTOExtendEnum)[keyof typeof CommandSearchInputDTOExtendEnum];
 export const CommandSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -1183,6 +1216,12 @@ export interface CommandUpdateDTO {
    * @memberof CommandUpdateDTO
    */
   arguments?: Array<CommandArgumentCreateDTO>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof CommandUpdateDTO
+   */
+  requiredPermissions?: Array<string>;
 }
 /**
  *
@@ -1391,6 +1430,12 @@ export interface CronJobSearchInputDTO {
   search?: CronJobSearchInputAllowedSearch;
   /**
    *
+   * @type {Array<string>}
+   * @memberof CronJobSearchInputDTO
+   */
+  extend?: Array<CronJobSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof CronJobSearchInputDTO
    */
@@ -1425,14 +1470,15 @@ export interface CronJobSearchInputDTO {
    * @memberof CronJobSearchInputDTO
    */
   sortDirection?: CronJobSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof CronJobSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const CronJobSearchInputDTOExtendEnum = {
+  Module: 'module',
+  GameServer: 'gameServer',
+} as const;
+
+export type CronJobSearchInputDTOExtendEnum =
+  (typeof CronJobSearchInputDTOExtendEnum)[keyof typeof CronJobSearchInputDTOExtendEnum];
 export const CronJobSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -1914,12 +1960,6 @@ export interface DomainSearchInputDTO {
    * @memberof DomainSearchInputDTO
    */
   sortDirection?: DomainSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof DomainSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
 export const DomainSearchInputDTOSortDirectionEnum = {
@@ -2287,12 +2327,6 @@ export interface EntitySearchInputDTO {
    * @memberof EntitySearchInputDTO
    */
   sortDirection?: EntitySearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof EntitySearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
 export const EntitySearchInputDTOSortDirectionEnum = {
@@ -2485,6 +2519,7 @@ export const EventCreateDTOEventNameEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -2756,6 +2791,7 @@ export const EventOutputDTOEventNameEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -2804,6 +2840,7 @@ export type EventOutputDTOMeta =
   | EventPlayerDisconnected
   | HookEventDiscordMessage
   | TakaroEventCommandExecuted
+  | TakaroEventCommandExecutionDenied
   | TakaroEventCronjobExecuted
   | TakaroEventCurrencyAdded
   | TakaroEventCurrencyDeducted
@@ -2979,6 +3016,7 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -3040,6 +3078,12 @@ export interface EventSearchInputDTO {
   lessThan?: RangeFilterCreatedAndUpdatedAt;
   /**
    *
+   * @type {Array<string>}
+   * @memberof EventSearchInputDTO
+   */
+  extend?: Array<EventSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof EventSearchInputDTO
    */
@@ -3068,14 +3112,17 @@ export interface EventSearchInputDTO {
    * @memberof EventSearchInputDTO
    */
   sortDirection?: EventSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof EventSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const EventSearchInputDTOExtendEnum = {
+  Module: 'module',
+  GameServer: 'gameServer',
+  Player: 'player',
+  User: 'user',
+} as const;
+
+export type EventSearchInputDTOExtendEnum =
+  (typeof EventSearchInputDTOExtendEnum)[keyof typeof EventSearchInputDTOExtendEnum];
 export const EventSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -3153,6 +3200,7 @@ export const EventsCountInputDTOEventNameEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -3390,6 +3438,12 @@ export interface FunctionSearchInputDTO {
   search?: FunctionSearchInputAllowedSearch;
   /**
    *
+   * @type {Array<string>}
+   * @memberof FunctionSearchInputDTO
+   */
+  extend?: Array<FunctionSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof FunctionSearchInputDTO
    */
@@ -3424,14 +3478,17 @@ export interface FunctionSearchInputDTO {
    * @memberof FunctionSearchInputDTO
    */
   sortDirection?: FunctionSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof FunctionSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const FunctionSearchInputDTOExtendEnum = {
+  Module: 'module',
+  CronJobs: 'cronJobs',
+  Hooks: 'hooks',
+  Commands: 'commands',
+} as const;
+
+export type FunctionSearchInputDTOExtendEnum =
+  (typeof FunctionSearchInputDTOExtendEnum)[keyof typeof FunctionSearchInputDTOExtendEnum];
 export const FunctionSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -3704,6 +3761,12 @@ export interface GameServerSearchInputDTO {
   search?: GameServerSearchInputAllowedSearch;
   /**
    *
+   * @type {Array<string>}
+   * @memberof GameServerSearchInputDTO
+   */
+  extend?: Array<GameServerSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof GameServerSearchInputDTO
    */
@@ -3738,14 +3801,15 @@ export interface GameServerSearchInputDTO {
    * @memberof GameServerSearchInputDTO
    */
   sortDirection?: GameServerSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof GameServerSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const GameServerSearchInputDTOExtendEnum = {
+  Players: 'players',
+  Items: 'items',
+} as const;
+
+export type GameServerSearchInputDTOExtendEnum =
+  (typeof GameServerSearchInputDTOExtendEnum)[keyof typeof GameServerSearchInputDTOExtendEnum];
 export const GameServerSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -4242,12 +4306,6 @@ export interface GuildSearchInputDTO {
    * @memberof GuildSearchInputDTO
    */
   sortDirection?: GuildSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof GuildSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
 export const GuildSearchInputDTOSortDirectionEnum = {
@@ -4354,6 +4412,7 @@ export const HookCreateDTOEventTypeEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -4509,6 +4568,7 @@ export const HookOutputDTOEventTypeEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -4609,6 +4669,7 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -4672,6 +4733,12 @@ export interface HookSearchInputDTO {
   search?: HookSearchInputAllowedSearch;
   /**
    *
+   * @type {Array<string>}
+   * @memberof HookSearchInputDTO
+   */
+  extend?: Array<HookSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof HookSearchInputDTO
    */
@@ -4706,14 +4773,15 @@ export interface HookSearchInputDTO {
    * @memberof HookSearchInputDTO
    */
   sortDirection?: HookSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof HookSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const HookSearchInputDTOExtendEnum = {
+  Module: 'module',
+  GameServer: 'gameServer',
+} as const;
+
+export type HookSearchInputDTOExtendEnum =
+  (typeof HookSearchInputDTOExtendEnum)[keyof typeof HookSearchInputDTOExtendEnum];
 export const HookSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -4774,6 +4842,7 @@ export const HookTriggerDTOEventTypeEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -4856,6 +4925,7 @@ export const HookUpdateDTOEventTypeEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -4927,6 +4997,12 @@ export interface ICommand {
    * @memberof ICommand
    */
   arguments?: Array<ICommandArgument>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ICommand
+   */
+  requiredPermissions?: Array<string>;
 }
 /**
  *
@@ -5174,6 +5250,7 @@ export const IHookEventTypeEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
@@ -5306,7 +5383,13 @@ export interface IMessageOptsDTO {
    * @type {IPlayerReferenceDTO}
    * @memberof IMessageOptsDTO
    */
-  recipient: IPlayerReferenceDTO;
+  recipient?: IPlayerReferenceDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof IMessageOptsDTO
+   */
+  senderNameOverride?: string;
 }
 /**
  *
@@ -5767,6 +5850,12 @@ export interface ItemSearchInputDTO {
   search?: ItemSearchInputAllowedSearch;
   /**
    *
+   * @type {Array<string>}
+   * @memberof ItemSearchInputDTO
+   */
+  extend?: Array<ItemSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof ItemSearchInputDTO
    */
@@ -5801,14 +5890,14 @@ export interface ItemSearchInputDTO {
    * @memberof ItemSearchInputDTO
    */
   sortDirection?: ItemSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof ItemSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const ItemSearchInputDTOExtendEnum = {
+  GameServer: 'gameServer',
+} as const;
+
+export type ItemSearchInputDTOExtendEnum =
+  (typeof ItemSearchInputDTOExtendEnum)[keyof typeof ItemSearchInputDTOExtendEnum];
 export const ItemSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -6616,12 +6705,6 @@ export interface ModuleInstallationSearchInputDTO {
    * @memberof ModuleInstallationSearchInputDTO
    */
   sortDirection?: ModuleInstallationSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof ModuleInstallationSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
 export const ModuleInstallationSearchInputDTOSortDirectionEnum = {
@@ -6783,6 +6866,12 @@ export interface ModuleSearchInputDTO {
   lessThan?: RangeFilterCreatedAndUpdatedAt;
   /**
    *
+   * @type {Array<string>}
+   * @memberof ModuleSearchInputDTO
+   */
+  extend?: Array<ModuleSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {number}
    * @memberof ModuleSearchInputDTO
    */
@@ -6805,14 +6894,14 @@ export interface ModuleSearchInputDTO {
    * @memberof ModuleSearchInputDTO
    */
   sortDirection?: ModuleSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof ModuleSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const ModuleSearchInputDTOExtendEnum = {
+  Versions: 'versions',
+} as const;
+
+export type ModuleSearchInputDTOExtendEnum =
+  (typeof ModuleSearchInputDTOExtendEnum)[keyof typeof ModuleSearchInputDTOExtendEnum];
 export const ModuleSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -7178,12 +7267,6 @@ export interface ModuleVersionSearchInputDTO {
    * @memberof ModuleVersionSearchInputDTO
    */
   sortDirection?: ModuleVersionSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof ModuleVersionSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
 export const ModuleVersionSearchInputDTOSortDirectionEnum = {
@@ -8099,6 +8182,12 @@ export interface PlayerOnGameServerSearchInputDTO {
   lessThan?: PlayerOnGameServerSearchInputAllowedRangeFilter;
   /**
    *
+   * @type {Array<string>}
+   * @memberof PlayerOnGameServerSearchInputDTO
+   */
+  extend?: Array<PlayerOnGameServerSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof PlayerOnGameServerSearchInputDTO
    */
@@ -8127,14 +8216,15 @@ export interface PlayerOnGameServerSearchInputDTO {
    * @memberof PlayerOnGameServerSearchInputDTO
    */
   sortDirection?: PlayerOnGameServerSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof PlayerOnGameServerSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const PlayerOnGameServerSearchInputDTOExtendEnum = {
+  GameServer: 'gameServer',
+  Player: 'player',
+} as const;
+
+export type PlayerOnGameServerSearchInputDTOExtendEnum =
+  (typeof PlayerOnGameServerSearchInputDTOExtendEnum)[keyof typeof PlayerOnGameServerSearchInputDTOExtendEnum];
 export const PlayerOnGameServerSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -9025,6 +9115,12 @@ export interface PlayerSearchInputDTO {
   lessThan?: PlayerSearchInputAllowedRangeFilter;
   /**
    *
+   * @type {Array<string>}
+   * @memberof PlayerSearchInputDTO
+   */
+  extend?: Array<PlayerSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {number}
    * @memberof PlayerSearchInputDTO
    */
@@ -9047,14 +9143,17 @@ export interface PlayerSearchInputDTO {
    * @memberof PlayerSearchInputDTO
    */
   sortDirection?: PlayerSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof PlayerSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const PlayerSearchInputDTOExtendEnum = {
+  PlayerOnGameServers: 'playerOnGameServers',
+  Roles: 'roles',
+  GameServers: 'gameServers',
+  RoleAssignments: 'roleAssignments',
+} as const;
+
+export type PlayerSearchInputDTOExtendEnum =
+  (typeof PlayerSearchInputDTOExtendEnum)[keyof typeof PlayerSearchInputDTOExtendEnum];
 export const PlayerSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -9241,7 +9340,13 @@ export interface RadiusSearchInputDTO {
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof RadiusSearchInputDTO
    */
-  timestamp?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  startDate?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof RadiusSearchInputDTO
+   */
+  endDate?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
@@ -9522,6 +9627,12 @@ export interface RoleSearchInputDTO {
   search?: RoleSearchInputAllowedSearch;
   /**
    *
+   * @type {Array<string>}
+   * @memberof RoleSearchInputDTO
+   */
+  extend?: Array<RoleSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof RoleSearchInputDTO
    */
@@ -9556,14 +9667,14 @@ export interface RoleSearchInputDTO {
    * @memberof RoleSearchInputDTO
    */
   sortDirection?: RoleSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof RoleSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const RoleSearchInputDTOExtendEnum = {
+  Permissions: 'permissions',
+} as const;
+
+export type RoleSearchInputDTOExtendEnum =
+  (typeof RoleSearchInputDTOExtendEnum)[keyof typeof RoleSearchInputDTOExtendEnum];
 export const RoleSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -9889,6 +10000,301 @@ export interface SettingsSetDTO {
 /**
  *
  * @export
+ * @interface ShopCategoryBulkAssignDTO
+ */
+export interface ShopCategoryBulkAssignDTO {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopCategoryBulkAssignDTO
+   */
+  listingIds: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopCategoryBulkAssignDTO
+   */
+  addCategoryIds?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopCategoryBulkAssignDTO
+   */
+  removeCategoryIds?: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface ShopCategoryCreateDTO
+ */
+export interface ShopCategoryCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryCreateDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryCreateDTO
+   */
+  emoji: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryCreateDTO
+   */
+  parentId?: string;
+}
+/**
+ *
+ * @export
+ * @interface ShopCategoryMoveDTO
+ */
+export interface ShopCategoryMoveDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryMoveDTO
+   */
+  parentId?: string;
+}
+/**
+ *
+ * @export
+ * @interface ShopCategoryOutputArrayDTOAPI
+ */
+export interface ShopCategoryOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<ShopCategoryOutputDTO>}
+   * @memberof ShopCategoryOutputArrayDTOAPI
+   */
+  data: Array<ShopCategoryOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ShopCategoryOutputArrayDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface ShopCategoryOutputDTO
+ */
+export interface ShopCategoryOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryOutputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryOutputDTO
+   */
+  emoji: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryOutputDTO
+   */
+  parentId?: string;
+  /**
+   *
+   * @type {ShopCategoryOutputDTO}
+   * @memberof ShopCategoryOutputDTO
+   */
+  parent?: ShopCategoryOutputDTO;
+  /**
+   *
+   * @type {Array<ShopCategoryOutputDTO>}
+   * @memberof ShopCategoryOutputDTO
+   */
+  children?: Array<ShopCategoryOutputDTO>;
+  /**
+   *
+   * @type {Array<ShopListingOutputDTO>}
+   * @memberof ShopCategoryOutputDTO
+   */
+  listings?: Array<ShopListingOutputDTO>;
+  /**
+   *
+   * @type {number}
+   * @memberof ShopCategoryOutputDTO
+   */
+  listingCount?: number;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ShopCategoryOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ShopCategoryOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface ShopCategoryOutputDTOAPI
+ */
+export interface ShopCategoryOutputDTOAPI {
+  /**
+   *
+   * @type {ShopCategoryOutputDTO}
+   * @memberof ShopCategoryOutputDTOAPI
+   */
+  data: ShopCategoryOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ShopCategoryOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface ShopCategorySearchInputAllowedFilters
+ */
+export interface ShopCategorySearchInputAllowedFilters {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopCategorySearchInputAllowedFilters
+   */
+  id?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopCategorySearchInputAllowedFilters
+   */
+  parentId?: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface ShopCategorySearchInputAllowedSearch
+ */
+export interface ShopCategorySearchInputAllowedSearch {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopCategorySearchInputAllowedSearch
+   */
+  name?: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface ShopCategorySearchInputDTO
+ */
+export interface ShopCategorySearchInputDTO {
+  /**
+   *
+   * @type {ShopCategorySearchInputAllowedFilters}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  filters?: ShopCategorySearchInputAllowedFilters;
+  /**
+   *
+   * @type {ShopCategorySearchInputAllowedSearch}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  search?: ShopCategorySearchInputAllowedSearch;
+  /**
+   *
+   * @type {RangeFilterCreatedAndUpdatedAt}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  greaterThan?: RangeFilterCreatedAndUpdatedAt;
+  /**
+   *
+   * @type {RangeFilterCreatedAndUpdatedAt}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  lessThan?: RangeFilterCreatedAndUpdatedAt;
+  /**
+   *
+   * @type {number}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  limit?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  sortBy?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  sortDirection?: ShopCategorySearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  extend?: Array<string>;
+}
+
+export const ShopCategorySearchInputDTOSortDirectionEnum = {
+  Asc: 'asc',
+  Desc: 'desc',
+} as const;
+
+export type ShopCategorySearchInputDTOSortDirectionEnum =
+  (typeof ShopCategorySearchInputDTOSortDirectionEnum)[keyof typeof ShopCategorySearchInputDTOSortDirectionEnum];
+
+/**
+ *
+ * @export
+ * @interface ShopCategoryUpdateDTO
+ */
+export interface ShopCategoryUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryUpdateDTO
+   */
+  name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryUpdateDTO
+   */
+  emoji?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryUpdateDTO
+   */
+  parentId?: string;
+}
+/**
+ *
+ * @export
  * @interface ShopImportOptions
  */
 export interface ShopImportOptions {
@@ -9947,6 +10353,12 @@ export interface ShopListingCreateDTO {
    * @memberof ShopListingCreateDTO
    */
   draft?: boolean;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopListingCreateDTO
+   */
+  categoryIds?: Array<string>;
 }
 /**
  *
@@ -10091,6 +10503,12 @@ export interface ShopListingOutputDTO {
   draft: boolean;
   /**
    *
+   * @type {Array<ShopCategoryOutputDTO>}
+   * @memberof ShopListingOutputDTO
+   */
+  categories?: Array<ShopCategoryOutputDTO>;
+  /**
+   *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof ShopListingOutputDTO
    */
@@ -10157,6 +10575,18 @@ export interface ShopListingSearchInputAllowedFilters {
    * @memberof ShopListingSearchInputAllowedFilters
    */
   draft?: boolean;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopListingSearchInputAllowedFilters
+   */
+  categoryIds?: Array<string>;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ShopListingSearchInputAllowedFilters
+   */
+  uncategorized?: boolean;
 }
 /**
  *
@@ -10203,6 +10633,12 @@ export interface ShopListingSearchInputDTO {
   lessThan?: ShopSearchInputAllowedRangeFilter;
   /**
    *
+   * @type {Array<string>}
+   * @memberof ShopListingSearchInputDTO
+   */
+  extend?: Array<ShopListingSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {number}
    * @memberof ShopListingSearchInputDTO
    */
@@ -10225,14 +10661,16 @@ export interface ShopListingSearchInputDTO {
    * @memberof ShopListingSearchInputDTO
    */
   sortDirection?: ShopListingSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof ShopListingSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const ShopListingSearchInputDTOExtendEnum = {
+  GameServer: 'gameServer',
+  Item: 'item',
+  Categories: 'categories',
+} as const;
+
+export type ShopListingSearchInputDTOExtendEnum =
+  (typeof ShopListingSearchInputDTOExtendEnum)[keyof typeof ShopListingSearchInputDTOExtendEnum];
 export const ShopListingSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -10277,6 +10715,12 @@ export interface ShopListingUpdateDTO {
    * @memberof ShopListingUpdateDTO
    */
   draft?: boolean;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopListingUpdateDTO
+   */
+  categoryIds?: Array<string>;
 }
 /**
  *
@@ -10543,6 +10987,12 @@ export interface ShopOrderSearchInputDTO {
   lessThan?: ShopOrderSearchInputAllowedRangeFilter;
   /**
    *
+   * @type {Array<string>}
+   * @memberof ShopOrderSearchInputDTO
+   */
+  extend?: Array<ShopOrderSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof ShopOrderSearchInputDTO
    */
@@ -10571,14 +11021,17 @@ export interface ShopOrderSearchInputDTO {
    * @memberof ShopOrderSearchInputDTO
    */
   sortDirection?: ShopOrderSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof ShopOrderSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const ShopOrderSearchInputDTOExtendEnum = {
+  Listing: 'listing',
+  ListingItems: 'listing.items',
+  ListingItemsItem: 'listing.items.item',
+  Player: 'player',
+} as const;
+
+export type ShopOrderSearchInputDTOExtendEnum =
+  (typeof ShopOrderSearchInputDTOExtendEnum)[keyof typeof ShopOrderSearchInputDTOExtendEnum];
 export const ShopOrderSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -10770,6 +11223,31 @@ export interface TakaroEventCommandExecuted {
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof TakaroEventCommandExecuted
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventCommandExecutionDenied
+ */
+export interface TakaroEventCommandExecutionDenied {
+  /**
+   *
+   * @type {TakaroEventCommandDetails}
+   * @memberof TakaroEventCommandExecutionDenied
+   */
+  command: TakaroEventCommandDetails;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof TakaroEventCommandExecutionDenied
+   */
+  missingPermissions: Array<string>;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventCommandExecutionDenied
    */
   timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
@@ -12099,6 +12577,12 @@ export interface UserSearchInputDTO {
   lessThan?: UserSearchInputAllowedRangeFilter;
   /**
    *
+   * @type {Array<string>}
+   * @memberof UserSearchInputDTO
+   */
+  extend?: Array<UserSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {number}
    * @memberof UserSearchInputDTO
    */
@@ -12121,14 +12605,14 @@ export interface UserSearchInputDTO {
    * @memberof UserSearchInputDTO
    */
   sortDirection?: UserSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof UserSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const UserSearchInputDTOExtendEnum = {
+  Roles: 'roles',
+} as const;
+
+export type UserSearchInputDTOExtendEnum =
+  (typeof UserSearchInputDTOExtendEnum)[keyof typeof UserSearchInputDTOExtendEnum];
 export const UserSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -12405,6 +12889,12 @@ export interface VariableSearchInputDTO {
   search?: VariableSearchInputAllowedSearch;
   /**
    *
+   * @type {Array<string>}
+   * @memberof VariableSearchInputDTO
+   */
+  extend?: Array<VariableSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof VariableSearchInputDTO
    */
@@ -12439,14 +12929,16 @@ export interface VariableSearchInputDTO {
    * @memberof VariableSearchInputDTO
    */
   sortDirection?: VariableSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof VariableSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const VariableSearchInputDTOExtendEnum = {
+  Module: 'module',
+  Player: 'player',
+  GameServer: 'gameServer',
+} as const;
+
+export type VariableSearchInputDTOExtendEnum =
+  (typeof VariableSearchInputDTOExtendEnum)[keyof typeof VariableSearchInputDTOExtendEnum];
 export const VariableSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -15490,6 +15982,43 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
+     * Export events matching the search criteria to CSV format. Accepts the same parameters as the search endpoint. Maximum time range is 90 days.   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerExport`
+     * @summary Export events to CSV
+     * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    eventControllerExport: async (
+      eventSearchInputDTO?: EventSearchInputDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/event/export`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(eventSearchInputDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Fetches events where cronjob, hook and command failed. Supports all the common query parameters   Required permissions: `READ_MODULES`, `READ_EVENTS`<br> OperationId: `EventControllerGetFailedFunctions`
      * @summary Get failed functions
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
@@ -15630,6 +16159,29 @@ export const EventApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
+     * Export events matching the search criteria to CSV format. Accepts the same parameters as the search endpoint. Maximum time range is 90 days.   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerExport`
+     * @summary Export events to CSV
+     * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async eventControllerExport(
+      eventSearchInputDTO?: EventSearchInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.eventControllerExport(eventSearchInputDTO, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['EventApi.eventControllerExport']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
      * Fetches events where cronjob, hook and command failed. Supports all the common query parameters   Required permissions: `READ_MODULES`, `READ_EVENTS`<br> OperationId: `EventControllerGetFailedFunctions`
      * @summary Get failed functions
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
@@ -15725,6 +16277,19 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
       return localVarFp.eventControllerCreate(eventCreateDTO, options).then((request) => request(axios, basePath));
     },
     /**
+     * Export events matching the search criteria to CSV format. Accepts the same parameters as the search endpoint. Maximum time range is 90 days.   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerExport`
+     * @summary Export events to CSV
+     * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    eventControllerExport(
+      eventSearchInputDTO?: EventSearchInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<void> {
+      return localVarFp.eventControllerExport(eventSearchInputDTO, options).then((request) => request(axios, basePath));
+    },
+    /**
      * Fetches events where cronjob, hook and command failed. Supports all the common query parameters   Required permissions: `READ_MODULES`, `READ_EVENTS`<br> OperationId: `EventControllerGetFailedFunctions`
      * @summary Get failed functions
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
@@ -15783,6 +16348,20 @@ export class EventApi extends BaseAPI {
   public eventControllerCreate(eventCreateDTO?: EventCreateDTO, options?: RawAxiosRequestConfig) {
     return EventApiFp(this.configuration)
       .eventControllerCreate(eventCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Export events matching the search criteria to CSV format. Accepts the same parameters as the search endpoint. Maximum time range is 90 days.   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerExport`
+   * @summary Export events to CSV
+   * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof EventApi
+   */
+  public eventControllerExport(eventSearchInputDTO?: EventSearchInputDTO, options?: RawAxiosRequestConfig) {
+    return EventApiFp(this.configuration)
+      .eventControllerExport(eventSearchInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -24482,6 +25061,782 @@ export type SettingsControllerGetKeysEnum =
   (typeof SettingsControllerGetKeysEnum)[keyof typeof SettingsControllerGetKeysEnum];
 
 /**
+ * ShopCategoryApi - axios parameter creator
+ * @export
+ */
+export const ShopCategoryApiAxiosParamCreator = function (configuration?: Configuration) {
+  return {
+    /**
+     * Bulk assign categories to multiple shop listings   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerBulkAssign`
+     * @summary Bulk assign
+     * @param {ShopCategoryBulkAssignDTO} [shopCategoryBulkAssignDTO] ShopCategoryBulkAssignDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerBulkAssign: async (
+      shopCategoryBulkAssignDTO?: ShopCategoryBulkAssignDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/shop/category/bulk-assign`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        shopCategoryBulkAssignDTO,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Create a new shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerCreate`
+     * @summary Create
+     * @param {ShopCategoryCreateDTO} [shopCategoryCreateDTO] ShopCategoryCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerCreate: async (
+      shopCategoryCreateDTO?: ShopCategoryCreateDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/shop/category/`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(shopCategoryCreateDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Get all shop categories<br> OperationId: `ShopCategoryControllerGetAll`
+     * @summary Get all
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerGetAll: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      const localVarPath = `/shop/category/`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Get a shop category by id<br> OperationId: `ShopCategoryControllerGetOne`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerGetOne: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('shopCategoryControllerGetOne', 'id', id);
+      const localVarPath = `/shop/category/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Move a shop category to a different parent   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerMove`
+     * @summary Move
+     * @param {string} id
+     * @param {ShopCategoryMoveDTO} [shopCategoryMoveDTO] ShopCategoryMoveDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerMove: async (
+      id: string,
+      shopCategoryMoveDTO?: ShopCategoryMoveDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('shopCategoryControllerMove', 'id', id);
+      const localVarPath = `/shop/category/{id}/move`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(shopCategoryMoveDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Delete a shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerRemove`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerRemove: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('shopCategoryControllerRemove', 'id', id);
+      const localVarPath = `/shop/category/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Search shop categories<br> OperationId: `ShopCategoryControllerSearch`
+     * @summary Search
+     * @param {ShopCategorySearchInputDTO} [shopCategorySearchInputDTO] ShopCategorySearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerSearch: async (
+      shopCategorySearchInputDTO?: ShopCategorySearchInputDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/shop/category/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        shopCategorySearchInputDTO,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Update a shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerUpdate`
+     * @summary Update
+     * @param {string} id
+     * @param {ShopCategoryUpdateDTO} [shopCategoryUpdateDTO] ShopCategoryUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerUpdate: async (
+      id: string,
+      shopCategoryUpdateDTO?: ShopCategoryUpdateDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('shopCategoryControllerUpdate', 'id', id);
+      const localVarPath = `/shop/category/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(shopCategoryUpdateDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * ShopCategoryApi - functional programming interface
+ * @export
+ */
+export const ShopCategoryApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = ShopCategoryApiAxiosParamCreator(configuration);
+  return {
+    /**
+     * Bulk assign categories to multiple shop listings   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerBulkAssign`
+     * @summary Bulk assign
+     * @param {ShopCategoryBulkAssignDTO} [shopCategoryBulkAssignDTO] ShopCategoryBulkAssignDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopCategoryControllerBulkAssign(
+      shopCategoryBulkAssignDTO?: ShopCategoryBulkAssignDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerBulkAssign(
+        shopCategoryBulkAssignDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ShopCategoryApi.shopCategoryControllerBulkAssign']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Create a new shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerCreate`
+     * @summary Create
+     * @param {ShopCategoryCreateDTO} [shopCategoryCreateDTO] ShopCategoryCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopCategoryControllerCreate(
+      shopCategoryCreateDTO?: ShopCategoryCreateDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopCategoryOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerCreate(
+        shopCategoryCreateDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ShopCategoryApi.shopCategoryControllerCreate']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Get all shop categories<br> OperationId: `ShopCategoryControllerGetAll`
+     * @summary Get all
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopCategoryControllerGetAll(
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopCategoryOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerGetAll(options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ShopCategoryApi.shopCategoryControllerGetAll']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Get a shop category by id<br> OperationId: `ShopCategoryControllerGetOne`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopCategoryControllerGetOne(
+      id: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopCategoryOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerGetOne(id, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ShopCategoryApi.shopCategoryControllerGetOne']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Move a shop category to a different parent   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerMove`
+     * @summary Move
+     * @param {string} id
+     * @param {ShopCategoryMoveDTO} [shopCategoryMoveDTO] ShopCategoryMoveDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopCategoryControllerMove(
+      id: string,
+      shopCategoryMoveDTO?: ShopCategoryMoveDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopCategoryOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerMove(
+        id,
+        shopCategoryMoveDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ShopCategoryApi.shopCategoryControllerMove']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Delete a shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerRemove`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopCategoryControllerRemove(
+      id: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerRemove(id, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ShopCategoryApi.shopCategoryControllerRemove']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Search shop categories<br> OperationId: `ShopCategoryControllerSearch`
+     * @summary Search
+     * @param {ShopCategorySearchInputDTO} [shopCategorySearchInputDTO] ShopCategorySearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopCategoryControllerSearch(
+      shopCategorySearchInputDTO?: ShopCategorySearchInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopCategoryOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerSearch(
+        shopCategorySearchInputDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ShopCategoryApi.shopCategoryControllerSearch']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Update a shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerUpdate`
+     * @summary Update
+     * @param {string} id
+     * @param {ShopCategoryUpdateDTO} [shopCategoryUpdateDTO] ShopCategoryUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopCategoryControllerUpdate(
+      id: string,
+      shopCategoryUpdateDTO?: ShopCategoryUpdateDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopCategoryOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerUpdate(
+        id,
+        shopCategoryUpdateDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ShopCategoryApi.shopCategoryControllerUpdate']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+  };
+};
+
+/**
+ * ShopCategoryApi - factory interface
+ * @export
+ */
+export const ShopCategoryApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance,
+) {
+  const localVarFp = ShopCategoryApiFp(configuration);
+  return {
+    /**
+     * Bulk assign categories to multiple shop listings   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerBulkAssign`
+     * @summary Bulk assign
+     * @param {ShopCategoryBulkAssignDTO} [shopCategoryBulkAssignDTO] ShopCategoryBulkAssignDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerBulkAssign(
+      shopCategoryBulkAssignDTO?: ShopCategoryBulkAssignDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<void> {
+      return localVarFp
+        .shopCategoryControllerBulkAssign(shopCategoryBulkAssignDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Create a new shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerCreate`
+     * @summary Create
+     * @param {ShopCategoryCreateDTO} [shopCategoryCreateDTO] ShopCategoryCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerCreate(
+      shopCategoryCreateDTO?: ShopCategoryCreateDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ShopCategoryOutputDTOAPI> {
+      return localVarFp
+        .shopCategoryControllerCreate(shopCategoryCreateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Get all shop categories<br> OperationId: `ShopCategoryControllerGetAll`
+     * @summary Get all
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerGetAll(options?: RawAxiosRequestConfig): AxiosPromise<ShopCategoryOutputArrayDTOAPI> {
+      return localVarFp.shopCategoryControllerGetAll(options).then((request) => request(axios, basePath));
+    },
+    /**
+     * Get a shop category by id<br> OperationId: `ShopCategoryControllerGetOne`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<ShopCategoryOutputDTOAPI> {
+      return localVarFp.shopCategoryControllerGetOne(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     * Move a shop category to a different parent   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerMove`
+     * @summary Move
+     * @param {string} id
+     * @param {ShopCategoryMoveDTO} [shopCategoryMoveDTO] ShopCategoryMoveDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerMove(
+      id: string,
+      shopCategoryMoveDTO?: ShopCategoryMoveDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ShopCategoryOutputDTOAPI> {
+      return localVarFp
+        .shopCategoryControllerMove(id, shopCategoryMoveDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Delete a shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerRemove`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerRemove(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+      return localVarFp.shopCategoryControllerRemove(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     * Search shop categories<br> OperationId: `ShopCategoryControllerSearch`
+     * @summary Search
+     * @param {ShopCategorySearchInputDTO} [shopCategorySearchInputDTO] ShopCategorySearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerSearch(
+      shopCategorySearchInputDTO?: ShopCategorySearchInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ShopCategoryOutputArrayDTOAPI> {
+      return localVarFp
+        .shopCategoryControllerSearch(shopCategorySearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Update a shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerUpdate`
+     * @summary Update
+     * @param {string} id
+     * @param {ShopCategoryUpdateDTO} [shopCategoryUpdateDTO] ShopCategoryUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerUpdate(
+      id: string,
+      shopCategoryUpdateDTO?: ShopCategoryUpdateDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ShopCategoryOutputDTOAPI> {
+      return localVarFp
+        .shopCategoryControllerUpdate(id, shopCategoryUpdateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * ShopCategoryApi - object-oriented interface
+ * @export
+ * @class ShopCategoryApi
+ * @extends {BaseAPI}
+ */
+export class ShopCategoryApi extends BaseAPI {
+  /**
+   * Bulk assign categories to multiple shop listings   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerBulkAssign`
+   * @summary Bulk assign
+   * @param {ShopCategoryBulkAssignDTO} [shopCategoryBulkAssignDTO] ShopCategoryBulkAssignDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopCategoryApi
+   */
+  public shopCategoryControllerBulkAssign(
+    shopCategoryBulkAssignDTO?: ShopCategoryBulkAssignDTO,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return ShopCategoryApiFp(this.configuration)
+      .shopCategoryControllerBulkAssign(shopCategoryBulkAssignDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Create a new shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerCreate`
+   * @summary Create
+   * @param {ShopCategoryCreateDTO} [shopCategoryCreateDTO] ShopCategoryCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopCategoryApi
+   */
+  public shopCategoryControllerCreate(shopCategoryCreateDTO?: ShopCategoryCreateDTO, options?: RawAxiosRequestConfig) {
+    return ShopCategoryApiFp(this.configuration)
+      .shopCategoryControllerCreate(shopCategoryCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Get all shop categories<br> OperationId: `ShopCategoryControllerGetAll`
+   * @summary Get all
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopCategoryApi
+   */
+  public shopCategoryControllerGetAll(options?: RawAxiosRequestConfig) {
+    return ShopCategoryApiFp(this.configuration)
+      .shopCategoryControllerGetAll(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Get a shop category by id<br> OperationId: `ShopCategoryControllerGetOne`
+   * @summary Get one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopCategoryApi
+   */
+  public shopCategoryControllerGetOne(id: string, options?: RawAxiosRequestConfig) {
+    return ShopCategoryApiFp(this.configuration)
+      .shopCategoryControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Move a shop category to a different parent   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerMove`
+   * @summary Move
+   * @param {string} id
+   * @param {ShopCategoryMoveDTO} [shopCategoryMoveDTO] ShopCategoryMoveDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopCategoryApi
+   */
+  public shopCategoryControllerMove(
+    id: string,
+    shopCategoryMoveDTO?: ShopCategoryMoveDTO,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return ShopCategoryApiFp(this.configuration)
+      .shopCategoryControllerMove(id, shopCategoryMoveDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Delete a shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerRemove`
+   * @summary Remove
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopCategoryApi
+   */
+  public shopCategoryControllerRemove(id: string, options?: RawAxiosRequestConfig) {
+    return ShopCategoryApiFp(this.configuration)
+      .shopCategoryControllerRemove(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Search shop categories<br> OperationId: `ShopCategoryControllerSearch`
+   * @summary Search
+   * @param {ShopCategorySearchInputDTO} [shopCategorySearchInputDTO] ShopCategorySearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopCategoryApi
+   */
+  public shopCategoryControllerSearch(
+    shopCategorySearchInputDTO?: ShopCategorySearchInputDTO,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return ShopCategoryApiFp(this.configuration)
+      .shopCategoryControllerSearch(shopCategorySearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Update a shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerUpdate`
+   * @summary Update
+   * @param {string} id
+   * @param {ShopCategoryUpdateDTO} [shopCategoryUpdateDTO] ShopCategoryUpdateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopCategoryApi
+   */
+  public shopCategoryControllerUpdate(
+    id: string,
+    shopCategoryUpdateDTO?: ShopCategoryUpdateDTO,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return ShopCategoryApiFp(this.configuration)
+      .shopCategoryControllerUpdate(id, shopCategoryUpdateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
  * ShopListingApi - axios parameter creator
  * @export
  */
@@ -26570,6 +27925,7 @@ export const StatsControllerGetEventsCountEventNameEnum = {
   RoleUpdated: 'role-updated',
   RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
+  CommandExecutionDenied: 'command-execution-denied',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',

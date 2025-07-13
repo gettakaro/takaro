@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, IsUUID, ValidateNested, IsEnum } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -50,6 +50,9 @@ class FunctionSearchInputAllowedSearch extends AllowedSearch {
   name: string[];
 }
 
+const functionExtendOptions = ['module', 'cronJobs', 'hooks', 'commands'];
+type FunctionExtendOptions = (typeof functionExtendOptions)[number];
+
 class FunctionSearchInputDTO extends ITakaroQuery<FunctionOutputDTO> {
   @ValidateNested()
   @Type(() => FunctionSearchInputAllowedFilters)
@@ -58,6 +61,10 @@ class FunctionSearchInputDTO extends ITakaroQuery<FunctionOutputDTO> {
   @ValidateNested()
   @Type(() => FunctionSearchInputAllowedSearch)
   declare search: FunctionSearchInputAllowedSearch;
+
+  @IsOptional()
+  @IsEnum(functionExtendOptions, { each: true })
+  declare extend?: FunctionExtendOptions[];
 }
 
 @OpenAPI({

@@ -1,4 +1,4 @@
-import { IsBoolean, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, IsUUID, ValidateNested, IsEnum } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -74,6 +74,9 @@ class CommandSearchInputAllowedSearch extends AllowedSearch {
   name!: string[];
 }
 
+const commandExtendOptions = ['module', 'gameServer', 'permissions'];
+type CommandExtendOptions = (typeof commandExtendOptions)[number];
+
 export class CommandSearchInputDTO extends ITakaroQuery<CommandOutputDTO> {
   @ValidateNested()
   @Type(() => CommandSearchInputAllowedFilters)
@@ -82,6 +85,10 @@ export class CommandSearchInputDTO extends ITakaroQuery<CommandOutputDTO> {
   @ValidateNested()
   @Type(() => CommandSearchInputAllowedSearch)
   declare search: CommandSearchInputAllowedSearch;
+
+  @IsOptional()
+  @IsEnum(commandExtendOptions, { each: true })
+  declare extend?: CommandExtendOptions[];
 }
 
 @OpenAPI({

@@ -36,6 +36,30 @@ Arguments can have different types, such as `string`, `number`, `boolean` and `p
 
 The `player` type is a special type that allows you to pass a player as an argument. This is useful for commands that require a player to be passed, such as `/kick John Doe`. The `player` type can be a partial name, so `/kick John` would also work. It also supports case insensitivity, so `/kick john` would also work. You can also pass IDs to be most precise. If multiple players match the name, the user will get an error message.
 
+### Command Permissions
+
+Commands can require specific permissions to be executed. This allows you to restrict powerful commands to trusted players or roles.
+
+When a player tries to execute a command without the required permissions:
+- They receive a permission denied message
+- The command is not executed
+- A `COMMAND_EXECUTION_DENIED` event is logged
+
+Example of a command with required permissions:
+```javascript
+{
+  name: 'grantCurrency',
+  trigger: 'grantcurrency',
+  helpText: 'Grant money to a player',
+  requiredPermissions: ['ECONOMY_UTILS_MANAGE_CURRENCY'],
+  arguments: [
+    // ... arguments
+  ]
+}
+```
+
+Players with the `ROOT` permission bypass all command permission checks.
+
 ## Configuration
 
 Takaro modules have two types of configuration:

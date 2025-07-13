@@ -4,6 +4,8 @@ import { ctx, errors, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../../db/base.js';
 import { ShopOrderRepo } from '../../db/shopOrder.js';
+
+export { ShopCategoryService } from './ShopCategoryService.js';
 import {
   ShopListingOutputDTO,
   ShopListingCreateDTO,

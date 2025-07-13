@@ -8,10 +8,10 @@ import { ItemsOutputDTO, ItemSearchInputDTOSortDirectionEnum } from '@takaro/api
 import { DateFormatter, Table, useTableActions } from '@takaro/lib-components';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/items')({
-  component: () => <div>Hello /_auth/gameserver/$gameServerId/items!</div>,
+  component: Component,
 });
 
-export function Component() {
+function Component() {
   useDocumentTitle('Items');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<ItemsOutputDTO>();
 

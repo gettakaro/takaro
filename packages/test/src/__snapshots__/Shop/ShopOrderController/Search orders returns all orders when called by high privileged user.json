@@ -1,0 +1,41 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 2
+    },
+    "data": [
+      {
+        "createdAt": "2024-06-29T14:53:40.092Z",
+        "updatedAt": "2024-06-29T14:53:40.093Z",
+        "id": "850fc458-0d0d-44ec-b3d3-16ec551ce1df",
+        "listingId": "c64b9b92-efdd-46ce-917d-e4b1afcbcc4f",
+        "playerId": "d318fe3f-85e8-4bdd-bec7-b4c068f5c051",
+        "amount": 1,
+        "status": "PAID"
+      },
+      {
+        "createdAt": "2024-06-29T14:53:40.059Z",
+        "updatedAt": "2024-06-29T14:53:40.059Z",
+        "id": "870b66c1-cb23-429e-8930-639ceaf40112",
+        "listingId": "a8a0176a-57d5-473a-b7c2-5e441375f889",
+        "playerId": "24533272-a87b-4121-9624-3e8310c1a522",
+        "amount": 1,
+        "status": "PAID"
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "Shop/ShopOrderController",
+    "snapshot": true,
+    "name": "Search orders returns all orders when called by high privileged user",
+    "filteredFields": [
+      "listingId",
+      "playerId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

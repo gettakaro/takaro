@@ -1,0 +1,51 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "createdAt": "2024-07-18T15:25:46.472Z",
+      "updatedAt": "2024-07-18T15:25:46.473Z",
+      "id": "e20dc8e0-1550-4748-acf3-f7a0d411b5ac",
+      "gameServerId": "00457bb1-e04b-447c-8ad8-9730f6c3e5b2",
+      "price": 150,
+      "name": "Test item",
+      "deletedAt": null,
+      "draft": false,
+      "items": [
+        {
+          "createdAt": "2024-07-18T15:25:46.475Z",
+          "updatedAt": "2024-07-18T15:25:46.475Z",
+          "id": "72b019c4-48d9-4e15-8c16-bf7b5067b9de",
+          "listingId": "e20dc8e0-1550-4748-acf3-f7a0d411b5ac",
+          "itemId": "8e74a066-f60a-4822-bdb7-417a4289aa5a",
+          "amount": 1,
+          "quality": null,
+          "item": {
+            "id": "8e74a066-f60a-4822-bdb7-417a4289aa5a",
+            "createdAt": "2024-07-18T15:25:44.860Z",
+            "updatedAt": "2024-07-18T15:25:44.860Z",
+            "gameserverId": "1d7fd19b-66de-4e3a-a74f-25ff35c356d6",
+            "name": "Stone",
+            "code": "stone",
+            "description": "Stone can get you stoned",
+            "icon": null
+          }
+        }
+      ],
+      "categories": []
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "Shop/ShopController",
+    "snapshot": true,
+    "name": "Create",
+    "filteredFields": [
+      "itemId",
+      "gameServerId",
+      "gameserverId",
+      "listingId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

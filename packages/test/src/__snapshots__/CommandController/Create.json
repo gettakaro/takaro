@@ -20,7 +20,8 @@
       "functionId": "9ce7cec2-cc78-40c7-abc1-42ac836ec350",
       "moduleId": "e817db36-812b-4eb9-9a78-2f8857658e7e",
       "arguments": [],
-      "description": "Cool description"
+      "description": "Cool description",
+      "requiredPermissions": []
     }
   },
   "status": 200,
