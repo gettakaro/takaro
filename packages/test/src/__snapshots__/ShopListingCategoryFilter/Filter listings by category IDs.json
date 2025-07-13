@@ -1,0 +1,201 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 4
+    },
+    "data": [
+      {
+        "createdAt": "2025-07-13T09:59:02.572Z",
+        "updatedAt": "2025-07-13T09:59:02.572Z",
+        "id": "099898f0-c321-43ed-b297-27ea9d2ace37",
+        "gameServerId": "54c3716a-693b-494c-8a74-3a94e51e69c8",
+        "price": 22,
+        "name": "Iron Helmet",
+        "deletedAt": null,
+        "draft": false,
+        "items": [
+          {
+            "createdAt": "2025-07-13T09:59:02.573Z",
+            "updatedAt": "2025-07-13T09:59:02.573Z",
+            "id": "6571e053-c762-44f1-9218-8341423efedf",
+            "listingId": "099898f0-c321-43ed-b297-27ea9d2ace37",
+            "itemId": "f52a2c1d-370f-4b89-8002-a74485f5985c",
+            "amount": 1,
+            "quality": null,
+            "item": {
+              "id": "f52a2c1d-370f-4b89-8002-a74485f5985c",
+              "createdAt": "2025-07-13T09:58:59.608Z",
+              "updatedAt": "2025-07-13T09:58:59.608Z",
+              "gameserverId": "54c3716a-693b-494c-8a74-3a94e51e69c8",
+              "name": "Healing Potion",
+              "code": "healingPotion",
+              "description": "Restores health over time",
+              "icon": null
+            }
+          }
+        ],
+        "categories": [
+          {
+            "createdAt": "2025-07-13T09:59:02.478Z",
+            "updatedAt": "2025-07-13T09:59:02.478Z",
+            "id": "cae19fae-b4ec-416e-ab1b-1115c049c332",
+            "name": "Helmets",
+            "emoji": "⛑️",
+            "parentId": "81ad77a1-7954-433f-b446-ce013a8396a2"
+          }
+        ]
+      },
+      {
+        "createdAt": "2025-07-13T09:59:02.553Z",
+        "updatedAt": "2025-07-13T09:59:02.553Z",
+        "id": "0e878d19-b755-46b4-bcc4-148c2783aafa",
+        "gameServerId": "54c3716a-693b-494c-8a74-3a94e51e69c8",
+        "price": 22,
+        "name": "Wooden Bow",
+        "deletedAt": null,
+        "draft": false,
+        "items": [
+          {
+            "createdAt": "2025-07-13T09:59:02.554Z",
+            "updatedAt": "2025-07-13T09:59:02.554Z",
+            "id": "063a96de-1bee-4c85-9987-4e981a7f54cb",
+            "listingId": "0e878d19-b755-46b4-bcc4-148c2783aafa",
+            "itemId": "1ec79437-9145-4c4e-a483-176053ef56eb",
+            "amount": 1,
+            "quality": null,
+            "item": {
+              "id": "1ec79437-9145-4c4e-a483-176053ef56eb",
+              "createdAt": "2025-07-13T09:58:59.608Z",
+              "updatedAt": "2025-07-13T09:58:59.608Z",
+              "gameserverId": "54c3716a-693b-494c-8a74-3a94e51e69c8",
+              "name": "Gold",
+              "code": "gold",
+              "description": "Gold is shiny",
+              "icon": null
+            }
+          }
+        ],
+        "categories": [
+          {
+            "createdAt": "2025-07-13T09:59:02.463Z",
+            "updatedAt": "2025-07-13T09:59:02.463Z",
+            "id": "de567d61-30a4-4684-b163-c40f06c2edf3",
+            "name": "Ranged Weapons",
+            "emoji": "🏹",
+            "parentId": "9d6ef8a5-e5fb-49e1-9f28-b85a446fd04e"
+          }
+        ]
+      },
+      {
+        "createdAt": "2025-07-13T09:59:02.534Z",
+        "updatedAt": "2025-07-13T09:59:02.534Z",
+        "id": "e85de6f6-dc7d-41f7-ad8b-eb6c798ceca5",
+        "gameServerId": "54c3716a-693b-494c-8a74-3a94e51e69c8",
+        "price": 29,
+        "name": "Iron Sword",
+        "deletedAt": null,
+        "draft": false,
+        "items": [
+          {
+            "createdAt": "2025-07-13T09:59:02.535Z",
+            "updatedAt": "2025-07-13T09:59:02.536Z",
+            "id": "ba1bfb0e-eb0d-43ef-9abc-abb30d92d079",
+            "listingId": "e85de6f6-dc7d-41f7-ad8b-eb6c798ceca5",
+            "itemId": "ac35d9a3-70f8-4a98-8153-ea92cbbdc4c8",
+            "amount": 1,
+            "quality": null,
+            "item": {
+              "id": "ac35d9a3-70f8-4a98-8153-ea92cbbdc4c8",
+              "createdAt": "2025-07-13T09:58:59.608Z",
+              "updatedAt": "2025-07-13T09:58:59.608Z",
+              "gameserverId": "54c3716a-693b-494c-8a74-3a94e51e69c8",
+              "name": "Admin Gun",
+              "code": "adminGun",
+              "description": "A powerful gun for admins",
+              "icon": null
+            }
+          }
+        ],
+        "categories": [
+          {
+            "createdAt": "2025-07-13T09:59:02.448Z",
+            "updatedAt": "2025-07-13T09:59:02.448Z",
+            "id": "865a5720-0359-49d4-8626-ae524c09f2f9",
+            "name": "Melee Weapons",
+            "emoji": "⚔️",
+            "parentId": "9d6ef8a5-e5fb-49e1-9f28-b85a446fd04e"
+          }
+        ]
+      },
+      {
+        "createdAt": "2025-07-13T09:59:02.588Z",
+        "updatedAt": "2025-07-13T09:59:02.588Z",
+        "id": "f227b407-08db-4492-b0db-011e1d2b2885",
+        "gameServerId": "54c3716a-693b-494c-8a74-3a94e51e69c8",
+        "price": 36,
+        "name": "Combat Gear Bundle",
+        "deletedAt": null,
+        "draft": false,
+        "items": [
+          {
+            "createdAt": "2025-07-13T09:59:02.589Z",
+            "updatedAt": "2025-07-13T09:59:02.589Z",
+            "id": "e4c03e97-779c-444a-a32f-60f09b561dd6",
+            "listingId": "f227b407-08db-4492-b0db-011e1d2b2885",
+            "itemId": "ac35d9a3-70f8-4a98-8153-ea92cbbdc4c8",
+            "amount": 1,
+            "quality": null,
+            "item": {
+              "id": "ac35d9a3-70f8-4a98-8153-ea92cbbdc4c8",
+              "createdAt": "2025-07-13T09:58:59.608Z",
+              "updatedAt": "2025-07-13T09:58:59.608Z",
+              "gameserverId": "54c3716a-693b-494c-8a74-3a94e51e69c8",
+              "name": "Admin Gun",
+              "code": "adminGun",
+              "description": "A powerful gun for admins",
+              "icon": null
+            }
+          }
+        ],
+        "categories": [
+          {
+            "createdAt": "2025-07-13T09:59:02.448Z",
+            "updatedAt": "2025-07-13T09:59:02.448Z",
+            "id": "865a5720-0359-49d4-8626-ae524c09f2f9",
+            "name": "Melee Weapons",
+            "emoji": "⚔️",
+            "parentId": "9d6ef8a5-e5fb-49e1-9f28-b85a446fd04e"
+          },
+          {
+            "createdAt": "2025-07-13T09:59:02.478Z",
+            "updatedAt": "2025-07-13T09:59:02.478Z",
+            "id": "cae19fae-b4ec-416e-ab1b-1115c049c332",
+            "name": "Helmets",
+            "emoji": "⛑️",
+            "parentId": "81ad77a1-7954-433f-b446-ce013a8396a2"
+          }
+        ]
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "ShopListingCategoryFilter",
+    "snapshot": true,
+    "name": "Filter listings by category IDs",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "updatedAt",
+      "domain",
+      "gameServerId",
+      "deletedAt",
+      "items",
+      "categories"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

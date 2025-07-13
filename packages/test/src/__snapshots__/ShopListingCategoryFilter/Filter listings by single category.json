@@ -1,0 +1,160 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 3
+    },
+    "data": [
+      {
+        "createdAt": "2025-07-13T09:59:09.383Z",
+        "updatedAt": "2025-07-13T09:59:09.383Z",
+        "id": "19f79045-9df3-4566-af4e-3c4800456217",
+        "gameServerId": "3d7b1666-59a0-4751-a227-610f0f130f3a",
+        "price": 23,
+        "name": "Iron Sword",
+        "deletedAt": null,
+        "draft": false,
+        "items": [
+          {
+            "createdAt": "2025-07-13T09:59:09.384Z",
+            "updatedAt": "2025-07-13T09:59:09.384Z",
+            "id": "81858471-a475-4d04-8939-19fb6f8a9d04",
+            "listingId": "19f79045-9df3-4566-af4e-3c4800456217",
+            "itemId": "a2de7cef-94d5-4439-b21f-a36d869c5394",
+            "amount": 1,
+            "quality": null,
+            "item": {
+              "id": "a2de7cef-94d5-4439-b21f-a36d869c5394",
+              "createdAt": "2025-07-13T09:59:07.222Z",
+              "updatedAt": "2025-07-13T09:59:07.222Z",
+              "gameserverId": "3d7b1666-59a0-4751-a227-610f0f130f3a",
+              "name": "Admin Gun",
+              "code": "adminGun",
+              "description": "A powerful gun for admins",
+              "icon": null
+            }
+          }
+        ],
+        "categories": [
+          {
+            "createdAt": "2025-07-13T09:59:09.290Z",
+            "updatedAt": "2025-07-13T09:59:09.290Z",
+            "id": "9eebcb5e-d2e4-43df-bfab-4edb864914ea",
+            "name": "Melee Weapons",
+            "emoji": "⚔️",
+            "parentId": "f7a80db2-d603-4d04-82d9-27871e6bf25d"
+          }
+        ]
+      },
+      {
+        "createdAt": "2025-07-13T09:59:09.398Z",
+        "updatedAt": "2025-07-13T09:59:09.399Z",
+        "id": "e58d9da6-b2b1-41cd-87be-cd11a5dc494e",
+        "gameServerId": "3d7b1666-59a0-4751-a227-610f0f130f3a",
+        "price": 30,
+        "name": "Wooden Bow",
+        "deletedAt": null,
+        "draft": false,
+        "items": [
+          {
+            "createdAt": "2025-07-13T09:59:09.399Z",
+            "updatedAt": "2025-07-13T09:59:09.399Z",
+            "id": "c5c24e86-3f01-48e8-93fe-a913d7488abf",
+            "listingId": "e58d9da6-b2b1-41cd-87be-cd11a5dc494e",
+            "itemId": "82d52018-d3c7-47a2-a307-873ce655ec3a",
+            "amount": 1,
+            "quality": null,
+            "item": {
+              "id": "82d52018-d3c7-47a2-a307-873ce655ec3a",
+              "createdAt": "2025-07-13T09:59:07.222Z",
+              "updatedAt": "2025-07-13T09:59:07.222Z",
+              "gameserverId": "3d7b1666-59a0-4751-a227-610f0f130f3a",
+              "name": "Gold",
+              "code": "gold",
+              "description": "Gold is shiny",
+              "icon": null
+            }
+          }
+        ],
+        "categories": [
+          {
+            "createdAt": "2025-07-13T09:59:09.306Z",
+            "updatedAt": "2025-07-13T09:59:09.306Z",
+            "id": "58c15b3e-f2d9-40c7-ba16-208d647f83e7",
+            "name": "Ranged Weapons",
+            "emoji": "🏹",
+            "parentId": "f7a80db2-d603-4d04-82d9-27871e6bf25d"
+          }
+        ]
+      },
+      {
+        "createdAt": "2025-07-13T09:59:09.430Z",
+        "updatedAt": "2025-07-13T09:59:09.430Z",
+        "id": "e66d3ccd-6755-48b7-b789-a44b285b24f4",
+        "gameServerId": "3d7b1666-59a0-4751-a227-610f0f130f3a",
+        "price": 52,
+        "name": "Combat Gear Bundle",
+        "deletedAt": null,
+        "draft": false,
+        "items": [
+          {
+            "createdAt": "2025-07-13T09:59:09.431Z",
+            "updatedAt": "2025-07-13T09:59:09.431Z",
+            "id": "5e0aa277-8b8f-459d-bb28-185a6b0cf1d4",
+            "listingId": "e66d3ccd-6755-48b7-b789-a44b285b24f4",
+            "itemId": "a2de7cef-94d5-4439-b21f-a36d869c5394",
+            "amount": 1,
+            "quality": null,
+            "item": {
+              "id": "a2de7cef-94d5-4439-b21f-a36d869c5394",
+              "createdAt": "2025-07-13T09:59:07.222Z",
+              "updatedAt": "2025-07-13T09:59:07.222Z",
+              "gameserverId": "3d7b1666-59a0-4751-a227-610f0f130f3a",
+              "name": "Admin Gun",
+              "code": "adminGun",
+              "description": "A powerful gun for admins",
+              "icon": null
+            }
+          }
+        ],
+        "categories": [
+          {
+            "createdAt": "2025-07-13T09:59:09.290Z",
+            "updatedAt": "2025-07-13T09:59:09.290Z",
+            "id": "9eebcb5e-d2e4-43df-bfab-4edb864914ea",
+            "name": "Melee Weapons",
+            "emoji": "⚔️",
+            "parentId": "f7a80db2-d603-4d04-82d9-27871e6bf25d"
+          },
+          {
+            "createdAt": "2025-07-13T09:59:09.322Z",
+            "updatedAt": "2025-07-13T09:59:09.322Z",
+            "id": "97c81713-d1ad-4dba-9216-cb0e1d551a5a",
+            "name": "Helmets",
+            "emoji": "⛑️",
+            "parentId": "21c70d53-f599-45f5-8863-ae61709ff166"
+          }
+        ]
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "ShopListingCategoryFilter",
+    "snapshot": true,
+    "name": "Filter listings by single category",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "updatedAt",
+      "domain",
+      "gameServerId",
+      "deletedAt",
+      "items",
+      "categories"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

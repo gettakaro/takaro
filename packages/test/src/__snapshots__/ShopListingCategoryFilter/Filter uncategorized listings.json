@@ -1,0 +1,157 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 4
+    },
+    "data": [
+      {
+        "createdAt": "2025-07-13T09:53:29.921Z",
+        "updatedAt": "2025-07-13T09:53:29.921Z",
+        "id": "2567365a-e48f-4fa6-8eca-822f05a01e2f",
+        "gameServerId": "6124cf6d-f860-46d0-8efd-fc537f60981e",
+        "price": 33,
+        "name": "Test item 2",
+        "deletedAt": null,
+        "draft": false,
+        "items": [
+          {
+            "createdAt": "2025-07-13T09:53:29.922Z",
+            "updatedAt": "2025-07-13T09:53:29.922Z",
+            "id": "9eba2cfe-ed84-4e02-8042-487b489f575c",
+            "listingId": "2567365a-e48f-4fa6-8eca-822f05a01e2f",
+            "itemId": "7b38ce4a-1f05-452c-b294-f5bb7c0c4e0e",
+            "amount": 1,
+            "quality": null,
+            "item": {
+              "id": "7b38ce4a-1f05-452c-b294-f5bb7c0c4e0e",
+              "createdAt": "2025-07-13T09:53:29.426Z",
+              "updatedAt": "2025-07-13T09:53:29.426Z",
+              "gameserverId": "6124cf6d-f860-46d0-8efd-fc537f60981e",
+              "name": "Wood",
+              "code": "wood",
+              "description": "Wood is good",
+              "icon": null
+            }
+          }
+        ],
+        "categories": []
+      },
+      {
+        "createdAt": "2025-07-13T09:53:29.906Z",
+        "updatedAt": "2025-07-13T09:53:29.906Z",
+        "id": "6d06ac2a-3f93-4c88-ab29-44866f06ae77",
+        "gameServerId": "6124cf6d-f860-46d0-8efd-fc537f60981e",
+        "price": 100,
+        "name": "Test item",
+        "deletedAt": null,
+        "draft": false,
+        "items": [
+          {
+            "createdAt": "2025-07-13T09:53:29.906Z",
+            "updatedAt": "2025-07-13T09:53:29.907Z",
+            "id": "9a11b139-9017-420e-aac3-7b085982e057",
+            "listingId": "6d06ac2a-3f93-4c88-ab29-44866f06ae77",
+            "itemId": "fba4dff4-5b81-43b4-b084-f72c2c56c000",
+            "amount": 1,
+            "quality": null,
+            "item": {
+              "id": "fba4dff4-5b81-43b4-b084-f72c2c56c000",
+              "createdAt": "2025-07-13T09:53:29.426Z",
+              "updatedAt": "2025-07-13T09:53:29.426Z",
+              "gameserverId": "6124cf6d-f860-46d0-8efd-fc537f60981e",
+              "name": "Stone",
+              "code": "stone",
+              "description": "Stone can get you stoned",
+              "icon": null
+            }
+          }
+        ],
+        "categories": []
+      },
+      {
+        "createdAt": "2025-07-13T09:53:32.595Z",
+        "updatedAt": "2025-07-13T09:53:32.596Z",
+        "id": "7e718e18-1037-4fb6-8b73-cbff9da5f7d9",
+        "gameServerId": "6124cf6d-f860-46d0-8efd-fc537f60981e",
+        "price": 5,
+        "name": "Misc Item 1",
+        "deletedAt": null,
+        "draft": false,
+        "items": [
+          {
+            "createdAt": "2025-07-13T09:53:32.596Z",
+            "updatedAt": "2025-07-13T09:53:32.596Z",
+            "id": "442f9cca-b4c3-4055-bab0-19e52f428514",
+            "listingId": "7e718e18-1037-4fb6-8b73-cbff9da5f7d9",
+            "itemId": "ec00a44a-619c-4573-adc5-a516e4d107b1",
+            "amount": 1,
+            "quality": null,
+            "item": {
+              "id": "ec00a44a-619c-4573-adc5-a516e4d107b1",
+              "createdAt": "2025-07-13T09:53:29.426Z",
+              "updatedAt": "2025-07-13T09:53:29.426Z",
+              "gameserverId": "6124cf6d-f860-46d0-8efd-fc537f60981e",
+              "name": "Gold",
+              "code": "gold",
+              "description": "Gold is shiny",
+              "icon": null
+            }
+          }
+        ],
+        "categories": []
+      },
+      {
+        "createdAt": "2025-07-13T09:53:32.613Z",
+        "updatedAt": "2025-07-13T09:53:32.613Z",
+        "id": "f612e001-38ba-436d-8944-f05000925f03",
+        "gameServerId": "6124cf6d-f860-46d0-8efd-fc537f60981e",
+        "price": 10,
+        "name": "Misc Item 2",
+        "deletedAt": null,
+        "draft": false,
+        "items": [
+          {
+            "createdAt": "2025-07-13T09:53:32.614Z",
+            "updatedAt": "2025-07-13T09:53:32.614Z",
+            "id": "d1b3020c-8b3d-4d76-b44c-70cdc48f2f20",
+            "listingId": "f612e001-38ba-436d-8944-f05000925f03",
+            "itemId": "fd30044b-653e-49cb-bea6-e35b5fb58f4e",
+            "amount": 1,
+            "quality": null,
+            "item": {
+              "id": "fd30044b-653e-49cb-bea6-e35b5fb58f4e",
+              "createdAt": "2025-07-13T09:53:29.426Z",
+              "updatedAt": "2025-07-13T09:53:29.426Z",
+              "gameserverId": "6124cf6d-f860-46d0-8efd-fc537f60981e",
+              "name": "Healing Potion",
+              "code": "healingPotion",
+              "description": "Restores health over time",
+              "icon": null
+            }
+          }
+        ],
+        "categories": []
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "ShopListingCategoryFilter",
+    "snapshot": true,
+    "name": "Filter uncategorized listings",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "updatedAt",
+      "domain",
+      "gameServerId",
+      "deletedAt",
+      "items",
+      "categories"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}
