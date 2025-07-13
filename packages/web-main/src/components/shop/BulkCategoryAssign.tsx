@@ -14,7 +14,7 @@ const DialogBody = styled.div`
 
 const ListingInfo = styled.div`
   padding: ${({ theme }) => theme.spacing['2']};
-  background: ${({ theme }) => theme.colors.backgroundAccent};
+  background: ${({ theme }) => theme.colors.backgroundAlt};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
 `;
 
@@ -29,6 +29,12 @@ const CategorySection = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing['1']};
+`;
+
+const CategoriesRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${({ theme }) => theme.spacing['2']};
 `;
 
 const ButtonGroup = styled.div`
@@ -121,7 +127,7 @@ export const BulkCategoryAssign: FC<BulkCategoryAssignProps> = ({
                 <Skeleton height="60px" variant="text" />
               ) : (
                 <ListingList>
-                  {listingsData?.data.map((listing) => (
+                  {listingsData?.data?.map((listing) => (
                     <li key={listing.id}>{listing.name || listing.items[0]?.item.name || 'Unnamed listing'}</li>
                   ))}
                 </ListingList>
@@ -133,23 +139,25 @@ export const BulkCategoryAssign: FC<BulkCategoryAssignProps> = ({
               text="Categories will be added or removed from all selected listings. Existing categories not mentioned will remain unchanged."
             />
 
-            <CategorySection>
-              <CategorySelector
-                selectedCategoryIds={addCategoryIds}
-                onChange={setAddCategoryIds}
-                label="Add Categories"
-                placeholder="Search categories to add..."
-              />
-            </CategorySection>
+            <CategoriesRow>
+              <CategorySection>
+                <CategorySelector
+                  selectedCategoryIds={addCategoryIds}
+                  onChange={setAddCategoryIds}
+                  label="Add Categories"
+                  placeholder="Search categories to add..."
+                />
+              </CategorySection>
 
-            <CategorySection>
-              <CategorySelector
-                selectedCategoryIds={removeCategoryIds}
-                onChange={setRemoveCategoryIds}
-                label="Remove Categories"
-                placeholder="Search categories to remove..."
-              />
-            </CategorySection>
+              <CategorySection>
+                <CategorySelector
+                  selectedCategoryIds={removeCategoryIds}
+                  onChange={setRemoveCategoryIds}
+                  label="Remove Categories"
+                  placeholder="Search categories to remove..."
+                />
+              </CategorySection>
+            </CategoriesRow>
 
             {addCategoryIds.length > 0 && removeCategoryIds.some((id) => addCategoryIds.includes(id)) && (
               <Alert

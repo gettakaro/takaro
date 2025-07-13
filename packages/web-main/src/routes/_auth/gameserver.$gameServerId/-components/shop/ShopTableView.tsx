@@ -312,6 +312,7 @@ export const ShopTableView: FC<ShopViewProps> = ({
         rowSelectionState: rowSelection,
         setRowSelectionState: handleRowSelectionChange,
       }}
+      getRowId={(row) => row.id}
     />
   );
 };

@@ -48,7 +48,7 @@ const BulkActionBar = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: ${({ theme }) => theme.spacing['2']};
-  background: ${({ theme }) => theme.colors.backgroundAccent};
+  background: ${({ theme }) => theme.colors.backgroundAlt};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   margin-bottom: ${({ theme }) => theme.spacing['2']};
   gap: ${({ theme }) => theme.spacing['2']};
