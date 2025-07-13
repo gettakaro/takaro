@@ -406,6 +406,12 @@ export interface BanSearchInputDTO {
   lessThan?: BanSearchInputAllowedRangeFilter;
   /**
    *
+   * @type {Array<string>}
+   * @memberof BanSearchInputDTO
+   */
+  extend?: Array<BanSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof BanSearchInputDTO
    */
@@ -434,14 +440,15 @@ export interface BanSearchInputDTO {
    * @memberof BanSearchInputDTO
    */
   sortDirection?: BanSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof BanSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const BanSearchInputDTOExtendEnum = {
+  Player: 'player',
+  GameServer: 'gameServer',
+} as const;
+
+export type BanSearchInputDTOExtendEnum =
+  (typeof BanSearchInputDTOExtendEnum)[keyof typeof BanSearchInputDTOExtendEnum];
 export const BanSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -629,7 +636,13 @@ export interface BoundingBoxSearchInputDTO {
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof BoundingBoxSearchInputDTO
    */
-  timestamp?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  startDate?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof BoundingBoxSearchInputDTO
+   */
+  endDate?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
@@ -1084,6 +1097,12 @@ export interface CommandSearchInputDTO {
   search?: CommandSearchInputAllowedSearch;
   /**
    *
+   * @type {Array<string>}
+   * @memberof CommandSearchInputDTO
+   */
+  extend?: Array<CommandSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof CommandSearchInputDTO
    */
@@ -1118,14 +1137,16 @@ export interface CommandSearchInputDTO {
    * @memberof CommandSearchInputDTO
    */
   sortDirection?: CommandSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof CommandSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const CommandSearchInputDTOExtendEnum = {
+  Module: 'module',
+  GameServer: 'gameServer',
+  Permissions: 'permissions',
+} as const;
+
+export type CommandSearchInputDTOExtendEnum =
+  (typeof CommandSearchInputDTOExtendEnum)[keyof typeof CommandSearchInputDTOExtendEnum];
 export const CommandSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -1409,6 +1430,12 @@ export interface CronJobSearchInputDTO {
   search?: CronJobSearchInputAllowedSearch;
   /**
    *
+   * @type {Array<string>}
+   * @memberof CronJobSearchInputDTO
+   */
+  extend?: Array<CronJobSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof CronJobSearchInputDTO
    */
@@ -1443,14 +1470,15 @@ export interface CronJobSearchInputDTO {
    * @memberof CronJobSearchInputDTO
    */
   sortDirection?: CronJobSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof CronJobSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const CronJobSearchInputDTOExtendEnum = {
+  Module: 'module',
+  GameServer: 'gameServer',
+} as const;
+
+export type CronJobSearchInputDTOExtendEnum =
+  (typeof CronJobSearchInputDTOExtendEnum)[keyof typeof CronJobSearchInputDTOExtendEnum];
 export const CronJobSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -1932,12 +1960,6 @@ export interface DomainSearchInputDTO {
    * @memberof DomainSearchInputDTO
    */
   sortDirection?: DomainSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof DomainSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
 export const DomainSearchInputDTOSortDirectionEnum = {
@@ -2305,12 +2327,6 @@ export interface EntitySearchInputDTO {
    * @memberof EntitySearchInputDTO
    */
   sortDirection?: EntitySearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof EntitySearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
 export const EntitySearchInputDTOSortDirectionEnum = {
@@ -3062,6 +3078,12 @@ export interface EventSearchInputDTO {
   lessThan?: RangeFilterCreatedAndUpdatedAt;
   /**
    *
+   * @type {Array<string>}
+   * @memberof EventSearchInputDTO
+   */
+  extend?: Array<EventSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof EventSearchInputDTO
    */
@@ -3090,14 +3112,17 @@ export interface EventSearchInputDTO {
    * @memberof EventSearchInputDTO
    */
   sortDirection?: EventSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof EventSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const EventSearchInputDTOExtendEnum = {
+  Module: 'module',
+  GameServer: 'gameServer',
+  Player: 'player',
+  User: 'user',
+} as const;
+
+export type EventSearchInputDTOExtendEnum =
+  (typeof EventSearchInputDTOExtendEnum)[keyof typeof EventSearchInputDTOExtendEnum];
 export const EventSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -3413,6 +3438,12 @@ export interface FunctionSearchInputDTO {
   search?: FunctionSearchInputAllowedSearch;
   /**
    *
+   * @type {Array<string>}
+   * @memberof FunctionSearchInputDTO
+   */
+  extend?: Array<FunctionSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof FunctionSearchInputDTO
    */
@@ -3447,14 +3478,17 @@ export interface FunctionSearchInputDTO {
    * @memberof FunctionSearchInputDTO
    */
   sortDirection?: FunctionSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof FunctionSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const FunctionSearchInputDTOExtendEnum = {
+  Module: 'module',
+  CronJobs: 'cronJobs',
+  Hooks: 'hooks',
+  Commands: 'commands',
+} as const;
+
+export type FunctionSearchInputDTOExtendEnum =
+  (typeof FunctionSearchInputDTOExtendEnum)[keyof typeof FunctionSearchInputDTOExtendEnum];
 export const FunctionSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -3727,6 +3761,12 @@ export interface GameServerSearchInputDTO {
   search?: GameServerSearchInputAllowedSearch;
   /**
    *
+   * @type {Array<string>}
+   * @memberof GameServerSearchInputDTO
+   */
+  extend?: Array<GameServerSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof GameServerSearchInputDTO
    */
@@ -3761,14 +3801,15 @@ export interface GameServerSearchInputDTO {
    * @memberof GameServerSearchInputDTO
    */
   sortDirection?: GameServerSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof GameServerSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const GameServerSearchInputDTOExtendEnum = {
+  Players: 'players',
+  Items: 'items',
+} as const;
+
+export type GameServerSearchInputDTOExtendEnum =
+  (typeof GameServerSearchInputDTOExtendEnum)[keyof typeof GameServerSearchInputDTOExtendEnum];
 export const GameServerSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -4265,12 +4306,6 @@ export interface GuildSearchInputDTO {
    * @memberof GuildSearchInputDTO
    */
   sortDirection?: GuildSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof GuildSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
 export const GuildSearchInputDTOSortDirectionEnum = {
@@ -4698,6 +4733,12 @@ export interface HookSearchInputDTO {
   search?: HookSearchInputAllowedSearch;
   /**
    *
+   * @type {Array<string>}
+   * @memberof HookSearchInputDTO
+   */
+  extend?: Array<HookSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof HookSearchInputDTO
    */
@@ -4732,14 +4773,15 @@ export interface HookSearchInputDTO {
    * @memberof HookSearchInputDTO
    */
   sortDirection?: HookSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof HookSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const HookSearchInputDTOExtendEnum = {
+  Module: 'module',
+  GameServer: 'gameServer',
+} as const;
+
+export type HookSearchInputDTOExtendEnum =
+  (typeof HookSearchInputDTOExtendEnum)[keyof typeof HookSearchInputDTOExtendEnum];
 export const HookSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -5341,7 +5383,13 @@ export interface IMessageOptsDTO {
    * @type {IPlayerReferenceDTO}
    * @memberof IMessageOptsDTO
    */
-  recipient: IPlayerReferenceDTO;
+  recipient?: IPlayerReferenceDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof IMessageOptsDTO
+   */
+  senderNameOverride?: string;
 }
 /**
  *
@@ -5802,6 +5850,12 @@ export interface ItemSearchInputDTO {
   search?: ItemSearchInputAllowedSearch;
   /**
    *
+   * @type {Array<string>}
+   * @memberof ItemSearchInputDTO
+   */
+  extend?: Array<ItemSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof ItemSearchInputDTO
    */
@@ -5836,14 +5890,14 @@ export interface ItemSearchInputDTO {
    * @memberof ItemSearchInputDTO
    */
   sortDirection?: ItemSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof ItemSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const ItemSearchInputDTOExtendEnum = {
+  GameServer: 'gameServer',
+} as const;
+
+export type ItemSearchInputDTOExtendEnum =
+  (typeof ItemSearchInputDTOExtendEnum)[keyof typeof ItemSearchInputDTOExtendEnum];
 export const ItemSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -6651,12 +6705,6 @@ export interface ModuleInstallationSearchInputDTO {
    * @memberof ModuleInstallationSearchInputDTO
    */
   sortDirection?: ModuleInstallationSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof ModuleInstallationSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
 export const ModuleInstallationSearchInputDTOSortDirectionEnum = {
@@ -6818,6 +6866,12 @@ export interface ModuleSearchInputDTO {
   lessThan?: RangeFilterCreatedAndUpdatedAt;
   /**
    *
+   * @type {Array<string>}
+   * @memberof ModuleSearchInputDTO
+   */
+  extend?: Array<ModuleSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {number}
    * @memberof ModuleSearchInputDTO
    */
@@ -6840,14 +6894,14 @@ export interface ModuleSearchInputDTO {
    * @memberof ModuleSearchInputDTO
    */
   sortDirection?: ModuleSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof ModuleSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const ModuleSearchInputDTOExtendEnum = {
+  Versions: 'versions',
+} as const;
+
+export type ModuleSearchInputDTOExtendEnum =
+  (typeof ModuleSearchInputDTOExtendEnum)[keyof typeof ModuleSearchInputDTOExtendEnum];
 export const ModuleSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -7213,12 +7267,6 @@ export interface ModuleVersionSearchInputDTO {
    * @memberof ModuleVersionSearchInputDTO
    */
   sortDirection?: ModuleVersionSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof ModuleVersionSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
 export const ModuleVersionSearchInputDTOSortDirectionEnum = {
@@ -8134,6 +8182,12 @@ export interface PlayerOnGameServerSearchInputDTO {
   lessThan?: PlayerOnGameServerSearchInputAllowedRangeFilter;
   /**
    *
+   * @type {Array<string>}
+   * @memberof PlayerOnGameServerSearchInputDTO
+   */
+  extend?: Array<PlayerOnGameServerSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof PlayerOnGameServerSearchInputDTO
    */
@@ -8162,14 +8216,15 @@ export interface PlayerOnGameServerSearchInputDTO {
    * @memberof PlayerOnGameServerSearchInputDTO
    */
   sortDirection?: PlayerOnGameServerSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof PlayerOnGameServerSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const PlayerOnGameServerSearchInputDTOExtendEnum = {
+  GameServer: 'gameServer',
+  Player: 'player',
+} as const;
+
+export type PlayerOnGameServerSearchInputDTOExtendEnum =
+  (typeof PlayerOnGameServerSearchInputDTOExtendEnum)[keyof typeof PlayerOnGameServerSearchInputDTOExtendEnum];
 export const PlayerOnGameServerSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -9060,6 +9115,12 @@ export interface PlayerSearchInputDTO {
   lessThan?: PlayerSearchInputAllowedRangeFilter;
   /**
    *
+   * @type {Array<string>}
+   * @memberof PlayerSearchInputDTO
+   */
+  extend?: Array<PlayerSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {number}
    * @memberof PlayerSearchInputDTO
    */
@@ -9082,14 +9143,17 @@ export interface PlayerSearchInputDTO {
    * @memberof PlayerSearchInputDTO
    */
   sortDirection?: PlayerSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof PlayerSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const PlayerSearchInputDTOExtendEnum = {
+  PlayerOnGameServers: 'playerOnGameServers',
+  Roles: 'roles',
+  GameServers: 'gameServers',
+  RoleAssignments: 'roleAssignments',
+} as const;
+
+export type PlayerSearchInputDTOExtendEnum =
+  (typeof PlayerSearchInputDTOExtendEnum)[keyof typeof PlayerSearchInputDTOExtendEnum];
 export const PlayerSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -9276,7 +9340,13 @@ export interface RadiusSearchInputDTO {
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof RadiusSearchInputDTO
    */
-  timestamp?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  startDate?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof RadiusSearchInputDTO
+   */
+  endDate?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
@@ -9557,6 +9627,12 @@ export interface RoleSearchInputDTO {
   search?: RoleSearchInputAllowedSearch;
   /**
    *
+   * @type {Array<string>}
+   * @memberof RoleSearchInputDTO
+   */
+  extend?: Array<RoleSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof RoleSearchInputDTO
    */
@@ -9591,14 +9667,14 @@ export interface RoleSearchInputDTO {
    * @memberof RoleSearchInputDTO
    */
   sortDirection?: RoleSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof RoleSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const RoleSearchInputDTOExtendEnum = {
+  Permissions: 'permissions',
+} as const;
+
+export type RoleSearchInputDTOExtendEnum =
+  (typeof RoleSearchInputDTOExtendEnum)[keyof typeof RoleSearchInputDTOExtendEnum];
 export const RoleSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -10545,6 +10621,12 @@ export interface ShopListingSearchInputDTO {
   lessThan?: ShopSearchInputAllowedRangeFilter;
   /**
    *
+   * @type {Array<string>}
+   * @memberof ShopListingSearchInputDTO
+   */
+  extend?: Array<ShopListingSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {number}
    * @memberof ShopListingSearchInputDTO
    */
@@ -10567,14 +10649,15 @@ export interface ShopListingSearchInputDTO {
    * @memberof ShopListingSearchInputDTO
    */
   sortDirection?: ShopListingSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof ShopListingSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const ShopListingSearchInputDTOExtendEnum = {
+  GameServer: 'gameServer',
+  Item: 'item',
+} as const;
+
+export type ShopListingSearchInputDTOExtendEnum =
+  (typeof ShopListingSearchInputDTOExtendEnum)[keyof typeof ShopListingSearchInputDTOExtendEnum];
 export const ShopListingSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -10891,6 +10974,12 @@ export interface ShopOrderSearchInputDTO {
   lessThan?: ShopOrderSearchInputAllowedRangeFilter;
   /**
    *
+   * @type {Array<string>}
+   * @memberof ShopOrderSearchInputDTO
+   */
+  extend?: Array<ShopOrderSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof ShopOrderSearchInputDTO
    */
@@ -10919,14 +11008,17 @@ export interface ShopOrderSearchInputDTO {
    * @memberof ShopOrderSearchInputDTO
    */
   sortDirection?: ShopOrderSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof ShopOrderSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const ShopOrderSearchInputDTOExtendEnum = {
+  Listing: 'listing',
+  ListingItems: 'listing.items',
+  ListingItemsItem: 'listing.items.item',
+  Player: 'player',
+} as const;
+
+export type ShopOrderSearchInputDTOExtendEnum =
+  (typeof ShopOrderSearchInputDTOExtendEnum)[keyof typeof ShopOrderSearchInputDTOExtendEnum];
 export const ShopOrderSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -12472,6 +12564,12 @@ export interface UserSearchInputDTO {
   lessThan?: UserSearchInputAllowedRangeFilter;
   /**
    *
+   * @type {Array<string>}
+   * @memberof UserSearchInputDTO
+   */
+  extend?: Array<UserSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {number}
    * @memberof UserSearchInputDTO
    */
@@ -12494,14 +12592,14 @@ export interface UserSearchInputDTO {
    * @memberof UserSearchInputDTO
    */
   sortDirection?: UserSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof UserSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const UserSearchInputDTOExtendEnum = {
+  Roles: 'roles',
+} as const;
+
+export type UserSearchInputDTOExtendEnum =
+  (typeof UserSearchInputDTOExtendEnum)[keyof typeof UserSearchInputDTOExtendEnum];
 export const UserSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -12778,6 +12876,12 @@ export interface VariableSearchInputDTO {
   search?: VariableSearchInputAllowedSearch;
   /**
    *
+   * @type {Array<string>}
+   * @memberof VariableSearchInputDTO
+   */
+  extend?: Array<VariableSearchInputDTOExtendEnum>;
+  /**
+   *
    * @type {any}
    * @memberof VariableSearchInputDTO
    */
@@ -12812,14 +12916,16 @@ export interface VariableSearchInputDTO {
    * @memberof VariableSearchInputDTO
    */
   sortDirection?: VariableSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof VariableSearchInputDTO
-   */
-  extend?: Array<string>;
 }
 
+export const VariableSearchInputDTOExtendEnum = {
+  Module: 'module',
+  Player: 'player',
+  GameServer: 'gameServer',
+} as const;
+
+export type VariableSearchInputDTOExtendEnum =
+  (typeof VariableSearchInputDTOExtendEnum)[keyof typeof VariableSearchInputDTOExtendEnum];
 export const VariableSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -15863,6 +15969,43 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
+     * Export events matching the search criteria to CSV format. Accepts the same parameters as the search endpoint. Maximum time range is 90 days.   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerExport`
+     * @summary Export events to CSV
+     * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    eventControllerExport: async (
+      eventSearchInputDTO?: EventSearchInputDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/event/export`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(eventSearchInputDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Fetches events where cronjob, hook and command failed. Supports all the common query parameters   Required permissions: `READ_MODULES`, `READ_EVENTS`<br> OperationId: `EventControllerGetFailedFunctions`
      * @summary Get failed functions
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
@@ -16003,6 +16146,29 @@ export const EventApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
+     * Export events matching the search criteria to CSV format. Accepts the same parameters as the search endpoint. Maximum time range is 90 days.   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerExport`
+     * @summary Export events to CSV
+     * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async eventControllerExport(
+      eventSearchInputDTO?: EventSearchInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.eventControllerExport(eventSearchInputDTO, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['EventApi.eventControllerExport']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
      * Fetches events where cronjob, hook and command failed. Supports all the common query parameters   Required permissions: `READ_MODULES`, `READ_EVENTS`<br> OperationId: `EventControllerGetFailedFunctions`
      * @summary Get failed functions
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
@@ -16098,6 +16264,19 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
       return localVarFp.eventControllerCreate(eventCreateDTO, options).then((request) => request(axios, basePath));
     },
     /**
+     * Export events matching the search criteria to CSV format. Accepts the same parameters as the search endpoint. Maximum time range is 90 days.   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerExport`
+     * @summary Export events to CSV
+     * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    eventControllerExport(
+      eventSearchInputDTO?: EventSearchInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<void> {
+      return localVarFp.eventControllerExport(eventSearchInputDTO, options).then((request) => request(axios, basePath));
+    },
+    /**
      * Fetches events where cronjob, hook and command failed. Supports all the common query parameters   Required permissions: `READ_MODULES`, `READ_EVENTS`<br> OperationId: `EventControllerGetFailedFunctions`
      * @summary Get failed functions
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
@@ -16156,6 +16335,20 @@ export class EventApi extends BaseAPI {
   public eventControllerCreate(eventCreateDTO?: EventCreateDTO, options?: RawAxiosRequestConfig) {
     return EventApiFp(this.configuration)
       .eventControllerCreate(eventCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Export events matching the search criteria to CSV format. Accepts the same parameters as the search endpoint. Maximum time range is 90 days.   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerExport`
+   * @summary Export events to CSV
+   * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof EventApi
+   */
+  public eventControllerExport(eventSearchInputDTO?: EventSearchInputDTO, options?: RawAxiosRequestConfig) {
+    return EventApiFp(this.configuration)
+      .eventControllerExport(eventSearchInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

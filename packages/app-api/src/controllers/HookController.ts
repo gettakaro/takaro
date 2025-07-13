@@ -60,6 +60,9 @@ class HookSearchInputAllowedSearch extends AllowedSearch {
   name!: string[];
 }
 
+const hookExtendOptions = ['module', 'gameServer'];
+type HookExtendOptions = (typeof hookExtendOptions)[number];
+
 class HookSearchInputDTO extends ITakaroQuery<HookSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => HookSearchInputAllowedFilters)
@@ -68,6 +71,10 @@ class HookSearchInputDTO extends ITakaroQuery<HookSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => HookSearchInputAllowedSearch)
   declare search: HookSearchInputAllowedSearch;
+
+  @IsOptional()
+  @IsEnum(hookExtendOptions, { each: true })
+  declare extend?: HookExtendOptions[];
 }
 
 @OpenAPI({

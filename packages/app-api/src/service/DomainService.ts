@@ -152,8 +152,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     if (item.state) {
       // If domain state changes, trigger an update for any gameservers too
       const gameServerService = new GameServerService(id);
-      const allGameServers = await gameServerService.find({});
-      for (const gameServer of allGameServers.results) {
+      for await (const gameServer of gameServerService.getIterator()) {
         await gameServerService.update(gameServer.id, await new GameServerUpdateDTO());
       }
     }

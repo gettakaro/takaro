@@ -1,4 +1,4 @@
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, ValidateNested, IsEnum } from 'class-validator';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../../service/AuthService.js';
 import {
@@ -70,6 +70,9 @@ class ModuleSearchInputAllowedSearch extends AllowedSearch {
   name: string[];
 }
 
+const moduleExtendOptions = ['versions'];
+type ModuleExtendOptions = (typeof moduleExtendOptions)[number];
+
 class ModuleSearchInputDTO extends ITakaroQuery<ModuleSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => ModuleSearchInputAllowedFilters)
@@ -83,6 +86,10 @@ class ModuleSearchInputDTO extends ITakaroQuery<ModuleSearchInputAllowedFilters>
   @ValidateNested()
   @Type(() => RangeFilterCreatedAndUpdatedAt)
   declare lessThan: RangeFilterCreatedAndUpdatedAt;
+
+  @IsOptional()
+  @IsEnum(moduleExtendOptions, { each: true })
+  declare extend?: ModuleExtendOptions[];
 }
 
 class ModuleExportDTOAPI extends APIOutput<ModuleTransferDTO<unknown>> {

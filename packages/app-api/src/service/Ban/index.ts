@@ -39,12 +39,11 @@ export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateD
       }
 
       if (item.isGlobal) {
-        const allGameservers = await gameServerService.find({});
-        await Promise.all(
-          allGameservers.results.map(async (gs) => {
-            return gameServerService.banPlayer(gs.id, item.playerId, reason, until);
-          }),
-        );
+        const banPromises = [];
+        for await (const gs of gameServerService.getIterator()) {
+          banPromises.push(gameServerService.banPlayer(gs.id, item.playerId, reason, until));
+        }
+        await Promise.all(banPromises);
       }
     } catch (error) {
       this.log.warn('Failed to apply ban on live server for player', { error });
@@ -86,14 +85,14 @@ export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateD
         const gameServerService = new GameServerService(this.domainId);
 
         if (existing.isGlobal) {
-          const allGameservers = await gameServerService.find({});
           const serverScopedBans = (await this.find({ filters: { playerId: [existing.playerId] } })).results.filter(
             (b) => !b.isGlobal,
           );
 
-          const unbanPromises = allGameservers.results.map(async (gs) => {
-            return gameServerService.unbanPlayer(gs.id, existing.playerId);
-          });
+          const unbanPromises = [];
+          for await (const gs of gameServerService.getIterator()) {
+            unbanPromises.push(gameServerService.unbanPlayer(gs.id, existing.playerId));
+          }
 
           const childBanDeletePromises = serverScopedBans.map(async (b) => this.delete(b.id));
           this.log.debug(
