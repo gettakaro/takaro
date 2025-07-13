@@ -37,6 +37,7 @@ import { StatsController } from './controllers/StatsController.js';
 import { KPIWorker } from './workers/kpiWorker.js';
 import { ShopOrderController } from './controllers/Shop/Order.js';
 import { ShopListingController } from './controllers/Shop/Listing.js';
+import { ShopCategoryController } from './controllers/Shop/Category.js';
 import { SystemWorker } from './workers/systemWorker.js';
 import { BanController } from './controllers/BanController.js';
 import { ModuleController } from './controllers/Module/modules.js';
@@ -70,6 +71,7 @@ export const server = new HTTP(
       StatsController,
       ShopListingController,
       ShopOrderController,
+      ShopCategoryController,
       BanController,
       TrackingController,
     ],

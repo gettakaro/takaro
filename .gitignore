@@ -48,3 +48,6 @@ _data/
 routeTree.gen.ts
 
 CLAUDE.local.md
+
+# Generated API documentation files
+packages/lib-apiclient/src/generated/docs/

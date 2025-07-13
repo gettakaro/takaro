@@ -10000,6 +10000,301 @@ export interface SettingsSetDTO {
 /**
  *
  * @export
+ * @interface ShopCategoryBulkAssignDTO
+ */
+export interface ShopCategoryBulkAssignDTO {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopCategoryBulkAssignDTO
+   */
+  listingIds: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopCategoryBulkAssignDTO
+   */
+  addCategoryIds?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopCategoryBulkAssignDTO
+   */
+  removeCategoryIds?: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface ShopCategoryCreateDTO
+ */
+export interface ShopCategoryCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryCreateDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryCreateDTO
+   */
+  emoji: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryCreateDTO
+   */
+  parentId?: string;
+}
+/**
+ *
+ * @export
+ * @interface ShopCategoryMoveDTO
+ */
+export interface ShopCategoryMoveDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryMoveDTO
+   */
+  parentId?: string;
+}
+/**
+ *
+ * @export
+ * @interface ShopCategoryOutputArrayDTOAPI
+ */
+export interface ShopCategoryOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<ShopCategoryOutputDTO>}
+   * @memberof ShopCategoryOutputArrayDTOAPI
+   */
+  data: Array<ShopCategoryOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ShopCategoryOutputArrayDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface ShopCategoryOutputDTO
+ */
+export interface ShopCategoryOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryOutputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryOutputDTO
+   */
+  emoji: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryOutputDTO
+   */
+  parentId?: string;
+  /**
+   *
+   * @type {ShopCategoryOutputDTO}
+   * @memberof ShopCategoryOutputDTO
+   */
+  parent?: ShopCategoryOutputDTO;
+  /**
+   *
+   * @type {Array<ShopCategoryOutputDTO>}
+   * @memberof ShopCategoryOutputDTO
+   */
+  children?: Array<ShopCategoryOutputDTO>;
+  /**
+   *
+   * @type {Array<ShopListingOutputDTO>}
+   * @memberof ShopCategoryOutputDTO
+   */
+  listings?: Array<ShopListingOutputDTO>;
+  /**
+   *
+   * @type {number}
+   * @memberof ShopCategoryOutputDTO
+   */
+  listingCount?: number;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ShopCategoryOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ShopCategoryOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface ShopCategoryOutputDTOAPI
+ */
+export interface ShopCategoryOutputDTOAPI {
+  /**
+   *
+   * @type {ShopCategoryOutputDTO}
+   * @memberof ShopCategoryOutputDTOAPI
+   */
+  data: ShopCategoryOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ShopCategoryOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface ShopCategorySearchInputAllowedFilters
+ */
+export interface ShopCategorySearchInputAllowedFilters {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopCategorySearchInputAllowedFilters
+   */
+  id?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopCategorySearchInputAllowedFilters
+   */
+  parentId?: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface ShopCategorySearchInputAllowedSearch
+ */
+export interface ShopCategorySearchInputAllowedSearch {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopCategorySearchInputAllowedSearch
+   */
+  name?: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface ShopCategorySearchInputDTO
+ */
+export interface ShopCategorySearchInputDTO {
+  /**
+   *
+   * @type {ShopCategorySearchInputAllowedFilters}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  filters?: ShopCategorySearchInputAllowedFilters;
+  /**
+   *
+   * @type {ShopCategorySearchInputAllowedSearch}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  search?: ShopCategorySearchInputAllowedSearch;
+  /**
+   *
+   * @type {RangeFilterCreatedAndUpdatedAt}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  greaterThan?: RangeFilterCreatedAndUpdatedAt;
+  /**
+   *
+   * @type {RangeFilterCreatedAndUpdatedAt}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  lessThan?: RangeFilterCreatedAndUpdatedAt;
+  /**
+   *
+   * @type {number}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  limit?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  sortBy?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  sortDirection?: ShopCategorySearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopCategorySearchInputDTO
+   */
+  extend?: Array<string>;
+}
+
+export const ShopCategorySearchInputDTOSortDirectionEnum = {
+  Asc: 'asc',
+  Desc: 'desc',
+} as const;
+
+export type ShopCategorySearchInputDTOSortDirectionEnum =
+  (typeof ShopCategorySearchInputDTOSortDirectionEnum)[keyof typeof ShopCategorySearchInputDTOSortDirectionEnum];
+
+/**
+ *
+ * @export
+ * @interface ShopCategoryUpdateDTO
+ */
+export interface ShopCategoryUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryUpdateDTO
+   */
+  name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryUpdateDTO
+   */
+  emoji?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopCategoryUpdateDTO
+   */
+  parentId?: string;
+}
+/**
+ *
+ * @export
  * @interface ShopImportOptions
  */
 export interface ShopImportOptions {
@@ -10058,6 +10353,12 @@ export interface ShopListingCreateDTO {
    * @memberof ShopListingCreateDTO
    */
   draft?: boolean;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopListingCreateDTO
+   */
+  categoryIds?: Array<string>;
 }
 /**
  *
@@ -10202,6 +10503,12 @@ export interface ShopListingOutputDTO {
   draft: boolean;
   /**
    *
+   * @type {Array<ShopCategoryOutputDTO>}
+   * @memberof ShopListingOutputDTO
+   */
+  categories?: Array<ShopCategoryOutputDTO>;
+  /**
+   *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof ShopListingOutputDTO
    */
@@ -10268,6 +10575,18 @@ export interface ShopListingSearchInputAllowedFilters {
    * @memberof ShopListingSearchInputAllowedFilters
    */
   draft?: boolean;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopListingSearchInputAllowedFilters
+   */
+  categoryIds?: Array<string>;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ShopListingSearchInputAllowedFilters
+   */
+  uncategorized?: boolean;
 }
 /**
  *
@@ -10347,6 +10666,7 @@ export interface ShopListingSearchInputDTO {
 export const ShopListingSearchInputDTOExtendEnum = {
   GameServer: 'gameServer',
   Item: 'item',
+  Categories: 'categories',
 } as const;
 
 export type ShopListingSearchInputDTOExtendEnum =
@@ -10395,6 +10715,12 @@ export interface ShopListingUpdateDTO {
    * @memberof ShopListingUpdateDTO
    */
   draft?: boolean;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopListingUpdateDTO
+   */
+  categoryIds?: Array<string>;
 }
 /**
  *
@@ -24733,6 +25059,782 @@ export const SettingsControllerGetKeysEnum = {
 } as const;
 export type SettingsControllerGetKeysEnum =
   (typeof SettingsControllerGetKeysEnum)[keyof typeof SettingsControllerGetKeysEnum];
+
+/**
+ * ShopCategoryApi - axios parameter creator
+ * @export
+ */
+export const ShopCategoryApiAxiosParamCreator = function (configuration?: Configuration) {
+  return {
+    /**
+     * Bulk assign categories to multiple shop listings   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerBulkAssign`
+     * @summary Bulk assign
+     * @param {ShopCategoryBulkAssignDTO} [shopCategoryBulkAssignDTO] ShopCategoryBulkAssignDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerBulkAssign: async (
+      shopCategoryBulkAssignDTO?: ShopCategoryBulkAssignDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/shop/category/bulk-assign`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        shopCategoryBulkAssignDTO,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Create a new shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerCreate`
+     * @summary Create
+     * @param {ShopCategoryCreateDTO} [shopCategoryCreateDTO] ShopCategoryCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerCreate: async (
+      shopCategoryCreateDTO?: ShopCategoryCreateDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/shop/category/`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(shopCategoryCreateDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Get all shop categories<br> OperationId: `ShopCategoryControllerGetAll`
+     * @summary Get all
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerGetAll: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      const localVarPath = `/shop/category/`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Get a shop category by id<br> OperationId: `ShopCategoryControllerGetOne`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerGetOne: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('shopCategoryControllerGetOne', 'id', id);
+      const localVarPath = `/shop/category/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Move a shop category to a different parent   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerMove`
+     * @summary Move
+     * @param {string} id
+     * @param {ShopCategoryMoveDTO} [shopCategoryMoveDTO] ShopCategoryMoveDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerMove: async (
+      id: string,
+      shopCategoryMoveDTO?: ShopCategoryMoveDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('shopCategoryControllerMove', 'id', id);
+      const localVarPath = `/shop/category/{id}/move`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(shopCategoryMoveDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Delete a shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerRemove`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerRemove: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('shopCategoryControllerRemove', 'id', id);
+      const localVarPath = `/shop/category/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Search shop categories<br> OperationId: `ShopCategoryControllerSearch`
+     * @summary Search
+     * @param {ShopCategorySearchInputDTO} [shopCategorySearchInputDTO] ShopCategorySearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerSearch: async (
+      shopCategorySearchInputDTO?: ShopCategorySearchInputDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/shop/category/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        shopCategorySearchInputDTO,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Update a shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerUpdate`
+     * @summary Update
+     * @param {string} id
+     * @param {ShopCategoryUpdateDTO} [shopCategoryUpdateDTO] ShopCategoryUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerUpdate: async (
+      id: string,
+      shopCategoryUpdateDTO?: ShopCategoryUpdateDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('shopCategoryControllerUpdate', 'id', id);
+      const localVarPath = `/shop/category/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(shopCategoryUpdateDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * ShopCategoryApi - functional programming interface
+ * @export
+ */
+export const ShopCategoryApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = ShopCategoryApiAxiosParamCreator(configuration);
+  return {
+    /**
+     * Bulk assign categories to multiple shop listings   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerBulkAssign`
+     * @summary Bulk assign
+     * @param {ShopCategoryBulkAssignDTO} [shopCategoryBulkAssignDTO] ShopCategoryBulkAssignDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopCategoryControllerBulkAssign(
+      shopCategoryBulkAssignDTO?: ShopCategoryBulkAssignDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerBulkAssign(
+        shopCategoryBulkAssignDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ShopCategoryApi.shopCategoryControllerBulkAssign']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Create a new shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerCreate`
+     * @summary Create
+     * @param {ShopCategoryCreateDTO} [shopCategoryCreateDTO] ShopCategoryCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopCategoryControllerCreate(
+      shopCategoryCreateDTO?: ShopCategoryCreateDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopCategoryOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerCreate(
+        shopCategoryCreateDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ShopCategoryApi.shopCategoryControllerCreate']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Get all shop categories<br> OperationId: `ShopCategoryControllerGetAll`
+     * @summary Get all
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopCategoryControllerGetAll(
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopCategoryOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerGetAll(options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ShopCategoryApi.shopCategoryControllerGetAll']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Get a shop category by id<br> OperationId: `ShopCategoryControllerGetOne`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopCategoryControllerGetOne(
+      id: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopCategoryOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerGetOne(id, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ShopCategoryApi.shopCategoryControllerGetOne']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Move a shop category to a different parent   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerMove`
+     * @summary Move
+     * @param {string} id
+     * @param {ShopCategoryMoveDTO} [shopCategoryMoveDTO] ShopCategoryMoveDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopCategoryControllerMove(
+      id: string,
+      shopCategoryMoveDTO?: ShopCategoryMoveDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopCategoryOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerMove(
+        id,
+        shopCategoryMoveDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ShopCategoryApi.shopCategoryControllerMove']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Delete a shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerRemove`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopCategoryControllerRemove(
+      id: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerRemove(id, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ShopCategoryApi.shopCategoryControllerRemove']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Search shop categories<br> OperationId: `ShopCategoryControllerSearch`
+     * @summary Search
+     * @param {ShopCategorySearchInputDTO} [shopCategorySearchInputDTO] ShopCategorySearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopCategoryControllerSearch(
+      shopCategorySearchInputDTO?: ShopCategorySearchInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopCategoryOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerSearch(
+        shopCategorySearchInputDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ShopCategoryApi.shopCategoryControllerSearch']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Update a shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerUpdate`
+     * @summary Update
+     * @param {string} id
+     * @param {ShopCategoryUpdateDTO} [shopCategoryUpdateDTO] ShopCategoryUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopCategoryControllerUpdate(
+      id: string,
+      shopCategoryUpdateDTO?: ShopCategoryUpdateDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopCategoryOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerUpdate(
+        id,
+        shopCategoryUpdateDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['ShopCategoryApi.shopCategoryControllerUpdate']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+  };
+};
+
+/**
+ * ShopCategoryApi - factory interface
+ * @export
+ */
+export const ShopCategoryApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance,
+) {
+  const localVarFp = ShopCategoryApiFp(configuration);
+  return {
+    /**
+     * Bulk assign categories to multiple shop listings   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerBulkAssign`
+     * @summary Bulk assign
+     * @param {ShopCategoryBulkAssignDTO} [shopCategoryBulkAssignDTO] ShopCategoryBulkAssignDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerBulkAssign(
+      shopCategoryBulkAssignDTO?: ShopCategoryBulkAssignDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<void> {
+      return localVarFp
+        .shopCategoryControllerBulkAssign(shopCategoryBulkAssignDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Create a new shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerCreate`
+     * @summary Create
+     * @param {ShopCategoryCreateDTO} [shopCategoryCreateDTO] ShopCategoryCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerCreate(
+      shopCategoryCreateDTO?: ShopCategoryCreateDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ShopCategoryOutputDTOAPI> {
+      return localVarFp
+        .shopCategoryControllerCreate(shopCategoryCreateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Get all shop categories<br> OperationId: `ShopCategoryControllerGetAll`
+     * @summary Get all
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerGetAll(options?: RawAxiosRequestConfig): AxiosPromise<ShopCategoryOutputArrayDTOAPI> {
+      return localVarFp.shopCategoryControllerGetAll(options).then((request) => request(axios, basePath));
+    },
+    /**
+     * Get a shop category by id<br> OperationId: `ShopCategoryControllerGetOne`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<ShopCategoryOutputDTOAPI> {
+      return localVarFp.shopCategoryControllerGetOne(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     * Move a shop category to a different parent   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerMove`
+     * @summary Move
+     * @param {string} id
+     * @param {ShopCategoryMoveDTO} [shopCategoryMoveDTO] ShopCategoryMoveDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerMove(
+      id: string,
+      shopCategoryMoveDTO?: ShopCategoryMoveDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ShopCategoryOutputDTOAPI> {
+      return localVarFp
+        .shopCategoryControllerMove(id, shopCategoryMoveDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Delete a shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerRemove`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerRemove(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+      return localVarFp.shopCategoryControllerRemove(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     * Search shop categories<br> OperationId: `ShopCategoryControllerSearch`
+     * @summary Search
+     * @param {ShopCategorySearchInputDTO} [shopCategorySearchInputDTO] ShopCategorySearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerSearch(
+      shopCategorySearchInputDTO?: ShopCategorySearchInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ShopCategoryOutputArrayDTOAPI> {
+      return localVarFp
+        .shopCategoryControllerSearch(shopCategorySearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Update a shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerUpdate`
+     * @summary Update
+     * @param {string} id
+     * @param {ShopCategoryUpdateDTO} [shopCategoryUpdateDTO] ShopCategoryUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopCategoryControllerUpdate(
+      id: string,
+      shopCategoryUpdateDTO?: ShopCategoryUpdateDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ShopCategoryOutputDTOAPI> {
+      return localVarFp
+        .shopCategoryControllerUpdate(id, shopCategoryUpdateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * ShopCategoryApi - object-oriented interface
+ * @export
+ * @class ShopCategoryApi
+ * @extends {BaseAPI}
+ */
+export class ShopCategoryApi extends BaseAPI {
+  /**
+   * Bulk assign categories to multiple shop listings   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerBulkAssign`
+   * @summary Bulk assign
+   * @param {ShopCategoryBulkAssignDTO} [shopCategoryBulkAssignDTO] ShopCategoryBulkAssignDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopCategoryApi
+   */
+  public shopCategoryControllerBulkAssign(
+    shopCategoryBulkAssignDTO?: ShopCategoryBulkAssignDTO,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return ShopCategoryApiFp(this.configuration)
+      .shopCategoryControllerBulkAssign(shopCategoryBulkAssignDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Create a new shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerCreate`
+   * @summary Create
+   * @param {ShopCategoryCreateDTO} [shopCategoryCreateDTO] ShopCategoryCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopCategoryApi
+   */
+  public shopCategoryControllerCreate(shopCategoryCreateDTO?: ShopCategoryCreateDTO, options?: RawAxiosRequestConfig) {
+    return ShopCategoryApiFp(this.configuration)
+      .shopCategoryControllerCreate(shopCategoryCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Get all shop categories<br> OperationId: `ShopCategoryControllerGetAll`
+   * @summary Get all
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopCategoryApi
+   */
+  public shopCategoryControllerGetAll(options?: RawAxiosRequestConfig) {
+    return ShopCategoryApiFp(this.configuration)
+      .shopCategoryControllerGetAll(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Get a shop category by id<br> OperationId: `ShopCategoryControllerGetOne`
+   * @summary Get one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopCategoryApi
+   */
+  public shopCategoryControllerGetOne(id: string, options?: RawAxiosRequestConfig) {
+    return ShopCategoryApiFp(this.configuration)
+      .shopCategoryControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Move a shop category to a different parent   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerMove`
+   * @summary Move
+   * @param {string} id
+   * @param {ShopCategoryMoveDTO} [shopCategoryMoveDTO] ShopCategoryMoveDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopCategoryApi
+   */
+  public shopCategoryControllerMove(
+    id: string,
+    shopCategoryMoveDTO?: ShopCategoryMoveDTO,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return ShopCategoryApiFp(this.configuration)
+      .shopCategoryControllerMove(id, shopCategoryMoveDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Delete a shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerRemove`
+   * @summary Remove
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopCategoryApi
+   */
+  public shopCategoryControllerRemove(id: string, options?: RawAxiosRequestConfig) {
+    return ShopCategoryApiFp(this.configuration)
+      .shopCategoryControllerRemove(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Search shop categories<br> OperationId: `ShopCategoryControllerSearch`
+   * @summary Search
+   * @param {ShopCategorySearchInputDTO} [shopCategorySearchInputDTO] ShopCategorySearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopCategoryApi
+   */
+  public shopCategoryControllerSearch(
+    shopCategorySearchInputDTO?: ShopCategorySearchInputDTO,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return ShopCategoryApiFp(this.configuration)
+      .shopCategoryControllerSearch(shopCategorySearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Update a shop category   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerUpdate`
+   * @summary Update
+   * @param {string} id
+   * @param {ShopCategoryUpdateDTO} [shopCategoryUpdateDTO] ShopCategoryUpdateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopCategoryApi
+   */
+  public shopCategoryControllerUpdate(
+    id: string,
+    shopCategoryUpdateDTO?: ShopCategoryUpdateDTO,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return ShopCategoryApiFp(this.configuration)
+      .shopCategoryControllerUpdate(id, shopCategoryUpdateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
 
 /**
  * ShopListingApi - axios parameter creator

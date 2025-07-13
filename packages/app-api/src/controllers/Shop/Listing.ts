@@ -57,6 +57,12 @@ class ShopListingSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsBoolean()
   draft: boolean;
+  @IsOptional()
+  @IsUUID(4, { each: true })
+  categoryIds: string[];
+  @IsOptional()
+  @IsBoolean()
+  uncategorized: boolean;
 }
 
 class ShopListingSearchInputAllowedSearch extends AllowedSearch {
@@ -74,7 +80,7 @@ class ShopSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
   deletedAt!: string;
 }
 
-const shopListingExtendOptions = ['gameServer', 'item'];
+const shopListingExtendOptions = ['gameServer', 'item', 'categories'] as const;
 type ShopListingExtendOptions = (typeof shopListingExtendOptions)[number];
 
 class ShopListingSearchInputDTO extends ITakaroQuery<ShopListingSearchInputAllowedFilters> {

@@ -1,0 +1,268 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 14
+    },
+    "data": [
+      {
+        "id": "b23fa2eb-c1c8-4a0a-945f-2919ecfb42cd",
+        "name": "Armor",
+        "emoji": "🛡️",
+        "parentId": null,
+        "createdAt": "2025-07-13T07:46:33.582Z",
+        "updatedAt": "2025-07-13T07:46:33.582Z",
+        "listingCount": 2,
+        "children": [
+          {
+            "id": "53d3bf04-dfdf-4ac9-b91d-d91f6c5da03d",
+            "name": "Helmets",
+            "emoji": "⛑️",
+            "parentId": "b23fa2eb-c1c8-4a0a-945f-2919ecfb42cd",
+            "createdAt": "2025-07-13T07:46:36.144Z",
+            "updatedAt": "2025-07-13T07:46:36.144Z"
+          },
+          {
+            "id": "eb127cd8-5f5b-4cf0-a64b-020186976cde",
+            "name": "Chest Armor",
+            "emoji": "🦺",
+            "parentId": "b23fa2eb-c1c8-4a0a-945f-2919ecfb42cd",
+            "createdAt": "2025-07-13T07:46:36.156Z",
+            "updatedAt": "2025-07-13T07:46:36.156Z"
+          }
+        ]
+      },
+      {
+        "id": "02526070-26ef-40c2-9b6a-c17357d838db",
+        "name": "Base",
+        "emoji": "🏠",
+        "parentId": null,
+        "createdAt": "2025-07-13T07:46:33.591Z",
+        "updatedAt": "2025-07-13T07:46:33.591Z",
+        "listingCount": 0,
+        "children": []
+      },
+      {
+        "id": "c3482596-75d5-466d-8e75-182d88737df5",
+        "name": "Building",
+        "emoji": "🏗️",
+        "parentId": null,
+        "createdAt": "2025-07-13T07:46:33.583Z",
+        "updatedAt": "2025-07-13T07:46:33.583Z",
+        "listingCount": 0,
+        "children": []
+      },
+      {
+        "id": "eb127cd8-5f5b-4cf0-a64b-020186976cde",
+        "name": "Chest Armor",
+        "emoji": "🦺",
+        "parentId": "b23fa2eb-c1c8-4a0a-945f-2919ecfb42cd",
+        "createdAt": "2025-07-13T07:46:36.156Z",
+        "updatedAt": "2025-07-13T07:46:36.156Z",
+        "listingCount": 0,
+        "parent": {
+          "id": "b23fa2eb-c1c8-4a0a-945f-2919ecfb42cd",
+          "name": "Armor",
+          "emoji": "🛡️",
+          "parentId": null,
+          "createdAt": "2025-07-13T07:46:33.582Z",
+          "updatedAt": "2025-07-13T07:46:33.582Z"
+        },
+        "children": []
+      },
+      {
+        "id": "3d23f3b4-653a-4fd8-b3d2-0c690c85b0e2",
+        "name": "Consumables",
+        "emoji": "💊",
+        "parentId": null,
+        "createdAt": "2025-07-13T07:46:33.586Z",
+        "updatedAt": "2025-07-13T07:46:33.586Z",
+        "listingCount": 0,
+        "children": []
+      },
+      {
+        "id": "9beea6db-43f7-402c-bcc6-2369b33eae01",
+        "name": "Hand Tools",
+        "emoji": "🔨",
+        "parentId": "95f8c9dc-4909-43f2-bcd4-5989e71ead9a",
+        "createdAt": "2025-07-13T07:46:36.169Z",
+        "updatedAt": "2025-07-13T07:46:36.169Z",
+        "listingCount": 0,
+        "parent": {
+          "id": "95f8c9dc-4909-43f2-bcd4-5989e71ead9a",
+          "name": "Tools",
+          "emoji": "🔧",
+          "parentId": null,
+          "createdAt": "2025-07-13T07:46:33.585Z",
+          "updatedAt": "2025-07-13T07:46:33.585Z"
+        },
+        "children": []
+      },
+      {
+        "id": "53d3bf04-dfdf-4ac9-b91d-d91f6c5da03d",
+        "name": "Helmets",
+        "emoji": "⛑️",
+        "parentId": "b23fa2eb-c1c8-4a0a-945f-2919ecfb42cd",
+        "createdAt": "2025-07-13T07:46:36.144Z",
+        "updatedAt": "2025-07-13T07:46:36.144Z",
+        "listingCount": 2,
+        "parent": {
+          "id": "b23fa2eb-c1c8-4a0a-945f-2919ecfb42cd",
+          "name": "Armor",
+          "emoji": "🛡️",
+          "parentId": null,
+          "createdAt": "2025-07-13T07:46:33.582Z",
+          "updatedAt": "2025-07-13T07:46:33.582Z"
+        },
+        "children": []
+      },
+      {
+        "id": "65e31643-136c-437e-be85-4112ca233118",
+        "name": "Melee Weapons",
+        "emoji": "⚔️",
+        "parentId": "880e557f-5240-412f-bfaf-b0f60ccb96e4",
+        "createdAt": "2025-07-13T07:46:36.120Z",
+        "updatedAt": "2025-07-13T07:46:36.120Z",
+        "listingCount": 2,
+        "parent": {
+          "id": "880e557f-5240-412f-bfaf-b0f60ccb96e4",
+          "name": "Weapons",
+          "emoji": "⚔️",
+          "parentId": null,
+          "createdAt": "2025-07-13T07:46:33.580Z",
+          "updatedAt": "2025-07-13T07:46:33.580Z"
+        },
+        "children": []
+      },
+      {
+        "id": "e916a1ae-0cdc-4483-b162-c53fceeba51c",
+        "name": "Power Tools",
+        "emoji": "⚡",
+        "parentId": "95f8c9dc-4909-43f2-bcd4-5989e71ead9a",
+        "createdAt": "2025-07-13T07:46:36.181Z",
+        "updatedAt": "2025-07-13T07:46:36.181Z",
+        "listingCount": 0,
+        "parent": {
+          "id": "95f8c9dc-4909-43f2-bcd4-5989e71ead9a",
+          "name": "Tools",
+          "emoji": "🔧",
+          "parentId": null,
+          "createdAt": "2025-07-13T07:46:33.585Z",
+          "updatedAt": "2025-07-13T07:46:33.585Z"
+        },
+        "children": []
+      },
+      {
+        "id": "47bfcf62-db3f-4b77-a116-c30de57ceb8d",
+        "name": "Ranged Weapons",
+        "emoji": "🏹",
+        "parentId": "880e557f-5240-412f-bfaf-b0f60ccb96e4",
+        "createdAt": "2025-07-13T07:46:36.132Z",
+        "updatedAt": "2025-07-13T07:46:36.132Z",
+        "listingCount": 1,
+        "parent": {
+          "id": "880e557f-5240-412f-bfaf-b0f60ccb96e4",
+          "name": "Weapons",
+          "emoji": "⚔️",
+          "parentId": null,
+          "createdAt": "2025-07-13T07:46:33.580Z",
+          "updatedAt": "2025-07-13T07:46:33.580Z"
+        },
+        "children": []
+      },
+      {
+        "id": "04f0bda1-e24a-4c95-97db-2ed023acfb2d",
+        "name": "Resources",
+        "emoji": "📦",
+        "parentId": null,
+        "createdAt": "2025-07-13T07:46:33.589Z",
+        "updatedAt": "2025-07-13T07:46:33.589Z",
+        "listingCount": 0,
+        "children": []
+      },
+      {
+        "id": "95f8c9dc-4909-43f2-bcd4-5989e71ead9a",
+        "name": "Tools",
+        "emoji": "🔧",
+        "parentId": null,
+        "createdAt": "2025-07-13T07:46:33.585Z",
+        "updatedAt": "2025-07-13T07:46:33.585Z",
+        "listingCount": 0,
+        "children": [
+          {
+            "id": "9beea6db-43f7-402c-bcc6-2369b33eae01",
+            "name": "Hand Tools",
+            "emoji": "🔨",
+            "parentId": "95f8c9dc-4909-43f2-bcd4-5989e71ead9a",
+            "createdAt": "2025-07-13T07:46:36.169Z",
+            "updatedAt": "2025-07-13T07:46:36.169Z"
+          },
+          {
+            "id": "e916a1ae-0cdc-4483-b162-c53fceeba51c",
+            "name": "Power Tools",
+            "emoji": "⚡",
+            "parentId": "95f8c9dc-4909-43f2-bcd4-5989e71ead9a",
+            "createdAt": "2025-07-13T07:46:36.181Z",
+            "updatedAt": "2025-07-13T07:46:36.181Z"
+          }
+        ]
+      },
+      {
+        "id": "34588813-fe77-4baa-86d4-949a74096d94",
+        "name": "Vehicles",
+        "emoji": "🚗",
+        "parentId": null,
+        "createdAt": "2025-07-13T07:46:33.592Z",
+        "updatedAt": "2025-07-13T07:46:33.592Z",
+        "listingCount": 0,
+        "children": []
+      },
+      {
+        "id": "880e557f-5240-412f-bfaf-b0f60ccb96e4",
+        "name": "Weapons",
+        "emoji": "⚔️",
+        "parentId": null,
+        "createdAt": "2025-07-13T07:46:33.580Z",
+        "updatedAt": "2025-07-13T07:46:33.580Z",
+        "listingCount": 3,
+        "children": [
+          {
+            "id": "65e31643-136c-437e-be85-4112ca233118",
+            "name": "Melee Weapons",
+            "emoji": "⚔️",
+            "parentId": "880e557f-5240-412f-bfaf-b0f60ccb96e4",
+            "createdAt": "2025-07-13T07:46:36.120Z",
+            "updatedAt": "2025-07-13T07:46:36.120Z"
+          },
+          {
+            "id": "47bfcf62-db3f-4b77-a116-c30de57ceb8d",
+            "name": "Ranged Weapons",
+            "emoji": "🏹",
+            "parentId": "880e557f-5240-412f-bfaf-b0f60ccb96e4",
+            "createdAt": "2025-07-13T07:46:36.132Z",
+            "updatedAt": "2025-07-13T07:46:36.132Z"
+          }
+        ]
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "Shop/ShopCategoryController",
+    "snapshot": true,
+    "name": "Get all categories",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "updatedAt",
+      "domain",
+      "parentId",
+      "parent",
+      "children",
+      "listingCount"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}
