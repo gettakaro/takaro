@@ -23,7 +23,33 @@ async function main() {
     return command.requiredPermissions.every((permission) => checkPermission(data.pog, permission));
   });
 
-  if (data.arguments.command === 'all') {
+  if (data.arguments.command === 'search') {
+    // Check if a search term was actually provided (not the default 'none')
+    if (data.arguments.searchTerm === 'none') {
+      throw new TakaroUserError('Please provide a search term. Usage: /help search <term>');
+    }
+
+    // Search functionality
+    const searchTerm = data.arguments.searchTerm.toLowerCase();
+    const matchingCommands = accessibleCommands.filter((command) => {
+      // Check if command name contains search term
+      const nameMatch = command.name.toLowerCase().includes(searchTerm);
+      // Check if help text contains search term
+      const helpTextMatch = command.helpText.toLowerCase().includes(searchTerm);
+      return nameMatch || helpTextMatch;
+    });
+
+    if (matchingCommands.length === 0) {
+      await data.player.pm(`No commands found matching "${data.arguments.searchTerm}".`);
+    } else {
+      await data.player.pm(`Commands matching "${data.arguments.searchTerm}":`);
+      await Promise.all(
+        matchingCommands.map(async (command) => {
+          await data.player.pm(`${command.name}: ${command.helpText}`);
+        }),
+      );
+    }
+  } else if (data.arguments.command === 'all') {
     await data.player.pm('Available commands:');
 
     if (accessibleCommands.length === 0) {
