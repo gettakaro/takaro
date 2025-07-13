@@ -54,6 +54,7 @@ export const IconNavContainer = styled.div`
   align-items: center;
   justify-content: center;
   gap: ${({ theme }) => theme.spacing[2]};
+  padding-top: ${({ theme }) => theme.spacing[5]};
 `;
 
 export const Nav = styled.nav<{ $isCollapsed?: boolean }>`

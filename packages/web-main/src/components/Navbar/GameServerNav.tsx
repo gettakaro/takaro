@@ -81,8 +81,10 @@ export const GameServerNav: FC<GameServerNavProps> = ({ isCollapsed = false }) =
   if (isPending) {
     return (
       <Nav data-testid="server-nav" $isCollapsed={isCollapsed}>
-        {!isCollapsed && <h3>Game Server</h3>}
-        {!isCollapsed && <Skeleton variant="text" width="100%" height="35px" />}
+        <h3 style={{ visibility: isCollapsed ? 'hidden' : 'visible' }}>Game Server</h3>
+        <div style={{ visibility: isCollapsed ? 'hidden' : 'visible' }}>
+          <Skeleton variant="text" width="100%" height="35px" />
+        </div>
         {gameServerLinks.map((link) => renderLink(link, isCollapsed))}
       </Nav>
     );
@@ -92,16 +94,21 @@ export const GameServerNav: FC<GameServerNavProps> = ({ isCollapsed = false }) =
     <Nav data-testid="server-nav" $isCollapsed={isCollapsed}>
       {gameServerId && gameServerId !== '' && gameservers && gameservers.data.length > 0 ? (
         <>
-          {!isCollapsed && <h3>Game Server</h3>}
-          {!isCollapsed && gameservers.data.length > 1 && (
+          <h3 style={{ visibility: isCollapsed ? 'hidden' : 'visible' }}>Game Server</h3>
+          <div
+            style={{
+              visibility: isCollapsed ? 'hidden' : 'visible',
+              display: gameservers.data.length > 1 ? 'block' : 'none',
+            }}
+          >
             <GlobalGameServerSelect currentSelectedGameServerId={gameServerId} />
-          )}
+          </div>
           {gameServerLinks.map((link) => renderLink(link, isCollapsed))}
         </>
       ) : (
         <>
-          {!isCollapsed && <h3>Game Server</h3>}
-          {!isCollapsed && (
+          <h3 style={{ visibility: isCollapsed ? 'hidden' : 'visible' }}>Game Server</h3>
+          <div style={{ visibility: isCollapsed ? 'hidden' : 'visible' }}>
             <NoServersCallToAction
               initial={{ opacity: 0, y: -10 }}
               transition={{ delay: 0.5 }}
@@ -112,7 +119,7 @@ export const GameServerNav: FC<GameServerNavProps> = ({ isCollapsed = false }) =
                 Add a server
               </Button>
             </NoServersCallToAction>
-          )}
+          </div>
         </>
       )}
     </Nav>

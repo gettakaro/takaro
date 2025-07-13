@@ -169,7 +169,7 @@ export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
       <IconNavContainer data-testid="takaro-icon-nav">
         {showGameServerNav && <GameServerNav isCollapsed={isCollapsed} />}
         <Nav data-testid="global-nav" $isCollapsed={isCollapsed}>
-          {domainLinks.length > 0 && !isCollapsed && <h3>Global</h3>}
+          {domainLinks.length > 0 && <h3 style={{ visibility: isCollapsed ? 'hidden' : 'visible' }}>Global</h3>}
           {domainLinks.map((link) => renderLink(link, isCollapsed))}
         </Nav>
       </IconNavContainer>
