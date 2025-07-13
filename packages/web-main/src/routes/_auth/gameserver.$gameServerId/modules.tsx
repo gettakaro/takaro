@@ -43,7 +43,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules')(
   ),
 });
 
-export function Component() {
+function Component() {
   const loaderData = Route.useLoaderData();
   const { gameServerId } = Route.useParams();
   useDocumentTitle('Modules');
