@@ -57,7 +57,6 @@ const tests = [
       expect(findRes.data.data.items[0].item.id).to.be.equal(woodItem.id);
       expect(findRes.data.data.items[0].amount).to.be.equal(5);
       expect(findRes.data.data.name).to.be.equal('Updated item');
-      expect(findRes.data.data.items[0].item.id).to.be.equal(this.setupData.items[1].id);
 
       return res;
     },

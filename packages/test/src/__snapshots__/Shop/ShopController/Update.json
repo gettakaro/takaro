@@ -30,12 +30,13 @@
             "icon": null
           }
         }
-      ]
+      ],
+      "categories": []
     }
   },
   "status": 200,
   "test": {
-    "group": "ShopController",
+    "group": "Shop/ShopController",
     "snapshot": true,
     "name": "Update",
     "filteredFields": [
