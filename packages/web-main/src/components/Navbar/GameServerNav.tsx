@@ -19,7 +19,11 @@ import { useQuery } from '@tanstack/react-query';
 
 const route = getRouteApi('/_auth/gameserver/$gameServerId');
 
-export const GameServerNav: FC = () => {
+interface GameServerNavProps {
+  isCollapsed?: boolean;
+}
+
+export const GameServerNav: FC<GameServerNavProps> = ({ isCollapsed = false }) => {
   const navigate = useNavigate();
   const { data: gameservers, isPending } = useQuery(gameServersQueryOptions());
   const { gameServerId } = route.useParams();
@@ -76,35 +80,39 @@ export const GameServerNav: FC = () => {
 
   if (isPending) {
     return (
-      <Nav data-testid="server-nav">
-        <h3>Game Server</h3>
-        <Skeleton variant="text" width="100%" height="35px" />
-        {gameServerLinks.map((link) => renderLink(link))}
+      <Nav data-testid="server-nav" $isCollapsed={isCollapsed}>
+        {!isCollapsed && <h3>Game Server</h3>}
+        {!isCollapsed && <Skeleton variant="text" width="100%" height="35px" />}
+        {gameServerLinks.map((link) => renderLink(link, isCollapsed))}
       </Nav>
     );
   }
 
   return (
-    <Nav data-testid="server-nav">
+    <Nav data-testid="server-nav" $isCollapsed={isCollapsed}>
       {gameServerId && gameServerId !== '' && gameservers && gameservers.data.length > 0 ? (
         <>
-          <h3>Game Server</h3>
-          {gameservers.data.length > 1 && <GlobalGameServerSelect currentSelectedGameServerId={gameServerId} />}
-          {gameServerLinks.map((link) => renderLink(link))}
+          {!isCollapsed && <h3>Game Server</h3>}
+          {!isCollapsed && gameservers.data.length > 1 && (
+            <GlobalGameServerSelect currentSelectedGameServerId={gameServerId} />
+          )}
+          {gameServerLinks.map((link) => renderLink(link, isCollapsed))}
         </>
       ) : (
         <>
-          <h3>Game Server</h3>
-          <NoServersCallToAction
-            initial={{ opacity: 0, y: -10 }}
-            transition={{ delay: 0.5 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <p>Step into the world of Takaro by adding your first server!</p>
-            <Button icon={<AddServerIcon />} fullWidth onClick={() => navigate({ to: '/gameservers/create' })}>
-              Add a server
-            </Button>
-          </NoServersCallToAction>
+          {!isCollapsed && <h3>Game Server</h3>}
+          {!isCollapsed && (
+            <NoServersCallToAction
+              initial={{ opacity: 0, y: -10 }}
+              transition={{ delay: 0.5 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <p>Step into the world of Takaro by adding your first server!</p>
+              <Button icon={<AddServerIcon />} fullWidth onClick={() => navigate({ to: '/gameservers/create' })}>
+                Add a server
+              </Button>
+            </NoServersCallToAction>
+          )}
         </>
       )}
     </Nav>
