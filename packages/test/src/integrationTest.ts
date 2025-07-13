@@ -199,7 +199,12 @@ export class IntegrationTest<SetupData> {
               throw new Error('No response returned from test');
             }
             await matchSnapshot(integrationTestContext.test, response);
-            expect(response.status).to.equal(integrationTestContext.test.expectedStatus);
+            if (response.status !== integrationTestContext.test.expectedStatus) {
+              if (integrationTestContext.test.expectedStatus === 200) {
+                console.error(JSON.stringify(response.data));
+              }
+              throw new Error('Unexpected status code from snapshot match');
+            }
           }
 
           // If we reach here, test passed

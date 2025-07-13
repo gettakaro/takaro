@@ -248,25 +248,30 @@ export class ShopCategoryRepo extends ITakaroRepo<
       throw new errors.BadRequestError('Maximum category limit (100) reached for this domain');
     }
 
-    // Check for case-insensitive uniqueness at the same parent level
-    const existing = await query
-      .whereRaw('LOWER(name) = LOWER(?)', [item.name])
-      .where('parentId', item.parentId || null);
+    // No need to check for duplicates - database constraint will handle it
 
-    if (existing.length) {
-      throw new errors.BadRequestError('A category with this name already exists at this level');
+    try {
+      const category = await query
+        .insert({
+          name: item.name,
+          emoji: item.emoji,
+          parentId: item.parentId || null,
+          domain: this.domainId,
+        })
+        .returning('*');
+
+      return this.findOne(category.id);
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.name === 'UniqueViolationError') {
+          throw new errors.BadRequestError('A category with this name already exists');
+        }
+        if (error.name === 'ForeignKeyViolationError') {
+          throw new errors.BadRequestError('Parent category not found');
+        }
+      }
+      throw error;
     }
-
-    const category = await query
-      .insert({
-        name: item.name,
-        emoji: item.emoji,
-        parentId: item.parentId || null,
-        domain: this.domainId,
-      })
-      .returning('*');
-
-    return this.findOne(category.id);
   }
 
   async update(id: string, data: ShopCategoryUpdateDTO): Promise<ShopCategoryOutputDTO> {
@@ -285,17 +290,7 @@ export class ShopCategoryRepo extends ITakaroRepo<
         );
       }
 
-      // Check for case-insensitive uniqueness at the same parent level
-      const { query: uniqueQuery } = await this.getModel();
-      const parentId = data.parentId !== undefined ? data.parentId : existing.parentId;
-      const duplicate = await uniqueQuery
-        .whereRaw('LOWER(name) = LOWER(?)', [data.name])
-        .where('parentId', parentId || null)
-        .whereNot('id', id);
-
-      if (duplicate.length) {
-        throw new errors.BadRequestError('A category with this name already exists at this level');
-      }
+      // No need to check for duplicates - database constraint will handle it
     }
 
     // Validate emoji if provided
@@ -312,9 +307,16 @@ export class ShopCategoryRepo extends ITakaroRepo<
     }
 
     const { query } = await this.getModel();
-    await query.updateAndFetchById(id, data.toJSON()).returning('*');
 
-    return this.findOne(id);
+    try {
+      await query.updateAndFetchById(id, data.toJSON()).returning('*');
+      return this.findOne(id);
+    } catch (error) {
+      if (error instanceof Error && error.name === 'UniqueViolationError') {
+        throw new errors.BadRequestError('A category with this name already exists');
+      }
+      throw error;
+    }
   }
 
   async delete(id: string): Promise<boolean> {

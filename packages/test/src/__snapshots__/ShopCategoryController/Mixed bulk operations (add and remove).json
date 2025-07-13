@@ -14,7 +14,8 @@
       "id",
       "createdAt",
       "updatedAt",
-      "domain"
+      "domain",
+      "parentId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

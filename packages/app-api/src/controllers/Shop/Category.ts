@@ -1,5 +1,5 @@
 import { IsOptional, IsUUID, ValidateNested, IsString } from 'class-validator';
-import { ITakaroQuery } from '@takaro/db';
+import { ITakaroQuery, SortDirection } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { ShopCategoryService } from '../../service/Shop/ShopCategoryService.js';
 import { AuthenticatedRequest, AuthService } from '../../service/AuthService.js';
@@ -116,6 +116,8 @@ export class ShopCategoryController {
     const result = await service.find({
       page: res.locals.page,
       limit: res.locals.limit,
+      sortBy: 'name',
+      sortDirection: SortDirection.asc,
     });
     return apiResponse(result.results, {
       meta: { total: result.total },

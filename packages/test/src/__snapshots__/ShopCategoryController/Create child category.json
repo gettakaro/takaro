@@ -2,20 +2,20 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "9286d19f-b570-4106-94c0-cded5145a0d9",
+      "id": "4a980290-0262-4ccb-a321-b0088ad978a6",
       "name": "Child Category",
       "emoji": "👶",
-      "parentId": "5e2a839f-dffa-47e9-b379-763463b7d8ad",
-      "createdAt": "2025-07-10T16:24:43.661Z",
-      "updatedAt": "2025-07-10T16:24:43.662Z",
+      "parentId": "c6b1036d-8343-4b6e-8848-a163abd64820",
+      "createdAt": "2025-07-13T07:46:42.568Z",
+      "updatedAt": "2025-07-13T07:46:42.568Z",
       "listingCount": 0,
       "parent": {
-        "id": "5e2a839f-dffa-47e9-b379-763463b7d8ad",
+        "id": "c6b1036d-8343-4b6e-8848-a163abd64820",
         "name": "Weapons",
         "emoji": "⚔️",
         "parentId": null,
-        "createdAt": "2025-07-10T16:24:37.382Z",
-        "updatedAt": "2025-07-10T16:24:37.382Z"
+        "createdAt": "2025-07-13T07:46:40.172Z",
+        "updatedAt": "2025-07-13T07:46:40.172Z"
       },
       "children": []
     }
@@ -28,7 +28,8 @@
     "filteredFields": [
       "id",
       "createdAt",
-      "updatedAt"
+      "updatedAt",
+      "parentId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

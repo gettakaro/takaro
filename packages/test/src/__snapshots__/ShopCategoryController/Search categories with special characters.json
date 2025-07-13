@@ -7,12 +7,12 @@
     },
     "data": [
       {
-        "id": "c27af4b0-d882-46ee-9163-2ba9e4a5055a",
+        "id": "42ee4872-7607-47e8-80a0-376f5caa78cc",
         "name": "Test & Category",
         "emoji": "🧪",
         "parentId": null,
-        "createdAt": "2025-07-10T16:27:50.859Z",
-        "updatedAt": "2025-07-10T16:27:50.859Z",
+        "createdAt": "2025-07-13T07:47:54.065Z",
+        "updatedAt": "2025-07-13T07:47:54.065Z",
         "listingCount": 0,
         "children": []
       }
@@ -26,7 +26,8 @@
     "filteredFields": [
       "id",
       "createdAt",
-      "updatedAt"
+      "updatedAt",
+      "parentId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

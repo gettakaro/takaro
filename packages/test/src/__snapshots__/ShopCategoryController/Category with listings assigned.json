@@ -2,20 +2,20 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "1abc39de-e0b9-4360-ab17-56fa29725b5e",
-      "name": "Updated Melee",
-      "emoji": "🗡️",
-      "parentId": "6f72a139-b749-4052-9e54-43606f937272",
-      "createdAt": "2025-07-13T07:46:45.535Z",
-      "updatedAt": "2025-07-13T07:46:45.715Z",
+      "id": "f8a414ff-6800-4859-a8f1-babe9e1a5685",
+      "name": "Melee Weapons",
+      "emoji": "⚔️",
+      "parentId": "42ce776a-aa8e-45cd-91b2-6245c2b8355e",
+      "createdAt": "2025-07-13T07:47:57.060Z",
+      "updatedAt": "2025-07-13T07:47:57.060Z",
       "listingCount": 2,
       "parent": {
-        "id": "6f72a139-b749-4052-9e54-43606f937272",
+        "id": "42ce776a-aa8e-45cd-91b2-6245c2b8355e",
         "name": "Weapons",
         "emoji": "⚔️",
         "parentId": null,
-        "createdAt": "2025-07-13T07:46:43.168Z",
-        "updatedAt": "2025-07-13T07:46:43.169Z"
+        "createdAt": "2025-07-13T07:47:54.633Z",
+        "updatedAt": "2025-07-13T07:47:54.633Z"
       },
       "children": []
     }
@@ -24,7 +24,7 @@
   "test": {
     "group": "ShopCategoryController",
     "snapshot": true,
-    "name": "Update category",
+    "name": "Category with listings assigned",
     "filteredFields": [
       "id",
       "createdAt",

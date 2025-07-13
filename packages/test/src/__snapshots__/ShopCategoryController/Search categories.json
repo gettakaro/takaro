@@ -7,67 +7,67 @@
     },
     "data": [
       {
-        "id": "025d2183-9343-4111-9a58-eb2c4a9b00f8",
+        "id": "6c9d6339-8567-48ff-83bd-6f8532e003bf",
+        "name": "Melee Weapons",
+        "emoji": "⚔️",
+        "parentId": "490d904c-7e78-44f4-aa26-9e6e94aaad56",
+        "createdAt": "2025-07-13T07:46:51.408Z",
+        "updatedAt": "2025-07-13T07:46:51.408Z",
+        "listingCount": 2,
+        "parent": {
+          "id": "490d904c-7e78-44f4-aa26-9e6e94aaad56",
+          "name": "Weapons",
+          "emoji": "⚔️",
+          "parentId": null,
+          "createdAt": "2025-07-13T07:46:49.225Z",
+          "updatedAt": "2025-07-13T07:46:49.225Z"
+        },
+        "children": []
+      },
+      {
+        "id": "2dcf8e8c-638d-45bb-a2ba-e5054da8b7fa",
+        "name": "Ranged Weapons",
+        "emoji": "🏹",
+        "parentId": "490d904c-7e78-44f4-aa26-9e6e94aaad56",
+        "createdAt": "2025-07-13T07:46:51.423Z",
+        "updatedAt": "2025-07-13T07:46:51.423Z",
+        "listingCount": 1,
+        "parent": {
+          "id": "490d904c-7e78-44f4-aa26-9e6e94aaad56",
+          "name": "Weapons",
+          "emoji": "⚔️",
+          "parentId": null,
+          "createdAt": "2025-07-13T07:46:49.225Z",
+          "updatedAt": "2025-07-13T07:46:49.225Z"
+        },
+        "children": []
+      },
+      {
+        "id": "490d904c-7e78-44f4-aa26-9e6e94aaad56",
         "name": "Weapons",
         "emoji": "⚔️",
         "parentId": null,
-        "createdAt": "2025-07-10T16:25:04.707Z",
-        "updatedAt": "2025-07-10T16:25:04.708Z",
-        "listingCount": 0,
+        "createdAt": "2025-07-13T07:46:49.225Z",
+        "updatedAt": "2025-07-13T07:46:49.225Z",
+        "listingCount": 3,
         "children": [
           {
-            "id": "a2bf0cae-373d-4c82-8ab8-7588d911dcdb",
+            "id": "6c9d6339-8567-48ff-83bd-6f8532e003bf",
             "name": "Melee Weapons",
             "emoji": "⚔️",
-            "parentId": "025d2183-9343-4111-9a58-eb2c4a9b00f8",
-            "createdAt": "2025-07-10T16:25:10.681Z",
-            "updatedAt": "2025-07-10T16:25:10.681Z"
+            "parentId": "490d904c-7e78-44f4-aa26-9e6e94aaad56",
+            "createdAt": "2025-07-13T07:46:51.408Z",
+            "updatedAt": "2025-07-13T07:46:51.408Z"
           },
           {
-            "id": "0820c423-cb19-4f93-9bf5-5aa64c39a0a8",
+            "id": "2dcf8e8c-638d-45bb-a2ba-e5054da8b7fa",
             "name": "Ranged Weapons",
             "emoji": "🏹",
-            "parentId": "025d2183-9343-4111-9a58-eb2c4a9b00f8",
-            "createdAt": "2025-07-10T16:25:10.720Z",
-            "updatedAt": "2025-07-10T16:25:10.720Z"
+            "parentId": "490d904c-7e78-44f4-aa26-9e6e94aaad56",
+            "createdAt": "2025-07-13T07:46:51.423Z",
+            "updatedAt": "2025-07-13T07:46:51.423Z"
           }
         ]
-      },
-      {
-        "id": "0820c423-cb19-4f93-9bf5-5aa64c39a0a8",
-        "name": "Ranged Weapons",
-        "emoji": "🏹",
-        "parentId": "025d2183-9343-4111-9a58-eb2c4a9b00f8",
-        "createdAt": "2025-07-10T16:25:10.720Z",
-        "updatedAt": "2025-07-10T16:25:10.720Z",
-        "listingCount": 0,
-        "parent": {
-          "id": "025d2183-9343-4111-9a58-eb2c4a9b00f8",
-          "name": "Weapons",
-          "emoji": "⚔️",
-          "parentId": null,
-          "createdAt": "2025-07-10T16:25:04.707Z",
-          "updatedAt": "2025-07-10T16:25:04.708Z"
-        },
-        "children": []
-      },
-      {
-        "id": "a2bf0cae-373d-4c82-8ab8-7588d911dcdb",
-        "name": "Melee Weapons",
-        "emoji": "⚔️",
-        "parentId": "025d2183-9343-4111-9a58-eb2c4a9b00f8",
-        "createdAt": "2025-07-10T16:25:10.681Z",
-        "updatedAt": "2025-07-10T16:25:10.681Z",
-        "listingCount": 0,
-        "parent": {
-          "id": "025d2183-9343-4111-9a58-eb2c4a9b00f8",
-          "name": "Weapons",
-          "emoji": "⚔️",
-          "parentId": null,
-          "createdAt": "2025-07-10T16:25:04.707Z",
-          "updatedAt": "2025-07-10T16:25:04.708Z"
-        },
-        "children": []
       }
     ]
   },
@@ -79,7 +79,8 @@
     "filteredFields": [
       "id",
       "createdAt",
-      "updatedAt"
+      "updatedAt",
+      "parentId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

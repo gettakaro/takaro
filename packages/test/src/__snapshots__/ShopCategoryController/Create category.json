@@ -2,12 +2,12 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "3cbf7471-2bd7-4dad-9892-12e7de2198f0",
+      "id": "d6788e20-9f81-4541-97cb-cb8ac8d75c26",
       "name": "New Category",
       "emoji": "🆕",
       "parentId": null,
-      "createdAt": "2025-07-10T16:24:35.434Z",
-      "updatedAt": "2025-07-10T16:24:35.434Z",
+      "createdAt": "2025-07-13T07:46:39.522Z",
+      "updatedAt": "2025-07-13T07:46:39.522Z",
       "listingCount": 0,
       "children": []
     }
@@ -20,7 +20,8 @@
     "filteredFields": [
       "id",
       "createdAt",
-      "updatedAt"
+      "updatedAt",
+      "parentId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

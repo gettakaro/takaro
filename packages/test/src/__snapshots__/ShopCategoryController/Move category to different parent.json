@@ -2,20 +2,20 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "5c8fc2c4-410c-4dd5-8953-28bf9d0a7c51",
+      "id": "c6844827-cb02-424b-804f-554b4760c905",
       "name": "Melee Weapons",
       "emoji": "⚔️",
-      "parentId": "3153e452-5485-438d-96c1-916ff48c78e0",
-      "createdAt": "2025-07-10T16:25:18.948Z",
-      "updatedAt": "2025-07-10T16:25:19.398Z",
-      "listingCount": 0,
+      "parentId": "2727cc75-9ffc-40ac-89a9-d65d76af685f",
+      "createdAt": "2025-07-13T07:46:54.425Z",
+      "updatedAt": "2025-07-13T07:46:54.624Z",
+      "listingCount": 2,
       "parent": {
-        "id": "3153e452-5485-438d-96c1-916ff48c78e0",
+        "id": "2727cc75-9ffc-40ac-89a9-d65d76af685f",
         "name": "Tools",
         "emoji": "🔧",
         "parentId": null,
-        "createdAt": "2025-07-10T16:25:13.304Z",
-        "updatedAt": "2025-07-10T16:25:13.305Z"
+        "createdAt": "2025-07-13T07:46:52.142Z",
+        "updatedAt": "2025-07-13T07:46:52.143Z"
       },
       "children": []
     }
@@ -30,6 +30,7 @@
       "createdAt",
       "updatedAt",
       "domain",
+      "parentId",
       "parent",
       "children",
       "listingCount"

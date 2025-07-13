@@ -1,5 +1,6 @@
 import { IntegrationTest, expect, IShopCategorySetup, shopCategorySetup } from '@takaro/test';
 import { describe } from 'node:test';
+import { ShopCategorySearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 
 const group = 'ShopCategoryController';
 
@@ -10,7 +11,7 @@ const tests = [
     snapshot: true,
     name: 'Get by ID',
     setup: shopCategorySetup,
-    filteredFields: ['id', 'createdAt', 'updatedAt', 'domain', 'parent', 'children', 'listingCount'],
+    filteredFields: ['id', 'createdAt', 'updatedAt', 'domain', 'parentId', 'parent', 'children', 'listingCount'],
     test: async function () {
       return this.client.shopCategory.shopCategoryControllerGetOne(this.setupData.rootCategories.weapons.id);
     },
@@ -21,7 +22,7 @@ const tests = [
     snapshot: true,
     name: 'Get all categories',
     setup: shopCategorySetup,
-    filteredFields: ['id', 'createdAt', 'updatedAt', 'domain', 'parent', 'children', 'listingCount'],
+    filteredFields: ['id', 'createdAt', 'updatedAt', 'domain', 'parentId', 'parent', 'children', 'listingCount'],
     test: async function () {
       return this.client.shopCategory.shopCategoryControllerGetAll();
     },
@@ -32,7 +33,7 @@ const tests = [
     snapshot: true,
     name: 'Create category',
     setup: shopCategorySetup,
-    filteredFields: ['id', 'createdAt', 'updatedAt'],
+    filteredFields: ['id', 'createdAt', 'updatedAt', 'parentId'],
     test: async function () {
       const res = await this.client.shopCategory.shopCategoryControllerCreate({
         name: 'New Category',
@@ -54,7 +55,7 @@ const tests = [
     snapshot: true,
     name: 'Create child category',
     setup: shopCategorySetup,
-    filteredFields: ['id', 'createdAt', 'updatedAt'],
+    filteredFields: ['id', 'createdAt', 'updatedAt', 'parentId'],
     test: async function () {
       const res = await this.client.shopCategory.shopCategoryControllerCreate({
         name: 'Child Category',
@@ -76,7 +77,7 @@ const tests = [
     snapshot: true,
     name: 'Update category',
     setup: shopCategorySetup,
-    filteredFields: ['id', 'createdAt', 'updatedAt'],
+    filteredFields: ['id', 'createdAt', 'updatedAt', 'parentId'],
     test: async function () {
       const res = await this.client.shopCategory.shopCategoryControllerUpdate(this.setupData.childCategories.melee.id, {
         name: 'Updated Melee',
@@ -111,10 +112,12 @@ const tests = [
     snapshot: true,
     name: 'Search categories',
     setup: shopCategorySetup,
-    filteredFields: ['id', 'createdAt', 'updatedAt'],
+    filteredFields: ['id', 'createdAt', 'updatedAt', 'parentId'],
     test: async function () {
       return this.client.shopCategory.shopCategoryControllerSearch({
         search: { name: ['Weapons'] },
+        sortBy: 'name',
+        sortDirection: ShopCategorySearchInputDTOSortDirectionEnum.Asc,
       });
     },
   }),
@@ -125,7 +128,7 @@ const tests = [
     snapshot: true,
     name: 'Move category to different parent',
     setup: shopCategorySetup,
-    filteredFields: ['id', 'createdAt', 'updatedAt', 'domain', 'parent', 'children', 'listingCount'],
+    filteredFields: ['id', 'createdAt', 'updatedAt', 'domain', 'parentId', 'parent', 'children', 'listingCount'],
     test: async function () {
       const res = await this.client.shopCategory.shopCategoryControllerMove(this.setupData.childCategories.melee.id, {
         parentId: this.setupData.rootCategories.tools.id,
@@ -146,7 +149,7 @@ const tests = [
     snapshot: true,
     name: 'Move category to root level',
     setup: shopCategorySetup,
-    filteredFields: ['id', 'createdAt', 'updatedAt'],
+    filteredFields: ['id', 'createdAt', 'updatedAt', 'parentId'],
     test: async function () {
       const res = await this.client.shopCategory.shopCategoryControllerMove(this.setupData.childCategories.helmet.id, {
         parentId: undefined,
@@ -170,9 +173,14 @@ const tests = [
     expectedStatus: 400,
     test: async function () {
       // Try to move a parent to be a child of its own descendant
-      return this.client.shopCategory.shopCategoryControllerMove(this.setupData.rootCategories.weapons.id, {
+      const res = await this.client.shopCategory.shopCategoryControllerMove(this.setupData.rootCategories.weapons.id, {
         parentId: this.setupData.childCategories.melee.id,
       });
+
+      expect(res.status).to.equal(400);
+      expect(res.data.meta.error.message).to.include('Cannot create circular category hierarchy');
+
+      return res;
     },
   }),
 
@@ -182,7 +190,7 @@ const tests = [
     snapshot: true,
     name: 'Bulk assign categories to listings',
     setup: shopCategorySetup,
-    filteredFields: ['id', 'createdAt', 'updatedAt', 'domain'],
+    filteredFields: ['id', 'createdAt', 'updatedAt', 'domain', 'parentId'],
     test: async function () {
       const res = await this.client.shopCategory.shopCategoryControllerBulkAssign({
         listingIds: [this.setupData.uncategorizedListings[0].id],
@@ -207,7 +215,7 @@ const tests = [
     snapshot: true,
     name: 'Bulk remove categories from listings',
     setup: shopCategorySetup,
-    filteredFields: ['id', 'createdAt', 'updatedAt', 'domain'],
+    filteredFields: ['id', 'createdAt', 'updatedAt', 'domain', 'parentId'],
     test: async function () {
       const res = await this.client.shopCategory.shopCategoryControllerBulkAssign({
         listingIds: [this.setupData.categorizedListings[0].id],
@@ -230,7 +238,7 @@ const tests = [
     snapshot: true,
     name: 'Mixed bulk operations (add and remove)',
     setup: shopCategorySetup,
-    filteredFields: ['id', 'createdAt', 'updatedAt', 'domain'],
+    filteredFields: ['id', 'createdAt', 'updatedAt', 'domain', 'parentId'],
     test: async function () {
       const res = await this.client.shopCategory.shopCategoryControllerBulkAssign({
         listingIds: [this.setupData.categorizedListings[3].id], // Multi-category listing
@@ -301,6 +309,27 @@ const tests = [
         name: '',
         emoji: '🚫',
       });
+    },
+  }),
+
+  new IntegrationTest<IShopCategorySetup>({
+    group,
+    snapshot: true,
+    name: 'Create category with duplicate name (global check)',
+    setup: shopCategorySetup,
+    expectedStatus: 400,
+    test: async function () {
+      // Try to create a category with same name as existing 'Melee Weapons'
+      // which is a child category under Weapons
+      const res = await this.client.shopCategory.shopCategoryControllerCreate({
+        name: 'Melee Weapons', // This already exists as a child category
+        emoji: '⚔️',
+      });
+
+      expect(res.status).to.equal(400);
+      expect(res.data.meta.error.message).to.include('Category with this name already exists');
+
+      return res;
     },
   }),
 
@@ -393,7 +422,7 @@ const tests = [
     name: 'Delete parent category with children',
     setup: shopCategorySetup,
     expectedStatus: 404,
-    filteredFields: ['id', 'createdAt', 'updatedAt'],
+    filteredFields: ['id', 'createdAt', 'updatedAt', 'parentId'],
     test: async function () {
       // Delete a parent category that has children
       await this.client.shopCategory.shopCategoryControllerRemove(this.setupData.rootCategories.armor.id);
@@ -413,7 +442,7 @@ const tests = [
     snapshot: true,
     name: 'Search categories with special characters',
     setup: shopCategorySetup,
-    filteredFields: ['id', 'createdAt', 'updatedAt'],
+    filteredFields: ['id', 'createdAt', 'updatedAt', 'parentId'],
     test: async function () {
       // Create a category with special characters for search
       const _createRes = await this.client.shopCategory.shopCategoryControllerCreate({
@@ -438,7 +467,7 @@ const tests = [
     snapshot: true,
     name: 'Category with listings assigned',
     setup: shopCategorySetup,
-    filteredFields: ['id', 'createdAt', 'updatedAt'],
+    filteredFields: ['id', 'createdAt', 'updatedAt', 'parentId'],
     test: async function () {
       // Get a category that has listings assigned
       const categoryRes = await this.client.shopCategory.shopCategoryControllerGetOne(

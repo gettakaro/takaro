@@ -3,7 +3,7 @@
     "meta": {
       "error": {
         "code": "BadRequestError",
-        "message": "Parent category not found"
+        "message": "A category with this name already exists"
       }
     },
     "data": {}
@@ -12,7 +12,7 @@
   "test": {
     "group": "ShopCategoryController",
     "snapshot": true,
-    "name": "Create category with non-existent parent",
+    "name": "Create category with duplicate name (global check)",
     "expectedStatus": 400,
     "filteredFields": [],
     "standardEnvironment": true

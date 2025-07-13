@@ -2,13 +2,13 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "7f96c804-d195-4d65-8eab-64302edcb25f",
+      "id": "d9dcf71b-7af2-44e4-a406-dcc4854da265",
       "name": "Helmets",
       "emoji": "⛑️",
       "parentId": null,
-      "createdAt": "2025-07-10T16:25:27.400Z",
-      "updatedAt": "2025-07-10T16:25:27.771Z",
-      "listingCount": 0,
+      "createdAt": "2025-07-13T07:46:57.659Z",
+      "updatedAt": "2025-07-13T07:46:57.843Z",
+      "listingCount": 2,
       "children": []
     }
   },
@@ -20,7 +20,8 @@
     "filteredFields": [
       "id",
       "createdAt",
-      "updatedAt"
+      "updatedAt",
+      "parentId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

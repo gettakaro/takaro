@@ -30,11 +30,14 @@ export async function up(knex: Knex): Promise<void> {
     // Indexes for performance
     table.index('domain');
     table.index('parentId');
-    table.index(['domain', 'parentId', 'name']); // For unique constraint at same level
-
-    // Add unique constraint for name within same parent level and domain
-    table.unique(['domain', 'parentId', 'name']);
+    table.index(['domain', 'name']);
   });
+
+  // Add case-insensitive unique constraint on domain + name
+  await knex.raw(`
+    CREATE UNIQUE INDEX shopCategory_domain_name_unique 
+    ON "${SHOP_CATEGORY_TABLE_NAME}" ("domain", LOWER("name"))
+  `);
 
   // Create shopListingCategory junction table (many-to-many)
   await knex.schema.createTable(SHOP_LISTING_CATEGORY_TABLE_NAME, (table) => {

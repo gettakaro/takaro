@@ -228,7 +228,7 @@ test.describe('Shop Listing Categories Integration', () => {
     await shopListingPage.verifyCategoryHierarchyInSelector('Armor', 'Helmet');
   });
 
-  test('Selected categories persist on form errors', async ({ takaro }) => {
+  test('Selected categories persist on form errors', async ({ takaro, page }) => {
     const { shopListingPage } = takaro;
 
     await shopListingPage.goto();
