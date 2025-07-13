@@ -1,0 +1,29 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "id": "d9dcf71b-7af2-44e4-a406-dcc4854da265",
+      "name": "Helmets",
+      "emoji": "⛑️",
+      "parentId": null,
+      "createdAt": "2025-07-13T07:46:57.659Z",
+      "updatedAt": "2025-07-13T07:46:57.843Z",
+      "listingCount": 2,
+      "children": []
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "Shop/ShopCategoryController",
+    "snapshot": true,
+    "name": "Move category to root level",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "updatedAt",
+      "parentId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

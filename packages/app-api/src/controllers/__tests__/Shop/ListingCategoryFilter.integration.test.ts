@@ -1,7 +1,7 @@
 import { IntegrationTest, expect, IShopCategorySetup, shopCategorySetup } from '@takaro/test';
 import { describe } from 'node:test';
 
-const group = 'ShopListingCategoryFilter';
+const group = 'Shop/ShopListingCategoryFilter';
 
 const tests = [
   // Test filtering by category IDs

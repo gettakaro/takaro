@@ -2,7 +2,7 @@ import { IntegrationTest, expect, IShopCategorySetup, shopCategorySetup } from '
 import { describe } from 'node:test';
 import { ShopCategorySearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 
-const group = 'ShopCategoryController';
+const group = 'Shop/ShopCategoryController';
 
 const tests = [
   // Basic CRUD Operations

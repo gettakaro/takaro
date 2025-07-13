@@ -1,0 +1,42 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "ValidationError",
+        "details": [
+          {
+            "target": {
+              "listingIds": [
+                "3b3e1ad1-bd44-4351-af55-b01b98e9173b"
+              ],
+              "addCategoryIds": [
+                "invalid-category-id"
+              ]
+            },
+            "value": [
+              "invalid-category-id"
+            ],
+            "property": "addCategoryIds",
+            "children": [],
+            "constraints": {
+              "isUuid": "each value in addCategoryIds must be a UUID"
+            }
+          }
+        ],
+        "message": "Validation error"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "Shop/ShopCategoryController",
+    "snapshot": true,
+    "name": "Bulk assign with invalid category IDs",
+    "expectedStatus": 400,
+    "filteredFields": [
+      "listingIds"
+    ],
+    "standardEnvironment": true
+  }
+}
