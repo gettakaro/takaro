@@ -4,6 +4,7 @@ import { Chip, RequiredPermissions, Tooltip, useTheme, IconButton } from '@takar
 import { UserDropdown } from './UserDropdown';
 import { Nav, IconNav, Container, IconNavContainer } from './style';
 import { PERMISSIONS } from '@takaro/apiclient';
+import { useSession } from '../../hooks/useSession';
 import {
   AiOutlineAppstore as DashboardIcon,
   AiOutlineSetting as SettingsIcon,
@@ -24,7 +25,6 @@ import {
 
 import { FaDiscord as DiscordIcon } from 'react-icons/fa';
 import { GameServerNav } from './GameServerNav';
-import { TAKARO_DOMAIN_COOKIE_REGEX } from '../../util/domainCookieRegex';
 import { getConfigVar, getTakaroVersionComponents } from '../../util/getConfigVar';
 import { renderLink } from './renderLink';
 
@@ -129,6 +129,10 @@ export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
   const theme = useTheme();
   const { version } = getTakaroVersionComponents(getConfigVar('takaroVersion'));
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { session } = useSession();
+
+  // Find the current domain from the session
+  const currentDomain = session.domains.find((domain) => domain.id === session.domain);
 
   // Load collapsed state from localStorage on mount
   useEffect(() => {
@@ -180,12 +184,7 @@ export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
             style={{ display: 'flex', justifyContent: 'center', marginTop: theme.spacing['1'], alignItems: 'center' }}
           >
             <span style={{ marginRight: theme.spacing['0_5'] }}>Domain: </span>
-            <Chip
-              showIcon="hover"
-              color="secondary"
-              variant="outline"
-              label={`${document.cookie.replace(TAKARO_DOMAIN_COOKIE_REGEX, '$1')}`}
-            />
+            <Chip showIcon="hover" color="secondary" variant="outline" label={currentDomain?.name || 'Unknown'} />
           </div>
           <div
             style={{
