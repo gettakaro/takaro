@@ -23,7 +23,7 @@ async function main() {
     sortDirection: 'asc',
     filters: {
       gameServerId: [gameServerId],
-      draft: [false],
+      draft: false,
     },
   });
 
