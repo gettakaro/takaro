@@ -57,7 +57,7 @@ export function Module() {
           ]
         },
         {
-          "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    const { pog, gameServerId, module: mod } = data;\n    const varKey = 'lottery_tickets_bought';\n    const tickets = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            key: [varKey],\n            moduleId: [mod.id],\n            playerId: [pog.playerId],\n        },\n    })).data.data;\n    let ticketsBought = 0;\n    if (tickets.length === 1) {\n        ticketsBought = parseInt(JSON.parse(tickets[0].value).amount, 10);\n    }\n    await pog.pm(`You have bought ${ticketsBought} tickets.`);\n}\nawait main();\n//# sourceMappingURL=viewTickets.js.map",
+          "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    const { pog, gameServerId, module: mod } = data;\n    const varKey = 'lottery_tickets_bought';\n    const tickets = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            key: [varKey],\n            moduleId: [mod.moduleId],\n            playerId: [pog.playerId],\n        },\n    })).data.data;\n    let ticketsBought = 0;\n    if (tickets.length === 1) {\n        ticketsBought = parseInt(JSON.parse(tickets[0].value).amount, 10);\n    }\n    await pog.pm(`You have bought ${ticketsBought} tickets.`);\n}\nawait main();\n//# sourceMappingURL=viewTickets.js.map",
           "name": "viewTickets",
           "trigger": "viewTickets",
           "helpText": "View your lottery tickets.",
