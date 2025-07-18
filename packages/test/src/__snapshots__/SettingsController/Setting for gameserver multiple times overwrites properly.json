@@ -5,37 +5,51 @@
       {
         "key": "commandPrefix",
         "value": "!",
-        "type": "override"
+        "type": "override",
+        "description": "The prefix character(s) that players must use before commands in chat",
+        "canHaveGameServerOverride": true
       },
       {
         "key": "serverChatName",
         "value": "Takaro",
-        "type": "default"
+        "type": "default",
+        "description": "The name displayed when Takaro sends messages in game chat",
+        "canHaveGameServerOverride": true
       },
       {
         "key": "economyEnabled",
         "value": "false",
-        "type": "default"
+        "type": "default",
+        "description": "Enable or disable the economy system for earning and spending currency",
+        "canHaveGameServerOverride": true
       },
       {
         "key": "currencyName",
         "value": "Takaro coins",
-        "type": "default"
+        "type": "default",
+        "description": "The name of the currency used in the economy system",
+        "canHaveGameServerOverride": true
       },
       {
         "key": "developerMode",
         "value": "false",
-        "type": "default"
+        "type": "default",
+        "description": "Enable developer mode for custom modules and advanced features",
+        "canHaveGameServerOverride": false
       },
       {
         "key": "messagePrefix",
         "value": "",
-        "type": "default"
+        "type": "default",
+        "description": "A prefix added to all messages sent by Takaro in game chat",
+        "canHaveGameServerOverride": true
       },
       {
         "key": "domainName",
         "value": "",
-        "type": "default"
+        "type": "default",
+        "description": "The domain name for this Takaro instance",
+        "canHaveGameServerOverride": false
       }
     ]
   },
