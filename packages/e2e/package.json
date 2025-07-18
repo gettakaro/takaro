@@ -1,6 +1,6 @@
 {
   "name": "@takaro/e2e",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "e2e",
   "main": "",
   "types": "",
@@ -13,5 +13,8 @@
   },
   "keywords": [],
   "author": "Takaro Team",
-  "license": "AGPL-3.0-or-later"
+  "license": "AGPL-3.0-or-later",
+  "dependencies": {
+    "@playwright/test": "^1.54.0"
+  }
 }

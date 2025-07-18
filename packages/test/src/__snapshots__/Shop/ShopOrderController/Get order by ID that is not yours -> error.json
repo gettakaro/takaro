@@ -1,0 +1,23 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "NotFoundError",
+        "message": "Shop order not found"
+      }
+    },
+    "data": {}
+  },
+  "status": 404,
+  "test": {
+    "group": "Shop/ShopOrderController",
+    "snapshot": true,
+    "name": "Get order by ID that is not yours -> error",
+    "filteredFields": [
+      "listingId",
+      "playerId"
+    ],
+    "expectedStatus": 404,
+    "standardEnvironment": true
+  }
+}

@@ -31,7 +31,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules/$m
   pendingComponent: DrawerSkeleton,
 });
 
-export function Component() {
+function Component() {
   const { gameServerId, moduleId, moduleVersionTag } = Route.useParams();
   const loaderData = Route.useLoaderData();
 

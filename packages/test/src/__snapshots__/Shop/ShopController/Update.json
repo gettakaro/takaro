@@ -1,0 +1,51 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "createdAt": "2024-07-18T15:25:49.535Z",
+      "updatedAt": "2024-07-18T15:25:49.642Z",
+      "id": "496c4c26-a0fe-4af3-876c-ab493b87e604",
+      "gameServerId": "67d06a8b-8680-47f4-b643-3bea4b0c980f",
+      "price": 200,
+      "name": "Updated item",
+      "deletedAt": null,
+      "draft": false,
+      "items": [
+        {
+          "createdAt": "2024-07-18T15:25:49.647Z",
+          "updatedAt": "2024-07-18T15:25:49.647Z",
+          "id": "2487b012-d975-4093-81f7-288e3846f096",
+          "listingId": "496c4c26-a0fe-4af3-876c-ab493b87e604",
+          "itemId": "75a02d2b-7959-4aff-b10c-9dc81b81e668",
+          "amount": 5,
+          "quality": null,
+          "item": {
+            "id": "75a02d2b-7959-4aff-b10c-9dc81b81e668",
+            "createdAt": "2024-07-18T15:25:48.096Z",
+            "updatedAt": "2024-07-18T15:25:48.096Z",
+            "gameserverId": "becf27be-f2db-4a53-a2d4-56608001e5bb",
+            "name": "Wood",
+            "code": "wood",
+            "description": "Wood is good",
+            "icon": null
+          }
+        }
+      ],
+      "categories": []
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "Shop/ShopController",
+    "snapshot": true,
+    "name": "Update",
+    "filteredFields": [
+      "itemId",
+      "gameServerId",
+      "gameserverId",
+      "listingId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

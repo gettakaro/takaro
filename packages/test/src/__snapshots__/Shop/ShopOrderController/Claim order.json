@@ -1,0 +1,26 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "createdAt": "2024-06-29T19:06:09.877Z",
+      "updatedAt": "2024-06-29T19:06:09.952Z",
+      "id": "fca59a97-23b7-4fa0-83da-2a81bf55fec6",
+      "listingId": "d44e09a8-0211-4aca-8dc0-7c994a836c06",
+      "playerId": "ffbc5652-6d11-45a5-8b35-b4c851e3fa88",
+      "amount": 1,
+      "status": "COMPLETED"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "Shop/ShopOrderController",
+    "snapshot": true,
+    "name": "Claim order",
+    "filteredFields": [
+      "listingId",
+      "playerId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

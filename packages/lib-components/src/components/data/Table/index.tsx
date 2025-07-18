@@ -88,6 +88,9 @@ export interface TableProps<DataType extends object> {
     columnSearchState: ColumnFilter[];
     setColumnSearchState: OnChangeFn<ColumnFilter[]>;
   };
+
+  /// Custom function to get row ID from data
+  getRowId?: (row: DataType) => string;
 }
 
 export function Table<DataType extends object>({
@@ -107,6 +110,7 @@ export function Table<DataType extends object>({
   canExpand = () => false,
   renderRowSelectionActions,
   isLoading = false,
+  getRowId,
 }: TableProps<DataType>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(() => {
     return columns.reduce(
@@ -206,6 +210,7 @@ export function Table<DataType extends object>({
     enableHiding: !!columnVisibility,
     enableRowSelection: !!rowSelection,
     getRowCanExpand: canExpand,
+    getRowId,
     autoResetPageIndex: false,
 
     columnResizeMode: 'onChange',

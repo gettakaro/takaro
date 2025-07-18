@@ -72,7 +72,7 @@ test.describe('Domain Memory Feature', () => {
     await page.waitForURL((url) => url.pathname === '/dashboard', { waitUntil: 'domcontentloaded' });
 
     // Verify we're on the second domain
-    await expect(page.locator('text=Domain:').locator('..').getByText(secondDomain.createdDomain.id)).toBeVisible();
+    await expect(page.locator('text=Domain:').locator('..').getByText(secondDomain.createdDomain.name)).toBeVisible();
 
     // Logout via user dropdown
     await page.getByRole('button', { name: new RegExp(takaro.rootUser.name || takaro.rootUser.email, 'i') }).click();
@@ -84,7 +84,7 @@ test.describe('Domain Memory Feature', () => {
     await page.waitForURL((url) => url.pathname === '/dashboard', { waitUntil: 'domcontentloaded' });
 
     // Should auto-select the remembered second domain (not the alphabetically first one)
-    await expect(page.locator('text=Domain:').locator('..').getByText(secondDomain.createdDomain.id)).toBeVisible();
+    await expect(page.locator('text=Domain:').locator('..').getByText(secondDomain.createdDomain.name)).toBeVisible();
   });
 
   test('remembers domain when switching via navbar dropdown', async ({ page, takaro }) => {
@@ -110,7 +110,7 @@ test.describe('Domain Memory Feature', () => {
     await page.waitForURL((url) => url.pathname === '/dashboard', { waitUntil: 'domcontentloaded' });
 
     // Verify we switched to second domain
-    await expect(page.locator('text=Domain:').locator('..').getByText(secondDomain.createdDomain.id)).toBeVisible();
+    await expect(page.locator('text=Domain:').locator('..').getByText(secondDomain.createdDomain.name)).toBeVisible();
 
     // Logout
     await page.getByRole('button', { name: new RegExp(takaro.rootUser.name || takaro.rootUser.email, 'i') }).click();
@@ -122,7 +122,7 @@ test.describe('Domain Memory Feature', () => {
     await page.waitForURL((url) => url.pathname === '/dashboard', { waitUntil: 'domcontentloaded' });
 
     // Should auto-select the remembered second domain
-    await expect(page.locator('text=Domain:').locator('..').getByText(secondDomain.createdDomain.id)).toBeVisible();
+    await expect(page.locator('text=Domain:').locator('..').getByText(secondDomain.createdDomain.name)).toBeVisible();
   });
 
   test('falls back to auto-selecting first domain when no last used domain cookie exists', async ({ page, takaro }) => {
@@ -138,9 +138,9 @@ test.describe('Domain Memory Feature', () => {
 
     // Verify one of the domains is selected (backend auto-selects first available)
     const domainText = await page.locator('text=Domain:').locator('..').textContent();
-    const selectedDomainId = domainText?.split('Domain:')[1]?.trim();
-    expect(selectedDomainId).toBeTruthy();
-    expect([takaro.domain.createdDomain.id, secondDomain.createdDomain.id]).toContain(selectedDomainId);
+    const selectedDomainName = domainText?.split('Domain:')[1]?.trim();
+    expect(selectedDomainName).toBeTruthy();
+    expect([takaro.domain.createdDomain.name, secondDomain.createdDomain.name]).toContain(selectedDomainName);
   });
 
   test('handles invalid last used domain gracefully by auto-selecting first domain', async ({ page, takaro }) => {
@@ -163,8 +163,8 @@ test.describe('Domain Memory Feature', () => {
 
     // Verify a valid domain is selected (backend ignores invalid cookie)
     const domainText = await page.locator('text=Domain:').locator('..').textContent();
-    const selectedDomainId = domainText?.split('Domain:')[1]?.trim();
-    expect(selectedDomainId).toBeTruthy();
-    expect([takaro.domain.createdDomain.id, secondDomain.createdDomain.id]).toContain(selectedDomainId);
+    const selectedDomainName = domainText?.split('Domain:')[1]?.trim();
+    expect(selectedDomainName).toBeTruthy();
+    expect([takaro.domain.createdDomain.name, secondDomain.createdDomain.name]).toContain(selectedDomainName);
   });
 });
