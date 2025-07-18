@@ -1,4 +1,5 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { errors } from '@takaro/util';
 import {
   QueryBuilder as ObjectionQueryBuilder,
   Model as ObjectionModel,
@@ -81,6 +82,31 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
   private query: ITakaroQuery<OutputDTO>;
   constructor(rawQuery: ITakaroQuery<OutputDTO> = new ITakaroQuery()) {
     this.query = JSON.parse(JSON.stringify(rawQuery));
+    this.validateArrayFilters();
+  }
+
+  private validateArrayFilters() {
+    // Validate filters
+    if (this.query.filters) {
+      for (const [key, value] of Object.entries(this.query.filters)) {
+        if (value !== null && value !== undefined && !Array.isArray(value) && typeof value !== 'boolean') {
+          throw new errors.BadRequestError(
+            `Filter values must be arrays or boolean. Found invalid value for '${key}': '${value}'. Example: { ${key}: ["${value}"] }`,
+          );
+        }
+      }
+    }
+
+    // Validate search
+    if (this.query.search) {
+      for (const [key, value] of Object.entries(this.query.search)) {
+        if (value !== null && value !== undefined && !Array.isArray(value) && typeof value !== 'boolean') {
+          throw new errors.BadRequestError(
+            `Search values must be arrays or boolean. Found invalid value for '${key}': '${value}'. Example: { ${key}: ["${value}"] }`,
+          );
+        }
+      }
+    }
   }
 
   /**
@@ -95,7 +121,10 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
       if (Object.prototype.hasOwnProperty.call(this.query.filters, key)) {
         if (!columns.includes(key)) {
           if (this.query.filters) {
-            this.query.filters[key] = [];
+            // Preserve boolean values, only clear arrays
+            if (typeof this.query.filters[key] !== 'boolean') {
+              this.query.filters[key] = [];
+            }
           }
         }
       }
@@ -105,7 +134,10 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
       if (Object.prototype.hasOwnProperty.call(this.query.search, key)) {
         if (!columns.includes(key)) {
           if (this.query.search) {
-            this.query.search[key] = [];
+            // Preserve boolean values, only clear arrays
+            if (typeof this.query.search[key] !== 'boolean') {
+              this.query.search[key] = [];
+            }
           }
         }
       }
@@ -159,7 +191,9 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
       if (Object.prototype.hasOwnProperty.call(this.query.filters, filter)) {
         const searchVal = this.query.filters[filter];
 
-        if (searchVal && Array.isArray(searchVal)) {
+        if (typeof searchVal === 'boolean') {
+          query.where(`${tableName}.${filter}`, searchVal);
+        } else if (searchVal && Array.isArray(searchVal)) {
           if (searchVal.includes('null')) {
             query.whereNull(`${tableName}.${filter}`);
             continue;
