@@ -461,7 +461,9 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         expect(error.response?.status).to.be.eq(400);
-        expect(error.response?.data.meta.error.message).to.contain('All filter values must be arrays');
+        expect(error.response?.data.meta.error.message).to.contain(
+          'Filter values must be arrays or boolean. Found invalid value for',
+        );
       }
     },
   }),
