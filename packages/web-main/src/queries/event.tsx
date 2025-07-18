@@ -37,7 +37,8 @@ export const eventsFailedFunctionsQueryOptions = (queryParams: EventSearchInputD
 export const eventsInfiniteQueryOptions = (queryParams: EventSearchInputDTO) =>
   infiniteQueryOptions<EventOutputArrayDTOAPI, AxiosError<EventOutputArrayDTOAPI>>({
     queryKey: [eventKeys.list(), queryParamsToArray(queryParams)],
-    queryFn: async () => (await getApiClient().event.eventControllerSearch(queryParams)).data,
+    queryFn: async ({ pageParam }) =>
+      (await getApiClient().event.eventControllerSearch({ ...queryParams, page: pageParam as number })).data,
     initialPageParam: 0,
     getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
     placeholderData: keepPreviousData,
