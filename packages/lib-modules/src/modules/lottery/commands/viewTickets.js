@@ -10,7 +10,7 @@ async function main() {
       filters: {
         gameServerId: [gameServerId],
         key: [varKey],
-        moduleId: [mod.id],
+        moduleId: [mod.moduleId],
         playerId: [pog.playerId],
       },
     })
