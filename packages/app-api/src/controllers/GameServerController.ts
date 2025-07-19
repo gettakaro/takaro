@@ -500,7 +500,8 @@ export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
   @OpenAPI({
     description:
-      'Fetch a list of players on a gameserver. Requires gameserver to be online and reachable.\n\n**Deprecation Notice:** This endpoint is deprecated. Please use the Player on GameServer (PoG) search endpoint instead: `POST /gameserver/player/search`. The PoG search endpoint provides more flexible filtering, sorting, and pagination options.',
+      'Fetch a list of players on a gameserver. Requires gameserver to be online and reachable. Please use the Player on GameServer (PoG) search endpoint instead: `POST /gameserver/player/search` for more flexible filtering, sorting, and pagination options.',
+    deprecated: true,
   })
   @ResponseSchema(PlayerOnGameserverOutputDTOAPI)
   async getPlayers(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
