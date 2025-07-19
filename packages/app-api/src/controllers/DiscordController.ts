@@ -1,6 +1,12 @@
 import { UseBefore, JsonController, Body, Req, Res, Post, Params, Put, Get } from 'routing-controllers';
 import { AuthService, AuthenticatedRequest } from '../service/AuthService.js';
-import { DiscordService, GuildOutputDTO, SendMessageInputDTO } from '../service/DiscordService.js';
+import {
+  DiscordService,
+  GuildOutputDTO,
+  SendMessageInputDTO,
+  DiscordRoleOutputDTO,
+  DiscordChannelOutputDTO,
+} from '../service/DiscordService.js';
 import { Response } from 'express';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { ITakaroQuery } from '@takaro/db';
@@ -81,6 +87,18 @@ class DiscordInviteOutputDTO extends APIOutput<InviteOutputDTO> {
   declare data: InviteOutputDTO;
 }
 
+class DiscordRoleOutputArrayDTOAPI extends APIOutput<DiscordRoleOutputDTO[]> {
+  @Type(() => DiscordRoleOutputDTO)
+  @ValidateNested({ each: true })
+  declare data: DiscordRoleOutputDTO[];
+}
+
+class DiscordChannelOutputArrayDTOAPI extends APIOutput<DiscordChannelOutputDTO[]> {
+  @Type(() => DiscordChannelOutputDTO)
+  @ValidateNested({ each: true })
+  declare data: DiscordChannelOutputDTO[];
+}
+
 @UseBefore(AuthService.getAuthMiddleware([]))
 @JsonController()
 export class DiscordController {
@@ -124,6 +142,22 @@ export class DiscordController {
     const service = new DiscordService(req.domainId);
     const updated = await service.update(params.id, body);
     return apiResponse(updated);
+  }
+
+  @Get('/discord/guilds/:id/roles')
+  @ResponseSchema(DiscordRoleOutputArrayDTOAPI)
+  async getRoles(@Req() req: AuthenticatedRequest, @Res() _res: Response, @Params() params: DiscordParamId) {
+    const service = new DiscordService(req.domainId);
+    const roles = await service.getRoles(params.id);
+    return apiResponse(roles);
+  }
+
+  @Get('/discord/guilds/:id/channels')
+  @ResponseSchema(DiscordChannelOutputArrayDTOAPI)
+  async getChannels(@Req() req: AuthenticatedRequest, @Res() _res: Response, @Params() params: DiscordParamId) {
+    const service = new DiscordService(req.domainId);
+    const channels = await service.getChannels(params.id);
+    return apiResponse(channels);
   }
 
   @Get('/discord/invite')
