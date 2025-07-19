@@ -22,7 +22,7 @@ import {
   ValidatorConstraintInterface,
   Validate,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Exclude, Type } from 'class-transformer';
 import { HookService } from './HookService.js';
 import { GameServerService } from './GameServerService.js';
 import { DiscordErrorHandler } from '../lib/DiscordErrorHandler.js';
@@ -211,6 +211,7 @@ export class SendMessageInputDTO extends TakaroDTO<SendMessageInputDTO> {
   embed?: DiscordEmbedInputDTO;
 
   @Validate(MessageOrEmbedConstraint)
+  @Exclude()
   private _validation?: any;
 }
 
