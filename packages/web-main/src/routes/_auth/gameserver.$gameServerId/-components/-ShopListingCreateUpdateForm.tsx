@@ -49,29 +49,28 @@ interface ShopListingCreateUpdateFormProps {
   gameServerId: string;
 }
 
-const validationSchema = z.object({
-  name: z.string().optional().nullable(),
-  price: z.number().min(0, 'Price is required.'),
-  draft: z.boolean().optional(),
-  categoryIds: z.array(z.string()).optional(),
-  stockEnabled: z.boolean().optional(),
-  stock: z.number().min(0).optional().nullable(),
-  items: z
-    .array(
-      z.object({
-        amount: z.number().min(1, 'Amount must atleast be 1.'),
-        quality: z.string().optional(),
-        itemId: z.string().min(1, 'Item cannot be empty'),
-      }),
-    )
-    .min(1, 'At least one item is required'),
-}).refine(
-  (data) => !data.stockEnabled || (data.stock !== null && data.stock !== undefined),
-  {
-    message: "Stock amount is required when stock tracking is enabled",
-    path: ["stock"],
-  }
-);
+const validationSchema = z
+  .object({
+    name: z.string().optional().nullable(),
+    price: z.number().min(0, 'Price is required.'),
+    draft: z.boolean().optional(),
+    categoryIds: z.array(z.string()).optional(),
+    stockEnabled: z.boolean().optional(),
+    stock: z.number().min(0).optional().nullable(),
+    items: z
+      .array(
+        z.object({
+          amount: z.number().min(1, 'Amount must atleast be 1.'),
+          quality: z.string().optional(),
+          itemId: z.string().min(1, 'Item cannot be empty'),
+        }),
+      )
+      .min(1, 'At least one item is required'),
+  })
+  .refine((data) => !data.stockEnabled || (data.stock !== null && data.stock !== undefined), {
+    message: 'Stock amount is required when stock tracking is enabled',
+    path: ['stock'],
+  });
 
 export type FormValues = z.infer<typeof validationSchema>;
 
