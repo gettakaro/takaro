@@ -17,6 +17,8 @@ import {
   ShopImportOptions,
   ShopListingItemMetaOutputDTO,
   ShopListingItemMetaInputDTO,
+  StockUpdateDTO,
+  StockAddDTO,
 } from '../../service/Shop/dto.js';
 import multer from 'multer';
 
@@ -198,5 +200,31 @@ export class ShopListingController {
 
     await service.import(importData, options);
     return apiResponse();
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.SHOP_LISTING_MANAGE]))
+  @ResponseSchema(ShopListingOutputDTOAPI)
+  @OpenAPI({
+    summary: 'Set stock for a shop listing',
+    description: 'Sets the absolute stock quantity for a shop listing. This will enable stock tracking for the listing.',
+  })
+  @Put('/:id/stock')
+  async setStock(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: StockUpdateDTO) {
+    const service = new ShopListingService(req.domainId);
+    const updated = await service.setStock(params.id, data.stock);
+    return apiResponse(updated);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.SHOP_LISTING_MANAGE]))
+  @ResponseSchema(ShopListingOutputDTOAPI)
+  @OpenAPI({
+    summary: 'Add stock to a shop listing',
+    description: 'Adds the specified amount to the current stock. This will enable stock tracking for the listing if not already enabled.',
+  })
+  @Post('/:id/stock/add')
+  async addStock(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: StockAddDTO) {
+    const service = new ShopListingService(req.domainId);
+    const updated = await service.addStock(params.id, data.amount);
+    return apiResponse(updated);
   }
 }

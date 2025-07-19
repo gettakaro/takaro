@@ -59,6 +59,19 @@ export class ShopListingOutputDTO extends TakaroModelDTO<ShopListingOutputDTO> {
   @Type(() => ShopCategoryOutputDTO)
   @IsOptional()
   categories?: ShopCategoryOutputDTO[];
+  @IsNumber()
+  @IsOptional()
+  stock?: number;
+  @IsBoolean()
+  stockEnabled: boolean;
+  
+  get isInStock(): boolean {
+    return !this.stockEnabled || (this.stock !== undefined && this.stock > 0);
+  }
+  
+  get isUnlimitedStock(): boolean {
+    return !this.stockEnabled;
+  }
 }
 
 export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
@@ -77,6 +90,12 @@ export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
   @IsUUID('4', { each: true })
   @IsOptional()
   categoryIds?: string[];
+  @IsNumber()
+  @IsOptional()
+  stock?: number;
+  @IsBoolean()
+  @IsOptional()
+  stockEnabled?: boolean;
 }
 
 export class ShopListingUpdateDTO extends TakaroDTO<ShopListingUpdateDTO> {
@@ -99,6 +118,12 @@ export class ShopListingUpdateDTO extends TakaroDTO<ShopListingUpdateDTO> {
   @IsUUID('4', { each: true })
   @IsOptional()
   categoryIds?: string[];
+  @IsNumber()
+  @IsOptional()
+  stock?: number;
+  @IsBoolean()
+  @IsOptional()
+  stockEnabled?: boolean;
 }
 
 export enum ShopOrderStatus {
@@ -223,4 +248,16 @@ export class ShopCategoryBulkAssignDTO extends TakaroDTO<ShopCategoryBulkAssignD
   @IsUUID('4', { each: true })
   @IsOptional()
   removeCategoryIds?: string[];
+}
+
+export class StockUpdateDTO extends TakaroDTO<StockUpdateDTO> {
+  @IsNumber()
+  @Min(0)
+  stock: number;
+}
+
+export class StockAddDTO extends TakaroDTO<StockAddDTO> {
+  @IsNumber()
+  @Min(1)
+  amount: number;
 }

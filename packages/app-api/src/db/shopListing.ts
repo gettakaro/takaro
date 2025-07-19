@@ -53,6 +53,8 @@ export class ShopListingModel extends TakaroModel {
 
   deletedAt?: Date;
   draft: boolean;
+  stock?: number;
+  stockEnabled: boolean;
 
   items: ItemsModel[];
 
@@ -346,5 +348,69 @@ export class ShopListingRepo extends ITakaroRepo<
   async deleteMany(gameServerId: string) {
     const { query } = await this.getModel();
     await query.where('gameServerId', gameServerId).update({ deletedAt: new Date() });
+  }
+
+  async decrementStock(listingId: string, amount: number, trx?: any): Promise<void> {
+    const knex = trx || await this.getKnex();
+    
+    const result = await knex('shopListing')
+      .where('id', listingId)
+      .where('stockEnabled', true)
+      .where('stock', '>=', amount)
+      .decrement('stock', amount);
+    
+    if (!result) {
+      throw new errors.BadRequestError(`Insufficient stock available`);
+    }
+  }
+
+  async incrementStock(listingId: string, amount: number, trx?: any): Promise<void> {
+    const knex = trx || await this.getKnex();
+    
+    await knex('shopListing')
+      .where('id', listingId)
+      .where('stockEnabled', true)
+      .increment('stock', amount);
+  }
+
+  async setStock(listingId: string, stock: number): Promise<ShopListingOutputDTO> {
+    const { query } = await this.getModel();
+    await query.updateAndFetchById(listingId, { stock, stockEnabled: true });
+    return this.findOne(listingId);
+  }
+
+  async addStock(listingId: string, amount: number): Promise<ShopListingOutputDTO> {
+    const knex = await this.getKnex();
+    
+    await knex('shopListing')
+      .where('id', listingId)
+      .increment('stock', amount)
+      .update({ stockEnabled: true });
+    
+    return this.findOne(listingId);
+  }
+
+  async findOneForUpdate(id: string, trx: any): Promise<ShopListingOutputDTO> {
+    const result = await trx('shopListing')
+      .where('id', id)
+      .whereNull('deletedAt')
+      .forUpdate()
+      .first();
+    
+    if (!result) throw new errors.NotFoundError();
+    
+    // Fetch related data
+    const items = await trx(SHOP_LISTING_ITEMS_TABLE_NAME)
+      .where('listingId', id)
+      .join('items', 'items.id', '=', `${SHOP_LISTING_ITEMS_TABLE_NAME}.itemId`);
+    
+    const categories = await trx(SHOP_LISTING_CATEGORY_TABLE_NAME)
+      .where('shopListingId', id)
+      .join(SHOP_CATEGORY_TABLE_NAME, `${SHOP_CATEGORY_TABLE_NAME}.id`, '=', `${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`);
+    
+    result.items = items;
+    result.categories = categories;
+    
+    return new ShopListingOutputDTO(result);
   }
 }
