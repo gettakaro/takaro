@@ -379,16 +379,6 @@ export class ShopListingRepo extends ITakaroRepo<
     return this.findOne(listingId);
   }
 
-  async addStock(listingId: string, amount: number): Promise<ShopListingOutputDTO> {
-    const knex = await this.getKnex();
-    
-    await knex('shopListing')
-      .where('id', listingId)
-      .increment('stock', amount)
-      .update({ stockEnabled: true });
-    
-    return this.findOne(listingId);
-  }
 
   async findOneForUpdate(id: string, trx: any): Promise<ShopListingOutputDTO> {
     const result = await trx('shopListing')

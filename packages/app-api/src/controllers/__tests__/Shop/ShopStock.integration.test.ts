@@ -1,5 +1,5 @@
 import { IntegrationTest, expect, IShopSetup, shopSetup } from '@takaro/test';
-import { ShopListingOutputDTOAPI, StockUpdateDTO, StockAddDTO, isAxiosError } from '@takaro/apiclient';
+import { ShopListingOutputDTOAPI, StockUpdateDTO, isAxiosError } from '@takaro/apiclient';
 
 const group = 'ShopStockController';
 
@@ -28,32 +28,6 @@ const tests = [
   new IntegrationTest<IShopSetup>({
     group,
     snapshot: false,
-    name: 'Can add stock to a listing',
-    setup: shopSetup,
-    test: async function () {
-      // First set initial stock
-      await this.client.shopListing.shopListingControllerSetStock(
-        this.setupData.listing100.id,
-        new StockUpdateDTO({ stock: 5 })
-      );
-
-      // Then add more stock
-      const stockAdd = new StockAddDTO({ amount: 3 });
-      const response = await this.client.shopListing.shopListingControllerAddStock(
-        this.setupData.listing100.id,
-        stockAdd
-      );
-
-      expect(response.data.data.stock).to.equal(8);
-      expect(response.data.data.stockEnabled).to.be.true;
-
-      return response;
-    },
-  }),
-
-  new IntegrationTest<IShopSetup>({
-    group,
-    snapshot: false,
     name: 'Cannot set negative stock',
     setup: shopSetup,
     test: async function () {
@@ -61,26 +35,6 @@ const tests = [
         await this.client.shopListing.shopListingControllerSetStock(
           this.setupData.listing100.id,
           new StockUpdateDTO({ stock: -5 })
-        );
-        throw new Error('Should have thrown an error');
-      } catch (error) {
-        if (!isAxiosError(error)) throw error;
-        expect(error.response?.status).to.equal(400);
-        expect(error.response?.data.meta.error.code).to.equal('ValidationError');
-      }
-    },
-  }),
-
-  new IntegrationTest<IShopSetup>({
-    group,
-    snapshot: false,
-    name: 'Cannot add zero or negative amount',
-    setup: shopSetup,
-    test: async function () {
-      try {
-        await this.client.shopListing.shopListingControllerAddStock(
-          this.setupData.listing100.id,
-          new StockAddDTO({ amount: 0 })
         );
         throw new Error('Should have thrown an error');
       } catch (error) {

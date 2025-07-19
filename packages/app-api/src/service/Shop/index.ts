@@ -16,8 +16,6 @@ import {
   ShopOrderCreateInternalDTO,
   ShopImportOptions,
   ShopListingItemMetaInputDTO,
-  StockUpdateDTO,
-  StockAddDTO,
 } from './dto.js';
 import { UserService } from '../User/index.js';
 import { checkPermissions } from '../AuthService.js';
@@ -237,14 +235,14 @@ export class ShopListingService extends TakaroService<
       const listing = await this.repo.findOneForUpdate(listingId, trx);
       if (listing.draft) throw new errors.BadRequestError('Cannot order a draft listing');
       if (listing.deletedAt) throw new errors.BadRequestError('Cannot order a deleted listing');
-      
+
       // Check stock availability
       if (listing.stockEnabled) {
         if (listing.stock === undefined || listing.stock < amount) {
           throw new errors.BadRequestError(`Insufficient stock. Available: ${listing.stock || 0}, Requested: ${amount}`);
         }
       }
-      
+
       const gameServerId = listing.gameServerId;
 
       const playerService = new PlayerService(this.domainId);
@@ -421,7 +419,7 @@ export class ShopListingService extends TakaroService<
       throw new errors.BadRequestError(
         `Can only cancel paid orders that weren't claimed yet. Current status: ${order.status}`,
       );
-    
+
     const updatedOrder = await this.orderRepo.update(
       orderId,
       new ShopOrderUpdateDTO({ status: ShopOrderStatus.CANCELED }),
@@ -466,13 +464,13 @@ export class ShopListingService extends TakaroService<
   async setStock(listingId: string, stock: number): Promise<ShopListingOutputDTO> {
     await this.checkIfUserHasHighPrivileges();
     const listing = await this.findOne(listingId);
-    
+
     if (stock < 0) {
       throw new errors.BadRequestError('Stock cannot be negative');
     }
-    
+
     const updated = await this.repo.setStock(listingId, stock);
-    
+
     await this.eventService.create(
       new EventCreateDTO({
         eventName: EVENT_TYPES.SHOP_LISTING_UPDATED,
@@ -482,48 +480,28 @@ export class ShopListingService extends TakaroService<
         }),
       }),
     );
-    
+
     return updated;
   }
 
-  async addStock(listingId: string, amount: number): Promise<ShopListingOutputDTO> {
-    await this.checkIfUserHasHighPrivileges();
-    const listing = await this.findOne(listingId);
-    
-    if (amount <= 0) {
-      throw new errors.BadRequestError('Amount must be positive');
-    }
-    
-    const updated = await this.repo.addStock(listingId, amount);
-    
-    await this.eventService.create(
-      new EventCreateDTO({
-        eventName: EVENT_TYPES.SHOP_LISTING_UPDATED,
-        gameserverId: listing.gameServerId,
-        meta: new TakaroEventShopListingUpdated({
-          id: updated.id,
-        }),
-      }),
-    );
-    
-    return updated;
-  }
 
   async checkStockAvailability(listingId: string, requestedAmount: number): Promise<boolean> {
     const listing = await this.findOne(listingId);
-    
+
     if (!listing.stockEnabled) {
       return true; // Unlimited stock
     }
-    
+
     return listing.stock !== undefined && listing.stock >= requestedAmount;
   }
 
   private async checkIfUserHasHighPrivileges() {
-    const hasPermission = await checkPermissions([PERMISSIONS.SHOP_LISTING_MANAGE], {
-      user: await this.userHasPermission(),
-      domain: { id: this.domainId },
-    });
+    const userId = ctx.data.user;
+    if (!userId) throw new errors.UnauthorizedError();
+    const userService = new UserService(this.domainId);
+    const user = await userService.findOne(userId);
+    if (!user) throw new errors.NotFoundError('User not found');
+    const hasPermission = await checkPermissions([PERMISSIONS.MANAGE_SHOP_LISTINGS], user);
     if (!hasPermission) throw new errors.ForbiddenError();
   }
 

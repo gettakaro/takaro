@@ -255,9 +255,3 @@ export class StockUpdateDTO extends TakaroDTO<StockUpdateDTO> {
   @Min(0)
   stock: number;
 }
-
-export class StockAddDTO extends TakaroDTO<StockAddDTO> {
-  @IsNumber()
-  @Min(1)
-  amount: number;
-}
