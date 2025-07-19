@@ -1,5 +1,5 @@
 import { IntegrationTest, expect, IShopSetup, shopSetup } from '@takaro/test';
-import { ShopOrderOutputDTOStatusEnum, StockUpdateDTO, isAxiosError } from '@takaro/apiclient';
+import { ShopOrderOutputDTOStatusEnum, isAxiosError } from '@takaro/apiclient';
 
 const group = 'ShopOrderController - Stock';
 
@@ -13,7 +13,7 @@ const tests = [
       // Set stock
       await this.client.shopListing.shopListingControllerSetStock(
         this.setupData.listing100.id,
-        new StockUpdateDTO({ stock: 10 })
+        { stock: 10 }
       );
 
       // Create order
@@ -41,7 +41,7 @@ const tests = [
       // Set limited stock
       await this.client.shopListing.shopListingControllerSetStock(
         this.setupData.listing100.id,
-        new StockUpdateDTO({ stock: 2 })
+        { stock: 2 }
       );
 
       // Try to order more than available
@@ -68,7 +68,7 @@ const tests = [
       // Set stock to 0
       await this.client.shopListing.shopListingControllerSetStock(
         this.setupData.listing100.id,
-        new StockUpdateDTO({ stock: 0 })
+        { stock: 0 }
       );
 
       // Try to order
@@ -103,7 +103,6 @@ const tests = [
       // Check stock wasn't changed
       const listing = await this.client.shopListing.shopListingControllerGetOne(this.setupData.listing100.id);
       expect(listing.data.data.stockEnabled).to.be.false;
-      expect(listing.data.data.isUnlimitedStock).to.be.true;
 
       return order;
     },
@@ -118,7 +117,7 @@ const tests = [
       // Set stock
       await this.client.shopListing.shopListingControllerSetStock(
         this.setupData.listing100.id,
-        new StockUpdateDTO({ stock: 10 })
+        { stock: 10 }
       );
 
       // Create order
@@ -152,7 +151,7 @@ const tests = [
       // Set stock
       await this.client.shopListing.shopListingControllerSetStock(
         this.setupData.listing100.id,
-        new StockUpdateDTO({ stock: 20 })
+        { stock: 20 }
       );
 
       // Create multiple orders
@@ -188,7 +187,7 @@ const tests = [
       // Set stock
       await this.client.shopListing.shopListingControllerSetStock(
         this.setupData.listing100.id,
-        new StockUpdateDTO({ stock: 5 })
+        { stock: 5 }
       );
 
       // Create order

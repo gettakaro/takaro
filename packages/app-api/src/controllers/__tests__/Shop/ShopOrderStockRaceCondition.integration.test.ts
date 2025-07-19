@@ -1,5 +1,5 @@
 import { IntegrationTest, expect, IShopSetup, shopSetup } from '@takaro/test';
-import { ShopOrderOutputDTOStatusEnum, StockUpdateDTO, isAxiosError } from '@takaro/apiclient';
+import { ShopOrderOutputDTOStatusEnum, isAxiosError } from '@takaro/apiclient';
 
 const group = 'ShopOrderController - Stock Race Conditions';
 
@@ -13,7 +13,7 @@ const tests = [
       // Set stock to 1
       await this.client.shopListing.shopListingControllerSetStock(
         this.setupData.listing100.id,
-        new StockUpdateDTO({ stock: 1 })
+        { stock: 1 }
       );
 
       // Attempt to purchase the same item concurrently multiple times
@@ -72,7 +72,7 @@ const tests = [
       // Set stock to 5
       await this.client.shopListing.shopListingControllerSetStock(
         this.setupData.listing100.id,
-        new StockUpdateDTO({ stock: 5 })
+        { stock: 5 }
       );
 
       // Attempt to purchase 2 items each, 5 times concurrently (total demand: 10, available: 5)
@@ -123,7 +123,7 @@ const tests = [
       // Set stock to 3
       await this.client.shopListing.shopListingControllerSetStock(
         this.setupData.listing100.id,
-        new StockUpdateDTO({ stock: 3 })
+        { stock: 3 }
       );
 
       // Three different users try to purchase 2 items each
@@ -201,7 +201,6 @@ const tests = [
       // Verify stock is still unlimited
       const listing = await this.client.shopListing.shopListingControllerGetOne(this.setupData.listing100.id);
       expect(listing.data.data.stockEnabled).to.be.false;
-      expect(listing.data.data.isUnlimitedStock).to.be.true;
 
       return listing;
     },

@@ -1,5 +1,5 @@
 import { IntegrationTest, expect, IShopSetup, shopSetup } from '@takaro/test';
-import { ShopListingOutputDTOAPI, StockUpdateDTO, isAxiosError } from '@takaro/apiclient';
+import { isAxiosError } from '@takaro/apiclient';
 
 const group = 'ShopStockController';
 
@@ -10,16 +10,13 @@ const tests = [
     name: 'Can set stock for a listing',
     setup: shopSetup,
     test: async function () {
-      const stockUpdate = new StockUpdateDTO({ stock: 10 });
       const response = await this.client.shopListing.shopListingControllerSetStock(
         this.setupData.listing100.id,
-        stockUpdate
+        { stock: 10 }
       );
 
       expect(response.data.data.stock).to.equal(10);
       expect(response.data.data.stockEnabled).to.be.true;
-      expect(response.data.data.isInStock).to.be.true;
-      expect(response.data.data.isUnlimitedStock).to.be.false;
 
       return response;
     },
@@ -34,7 +31,7 @@ const tests = [
       try {
         await this.client.shopListing.shopListingControllerSetStock(
           this.setupData.listing100.id,
-          new StockUpdateDTO({ stock: -5 })
+          { stock: -5 }
         );
         throw new Error('Should have thrown an error');
       } catch (error) {
@@ -54,7 +51,7 @@ const tests = [
       try {
         await this.setupData.client1.shopListing.shopListingControllerSetStock(
           this.setupData.listing100.id,
-          new StockUpdateDTO({ stock: 10 })
+          { stock: 10 }
         );
         throw new Error('Should have thrown an error');
       } catch (error) {
@@ -73,7 +70,7 @@ const tests = [
       // Set stock
       await this.client.shopListing.shopListingControllerSetStock(
         this.setupData.listing100.id,
-        new StockUpdateDTO({ stock: 15 })
+        { stock: 15 }
       );
 
       // Get listing
@@ -81,8 +78,6 @@ const tests = [
 
       expect(response.data.data.stock).to.equal(15);
       expect(response.data.data.stockEnabled).to.be.true;
-      expect(response.data.data.isInStock).to.be.true;
-      expect(response.data.data.isUnlimitedStock).to.be.false;
 
       return response;
     },
@@ -105,7 +100,6 @@ const tests = [
 
       expect(newListing.data.data.stock).to.equal(20);
       expect(newListing.data.data.stockEnabled).to.be.true;
-      expect(newListing.data.data.isInStock).to.be.true;
 
       return newListing;
     },

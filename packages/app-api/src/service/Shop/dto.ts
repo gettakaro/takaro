@@ -64,14 +64,6 @@ export class ShopListingOutputDTO extends TakaroModelDTO<ShopListingOutputDTO> {
   stock?: number;
   @IsBoolean()
   stockEnabled: boolean;
-  
-  get isInStock(): boolean {
-    return !this.stockEnabled || (this.stock !== undefined && this.stock > 0);
-  }
-  
-  get isUnlimitedStock(): boolean {
-    return !this.stockEnabled;
-  }
 }
 
 export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
