@@ -39,15 +39,16 @@ describe('DiscordService sendMessage', () => {
           discordId: 'test-guild-id',
           takaroEnabled: true,
           name: 'Test Guild',
-        },
+        } as any,
       ],
+      total: 1,
     }));
 
     // Mock the repo.getServersWithManagePermission method
     service.repo.getServersWithManagePermission = mock.fn(async () => [
       {
         id: 'test-guild-uuid',
-      },
+      } as any,
     ]);
   });
 
@@ -110,7 +111,7 @@ describe('DiscordService sendMessage', () => {
         await service.sendMessage('test-channel', messageDto);
         expect.fail('Expected method to throw');
       } catch (error) {
-        expect(error.message).to.include('Embed must contain at least one of');
+        expect((error as Error).message).to.include('Embed must contain at least one of');
       }
     });
 
@@ -132,7 +133,7 @@ describe('DiscordService sendMessage', () => {
         await service.sendMessage('test-channel', messageDto);
         expect.fail('Expected method to throw');
       } catch (error) {
-        expect(error.message).to.include("Embed content exceeds Discord's 6000 character limit");
+        expect((error as Error).message).to.include("Embed content exceeds Discord's 6000 character limit");
       }
     });
 
@@ -148,7 +149,7 @@ describe('DiscordService sendMessage', () => {
         await service.sendMessage('test-channel', messageDto);
         expect.fail('Expected method to throw');
       } catch (error) {
-        expect(error.message).to.include('Invalid timestamp format');
+        expect((error as Error).message).to.include('Invalid timestamp format');
       }
     });
 
@@ -166,7 +167,7 @@ describe('DiscordService sendMessage', () => {
         await service.sendMessage('test-channel', messageDto);
         expect.fail('Expected method to throw');
       } catch (error) {
-        expect(error.message).to.include('image URL must use http or https protocol');
+        expect((error as Error).message).to.include('image URL must use http or https protocol');
       }
     });
 
@@ -210,7 +211,7 @@ describe('DiscordService sendMessage', () => {
 
   describe('guild validation', () => {
     it('should reject when guild is not found', async () => {
-      service.find = mock.fn(async () => ({ results: [] }));
+      service.find = mock.fn(async () => ({ results: [], total: 0 }));
 
       const messageDto = new SendMessageInputDTO({
         message: 'Hello, world!',
@@ -220,7 +221,7 @@ describe('DiscordService sendMessage', () => {
         await service.sendMessage('test-channel', messageDto);
         expect.fail('Expected method to throw');
       } catch (error) {
-        expect(error.message).to.include('Guild not found for channel');
+        expect((error as Error).message).to.include('Guild not found for channel');
       }
     });
 
@@ -232,8 +233,9 @@ describe('DiscordService sendMessage', () => {
             discordId: 'test-guild-id',
             takaroEnabled: false,
             name: 'Test Guild',
-          },
+          } as any,
         ],
+        total: 1,
       }));
 
       const messageDto = new SendMessageInputDTO({
@@ -244,7 +246,7 @@ describe('DiscordService sendMessage', () => {
         await service.sendMessage('test-channel', messageDto);
         expect.fail('Expected method to throw');
       } catch (error) {
-        expect(error.message).to.include('Takaro not enabled for guild');
+        expect((error as Error).message).to.include('Takaro not enabled for guild');
       }
     });
   });
