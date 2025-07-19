@@ -117,7 +117,12 @@ function Component() {
       </div>
 
       <Divider />
-      {view === 'table' && <ModulesTableView />}
+      {view === 'table' && (
+        <>
+          <ModulesTableView />
+          <Outlet />
+        </>
+      )}
       {view === 'list' && (
         <>
           <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageModules]}>

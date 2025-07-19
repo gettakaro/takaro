@@ -1,9 +1,9 @@
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { createColumnHelper, Table as TableInstance } from '@tanstack/react-table';
+import { useQuery, useQueries } from '@tanstack/react-query';
+import { createColumnHelper } from '@tanstack/react-table';
 import { Table, useTableActions, IconButton, styled } from '@takaro/lib-components';
 import { ModuleOutputDTO, ModuleSearchInputDTO } from '@takaro/apiclient';
 import { Dropdown } from '@takaro/lib-components';
-import { FC, useRef, useState } from 'react';
+import { FC, useState } from 'react';
 import {
   AiOutlineCopy as CopyIcon,
   AiOutlineEdit as EditIcon,
@@ -14,9 +14,15 @@ import {
   AiOutlineMore as ActionsIcon,
 } from 'react-icons/ai';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { getApiClient } from '../../../util/getApiClient';
-import { hasPermission } from '../../../hooks/useHasPermission';
-import { ModuleCopyDialog, ModuleDeleteDialog, ModuleExportDialog, ModuleTagDialog } from '../../../components/dialogs';
+import { getApiClient } from '../../../../util/getApiClient';
+import { useHasPermission } from '../../../../hooks/useHasPermission';
+import {
+  ModuleCopyDialog,
+  ModuleDeleteDialog,
+  ModuleExportDialog,
+  ModuleTagDialog,
+} from '../../../../components/dialogs';
+import { moduleTagsQueryOptions } from '../../../../queries/module';
 
 const ActionsContainer = styled.div`
   display: flex;
@@ -41,7 +47,7 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<{ module: ModuleOutputDTO } | null>(null);
   const [openExportDialog, setOpenExportDialog] = useState<{ module: ModuleOutputDTO } | null>(null);
   const [openTagDialog, setOpenTagDialog] = useState<{ module: ModuleOutputDTO } | null>(null);
-  const tableRef = useRef<TableInstance<ModuleOutputDTO>>(null);
+  const canManageModules = useHasPermission(['MANAGE_MODULES']);
 
   const {
     pagination: p,
@@ -64,18 +70,29 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
     search: (c.columnSearchState as any).query,
   };
 
-  const { data }: UseQueryResult<{ data: ModuleOutputDTO[] }> = useQuery(modulesQueryOptions(queryParams));
-  const totalPages = Math.ceil(((data as any)?.meta?.total ?? 0) / p.paginationState.pageSize);
+  const { data } = useQuery(modulesQueryOptions(queryParams));
+
+  const modules = data?.data || [];
+  const tagsQueries = useQueries({
+    queries: modules.map((module) => ({
+      ...moduleTagsQueryOptions({ moduleId: module.id, limit: 2 }),
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    })),
+  });
+
+  const moduleTagsMap = new Map<string, string>();
+  tagsQueries.forEach((query, index) => {
+    if (query.data && modules[index]) {
+      const tags = query.data.data || [];
+      const newestTag = tags.length > 1 ? tags[1].tag : null;
+      if (newestTag) {
+        moduleTagsMap.set(modules[index].id, newestTag);
+      }
+    }
+  });
 
   const columnHelper = createColumnHelper<ModuleOutputDTO>();
   const columnDefs = [
-    columnHelper.accessor('id', {
-      header: 'ID',
-      id: 'id',
-      cell: (info) => info.getValue(),
-      enableColumnFilter: false,
-      enableHiding: true,
-    }),
     columnHelper.accessor('name', {
       header: 'Name',
       id: 'name',
@@ -102,7 +119,11 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
     columnHelper.accessor('latestVersion', {
       header: 'Latest Version',
       id: 'latestVersion',
-      cell: (info) => info.getValue() || 'N/A',
+      cell: (info) => {
+        const module = info.row.original;
+        const versionTag = moduleTagsMap.get(module.id);
+        return versionTag || info.getValue()?.tag || 'N/A';
+      },
       enableColumnFilter: false,
       enableSorting: false,
     }),
@@ -111,7 +132,7 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
       id: 'commands',
       cell: ({ row }) => {
         const module = row.original;
-        return (module as any).commands?.length || 0;
+        return module.latestVersion?.commands?.length || 0;
       },
       enableColumnFilter: false,
       enableSorting: false,
@@ -121,7 +142,7 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
       id: 'hooks',
       cell: ({ row }) => {
         const module = row.original;
-        return (module as any).hooks?.length || 0;
+        return module.latestVersion?.hooks?.length || 0;
       },
       enableColumnFilter: false,
       enableSorting: false,
@@ -131,7 +152,7 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
       id: 'cronjobs',
       cell: ({ row }) => {
         const module = row.original;
-        return (module as any).cronJobs?.length || 0;
+        return module.latestVersion?.cronJobs?.length || 0;
       },
       enableColumnFilter: false,
       enableSorting: false,
@@ -142,7 +163,7 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
       cell: ({ row }) => {
         const module = row.original;
         return (
-          (module as any).permissions?.filter((permission: any) => !permission.permission.startsWith('SYSTEM_'))
+          module.latestVersion?.permissions?.filter((permission: any) => !permission.permission.startsWith('SYSTEM_'))
             .length || 0
         );
       },
@@ -177,7 +198,7 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
           },
         });
 
-        if (!module.builtin && hasPermission(['MANAGE_MODULES'])) {
+        if (!module.builtin && canManageModules) {
           menuItems.push({
             label: 'Update module',
             icon: <EditIcon />,
@@ -189,22 +210,23 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
               });
             },
           });
+        }
 
-          menuItems.push({
-            label: 'Copy module',
-            icon: <CopyIcon />,
-            onClick: () => {
-              setOpenCopyDialog({ module });
-            },
-          });
+        menuItems.push({
+          label: 'Copy module',
+          icon: <CopyIcon />,
+          onClick: () => {
+            setOpenCopyDialog({ module });
+          },
+        });
 
+        if (!module.builtin && canManageModules) {
           menuItems.push({
             label: 'Delete module',
             icon: <DeleteIcon />,
             onClick: () => {
               setOpenDeleteDialog({ module });
             },
-            color: 'error',
           });
         }
 
@@ -216,7 +238,7 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
           },
         });
 
-        if (!module.builtin && hasPermission(['MANAGE_MODULES'])) {
+        if (!module.builtin && canManageModules) {
           menuItems.push({
             label: 'Create module tag',
             icon: <TagIcon />,
@@ -239,7 +261,6 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
                     onClick={item.onClick}
                     label={item.label}
                     icon={item.icon}
-                    color={item.color}
                   />
                 ))}
               </Dropdown.Menu>
@@ -257,14 +278,15 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
   return (
     <>
       <Table
-        ref={tableRef}
         id="modules"
         data={allModules}
         columns={columnDefs}
         pagination={{
           paginationState: p.paginationState,
           setPaginationState: p.setPaginationState,
-          pageOptions: { total: (data as any)?.meta?.total ?? 0, pageCount: totalPages },
+          pageOptions: p.getPageOptions(
+            data || { data: [], meta: { total: 0, serverTime: Date.now().toString(), error: null as any } },
+          ),
         }}
         columnFiltering={f}
         columnSearch={c}
@@ -273,8 +295,8 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
 
       {openCopyDialog && (
         <ModuleCopyDialog
-          module={openCopyDialog.module}
-          isOpen={true}
+          mod={openCopyDialog.module}
+          open={true}
           onOpenChange={(open) => !open && setOpenCopyDialog(null)}
         />
       )}
@@ -283,15 +305,16 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
         <ModuleDeleteDialog
           moduleId={openDeleteDialog.module.id}
           moduleName={openDeleteDialog.module.name}
-          isOpen={true}
+          open={true}
           onOpenChange={(open) => !open && setOpenDeleteDialog(null)}
         />
       )}
 
       {openExportDialog && (
         <ModuleExportDialog
-          module={openExportDialog.module}
-          isOpen={true}
+          moduleId={openExportDialog.module.id}
+          moduleName={openExportDialog.module.name}
+          open={true}
           onOpenChange={(open) => !open && setOpenExportDialog(null)}
         />
       )}
@@ -299,7 +322,8 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
       {openTagDialog && (
         <ModuleTagDialog
           moduleId={openTagDialog.module.id}
-          isOpen={true}
+          moduleName={openTagDialog.module.name}
+          open={true}
           onOpenChange={(open) => !open && setOpenTagDialog(null)}
         />
       )}

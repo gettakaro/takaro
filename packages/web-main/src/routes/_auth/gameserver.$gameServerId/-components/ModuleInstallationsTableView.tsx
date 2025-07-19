@@ -1,23 +1,28 @@
-import { FC, useState, useRef } from 'react';
+import { FC, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { createColumnHelper, Table as TableInstance } from '@tanstack/react-table';
-import { Table, useTableActions, styled, IconButton, Switch, Dropdown } from '@takaro/lib-components';
+import { createColumnHelper } from '@tanstack/react-table';
+import { Table, useTableActions, styled, IconButton, Dropdown } from '@takaro/lib-components';
 import { ModuleOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
-import { RiSettingsLine as ConfigIcon } from '@takaro/icons';
-import { RiEyeLine as ViewConfigIcon } from '@takaro/icons';
-import { RiRefreshLine as UpdateIcon } from '@takaro/icons';
-import { RiFileCopyLine as CopyIcon } from '@takaro/icons';
-import { RiDeleteBinLine as UninstallIcon } from '@takaro/icons';
-import { RiMore2Line as ActionsIcon } from '@takaro/icons';
-import { RiAddLine as InstallIcon } from '@takaro/icons';
+import {
+  AiOutlineSetting as ConfigIcon,
+  AiOutlineEye as ViewConfigIcon,
+  AiOutlineReload as UpdateIcon,
+  AiOutlineCopy as CopyIcon,
+  AiOutlineDelete as UninstallIcon,
+  AiOutlineMore as ActionsIcon,
+  AiOutlinePlus as InstallIcon,
+  AiOutlineCheck,
+  AiOutlineClose,
+} from 'react-icons/ai';
 import { Link, useNavigate, useParams } from '@tanstack/react-router';
 import { getApiClient } from '../../../../util/getApiClient';
-import { hasPermission } from '../../../../hooks/useHasPermission';
+import { useHasPermission } from '../../../../hooks/useHasPermission';
 import { ModuleUninstallDialog } from '../../../../components/dialogs';
 import { useSnackbar } from 'notistack';
-import { modulesQueryOptions, moduleInstallationsOptions } from '../../../../queries/gameserver';
-import { ModuleVersionSelectQueryField } from '../../../../components/selects';
-import { mutationWrapper } from '../../../../queries/util';
+import { moduleInstallationsOptions } from '../../../../queries/gameserver';
+import { modulesQueryOptions } from '../../../../queries/module';
+import { UncontrolledModuleVersionSelectQueryField } from '../../../../components/selects';
+import { useQueryClient } from '@tanstack/react-query';
 
 const ActionsContainer = styled.div`
   display: flex;
@@ -42,13 +47,14 @@ interface CombinedModule extends ModuleOutputDTO {
 export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps> = () => {
   const navigate = useNavigate();
   const { gameServerId } = useParams({ from: '/_auth/gameserver/$gameServerId/modules' });
-  const { showSuccess, showError } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
+  const queryClient = useQueryClient();
   const [openUninstallDialog, setOpenUninstallDialog] = useState<{ installation: ModuleInstallationOutputDTO } | null>(
     null,
   );
   const [selectedVersions, setSelectedVersions] = useState<{ [moduleId: string]: string }>({});
-  const installedTableRef = useRef<TableInstance<CombinedModule>>(null);
-  const availableTableRef = useRef<TableInstance<CombinedModule>>(null);
+  const canManageGameServers = useHasPermission(['MANAGE_GAMESERVERS']);
+  const canReadGameServers = useHasPermission(['READ_MODULES']);
 
   // Query for all modules
   const { data: modulesData, isPending: modulesPending } = useQuery(modulesQueryOptions());
@@ -58,7 +64,7 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
   const { data: installationsData, isPending: installationsPending } = useQuery(
     moduleInstallationsOptions({ filters: { gameserverId: [gameServerId] } }),
   );
-  const installations = installationsData?.data || [];
+  const installations = installationsData || [];
 
   // Combine modules with their installations
   const combinedModules: CombinedModule[] = modules.map((module) => {
@@ -73,40 +79,38 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
     const versionId = selectedVersions[moduleId];
     if (!versionId) return;
 
-    await mutationWrapper({
-      fn: async () => {
-        await getApiClient().module.moduleControllerInstallModule(gameServerId, moduleId, versionId);
-      },
-      onSuccess: () => {
-        showSuccess('Module installed successfully');
-        setSelectedVersions((prev) => ({ ...prev, [moduleId]: '' }));
-      },
-      onError: (error) => {
-        showError(`Failed to install module: ${error.message}`);
-      },
-    });
+    try {
+      await getApiClient().module.moduleInstallationsControllerInstallModule({
+        gameServerId,
+        versionId,
+      });
+      enqueueSnackbar('Module installed successfully', { variant: 'default', type: 'success' });
+      setSelectedVersions((prev) => ({ ...prev, [moduleId]: '' }));
+      queryClient.invalidateQueries();
+    } catch (error: any) {
+      enqueueSnackbar(`Failed to install module: ${error.message}`, { variant: 'default', type: 'error' });
+    }
   };
 
   const handleToggleEnabled = async (installation: ModuleInstallationOutputDTO) => {
-    const newUserConfig = {
-      ...installation.userConfig,
-      enabled: !installation.userConfig.enabled,
-    };
+    const systemConfig = { ...installation.systemConfig } as any;
+    systemConfig.enabled = !(systemConfig.enabled || false);
 
-    await mutationWrapper({
-      fn: async () => {
-        await getApiClient().gameserver.gameServerControllerInstallModule(gameServerId, installation.moduleId, {
-          versionId: installation.versionId,
-          userConfig: newUserConfig,
-        });
-      },
-      onSuccess: () => {
-        showSuccess(`Module ${newUserConfig.enabled ? 'enabled' : 'disabled'} successfully`);
-      },
-      onError: (error) => {
-        showError(`Failed to toggle module: ${error.message}`);
-      },
-    });
+    try {
+      await getApiClient().module.moduleInstallationsControllerInstallModule({
+        gameServerId,
+        versionId: installation.versionId,
+        systemConfig: JSON.stringify(systemConfig),
+        userConfig: JSON.stringify(installation.userConfig),
+      });
+      enqueueSnackbar(`Module ${systemConfig.enabled ? 'enabled' : 'disabled'} successfully`, {
+        variant: 'default',
+        type: 'success',
+      });
+      queryClient.invalidateQueries();
+    } catch (error: any) {
+      enqueueSnackbar(`Failed to toggle module: ${error.message}`, { variant: 'default', type: 'error' });
+    }
   };
 
   const columnHelper = createColumnHelper<CombinedModule>();
@@ -119,7 +123,7 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
       cell: (info) => info.getValue(),
       enableColumnFilter: false,
       enableHiding: true,
-      meta: { isHidden: true },
+      meta: { hideColumn: true },
     }),
     columnHelper.accessor('name', {
       header: 'Name',
@@ -152,10 +156,11 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
         const module = row.original;
         if (!module.installation) return null;
         return (
-          <Switch
-            checked={module.installation.userConfig.enabled}
-            onChange={() => handleToggleEnabled(module.installation!)}
-            disabled={!hasPermission(['MANAGE_GAMESERVERS'])}
+          <IconButton
+            icon={(module.installation.systemConfig as any)?.enabled ? <AiOutlineCheck /> : <AiOutlineClose />}
+            onClick={() => handleToggleEnabled(module.installation!)}
+            disabled={!canManageGameServers}
+            ariaLabel="Toggle module"
           />
         );
       },
@@ -165,21 +170,21 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
     columnHelper.display({
       header: 'Commands',
       id: 'commands',
-      cell: ({ row }) => (row.original as any).commands?.length || 0,
+      cell: ({ row }) => row.original.latestVersion?.commands?.length || 0,
       enableColumnFilter: false,
       enableSorting: false,
     }),
     columnHelper.display({
       header: 'Hooks',
       id: 'hooks',
-      cell: ({ row }) => (row.original as any).hooks?.length || 0,
+      cell: ({ row }) => row.original.latestVersion?.hooks?.length || 0,
       enableColumnFilter: false,
       enableSorting: false,
     }),
     columnHelper.display({
       header: 'Cronjobs',
       id: 'cronjobs',
-      cell: ({ row }) => (row.original as any).cronJobs?.length || 0,
+      cell: ({ row }) => row.original.latestVersion?.cronJobs?.length || 0,
       enableColumnFilter: false,
       enableSorting: false,
     }),
@@ -187,7 +192,7 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
       header: 'Permissions',
       id: 'permissions',
       cell: ({ row }) =>
-        (row.original as any).permissions?.filter((p: any) => !p.permission.startsWith('SYSTEM_')).length || 0,
+        row.original.latestVersion?.permissions?.filter((p: any) => !p.permission.startsWith('SYSTEM_')).length || 0,
       enableColumnFilter: false,
       enableSorting: false,
     }),
@@ -203,7 +208,7 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
 
         const menuItems: any[] = [];
 
-        if (hasPermission(['READ_GAMESERVERS'])) {
+        if (canReadGameServers) {
           menuItems.push({
             label: 'View module configuration',
             icon: <ViewConfigIcon />,
@@ -220,7 +225,7 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
           });
         }
 
-        if (hasPermission(['MANAGE_GAMESERVERS'])) {
+        if (canManageGameServers) {
           menuItems.push({
             label: 'Change module configuration',
             icon: <ConfigIcon />,
@@ -257,11 +262,11 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
           icon: <CopyIcon />,
           onClick: () => {
             navigator.clipboard.writeText(module.id);
-            showSuccess('Module ID copied to clipboard');
+            enqueueSnackbar('Module ID copied to clipboard', { variant: 'default', type: 'success' });
           },
         });
 
-        if (hasPermission(['MANAGE_GAMESERVERS'])) {
+        if (canManageGameServers) {
           menuItems.push({
             label: 'Uninstall module',
             icon: <UninstallIcon />,
@@ -283,7 +288,6 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
                     onClick={item.onClick}
                     label={item.label}
                     icon={item.icon}
-                    color={item.color}
                   />
                 ))}
               </Dropdown.Menu>
@@ -302,7 +306,7 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
       cell: (info) => info.getValue(),
       enableColumnFilter: false,
       enableHiding: true,
-      meta: { isHidden: true },
+      meta: { hideColumn: true },
     }),
     columnHelper.accessor('name', {
       header: 'Name',
@@ -328,21 +332,21 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
     columnHelper.display({
       header: 'Commands',
       id: 'commands',
-      cell: ({ row }) => (row.original as any).commands?.length || 0,
+      cell: ({ row }) => row.original.latestVersion?.commands?.length || 0,
       enableColumnFilter: false,
       enableSorting: false,
     }),
     columnHelper.display({
       header: 'Hooks',
       id: 'hooks',
-      cell: ({ row }) => (row.original as any).hooks?.length || 0,
+      cell: ({ row }) => row.original.latestVersion?.hooks?.length || 0,
       enableColumnFilter: false,
       enableSorting: false,
     }),
     columnHelper.display({
       header: 'Cronjobs',
       id: 'cronjobs',
-      cell: ({ row }) => (row.original as any).cronJobs?.length || 0,
+      cell: ({ row }) => row.original.latestVersion?.cronJobs?.length || 0,
       enableColumnFilter: false,
       enableSorting: false,
     }),
@@ -350,7 +354,7 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
       header: 'Permissions',
       id: 'permissions',
       cell: ({ row }) =>
-        (row.original as any).permissions?.filter((p: any) => !p.permission.startsWith('SYSTEM_')).length || 0,
+        row.original.latestVersion?.permissions?.filter((p: any) => !p.permission.startsWith('SYSTEM_')).length || 0,
       enableColumnFilter: false,
       enableSorting: false,
     }),
@@ -364,23 +368,17 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
         const module = row.original;
         return (
           <InstallContainer>
-            <ModuleVersionSelectQueryField
-              control={{
-                field: {
-                  value: selectedVersions[module.id] || '',
-                  onChange: (value: string) => setSelectedVersions((prev) => ({ ...prev, [module.id]: value })),
-                },
-              }}
-              as
-              any
+            <UncontrolledModuleVersionSelectQueryField
+              value={selectedVersions[module.id] || ''}
+              onChange={(value) => setSelectedVersions((prev) => ({ ...prev, [module.id]: value as string }))}
               moduleId={module.id}
-              size="tiny"
+              name={`version-select-${module.id}`}
             />
             <IconButton
               icon={<InstallIcon />}
               ariaLabel="Install module"
               onClick={() => handleInstall(module.id)}
-              disabled={!selectedVersions[module.id] || !hasPermission(['MANAGE_GAMESERVERS'])}
+              disabled={!selectedVersions[module.id] || !canManageGameServers}
             />
           </InstallContainer>
         );
@@ -400,14 +398,16 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
       <div>
         <h3>Installed Modules</h3>
         <Table
-          ref={installedTableRef}
           id="installed-modules"
           data={installedModules}
           columns={installedColumns}
           pagination={{
             paginationState: installedTableActions.pagination.paginationState,
             setPaginationState: installedTableActions.pagination.setPaginationState,
-            pageOptions: { total: installedModules.length },
+            pageOptions: installedTableActions.pagination.getPageOptions({
+              data: installedModules,
+              meta: { total: installedModules.length, serverTime: Date.now().toString(), error: null as any },
+            }),
           }}
           columnFiltering={installedTableActions.columnFilters}
           columnSearch={installedTableActions.columnSearch}
@@ -418,14 +418,16 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
       <div style={{ marginTop: '3rem' }}>
         <h3>Available Modules</h3>
         <Table
-          ref={availableTableRef}
           id="available-modules"
           data={availableModules}
           columns={availableColumns}
           pagination={{
             paginationState: availableTableActions.pagination.paginationState,
             setPaginationState: availableTableActions.pagination.setPaginationState,
-            pageOptions: { total: availableModules.length },
+            pageOptions: availableTableActions.pagination.getPageOptions({
+              data: availableModules,
+              meta: { total: availableModules.length, serverTime: Date.now().toString(), error: null as any },
+            }),
           }}
           columnFiltering={availableTableActions.columnFilters}
           columnSearch={availableTableActions.columnSearch}
@@ -435,8 +437,11 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
 
       {openUninstallDialog && (
         <ModuleUninstallDialog
-          installation={openUninstallDialog.installation}
-          isOpen={true}
+          moduleName={openUninstallDialog.installation.module.name}
+          gameServerId={gameServerId}
+          versionId={openUninstallDialog.installation.versionId}
+          moduleId={openUninstallDialog.installation.moduleId}
+          open={true}
           onOpenChange={(open) => !open && setOpenUninstallDialog(null)}
         />
       )}
