@@ -6378,6 +6378,18 @@ export interface ModuleCreateAPIDTO {
   name: string;
   /**
    *
+   * @type {string}
+   * @memberof ModuleCreateAPIDTO
+   */
+  author?: string;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleCreateAPIDTO
+   */
+  supportedGames?: Array<string>;
+  /**
+   *
    * @type {ModuleCreateVersionInputDTO}
    * @memberof ModuleCreateAPIDTO
    */
@@ -6401,6 +6413,18 @@ export interface ModuleCreateDTO {
    * @memberof ModuleCreateDTO
    */
   builtin?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleCreateDTO
+   */
+  author?: string;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleCreateDTO
+   */
+  supportedGames?: Array<string>;
 }
 /**
  *
@@ -6420,6 +6444,18 @@ export interface ModuleCreateInternalDTO {
    * @memberof ModuleCreateInternalDTO
    */
   name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleCreateInternalDTO
+   */
+  author?: string;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleCreateInternalDTO
+   */
+  supportedGames?: Array<string>;
   /**
    *
    * @type {ModuleCreateVersionInputDTO}
@@ -6754,6 +6790,18 @@ export interface ModuleOutputDTO {
   builtin?: string;
   /**
    *
+   * @type {string}
+   * @memberof ModuleOutputDTO
+   */
+  author?: string;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleOutputDTO
+   */
+  supportedGames: Array<string>;
+  /**
+   *
    * @type {ModuleVersionOutputDTO}
    * @memberof ModuleOutputDTO
    */
@@ -6814,6 +6862,18 @@ export interface ModuleSearchInputAllowedFilters {
    * @memberof ModuleSearchInputAllowedFilters
    */
   builtin?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleSearchInputAllowedFilters
+   */
+  author?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleSearchInputAllowedFilters
+   */
+  supportedGames?: Array<string>;
   /**
    *
    * @type {Array<string>}
@@ -6930,6 +6990,18 @@ export interface ModuleTransferDTO {
   takaroVersion?: string;
   /**
    *
+   * @type {string}
+   * @memberof ModuleTransferDTO
+   */
+  author?: string;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleTransferDTO
+   */
+  supportedGames?: Array<string>;
+  /**
+   *
    * @type {Array<ModuleTransferVersionDTO>}
    * @memberof ModuleTransferDTO
    */
@@ -7008,6 +7080,18 @@ export interface ModuleUpdateDTO {
    * @memberof ModuleUpdateDTO
    */
   name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleUpdateDTO
+   */
+  author?: string;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleUpdateDTO
+   */
+  supportedGames?: Array<string>;
   /**
    *
    * @type {ModuleVersionUpdateDTO}
@@ -9937,6 +10021,18 @@ export interface SettingsOutputDTO {
    * @memberof SettingsOutputDTO
    */
   type: SettingsOutputDTOTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof SettingsOutputDTO
+   */
+  description: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof SettingsOutputDTO
+   */
+  canHaveGameServerOverride: boolean;
 }
 
 export const SettingsOutputDTOKeyEnum = {
