@@ -38,7 +38,7 @@ function Component() {
     initialData: loaderCurrencyName,
   });
 
-  const onSubmit: SubmitHandler<FormValues> = ({ name, items, price, draft, categoryIds }) => {
+  const onSubmit: SubmitHandler<FormValues> = ({ name, items, price, draft, categoryIds, stock, stockEnabled }) => {
     mutate({
       name: name ? name : 'Unnamed',
       price,
@@ -46,6 +46,8 @@ function Component() {
       items,
       draft,
       categoryIds,
+      stock: stock ?? undefined,
+      stockEnabled,
     });
     navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId } });
   };

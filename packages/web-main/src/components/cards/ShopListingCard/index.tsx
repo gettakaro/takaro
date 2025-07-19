@@ -1,4 +1,4 @@
-import { Avatar, Card, Chip, getInitials, Tooltip } from '@takaro/lib-components';
+import { Avatar, Card, Chip, getInitials, Tooltip, styled } from '@takaro/lib-components';
 import { FC } from 'react';
 import { Header, CardBody } from './style';
 import { GameServerOutputDTOTypeEnum, ShopListingOutputDTO } from '@takaro/apiclient';
@@ -13,6 +13,26 @@ const gameServerTypeToIconFolderMap = {
   [GameServerOutputDTOTypeEnum.Sevendaystodie]: '7d2d',
   [GameServerOutputDTOTypeEnum.Generic]: 'generic',
 };
+
+const StockDisplay = styled.div<{ $status: 'unlimited' | 'in-stock' | 'low-stock' | 'out-of-stock' }>`
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0.5rem 0;
+  color: ${({ theme, $status }) => {
+    switch ($status) {
+      case 'unlimited':
+        return theme.colors.textAlt;
+      case 'in-stock':
+        return theme.colors.success;
+      case 'low-stock':
+        return theme.colors.warning;
+      case 'out-of-stock':
+        return theme.colors.error;
+      default:
+        return theme.colors.text;
+    }
+  }};
+`;
 
 interface ShopListingCard {
   shopListing: ShopListingOutputDTO;
@@ -34,6 +54,22 @@ export const ShopListingCard: FC<ShopListingCard> = ({
   const firstItem = shopListing.items[0]?.item || { name: 'Unknown', code: 'unknown' };
   const shopListingName = shopListing.name || firstItem.name;
   const hasPermission = useHasPermission(['MANAGE_SHOP_LISTINGS']);
+
+  const getStockStatus = () => {
+    if (!shopListing.stockEnabled) {
+      return { status: 'unlimited' as const, text: 'Unlimited stock' };
+    }
+    const stock = shopListing.stock ?? 0;
+    if (stock === 0) {
+      return { status: 'out-of-stock' as const, text: 'Out of stock' };
+    }
+    if (stock <= 5) {
+      return { status: 'low-stock' as const, text: `Low stock: ${stock} left` };
+    }
+    return { status: 'in-stock' as const, text: `In stock: ${stock}` };
+  };
+
+  const stockInfo = getStockStatus();
 
   return (
     <>
@@ -59,6 +95,7 @@ export const ShopListingCard: FC<ShopListingCard> = ({
                 <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
               </Avatar>
               <h2>{shopListingName}</h2>
+              <StockDisplay $status={stockInfo.status}>{stockInfo.text}</StockDisplay>
               {shopListing.categories && shopListing.categories.length > 0 && (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
                   {shopListing.categories.map((category) => (
@@ -100,6 +137,8 @@ export const ShopListingCard: FC<ShopListingCard> = ({
               shopListingId={shopListing.id}
               playerCurrencyAmount={playerCurrencyAmount}
               price={shopListing.price}
+              stock={shopListing.stock}
+              stockEnabled={shopListing.stockEnabled}
             />
           </CardBody>{' '}
         </Card.Body>
