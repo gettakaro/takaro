@@ -11,7 +11,6 @@ import {
 import { errors, logger } from '@takaro/util';
 import { config } from '../config.js';
 import { DiscordService, DiscordEmbedInputDTO } from '../service/DiscordService.js';
-import { DiscordRateLimiter } from './DiscordRateLimiter.js';
 import { DiscordMetrics } from './DiscordMetrics.js';
 
 class DiscordBot {
@@ -59,75 +58,63 @@ class DiscordBot {
   }
 
   async getChannel(channelId: string): Promise<GuildBasedChannel> {
-    return DiscordRateLimiter.withRetry(
-      async () => {
-        return await DiscordMetrics.measureOperation(
-          () => this.client.channels.fetch(channelId) as Promise<GuildBasedChannel>,
-          'getChannel',
-          undefined,
-        );
-      },
+    return await DiscordMetrics.measureOperation(
+      () => this.client.channels.fetch(channelId) as Promise<GuildBasedChannel>,
       'getChannel',
-      { channelId },
+      undefined,
     );
   }
 
   async sendMessage(channelId: string, content?: string, embed?: DiscordEmbedInputDTO): Promise<Message> {
-    return DiscordRateLimiter.withRetry(
+    const channel = await this.getChannel(channelId);
+
+    if (!channel) {
+      throw new errors.BadRequestError('Channel not found');
+    }
+
+    if (!channel.isTextBased) {
+      throw new errors.BadRequestError('Channel is not text based');
+    }
+
+    const textChannel = channel as TextChannel;
+
+    // Validate that either content or embed is provided
+    if (!content && !embed) {
+      throw new errors.BadRequestError('Either message content or embed must be provided');
+    }
+
+    const guildId = channel.guildId;
+
+    return await DiscordMetrics.measureOperation(
       async () => {
-        const channel = await this.getChannel(channelId);
-
-        if (!channel) {
-          throw new errors.BadRequestError('Channel not found');
+        // If only content is provided (backward compatibility)
+        if (content && !embed) {
+          const message = await textChannel.send(content);
+          DiscordMetrics.recordMessageSent(guildId, channelId, false);
+          return message;
         }
 
-        if (!channel.isTextBased) {
-          throw new errors.BadRequestError('Channel is not text based');
+        // If embed is provided, convert to EmbedBuilder
+        let embedBuilder: EmbedBuilder | undefined;
+        if (embed) {
+          embedBuilder = this.convertToEmbedBuilder(embed);
         }
 
-        const textChannel = channel as TextChannel;
-
-        // Validate that either content or embed is provided
-        if (!content && !embed) {
-          throw new errors.BadRequestError('Either message content or embed must be provided');
+        // Send message with optional content and embed
+        const messageOptions: any = {};
+        if (content) {
+          messageOptions.content = content;
+        }
+        if (embedBuilder) {
+          messageOptions.embeds = [embedBuilder];
         }
 
-        const guildId = channel.guildId;
-
-        return await DiscordMetrics.measureOperation(
-          async () => {
-            // If only content is provided (backward compatibility)
-            if (content && !embed) {
-              const message = await textChannel.send(content);
-              DiscordMetrics.recordMessageSent(guildId, channelId, false);
-              return message;
-            }
-
-            // If embed is provided, convert to EmbedBuilder
-            let embedBuilder: EmbedBuilder | undefined;
-            if (embed) {
-              embedBuilder = this.convertToEmbedBuilder(embed);
-            }
-
-            // Send message with optional content and embed
-            const messageOptions: any = {};
-            if (content) {
-              messageOptions.content = content;
-            }
-            if (embedBuilder) {
-              messageOptions.embeds = [embedBuilder];
-            }
-
-            const message = await textChannel.send(messageOptions);
-            DiscordMetrics.recordMessageSent(guildId, channelId, !!embed);
-            return message;
-          },
-          'sendMessage',
-          guildId,
-        );
+        const message = await textChannel.send(messageOptions);
+        DiscordMetrics.recordMessageSent(guildId, channelId, !!embed);
+        return message;
       },
       'sendMessage',
-      { channelId },
+      guildId,
     );
   }
 
@@ -198,56 +185,44 @@ class DiscordBot {
   }
 
   async getGuildRoles(guildId: string): Promise<Role[]> {
-    return DiscordRateLimiter.withRetry(
+    return await DiscordMetrics.measureOperation(
       async () => {
-        return await DiscordMetrics.measureOperation(
-          async () => {
-            const guild = await this.client.guilds.fetch(guildId);
+        const guild = await this.client.guilds.fetch(guildId);
 
-            if (!guild) {
-              throw new errors.NotFoundError('Discord guild not found');
-            }
+        if (!guild) {
+          throw new errors.NotFoundError('Discord guild not found');
+        }
 
-            const roles = await guild.roles.fetch();
-            const roleArray = Array.from(roles.values());
+        const roles = await guild.roles.fetch();
+        const roleArray = Array.from(roles.values());
 
-            DiscordMetrics.recordRolesFetched(guildId, roleArray.length);
-            return roleArray;
-          },
-          'getGuildRoles',
-          guildId,
-        );
+        DiscordMetrics.recordRolesFetched(guildId, roleArray.length);
+        return roleArray;
       },
       'getGuildRoles',
-      { guildId },
+      guildId,
     );
   }
 
   async getGuildChannels(guildId: string): Promise<NonThreadGuildBasedChannel[]> {
-    return DiscordRateLimiter.withRetry(
+    return await DiscordMetrics.measureOperation(
       async () => {
-        return await DiscordMetrics.measureOperation(
-          async () => {
-            const guild = await this.client.guilds.fetch(guildId);
+        const guild = await this.client.guilds.fetch(guildId);
 
-            if (!guild) {
-              throw new errors.NotFoundError('Discord guild not found');
-            }
+        if (!guild) {
+          throw new errors.NotFoundError('Discord guild not found');
+        }
 
-            const channels = await guild.channels.fetch();
-            const channelArray = Array.from(channels.values()).filter(
-              (channel): channel is NonThreadGuildBasedChannel => channel !== null,
-            );
-
-            DiscordMetrics.recordChannelsFetched(guildId, channelArray.length);
-            return channelArray;
-          },
-          'getGuildChannels',
-          guildId,
+        const channels = await guild.channels.fetch();
+        const channelArray = Array.from(channels.values()).filter(
+          (channel): channel is NonThreadGuildBasedChannel => channel !== null,
         );
+
+        DiscordMetrics.recordChannelsFetched(guildId, channelArray.length);
+        return channelArray;
       },
       'getGuildChannels',
-      { guildId },
+      guildId,
     );
   }
 

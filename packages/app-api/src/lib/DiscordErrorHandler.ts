@@ -243,61 +243,6 @@ export class DiscordErrorHandler {
   }
 
   /**
-   * Determines if an error is retryable
-   */
-  static isRetryableError(error: any): boolean {
-    if (error instanceof DiscordAPIError || (error.code && typeof error.code === 'number')) {
-      const code = error.code;
-
-      // Rate limiting is retryable
-      if (code === DiscordErrorCodes.RATE_LIMITED) {
-        return true;
-      }
-
-      // These specific errors are retryable
-      const retryableCodes = [
-        DiscordErrorCodes.GENERAL_ERROR, // Sometimes transient
-      ];
-
-      if (retryableCodes.includes(code)) {
-        return true;
-      }
-    }
-
-    // Server errors are retryable (check status separately)
-    if (error.status >= 500 && error.status < 600) {
-      return true;
-    }
-
-    // Network errors are retryable
-    if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND' || error.code === 'ETIMEDOUT') {
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Gets retry delay from rate limit error
-   */
-  static getRetryDelay(error: any): number {
-    if (
-      (error instanceof DiscordAPIError || (error.code && typeof error.code === 'number')) &&
-      error.code === DiscordErrorCodes.RATE_LIMITED
-    ) {
-      // Discord provides retry-after header in seconds
-      const rawError = error.rawError as any;
-      const retryAfter = rawError?.retry_after;
-      if (retryAfter && typeof retryAfter === 'number') {
-        return retryAfter * 1000; // Convert to milliseconds
-      }
-    }
-
-    // Default exponential backoff delays (in milliseconds)
-    return 1000;
-  }
-
-  /**
    * Logs Discord API error with appropriate level and context
    */
   static logError(error: any, context: Record<string, any> = {}): void {
