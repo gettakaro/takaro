@@ -239,7 +239,9 @@ export class ShopListingService extends TakaroService<
       // Check stock availability
       if (listing.stockEnabled) {
         if (listing.stock === undefined || listing.stock < amount) {
-          throw new errors.BadRequestError(`Insufficient stock. Available: ${listing.stock || 0}, Requested: ${amount}`);
+          throw new errors.BadRequestError(
+            `Insufficient stock. Available: ${listing.stock || 0}, Requested: ${amount}`,
+          );
         }
       }
 
@@ -258,7 +260,7 @@ export class ShopListingService extends TakaroService<
         await this.repo.decrementStock(listingId, amount, trx);
       }
 
-      const order = await this.orderRepo.create(new ShopOrderCreateInternalDTO({ listingId, playerId, amount }));
+      const order = await this.orderRepo.create(new ShopOrderCreateInternalDTO({ listingId, playerId, amount }), trx);
 
       await this.eventService.create(
         new EventCreateDTO({
@@ -460,30 +462,6 @@ export class ShopListingService extends TakaroService<
 
     return updatedOrder;
   }
-
-  async setStock(listingId: string, stock: number): Promise<ShopListingOutputDTO> {
-    await this.checkIfUserHasHighPrivileges();
-    const listing = await this.findOne(listingId);
-
-    if (stock < 0) {
-      throw new errors.BadRequestError('Stock cannot be negative');
-    }
-
-    const updated = await this.repo.setStock(listingId, stock);
-
-    await this.eventService.create(
-      new EventCreateDTO({
-        eventName: EVENT_TYPES.SHOP_LISTING_UPDATED,
-        gameserverId: listing.gameServerId,
-        meta: new TakaroEventShopListingUpdated({
-          id: updated.id,
-        }),
-      }),
-    );
-
-    return updated;
-  }
-
 
   async checkStockAvailability(listingId: string, requestedAmount: number): Promise<boolean> {
     const listing = await this.findOne(listingId);

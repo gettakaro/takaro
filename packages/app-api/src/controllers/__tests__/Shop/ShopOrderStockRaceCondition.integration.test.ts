@@ -1,20 +1,40 @@
 import { IntegrationTest, expect, IShopSetup, shopSetup } from '@takaro/test';
 import { ShopOrderOutputDTOStatusEnum, isAxiosError } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'ShopOrderController - Stock Race Conditions';
+
+async function shopSetupWithExtraCurrency(this: IntegrationTest<IShopSetup>): Promise<IShopSetup> {
+  const setupData = await shopSetup.bind(this)();
+
+  // Add extra currency for stock tests
+  await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
+    setupData.gameserver.id,
+    setupData.players[0].id,
+    { currency: 100000 },
+  );
+
+  await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
+    setupData.gameserver.id,
+    setupData.players[1].id,
+    { currency: 100000 },
+  );
+
+  return setupData;
+}
 
 const tests = [
   new IntegrationTest<IShopSetup>({
     group,
     snapshot: false,
     name: 'Race condition protection: Multiple concurrent purchases of last item only succeed once',
-    setup: shopSetup,
+    setup: shopSetupWithExtraCurrency,
     test: async function () {
       // Set stock to 1
-      await this.client.shopListing.shopListingControllerSetStock(
-        this.setupData.listing100.id,
-        { stock: 1 }
-      );
+      await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, {
+        stock: 1,
+        stockEnabled: true,
+      });
 
       // Attempt to purchase the same item concurrently multiple times
       const purchasePromises = [];
@@ -67,13 +87,13 @@ const tests = [
     group,
     snapshot: false,
     name: 'Race condition protection: Multiple concurrent purchases with limited stock',
-    setup: shopSetup,
+    setup: shopSetupWithExtraCurrency,
     test: async function () {
       // Set stock to 5
-      await this.client.shopListing.shopListingControllerSetStock(
-        this.setupData.listing100.id,
-        { stock: 5 }
-      );
+      await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, {
+        stock: 5,
+        stockEnabled: true,
+      });
 
       // Attempt to purchase 2 items each, 5 times concurrently (total demand: 10, available: 5)
       const purchasePromises = [];
@@ -118,13 +138,13 @@ const tests = [
     group,
     snapshot: false,
     name: 'Race condition protection: Concurrent purchases from different users',
-    setup: shopSetup,
+    setup: shopSetupWithExtraCurrency,
     test: async function () {
       // Set stock to 3
-      await this.client.shopListing.shopListingControllerSetStock(
-        this.setupData.listing100.id,
-        { stock: 3 }
-      );
+      await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, {
+        stock: 3,
+        stockEnabled: true,
+      });
 
       // Three different users try to purchase 2 items each
       const purchasePromises = [
@@ -135,7 +155,7 @@ const tests = [
           })
           .then((response) => ({ type: 'success' as const, user: 'client1', response }))
           .catch((error) => ({ type: 'error' as const, user: 'client1', error })),
-        
+
         this.setupData.client2.shopOrder
           .shopOrderControllerCreate({
             listingId: this.setupData.listing100.id,
@@ -143,7 +163,7 @@ const tests = [
           })
           .then((response) => ({ type: 'success' as const, user: 'client2', response }))
           .catch((error) => ({ type: 'error' as const, user: 'client2', error })),
-        
+
         this.setupData.client1.shopOrder
           .shopOrderControllerCreate({
             listingId: this.setupData.listing100.id,
@@ -166,7 +186,7 @@ const tests = [
       const listing = await this.client.shopListing.shopListingControllerGetOne(this.setupData.listing100.id);
       expect(listing.data.data.stock).to.equal(1); // 3 - 2 = 1
 
-      return { results, listing };
+      return listing;
     },
   }),
 
@@ -174,7 +194,7 @@ const tests = [
     group,
     snapshot: false,
     name: 'No race condition issues with unlimited stock',
-    setup: shopSetup,
+    setup: shopSetupWithExtraCurrency,
     test: async function () {
       // Don't set stock - listing should have unlimited stock by default
 

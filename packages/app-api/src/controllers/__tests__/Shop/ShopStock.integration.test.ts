@@ -1,5 +1,6 @@
 import { IntegrationTest, expect, IShopSetup, shopSetup } from '@takaro/test';
 import { isAxiosError } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'ShopStockController';
 
@@ -10,10 +11,10 @@ const tests = [
     name: 'Can set stock for a listing',
     setup: shopSetup,
     test: async function () {
-      const response = await this.client.shopListing.shopListingControllerSetStock(
-        this.setupData.listing100.id,
-        { stock: 10 }
-      );
+      const response = await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, {
+        stock: 10,
+        stockEnabled: true,
+      });
 
       expect(response.data.data.stock).to.equal(10);
       expect(response.data.data.stockEnabled).to.be.true;
@@ -29,10 +30,10 @@ const tests = [
     setup: shopSetup,
     test: async function () {
       try {
-        await this.client.shopListing.shopListingControllerSetStock(
-          this.setupData.listing100.id,
-          { stock: -5 }
-        );
+        await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, {
+          stock: -5,
+          stockEnabled: true,
+        });
         throw new Error('Should have thrown an error');
       } catch (error) {
         if (!isAxiosError(error)) throw error;
@@ -48,11 +49,18 @@ const tests = [
     name: 'Regular users cannot manage stock',
     setup: shopSetup,
     test: async function () {
+      await this.client.user.userControllerUpdate(this.setupData.user1.id, {
+        isDashboardUser: true,
+      });
+
+      // Unassign the 'test role' to make sure the user has no permissions
+      await this.client.player.playerControllerRemoveRole(this.setupData.players[0].id, this.setupData.role.id);
+
       try {
-        await this.setupData.client1.shopListing.shopListingControllerSetStock(
-          this.setupData.listing100.id,
-          { stock: 10 }
-        );
+        await this.setupData.client1.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, {
+          stock: 10,
+          stockEnabled: true,
+        });
         throw new Error('Should have thrown an error');
       } catch (error) {
         if (!isAxiosError(error)) throw error;
@@ -68,10 +76,10 @@ const tests = [
     setup: shopSetup,
     test: async function () {
       // Set stock
-      await this.client.shopListing.shopListingControllerSetStock(
-        this.setupData.listing100.id,
-        { stock: 15 }
-      );
+      await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, {
+        stock: 15,
+        stockEnabled: true,
+      });
 
       // Get listing
       const response = await this.client.shopListing.shopListingControllerGetOne(this.setupData.listing100.id);
@@ -90,8 +98,8 @@ const tests = [
     setup: shopSetup,
     test: async function () {
       const newListing = await this.client.shopListing.shopListingControllerCreate({
-        gameServerId: this.setupData.gameServer1.id,
-        items: [{ itemId: this.setupData.items.itemBread.id, amount: 1 }],
+        gameServerId: this.setupData.gameserver.id,
+        items: [{ itemId: this.setupData.items[0].id, amount: 1 }],
         price: 50,
         name: 'Limited Stock Item',
         stock: 20,

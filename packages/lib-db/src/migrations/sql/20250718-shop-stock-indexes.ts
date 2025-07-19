@@ -5,7 +5,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.alterTable('shopListing', (table) => {
     table.index(['stockEnabled', 'stock'], 'idx_shopListing_stock');
   });
-  
+
   // Create partial index for stock-enabled listings
   await knex.raw(`
     CREATE INDEX idx_shopListing_stockEnabled_true 
@@ -18,6 +18,6 @@ export async function down(knex: Knex): Promise<void> {
   await knex.schema.alterTable('shopListing', (table) => {
     table.dropIndex(['stockEnabled', 'stock'], 'idx_shopListing_stock');
   });
-  
+
   await knex.raw('DROP INDEX IF EXISTS idx_shopListing_stockEnabled_true');
 }

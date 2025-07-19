@@ -60,6 +60,7 @@ export class ShopListingOutputDTO extends TakaroModelDTO<ShopListingOutputDTO> {
   @IsOptional()
   categories?: ShopCategoryOutputDTO[];
   @IsNumber()
+  @Min(0)
   @IsOptional()
   stock?: number;
   @IsBoolean()
@@ -83,6 +84,7 @@ export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
   @IsOptional()
   categoryIds?: string[];
   @IsNumber()
+  @Min(0)
   @IsOptional()
   stock?: number;
   @IsBoolean()
@@ -111,6 +113,7 @@ export class ShopListingUpdateDTO extends TakaroDTO<ShopListingUpdateDTO> {
   @IsOptional()
   categoryIds?: string[];
   @IsNumber()
+  @Min(0)
   @IsOptional()
   stock?: number;
   @IsBoolean()
@@ -131,8 +134,6 @@ export class ShopOrderOutputDTO extends TakaroModelDTO<ShopOrderOutputDTO> {
   listingId: string;
   @IsUUID()
   playerId: string;
-  @IsUUID()
-  gameServerId: string;
   @IsNumber()
   amount: number;
   @IsEnum(Object.values(ShopOrderStatus))
@@ -156,8 +157,6 @@ export class ShopOrderCreateDTO<T = void> extends TakaroDTO<T> {
 export class ShopOrderCreateInternalDTO extends ShopOrderCreateDTO<ShopOrderCreateInternalDTO> {
   @IsUUID()
   playerId: string;
-  @IsUUID()
-  gameServerId: string;
 }
 
 export class ShopOrderUpdateDTO extends TakaroDTO<ShopOrderUpdateDTO> {
@@ -240,10 +239,4 @@ export class ShopCategoryBulkAssignDTO extends TakaroDTO<ShopCategoryBulkAssignD
   @IsUUID('4', { each: true })
   @IsOptional()
   removeCategoryIds?: string[];
-}
-
-export class StockUpdateDTO extends TakaroDTO<StockUpdateDTO> {
-  @IsNumber()
-  @Min(0)
-  stock: number;
 }

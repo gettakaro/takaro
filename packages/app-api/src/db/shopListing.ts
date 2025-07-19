@@ -167,6 +167,8 @@ export class ShopListingRepo extends ITakaroRepo<
         draft: item.draft,
         name: item.name,
         price: item.price,
+        stock: item.stock,
+        stockEnabled: item.stockEnabled || false,
         domain: this.domainId,
       })
       .returning('*');
@@ -351,56 +353,64 @@ export class ShopListingRepo extends ITakaroRepo<
   }
 
   async decrementStock(listingId: string, amount: number, trx?: any): Promise<void> {
-    const knex = trx || await this.getKnex();
-    
+    const knex = trx || (await this.getKnex());
+
     const result = await knex('shopListing')
       .where('id', listingId)
       .where('stockEnabled', true)
       .where('stock', '>=', amount)
       .decrement('stock', amount);
-    
+
     if (!result) {
       throw new errors.BadRequestError(`Insufficient stock available`);
     }
   }
 
   async incrementStock(listingId: string, amount: number, trx?: any): Promise<void> {
-    const knex = trx || await this.getKnex();
-    
-    await knex('shopListing')
-      .where('id', listingId)
-      .where('stockEnabled', true)
-      .increment('stock', amount);
-  }
+    const knex = trx || (await this.getKnex());
 
-  async setStock(listingId: string, stock: number): Promise<ShopListingOutputDTO> {
-    const { query } = await this.getModel();
-    await query.updateAndFetchById(listingId, { stock, stockEnabled: true });
-    return this.findOne(listingId);
+    await knex('shopListing').where('id', listingId).where('stockEnabled', true).increment('stock', amount);
   }
-
 
   async findOneForUpdate(id: string, trx: any): Promise<ShopListingOutputDTO> {
-    const result = await trx('shopListing')
-      .where('id', id)
-      .whereNull('deletedAt')
-      .forUpdate()
-      .first();
-    
+    const result = await trx('shopListing').where('id', id).whereNull('deletedAt').forUpdate().first();
+
     if (!result) throw new errors.NotFoundError();
-    
-    // Fetch related data
-    const items = await trx(SHOP_LISTING_ITEMS_TABLE_NAME)
+
+    // Fetch related data with proper aliasing
+    const itemsJoinResult = await trx(SHOP_LISTING_ITEMS_TABLE_NAME)
+      .select(`${SHOP_LISTING_ITEMS_TABLE_NAME}.amount`, `${SHOP_LISTING_ITEMS_TABLE_NAME}.quality`, 'items.*')
       .where('listingId', id)
       .join('items', 'items.id', '=', `${SHOP_LISTING_ITEMS_TABLE_NAME}.itemId`);
-    
+
+    // Transform the flat join result into nested structure
+    const items = itemsJoinResult.map((row: any) => ({
+      amount: row.amount,
+      quality: row.quality,
+      item: {
+        id: row.id,
+        name: row.name,
+        code: row.code,
+        description: row.description,
+        createdAt: row.createdAt,
+        updatedAt: row.updatedAt,
+        gameServerId: row.gameServerId,
+        // Include any other fields from the items table
+      },
+    }));
+
     const categories = await trx(SHOP_LISTING_CATEGORY_TABLE_NAME)
       .where('shopListingId', id)
-      .join(SHOP_CATEGORY_TABLE_NAME, `${SHOP_CATEGORY_TABLE_NAME}.id`, '=', `${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`);
-    
+      .join(
+        SHOP_CATEGORY_TABLE_NAME,
+        `${SHOP_CATEGORY_TABLE_NAME}.id`,
+        '=',
+        `${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`,
+      );
+
     result.items = items;
     result.categories = categories;
-    
+
     return new ShopListingOutputDTO(result);
   }
 }

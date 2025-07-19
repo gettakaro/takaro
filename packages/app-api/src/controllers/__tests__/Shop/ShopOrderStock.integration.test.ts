@@ -1,20 +1,40 @@
 import { IntegrationTest, expect, IShopSetup, shopSetup } from '@takaro/test';
 import { ShopOrderOutputDTOStatusEnum, isAxiosError } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'ShopOrderController - Stock';
+
+async function shopSetupWithExtraCurrency(this: IntegrationTest<IShopSetup>): Promise<IShopSetup> {
+  const setupData = await shopSetup.bind(this)();
+
+  // Add extra currency for stock tests
+  await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
+    setupData.gameserver.id,
+    setupData.players[0].id,
+    { currency: 100000 },
+  );
+
+  await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
+    setupData.gameserver.id,
+    setupData.players[1].id,
+    { currency: 100000 },
+  );
+
+  return setupData;
+}
 
 const tests = [
   new IntegrationTest<IShopSetup>({
     group,
     snapshot: false,
     name: 'Can purchase item with sufficient stock',
-    setup: shopSetup,
+    setup: shopSetupWithExtraCurrency,
     test: async function () {
       // Set stock
-      await this.client.shopListing.shopListingControllerSetStock(
-        this.setupData.listing100.id,
-        { stock: 10 }
-      );
+      await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, {
+        stock: 10,
+        stockEnabled: true,
+      });
 
       // Create order
       const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
@@ -36,13 +56,13 @@ const tests = [
     group,
     snapshot: false,
     name: 'Cannot purchase more than available stock',
-    setup: shopSetup,
+    setup: shopSetupWithExtraCurrency,
     test: async function () {
       // Set limited stock
-      await this.client.shopListing.shopListingControllerSetStock(
-        this.setupData.listing100.id,
-        { stock: 2 }
-      );
+      await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, {
+        stock: 2,
+        stockEnabled: true,
+      });
 
       // Try to order more than available
       try {
@@ -63,13 +83,13 @@ const tests = [
     group,
     snapshot: false,
     name: 'Cannot purchase from out of stock listing',
-    setup: shopSetup,
+    setup: shopSetupWithExtraCurrency,
     test: async function () {
       // Set stock to 0
-      await this.client.shopListing.shopListingControllerSetStock(
-        this.setupData.listing100.id,
-        { stock: 0 }
-      );
+      await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, {
+        stock: 0,
+        stockEnabled: true,
+      });
 
       // Try to order
       try {
@@ -90,7 +110,7 @@ const tests = [
     group,
     snapshot: false,
     name: 'Can purchase from unlimited stock listing',
-    setup: shopSetup,
+    setup: shopSetupWithExtraCurrency,
     test: async function () {
       // Listing should have unlimited stock by default
       const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
@@ -112,13 +132,13 @@ const tests = [
     group,
     snapshot: false,
     name: 'Stock is restored when order is cancelled',
-    setup: shopSetup,
+    setup: shopSetupWithExtraCurrency,
     test: async function () {
       // Set stock
-      await this.client.shopListing.shopListingControllerSetStock(
-        this.setupData.listing100.id,
-        { stock: 10 }
-      );
+      await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, {
+        stock: 10,
+        stockEnabled: true,
+      });
 
       // Create order
       const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
@@ -146,13 +166,13 @@ const tests = [
     group,
     snapshot: false,
     name: 'Multiple purchases correctly decrement stock',
-    setup: shopSetup,
+    setup: shopSetupWithExtraCurrency,
     test: async function () {
       // Set stock
-      await this.client.shopListing.shopListingControllerSetStock(
-        this.setupData.listing100.id,
-        { stock: 20 }
-      );
+      await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, {
+        stock: 20,
+        stockEnabled: true,
+      });
 
       // Create multiple orders
       await this.setupData.client1.shopOrder.shopOrderControllerCreate({
@@ -182,13 +202,13 @@ const tests = [
     group,
     snapshot: false,
     name: 'Cannot claim order after stock is restored from cancellation',
-    setup: shopSetup,
+    setup: shopSetupWithExtraCurrency,
     test: async function () {
       // Set stock
-      await this.client.shopListing.shopListingControllerSetStock(
-        this.setupData.listing100.id,
-        { stock: 5 }
-      );
+      await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, {
+        stock: 5,
+        stockEnabled: true,
+      });
 
       // Create order
       const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
