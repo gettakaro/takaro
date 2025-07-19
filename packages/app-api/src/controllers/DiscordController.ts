@@ -15,6 +15,7 @@ import { IsBoolean, IsOptional, IsString, Length, ValidateNested } from 'class-v
 import { ResponseSchema, OpenAPI } from 'routing-controllers-openapi';
 import { TakaroDTO } from '@takaro/util';
 import { ParamId } from '../lib/validators.js';
+import { PERMISSIONS } from '@takaro/auth';
 import { discordBot } from '../lib/DiscordBot.js';
 import { AllowedFilters, AllowedSearch } from './shared.js';
 
@@ -99,10 +100,10 @@ class DiscordChannelOutputArrayDTOAPI extends APIOutput<DiscordChannelOutputDTO[
   declare data: DiscordChannelOutputDTO[];
 }
 
-@UseBefore(AuthService.getAuthMiddleware([]))
 @JsonController()
 export class DiscordController {
   @Post('/discord/guilds/search')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.VIEW_DISCORD_INFO]))
   @ResponseSchema(GuildOutputArrayDTOAPI)
   @OpenAPI({
     summary: 'Search Discord guilds',
@@ -155,6 +156,7 @@ export class DiscordController {
   }
 
   @Post('/discord/channels/:id/message')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.SEND_DISCORD_MESSAGE]))
   @ResponseSchema(APIOutput)
   @OpenAPI({
     summary: 'Send message to Discord channel',
@@ -258,6 +260,7 @@ export class DiscordController {
   }
 
   @Put('/discord/guilds/:id')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_SETTINGS]))
   @ResponseSchema(GuildOutputDTOAPI)
   @OpenAPI({
     summary: 'Update guild settings',
@@ -295,6 +298,7 @@ export class DiscordController {
   }
 
   @Get('/discord/guilds/:id/roles')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.VIEW_DISCORD_INFO]))
   @ResponseSchema(DiscordRoleOutputArrayDTOAPI)
   @OpenAPI({
     summary: 'Get guild roles',
@@ -308,6 +312,7 @@ export class DiscordController {
   }
 
   @Get('/discord/guilds/:id/channels')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.VIEW_DISCORD_INFO]))
   @ResponseSchema(DiscordChannelOutputArrayDTOAPI)
   @OpenAPI({
     summary: 'Get guild channels',
