@@ -6,6 +6,7 @@ import {
   Drawer,
   CollapseList,
   TextAreaField,
+  SelectField,
   FormError,
   IconTooltip,
   useTheme,
@@ -29,6 +30,8 @@ import { UncontrolledModuleVersionSelectQueryField } from '../../../../../../com
 export interface IFormInputs {
   name: string;
   description: string;
+  author?: string;
+  supportedGames?: string[];
   permissions: PermissionCreateDTO[];
   configFields: AnyInput[];
 }
@@ -38,6 +41,8 @@ export const ModuleFormBuilder: FC<ModuleFormProps> = ({
   isLoading = false,
   error,
   moduleName,
+  moduleAuthor,
+  moduleSupportedGames,
   moduleVersion,
 }) => {
   const [open, setOpen] = useState(true);
@@ -58,6 +63,8 @@ export const ModuleFormBuilder: FC<ModuleFormProps> = ({
     values: {
       name: moduleName ?? '',
       description: moduleVersion?.description ?? '',
+      author: moduleAuthor ?? '',
+      supportedGames: moduleSupportedGames ?? ['all'],
       permissions: moduleVersion?.permissions ?? [],
       configFields: initialConfigFields,
     },
@@ -88,12 +95,21 @@ export const ModuleFormBuilder: FC<ModuleFormProps> = ({
     }
   }, [open, navigate]);
 
-  const submitHandler: SubmitHandler<IFormInputs> = ({ configFields, name, description, permissions }) => {
+  const submitHandler: SubmitHandler<IFormInputs> = ({
+    configFields,
+    name,
+    description,
+    author,
+    supportedGames,
+    permissions,
+  }) => {
     const schema = inputsToSchema(configFields);
     const uiSchema = inputsToUiSchema(configFields);
     onSubmit!({
       name,
       description,
+      author,
+      supportedGames,
       permissions,
       schema: JSON.stringify(schema),
       uiSchema: JSON.stringify(uiSchema),
@@ -152,6 +168,54 @@ export const ModuleFormBuilder: FC<ModuleFormProps> = ({
                   name="description"
                   readOnly={readOnly}
                 />
+                <TextField
+                  control={control}
+                  label="Author"
+                  placeholder="Your name or organization"
+                  loading={isLoading}
+                  name="author"
+                  readOnly={readOnly}
+                />
+                <SelectField
+                  control={control}
+                  label="Supported Games"
+                  name="supportedGames"
+                  multiple={true}
+                  readOnly={readOnly}
+                  loading={isLoading}
+                  render={(selectedItems) => {
+                    if (selectedItems.length === 0) return 'Select supported games';
+                    return selectedItems.map((item) => item.label).join(', ');
+                  }}
+                >
+                  <SelectField.OptionGroup>
+                    <SelectField.Option value="all" label="All Games">
+                      <div>
+                        <span>All Games</span>
+                      </div>
+                    </SelectField.Option>
+                    <SelectField.Option value="minecraft" label="Minecraft">
+                      <div>
+                        <span>Minecraft</span>
+                      </div>
+                    </SelectField.Option>
+                    <SelectField.Option value="7 days to die" label="7 Days to Die">
+                      <div>
+                        <span>7 Days to Die</span>
+                      </div>
+                    </SelectField.Option>
+                    <SelectField.Option value="rust" label="Rust">
+                      <div>
+                        <span>Rust</span>
+                      </div>
+                    </SelectField.Option>
+                    <SelectField.Option value="other" label="Other">
+                      <div>
+                        <span>Other</span>
+                      </div>
+                    </SelectField.Option>
+                  </SelectField.OptionGroup>
+                </SelectField>
               </CollapseList.Item>
 
               <CollapseList.Item

@@ -5,6 +5,8 @@ export class ServerMessages extends ModuleTransferDTO<ServerMessages> {
     super();
 
     this.name = 'serverMessages';
+    this.author = 'Takaro';
+    this.supportedGames = ['all'];
     this.versions = [
       new ModuleTransferVersionDTO({
         tag: '0.0.1',

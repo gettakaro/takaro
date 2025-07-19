@@ -304,6 +304,23 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
     let mod = existingModule.results[0];
 
+    // Update existing module's author and supportedGames if they're different
+    if (
+      mod &&
+      (mod.author !== data.author || JSON.stringify(mod.supportedGames) !== JSON.stringify(data.supportedGames))
+    ) {
+      const updated = await this.update(
+        mod.id,
+        new ModuleUpdateDTO({
+          author: data.author,
+          supportedGames: data.supportedGames,
+        }),
+      );
+      if (updated) {
+        mod = updated;
+      }
+    }
+
     // New module, create it
     if (!mod) {
       this.log.info(`Creating new module ${data.name}`, { name: data.name });
@@ -311,6 +328,8 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         new ModuleCreateInternalDTO({
           name: data.name,
           builtin: isBuiltin ? data.name : null,
+          author: data.author,
+          supportedGames: data.supportedGames,
         }),
       );
     }

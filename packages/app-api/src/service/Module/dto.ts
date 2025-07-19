@@ -1,6 +1,16 @@
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
-import { IsString, IsJSON, IsOptional, ValidateNested, IsUUID, IsObject, Length, IsISO8601 } from 'class-validator';
+import {
+  IsString,
+  IsJSON,
+  IsOptional,
+  ValidateNested,
+  IsUUID,
+  IsObject,
+  Length,
+  IsISO8601,
+  IsArray,
+} from 'class-validator';
 import { CommandOutputDTO } from '../CommandService.js';
 import { CronJobOutputDTO } from '../CronJobService.js';
 import { FunctionOutputDTO } from '../FunctionService.js';
@@ -57,6 +67,12 @@ export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @IsString()
   @IsOptional()
   builtin: string;
+  @IsString()
+  @IsOptional()
+  author: string;
+  @IsArray()
+  @IsString({ each: true })
+  supportedGames: string[];
   @ValidateNested()
   @Type(() => ModuleVersionOutputDTO)
   latestVersion: ModuleVersionOutputDTO;
@@ -89,6 +105,15 @@ export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
   @IsString()
   @IsOptional()
   builtin: string;
+
+  @IsString()
+  @IsOptional()
+  author?: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  supportedGames?: string[];
 }
 
 export class ModuleCreateVersionInputDTO extends TakaroDTO<ModuleCreateVersionInputDTO> {
@@ -115,6 +140,16 @@ export class ModuleCreateAPIDTO extends TakaroDTO<ModuleCreateAPIDTO> {
   @IsString()
   @Length(3, 50)
   name!: string;
+
+  @IsString()
+  @IsOptional()
+  author?: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  supportedGames?: string[];
+
   @ValidateNested()
   @Type(() => ModuleCreateVersionInputDTO)
   @IsOptional()
@@ -129,6 +164,16 @@ export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> 
   @IsString()
   @Length(3, 50)
   name!: string;
+
+  @IsString()
+  @IsOptional()
+  author?: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  supportedGames?: string[];
+
   @ValidateNested()
   @Type(() => ModuleCreateVersionInputDTO)
   latestVersion: ModuleCreateVersionInputDTO;
@@ -158,6 +203,15 @@ export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @IsString()
+  @IsOptional()
+  author?: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  supportedGames?: string[];
 
   @ValidateNested()
   @Type(() => ModuleVersionUpdateDTO)

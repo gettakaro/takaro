@@ -4,6 +4,8 @@ export class HighPingKicker extends ModuleTransferDTO<HighPingKicker> {
   constructor() {
     super();
     this.name = 'highPingKicker';
+    this.author = 'Takaro';
+    this.supportedGames = ['7 days to die', 'rust', 'minecraft'];
     this.versions = [
       new ModuleTransferVersionDTO({
         tag: '0.0.2',

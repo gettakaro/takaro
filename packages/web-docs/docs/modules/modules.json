@@ -1,6 +1,10 @@
 [
   {
     "name": "utils",
+    "author": "Takaro",
+    "supportedGames": [
+      "all"
+    ],
     "versions": [
       {
         "tag": "0.0.2",
@@ -42,6 +46,12 @@
   },
   {
     "name": "teleports",
+    "author": "Takaro",
+    "supportedGames": [
+      "7 days to die",
+      "rust",
+      "minecraft"
+    ],
     "versions": [
       {
         "tag": "0.0.4",
@@ -232,6 +242,10 @@
   },
   {
     "name": "playerOnboarding",
+    "author": "Takaro",
+    "supportedGames": [
+      "all"
+    ],
     "versions": [
       {
         "tag": "0.0.3",
@@ -259,6 +273,10 @@
   },
   {
     "name": "serverMessages",
+    "author": "Takaro",
+    "supportedGames": [
+      "all"
+    ],
     "versions": [
       {
         "tag": "0.0.1",
@@ -276,6 +294,10 @@
   },
   {
     "name": "chatBridge",
+    "author": "Takaro",
+    "supportedGames": [
+      "all"
+    ],
     "versions": [
       {
         "tag": "0.0.1",
@@ -308,6 +330,12 @@
   },
   {
     "name": "gimme",
+    "author": "Takaro",
+    "supportedGames": [
+      "7 days to die",
+      "rust",
+      "minecraft"
+    ],
     "versions": [
       {
         "tag": "0.0.3",
@@ -328,6 +356,12 @@
   },
   {
     "name": "highPingKicker",
+    "author": "Takaro",
+    "supportedGames": [
+      "7 days to die",
+      "rust",
+      "minecraft"
+    ],
     "versions": [
       {
         "tag": "0.0.2",
@@ -345,6 +379,10 @@
   },
   {
     "name": "economyUtils",
+    "author": "Takaro",
+    "supportedGames": [
+      "all"
+    ],
     "versions": [
       {
         "tag": "0.0.2",
@@ -515,6 +553,10 @@
   },
   {
     "name": "lottery",
+    "author": "Takaro",
+    "supportedGames": [
+      "all"
+    ],
     "versions": [
       {
         "tag": "0.0.2",
@@ -583,6 +625,10 @@
   },
   {
     "name": "geoBlock",
+    "author": "Takaro",
+    "supportedGames": [
+      "all"
+    ],
     "versions": [
       {
         "tag": "0.0.1",
@@ -609,6 +655,10 @@
   },
   {
     "name": "timedShutdown",
+    "author": "Takaro",
+    "supportedGames": [
+      "all"
+    ],
     "versions": [
       {
         "tag": "0.0.1",
@@ -631,6 +681,10 @@
   },
   {
     "name": "dailyRewards",
+    "author": "Takaro",
+    "supportedGames": [
+      "all"
+    ],
     "versions": [
       {
         "description": "Provides daily login rewards with streak tracking",
