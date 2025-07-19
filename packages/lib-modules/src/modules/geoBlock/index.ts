@@ -255,6 +255,8 @@ export class GeoBlock extends ModuleTransferDTO<GeoBlock> {
     super();
 
     this.name = 'geoBlock';
+    this.author = 'Takaro';
+    this.supportedGames = ['all'];
     this.versions = [
       new ModuleTransferVersionDTO({
         tag: '0.0.1',

@@ -5,6 +5,8 @@ export class TimedShutdown extends ModuleTransferDTO<TimedShutdown> {
     super();
 
     this.name = 'timedShutdown';
+    this.author = 'Takaro';
+    this.supportedGames = ['all'];
     this.versions = [
       new ModuleTransferVersionDTO({
         tag: '0.0.1',

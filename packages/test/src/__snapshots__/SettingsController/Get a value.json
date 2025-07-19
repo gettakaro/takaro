@@ -4,7 +4,9 @@
     "data": {
       "key": "commandPrefix",
       "value": "/",
-      "type": "default"
+      "type": "default",
+      "description": "The prefix character(s) that players must use before commands in chat",
+      "canHaveGameServerOverride": true
     }
   },
   "status": 200,

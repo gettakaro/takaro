@@ -298,4 +298,46 @@ describe('7d2d event detection', () => {
     expect((emitStub.getCalls()[1].args[1] as EventEntityKilled).player.name).to.equal(mockGamePlayer.name);
     expect((emitStub.getCalls()[1].args[1] as EventEntityKilled).weapon).to.equal('S.H.I.E.L.D. Auto Shotgun');
   });
+
+  it('[EntityKilled] Can detect entity killed with spaces in name', async () => {
+    const emitter = new SevenDaysToDieEmitter(await mockConnectionInfo());
+
+    await emitter.parseMessage({
+      msg: `Entity Zombie cheerleader 613814 killed by ${mockGamePlayer.name} 54854`,
+    });
+    await emitter.parseMessage({
+      msg: `[CSMM_Patrons]entityKilled: ${mockGamePlayer.name} (Steam_${mockGamePlayer.steamId}) killed zombie Zombie cheerleader with Compound Bow`,
+    });
+
+    expect(emitStub).to.have.been.calledThrice;
+
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.ENTITY_KILLED);
+    expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
+    expect(emitStub.getCalls()[2].args[0]).to.equal(GameEvents.LOG_LINE);
+
+    expect((emitStub.getCalls()[0].args[1] as EventEntityKilled).entity).to.equal('Zombie cheerleader');
+    expect((emitStub.getCalls()[0].args[1] as EventEntityKilled).player.name).to.equal(mockGamePlayer.name);
+    expect((emitStub.getCalls()[0].args[1] as EventEntityKilled).weapon).to.equal(undefined);
+  });
+
+  it('[EntityKilled] Can detect entity killed with special accents', async () => {
+    const emitter = new SevenDaysToDieEmitter(await mockConnectionInfo({ useCPM: true }));
+
+    await emitter.parseMessage({
+      msg: `Entity zombieFrançaise 613814 killed by ${mockGamePlayer.name} 54854`,
+    });
+    await emitter.parseMessage({
+      msg: `[CSMM_Patrons]entityKilled: ${mockGamePlayer.name} (Steam_${mockGamePlayer.steamId}) killed zombie zombieFrançaise with Molotov Cocktail`,
+    });
+
+    expect(emitStub).to.have.been.calledThrice;
+
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.LOG_LINE);
+    expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.ENTITY_KILLED);
+    expect(emitStub.getCalls()[2].args[0]).to.equal(GameEvents.LOG_LINE);
+
+    expect((emitStub.getCalls()[1].args[1] as EventEntityKilled).entity).to.equal('zombieFrançaise');
+    expect((emitStub.getCalls()[1].args[1] as EventEntityKilled).player.name).to.equal(mockGamePlayer.name);
+    expect((emitStub.getCalls()[1].args[1] as EventEntityKilled).weapon).to.equal('Molotov Cocktail');
+  });
 });

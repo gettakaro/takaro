@@ -11,6 +11,8 @@ export class DailyRewards extends ModuleTransferDTO<DailyRewards> {
   constructor() {
     super();
     this.name = 'dailyRewards';
+    this.author = 'Takaro';
+    this.supportedGames = ['all'];
     this.versions = [
       new ModuleTransferVersionDTO({
         description: 'Provides daily login rewards with streak tracking',

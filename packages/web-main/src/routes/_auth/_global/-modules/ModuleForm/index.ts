@@ -5,6 +5,8 @@ import { schemaToInputs } from '../schemaConversion/SchemaToInputs';
 export interface ModuleFormSubmitProps {
   name: string;
   description: string;
+  author?: string;
+  supportedGames?: string[];
   permissions: PermissionCreateDTO[];
   schema: string;
   uiSchema: string;
@@ -15,6 +17,8 @@ export interface ModuleFormProps {
   onSubmit?: (data: ModuleFormSubmitProps) => void;
   error: string | string[] | null;
   moduleName?: string;
+  moduleAuthor?: string;
+  moduleSupportedGames?: string[];
   moduleVersion?: ModuleVersionOutputDTO;
 }
 

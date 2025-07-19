@@ -108,6 +108,12 @@ export class SevenDaysToDie implements IGameServer {
 
     if (this.connectionInfo.useCPM && !res.rawResult.includes('Item(s) given')) {
       this.logger.error('Failed to give item', { player, item, amount, quality, rawResult: res.rawResult });
+
+      if (res.rawResult.includes('does not support quality')) {
+        this.logger.warn('Item does not support quality, retrying without quality');
+        return this.giveItem(player, item, amount);
+      }
+
       throw new errors.BadRequestError(`Failed to give item. Result: "${res.rawResult}"`);
     }
   }

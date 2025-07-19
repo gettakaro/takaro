@@ -6,6 +6,8 @@ export class PlayerOnboarding extends ModuleTransferDTO<PlayerOnboarding> {
     super();
 
     this.name = 'playerOnboarding';
+    this.author = 'Takaro';
+    this.supportedGames = ['all'];
     this.versions = [
       new ModuleTransferVersionDTO({
         tag: '0.0.3',

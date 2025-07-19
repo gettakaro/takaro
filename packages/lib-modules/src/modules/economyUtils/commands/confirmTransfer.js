@@ -7,10 +7,10 @@ async function main() {
   const variables = (
     await takaro.variable.variableControllerSearch({
       filters: {
-        key: 'confirmTransfer',
-        gameServerId,
-        moduleId: mod.moduleId,
-        playerId: sender.playerId,
+        key: ['confirmTransfer'],
+        gameServerId: [gameServerId],
+        moduleId: [mod.moduleId],
+        playerId: [sender.playerId],
       },
     })
   ).data.data;
@@ -29,7 +29,7 @@ async function main() {
     pendingTransfer.receiver.id,
     {
       currency: pendingTransfer.amount,
-    }
+    },
   );
 
   const receiverName = (await takaro.player.playerControllerGetOne(pendingTransfer.receiver.playerId)).data.data.name;
@@ -37,7 +37,7 @@ async function main() {
   const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;
 
   const messageToSender = sender.pm(
-    `You successfully transferred ${pendingTransfer.amount} ${currencyName} to ${receiverName}`
+    `You successfully transferred ${pendingTransfer.amount} ${currencyName} to ${receiverName}`,
   );
 
   const messageToReceiver = takaro.gameserver.gameServerControllerSendMessage(gameServerId, {

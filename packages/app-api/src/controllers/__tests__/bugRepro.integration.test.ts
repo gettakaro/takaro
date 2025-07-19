@@ -444,6 +444,29 @@ const tests = [
       }
     },
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Search endpoint filters validation - should throw error when filters is not an object with arrays',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      try {
+        await this.client.module.moduleControllerSearch({
+          filters: {
+            // @ts-expect-error - we are testing invalid input
+            name: 'blabla',
+          },
+        });
+        throw new Error('Should have thrown a validation error');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.be.eq(400);
+        expect(error.response?.data.meta.error.message).to.contain(
+          'Filter values must be arrays or boolean. Found invalid value for',
+        );
+      }
+    },
+  }),
 ];
 
 describe(group, function () {

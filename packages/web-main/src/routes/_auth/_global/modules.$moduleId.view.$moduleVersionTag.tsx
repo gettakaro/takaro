@@ -70,8 +70,24 @@ function Component() {
 
   return (
     <>
-      {view === 'manual' && <ModuleFormManual moduleName={mod.name} moduleVersion={modVersion} error={null} />}
-      {view === 'builder' && <ModuleFormBuilder moduleName={mod.name} moduleVersion={modVersion} error={null} />}
+      {view === 'manual' && (
+        <ModuleFormManual
+          moduleName={mod.name}
+          moduleAuthor={mod.author}
+          moduleSupportedGames={mod.supportedGames}
+          moduleVersion={modVersion}
+          error={null}
+        />
+      )}
+      {view === 'builder' && (
+        <ModuleFormBuilder
+          moduleName={mod.name}
+          moduleAuthor={mod.author}
+          moduleSupportedGames={mod.supportedGames}
+          moduleVersion={modVersion}
+          error={null}
+        />
+      )}
     </>
   );
 }

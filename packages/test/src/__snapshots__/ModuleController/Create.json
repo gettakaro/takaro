@@ -23,7 +23,11 @@
         "functions": [],
         "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}",
         "defaultSystemConfig": null
-      }
+      },
+      "author": "Unknown",
+      "supportedGames": [
+        "all"
+      ]
     }
   },
   "status": 200,

@@ -7,6 +7,7 @@ import {
   SETTINGS_KEYS,
   SettingsMode,
   SettingsOutputDTO,
+  SETTINGS_DEFINITIONS,
 } from '../service/SettingsService.js';
 
 export const SETTINGS_TABLE_NAME = 'settings';
@@ -68,11 +69,15 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, ne
     const domainSetting = await query.where({ key, gameServerId: null }).first();
     const gameServerSetting = await query2.where({ key }).andWhere({ gameServerId: this.gameServerId }).first();
 
+    const settingDefinition = SETTINGS_DEFINITIONS[key];
+
     if (!domainSetting && !gameServerSetting) {
       return new SettingsOutputDTO({
         key,
         value: DEFAULT_SETTINGS[key],
         type: SettingsMode.Default,
+        description: settingDefinition.description,
+        canHaveGameServerOverride: settingDefinition.canHaveGameServerOverride,
       });
     }
 
@@ -82,12 +87,16 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, ne
           key,
           value: gameServerSetting?.value,
           type: SettingsMode.Override,
+          description: settingDefinition.description,
+          canHaveGameServerOverride: settingDefinition.canHaveGameServerOverride,
         });
       } else {
         return new SettingsOutputDTO({
           key,
           value: domainSetting?.value,
           type: SettingsMode.Inherit,
+          description: settingDefinition.description,
+          canHaveGameServerOverride: settingDefinition.canHaveGameServerOverride,
         });
       }
     } else {
@@ -95,6 +104,8 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, ne
         key,
         value: domainSetting?.value,
         type: SettingsMode.Global,
+        description: settingDefinition.description,
+        canHaveGameServerOverride: settingDefinition.canHaveGameServerOverride,
       });
     }
   }

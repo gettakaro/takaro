@@ -52,7 +52,11 @@
         "updatedAt": "2024-12-15T21:32:56.850Z",
         "id": "0c1d4403-0bfe-4709-af08-a4305cd8d43c",
         "name": "Test module",
-        "builtin": null
+        "builtin": null,
+        "author": "Unknown",
+        "supportedGames": [
+          "all"
+        ]
       }
     }
   },

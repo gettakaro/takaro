@@ -5,7 +5,9 @@
       {
         "key": "commandPrefix",
         "value": "global!",
-        "type": "inherit"
+        "type": "inherit",
+        "description": "The prefix character(s) that players must use before commands in chat",
+        "canHaveGameServerOverride": true
       }
     ]
   },

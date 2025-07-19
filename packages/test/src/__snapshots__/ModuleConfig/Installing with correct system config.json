@@ -57,7 +57,11 @@
         "updatedAt": "2024-12-15T21:33:05.299Z",
         "id": "ddeb3342-c314-464a-9da6-4d5ea5aae241",
         "name": "Test module cronjobs",
-        "builtin": null
+        "builtin": null,
+        "author": "Unknown",
+        "supportedGames": [
+          "all"
+        ]
       }
     }
   },

@@ -5,6 +5,8 @@ export class EconomyUtils extends ModuleTransferDTO<EconomyUtils> {
     super();
 
     this.name = 'economyUtils';
+    this.author = 'Takaro';
+    this.supportedGames = ['all'];
     this.versions = [
       new ModuleTransferVersionDTO({
         tag: '0.0.2',

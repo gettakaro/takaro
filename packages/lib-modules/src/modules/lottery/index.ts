@@ -5,6 +5,8 @@ export class Lottery extends ModuleTransferDTO<Lottery> {
     super();
 
     this.name = 'lottery';
+    this.author = 'Takaro';
+    this.supportedGames = ['all'];
     this.versions = [
       new ModuleTransferVersionDTO({
         tag: '0.0.2',

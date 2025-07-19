@@ -51,7 +51,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/settings')
 
 const SettingsContainer = styled.div`
   display: grid;
-  grid-template-columns: 130px 150px 150px 1fr;
+  grid-template-columns: 1fr 150px 150px 1fr;
   gap: ${({ theme }) => theme.spacing[2]};
   margin-bottom: ${({ theme }) => theme.spacing[2]};
   align-items: center;
@@ -150,17 +150,19 @@ function Component() {
     if (isUpdatingSettings || !gameServerSettings || !globalGameServerSettings) return;
 
     reset({
-      settings: gameServerSettings.map(({ key, value, type }) => {
-        return {
-          key,
-          type:
-            // There is also a default type, which we map to inherit
-            type === SettingsOutputDTOTypeEnum.Override
-              ? SettingsOutputDTOTypeEnum.Override
-              : SettingsOutputDTOTypeEnum.Inherit,
-          value: booleanFields.includes(key) ? value === 'true' : value,
-        };
-      }),
+      settings: gameServerSettings
+        .filter(({ canHaveGameServerOverride }) => canHaveGameServerOverride)
+        .map(({ key, value, type }) => {
+          return {
+            key,
+            type:
+              // There is also a default type, which we map to inherit
+              type === SettingsOutputDTOTypeEnum.Override
+                ? SettingsOutputDTOTypeEnum.Override
+                : SettingsOutputDTOTypeEnum.Inherit,
+            value: booleanFields.includes(key) ? value === 'true' : value,
+          };
+        }),
     });
   }, [gameServerSettings, globalGameServerSettings, reset]);
 
@@ -169,7 +171,7 @@ function Component() {
 
     if (gameServerSettings) {
       gameServerSettings
-        .filter(({ key }) => key !== 'developerMode')
+        .filter(({ canHaveGameServerOverride }) => canHaveGameServerOverride)
         .forEach(({ key }) => {
           if (booleanFields.includes(key)) {
             components[key] = (fieldName: string, disabled: boolean) => (
@@ -206,47 +208,52 @@ function Component() {
             <div>Game Server setting</div>
           </SettingsContainer>
 
-          {fields.map((field, index) => (
-            <SettingsContainer key={field.id}>
-              <label
-                style={{
-                  cursor:
-                    watch(`settings.${index}.type`) === SettingsOutputDTOTypeEnum.Override ? 'pointer' : 'default',
-                }}
-                htmlFor={`settings.${index}.value`}
-              >
-                {camelCaseToSpaces(watch(`settings.${index}.key`))}
-              </label>
-              <div>
-                {globalGameServerSettings.find((setting) => setting.key === watch(`settings.${index}.key`))?.value}
-              </div>
-              <NoSpacing>
-                <SelectField
-                  readOnly={readOnly}
-                  control={control}
-                  name={`settings.${index}.type`}
-                  render={(selectedItems) =>
-                    selectedItems.length === 0 ? <div>Select...</div> : <div>{selectedItems[0].label}</div>
-                  }
-                >
-                  <SelectField.OptionGroup>
-                    {typeOptions.map((val) => (
-                      <SelectField.Option key={`select-${val}-option`} value={val} label={val}>
-                        <span>{val}</span>
-                      </SelectField.Option>
-                    ))}
-                  </SelectField.OptionGroup>
-                </SelectField>
-              </NoSpacing>
-              {watch(`settings.${index}.type`) === SettingsOutputDTOTypeEnum.Inherit ? (
-                <div id={`settings.${index}.value`}>
-                  {globalGameServerSettings.find((setting) => setting.key === watch(`settings.${index}.key`))?.value}
+          {fields.map((field, index) => {
+            const settingKey = watch(`settings.${index}.key`);
+            const settingInfo = gameServerSettings.find((s) => s.key === settingKey);
+            return (
+              <SettingsContainer key={field.id}>
+                <div>
+                  <label
+                    style={{
+                      cursor:
+                        watch(`settings.${index}.type`) === SettingsOutputDTOTypeEnum.Override ? 'pointer' : 'default',
+                    }}
+                    htmlFor={`settings.${index}.value`}
+                  >
+                    {camelCaseToSpaces(settingKey)}
+                  </label>
+                  {settingInfo && <div style={{ marginTop: '0.25rem' }}>{settingInfo.description}</div>}
                 </div>
-              ) : (
-                settingsComponents[watch(`settings.${index}.key`)](`settings.${index}.value`, false)
-              )}
-            </SettingsContainer>
-          ))}
+                <div>{globalGameServerSettings.find((setting) => setting.key === settingKey)?.value}</div>
+                <NoSpacing>
+                  <SelectField
+                    readOnly={readOnly}
+                    control={control}
+                    name={`settings.${index}.type`}
+                    render={(selectedItems) =>
+                      selectedItems.length === 0 ? <div>Select...</div> : <div>{selectedItems[0].label}</div>
+                    }
+                  >
+                    <SelectField.OptionGroup>
+                      {typeOptions.map((val) => (
+                        <SelectField.Option key={`select-${val}-option`} value={val} label={val}>
+                          <span>{val}</span>
+                        </SelectField.Option>
+                      ))}
+                    </SelectField.OptionGroup>
+                  </SelectField>
+                </NoSpacing>
+                {watch(`settings.${index}.type`) === SettingsOutputDTOTypeEnum.Inherit ? (
+                  <div id={`settings.${index}.value`}>
+                    {globalGameServerSettings.find((setting) => setting.key === settingKey)?.value}
+                  </div>
+                ) : (
+                  settingsComponents[settingKey](`settings.${index}.value`, false)
+                )}
+              </SettingsContainer>
+            );
+          })}
           {!readOnly && (
             <Button disabled={!formState.isDirty} type="submit" variant="default">
               Save settings

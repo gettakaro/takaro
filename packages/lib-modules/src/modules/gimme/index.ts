@@ -5,6 +5,8 @@ export class Gimme extends ModuleTransferDTO<Gimme> {
     super();
 
     this.name = 'gimme';
+    this.author = 'Takaro';
+    this.supportedGames = ['7 days to die', 'rust', 'minecraft'];
     this.versions = [
       new ModuleTransferVersionDTO({
         tag: '0.0.3',

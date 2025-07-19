@@ -5,6 +5,8 @@ export class Utils extends ModuleTransferDTO<Utils> {
     super();
 
     this.name = 'utils';
+    this.author = 'Takaro';
+    this.supportedGames = ['all'];
     this.versions = [
       new ModuleTransferVersionDTO({
         tag: '0.0.2',

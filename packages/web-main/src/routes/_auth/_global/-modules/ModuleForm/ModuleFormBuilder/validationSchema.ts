@@ -29,6 +29,8 @@ const baseConfigFieldShape = z.object({
 export const validationSchema = z.object({
   name: moduleNameShape,
   description: moduleDescriptionShape,
+  author: z.string().optional(),
+  supportedGames: z.array(z.enum(['all', 'other', 'minecraft', '7 days to die', 'rust'])).optional(),
   permissions: z.array(modulePermissionShape),
   configFields: z
     .array(

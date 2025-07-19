@@ -134,6 +134,13 @@ export class ModuleTransferDTO<T> extends TakaroDTO<T> {
   @IsString()
   @IsOptional()
   takaroVersion = process.env.TAKARO_VERSION;
+  @IsString()
+  @IsOptional()
+  public author?: string;
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  public supportedGames?: string[];
 
   @ValidateNested({ each: true })
   @Type(() => ModuleTransferVersionDTO)

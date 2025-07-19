@@ -8,6 +8,7 @@ import {
   IconTooltip,
   TextAreaField,
   TextField,
+  SelectField,
   useTheme,
 } from '@takaro/lib-components';
 import { PermissionCreateDTO } from '@takaro/apiclient';
@@ -23,12 +24,22 @@ import { UncontrolledModuleVersionSelectQueryField } from '../../../../../../com
 interface IFormInputs {
   name: string;
   description: string;
+  author?: string;
+  supportedGames?: string[];
   permissions: PermissionCreateDTO[];
   configSchema: string;
   uiSchema: string;
 }
 
-export const ModuleFormManual: FC<ModuleFormProps> = ({ moduleName, moduleVersion, error, onSubmit, isLoading }) => {
+export const ModuleFormManual: FC<ModuleFormProps> = ({
+  moduleName,
+  moduleAuthor,
+  moduleSupportedGames,
+  moduleVersion,
+  error,
+  onSubmit,
+  isLoading,
+}) => {
   const readOnly = onSubmit ? false : true;
   const [open, setOpen] = useState(true);
   const theme = useTheme();
@@ -39,6 +50,8 @@ export const ModuleFormManual: FC<ModuleFormProps> = ({ moduleName, moduleVersio
     values: {
       name: moduleName ?? '',
       description: moduleVersion?.description ?? '',
+      author: moduleAuthor ?? '',
+      supportedGames: moduleSupportedGames ?? ['all'],
       permissions: moduleVersion?.permissions ?? [],
       configSchema: moduleVersion?.configSchema ? JSON.stringify(JSON.parse(moduleVersion.configSchema), null, 2) : '',
       uiSchema: moduleVersion?.uiSchema ? JSON.stringify(JSON.parse(moduleVersion.uiSchema), null, 2) : '',
@@ -46,10 +59,20 @@ export const ModuleFormManual: FC<ModuleFormProps> = ({ moduleName, moduleVersio
     resolver: zodResolver(validationSchema),
   });
 
-  const submitHandler: SubmitHandler<IFormInputs> = ({ name, description, permissions, configSchema, uiSchema }) => {
+  const submitHandler: SubmitHandler<IFormInputs> = ({
+    name,
+    description,
+    author,
+    supportedGames,
+    permissions,
+    configSchema,
+    uiSchema,
+  }) => {
     onSubmit!({
       name,
       description,
+      author,
+      supportedGames,
       permissions,
       schema: JSON.stringify(JSON.parse(configSchema)),
       uiSchema: JSON.stringify(JSON.parse(uiSchema)),
@@ -125,6 +148,54 @@ export const ModuleFormManual: FC<ModuleFormProps> = ({ moduleName, moduleVersio
                   name="description"
                   readOnly={readOnly}
                 />
+                <TextField
+                  control={control}
+                  label="Author"
+                  placeholder="Your name or organization"
+                  loading={isLoading}
+                  name="author"
+                  readOnly={readOnly}
+                />
+                <SelectField
+                  control={control}
+                  label="Supported Games"
+                  name="supportedGames"
+                  multiple={true}
+                  readOnly={readOnly}
+                  loading={isLoading}
+                  render={(selectedItems) => {
+                    if (selectedItems.length === 0) return 'Select supported games';
+                    return selectedItems.map((item) => item.label).join(', ');
+                  }}
+                >
+                  <SelectField.OptionGroup>
+                    <SelectField.Option value="all" label="All Games">
+                      <div>
+                        <span>All Games</span>
+                      </div>
+                    </SelectField.Option>
+                    <SelectField.Option value="minecraft" label="Minecraft">
+                      <div>
+                        <span>Minecraft</span>
+                      </div>
+                    </SelectField.Option>
+                    <SelectField.Option value="7 days to die" label="7 Days to Die">
+                      <div>
+                        <span>7 Days to Die</span>
+                      </div>
+                    </SelectField.Option>
+                    <SelectField.Option value="rust" label="Rust">
+                      <div>
+                        <span>Rust</span>
+                      </div>
+                    </SelectField.Option>
+                    <SelectField.Option value="other" label="Other">
+                      <div>
+                        <span>Other</span>
+                      </div>
+                    </SelectField.Option>
+                  </SelectField.OptionGroup>
+                </SelectField>
               </CollapseList.Item>
 
               <CollapseList.Item

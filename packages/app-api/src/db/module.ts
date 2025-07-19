@@ -28,6 +28,8 @@ export class ModuleModel extends TakaroModel {
   static tableName = MODULE_TABLE_NAME;
   name!: string;
   builtin: string;
+  author: string;
+  supportedGames: string;
 }
 
 export class ModuleVersion extends TakaroModel {
@@ -202,7 +204,13 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
     return {
       total: result.total,
-      results: result.results.map((_) => new ModuleOutputDTO(_)),
+      results: result.results.map(
+        (_) =>
+          new ModuleOutputDTO({
+            ..._,
+            supportedGames: typeof _.supportedGames === 'string' ? JSON.parse(_.supportedGames) : _.supportedGames,
+          }),
+      ),
     };
   }
 
@@ -250,7 +258,10 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       throw new errors.NotFoundError(`Module with id ${id} not found`);
     }
 
-    return new ModuleOutputDTO(data);
+    return new ModuleOutputDTO({
+      ...data,
+      supportedGames: typeof data.supportedGames === 'string' ? JSON.parse(data.supportedGames) : data.supportedGames,
+    });
   }
 
   async findOneVersion(id: string): Promise<ModuleVersionOutputDTO> {
@@ -311,6 +322,8 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     const data = await query.insert({
       name: item.name,
       builtin: item.builtin,
+      author: item.author || 'Unknown',
+      supportedGames: JSON.stringify(item.supportedGames || ['all']),
       domain: this.domainId,
     });
 
@@ -325,7 +338,11 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
   async update(id: string, data: ModuleUpdateDTO): Promise<ModuleOutputDTO> {
     const { query } = await this.getModel();
-    const item = await query.updateAndFetchById(id, data.toJSON());
+    const updateData = data.toJSON();
+    if (updateData.supportedGames) {
+      updateData.supportedGames = JSON.stringify(updateData.supportedGames);
+    }
+    const item = await query.updateAndFetchById(id, updateData);
     return this.findOne(item.id);
   }
 

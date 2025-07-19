@@ -5,6 +5,8 @@ export class ChatBridge extends ModuleTransferDTO<ChatBridge> {
   constructor() {
     super();
     this.name = 'chatBridge';
+    this.author = 'Takaro';
+    this.supportedGames = ['all'];
     this.versions = [
       new ModuleTransferVersionDTO({
         tag: '0.0.1',
