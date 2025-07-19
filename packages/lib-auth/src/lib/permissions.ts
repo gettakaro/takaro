@@ -21,6 +21,8 @@ export enum PERMISSIONS {
   'MANAGE_ENTITIES' = 'MANAGE_ENTITIES',
   'MANAGE_SHOP_LISTINGS' = 'MANAGE_SHOP_LISTINGS',
   'MANAGE_SHOP_ORDERS' = 'MANAGE_SHOP_ORDERS',
+  'VIEW_DISCORD_INFO' = 'VIEW_DISCORD_INFO',
+  'SEND_DISCORD_MESSAGE' = 'SEND_DISCORD_MESSAGE',
 }
 
 export interface IPermissionDetails {
@@ -139,5 +141,15 @@ export const PERMISSION_DETAILS: Record<PERMISSIONS, IPermissionDetails> = {
     permission: PERMISSIONS.MANAGE_SHOP_ORDERS,
     friendlyName: 'Manage Shop Orders',
     description: 'Can view orders not belonging to the themself and perform administrative actions on them',
+  },
+  [PERMISSIONS.VIEW_DISCORD_INFO]: {
+    permission: PERMISSIONS.VIEW_DISCORD_INFO,
+    friendlyName: 'View Discord Info',
+    description: 'Can view Discord guild information including channels and roles',
+  },
+  [PERMISSIONS.SEND_DISCORD_MESSAGE]: {
+    permission: PERMISSIONS.SEND_DISCORD_MESSAGE,
+    friendlyName: 'Send Discord Messages',
+    description: 'Can send messages to Discord channels',
   },
 };
