@@ -1,7 +1,9 @@
-import { Skeleton, styled, useTheme } from '@takaro/lib-components';
+import { Skeleton, styled, useTheme, useLocalStorage } from '@takaro/lib-components';
 import { Outlet, redirect, createFileRoute } from '@tanstack/react-router';
 import { useQueries } from '@tanstack/react-query';
 import { ModuleInstallCard, CardList } from '../../../components/cards';
+import { TableListToggleButton } from '../../../components/TableListToggleButton';
+import { ModuleInstallationsTableView } from './-components/ModuleInstallationsTableView';
 import { moduleInstallationsOptions } from '../../../queries/gameserver';
 import { modulesQueryOptions } from '../../../queries/module';
 import { hasPermission } from '../../../hooks/useHasPermission';
@@ -43,10 +45,16 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules')(
   ),
 });
 
+type ViewType = 'list' | 'table';
+
 function Component() {
   const loaderData = Route.useLoaderData();
   const { gameServerId } = Route.useParams();
   useDocumentTitle('Modules');
+  const { setValue: setView, storedValue: view } = useLocalStorage<ViewType>(
+    'module-installations-view-select',
+    'list',
+  );
 
   const [{ data: modules }, { data: installations }] = useQueries({
     queries: [
@@ -79,26 +87,44 @@ function Component() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing[2], overflowY: 'auto' }}>
-      {installedModules.length > 0 && (
-        <div>
-          <SubHeader>Installed Modules</SubHeader>
-          <CardList>
-            {installedModules.map((mod) => (
-              <ModuleInstallCard key={mod.id} mod={mod} installation={mod.installation} gameServerId={gameServerId} />
-            ))}
-          </CardList>
-        </div>
-      )}
-      <div>
-        <SubHeader>Available Modules</SubHeader>
-        <div style={{ overflowY: 'auto', height: '100%' }}>
-          <CardList>
-            {availableModules.map((mod) => (
-              <ModuleInstallCard key={mod.id} mod={mod} installation={mod.installation} gameServerId={gameServerId} />
-            ))}
-          </CardList>
-        </div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+        <TableListToggleButton onChange={setView} value={view} />
       </div>
+      {view === 'table' && <ModuleInstallationsTableView />}
+      {view === 'list' && (
+        <>
+          {installedModules.length > 0 && (
+            <div>
+              <SubHeader>Installed Modules</SubHeader>
+              <CardList>
+                {installedModules.map((mod) => (
+                  <ModuleInstallCard
+                    key={mod.id}
+                    mod={mod}
+                    installation={mod.installation}
+                    gameServerId={gameServerId}
+                  />
+                ))}
+              </CardList>
+            </div>
+          )}
+          <div>
+            <SubHeader>Available Modules</SubHeader>
+            <div style={{ overflowY: 'auto', height: '100%' }}>
+              <CardList>
+                {availableModules.map((mod) => (
+                  <ModuleInstallCard
+                    key={mod.id}
+                    mod={mod}
+                    installation={mod.installation}
+                    gameServerId={gameServerId}
+                  />
+                ))}
+              </CardList>
+            </div>
+          </div>
+        </>
+      )}
       <Outlet />
     </div>
   );
