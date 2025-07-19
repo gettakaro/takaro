@@ -21,7 +21,6 @@ export class ShopOrderModel extends TakaroModel {
   id: string;
   listingId: string;
   playerId: string;
-  gameServerId: string;
   amount: number;
   status: ShopOrderStatus;
 
@@ -92,20 +91,28 @@ export class ShopOrderRepo extends ITakaroRepo<
     return new ShopOrderOutputDTO(res);
   }
 
-  async create(data: ShopOrderCreateInternalDTO): Promise<ShopOrderOutputDTO> {
-    const { query } = await this.getModel();
+  async create(data: ShopOrderCreateInternalDTO, trx?: any): Promise<ShopOrderOutputDTO> {
+    let query;
+    if (trx) {
+      query = ShopOrderModel.bindKnex(trx).query();
+    } else {
+      const model = await this.getModel();
+      query = model.query;
+    }
+
     const order = await query
       .insert({
         listingId: data.listingId,
         playerId: data.playerId,
-        gameServerId: data.gameServerId,
         amount: data.amount,
         status: ShopOrderStatus.PAID,
         domain: this.domainId,
       })
       .returning('*');
 
-    return this.findOne(order.id);
+    // If we're in a transaction, just return the order directly
+    // since findOne would need to be refactored to support transactions
+    return new ShopOrderOutputDTO(order);
   }
 
   async update(id: string, data: ShopOrderUpdateDTO): Promise<ShopOrderOutputDTO> {

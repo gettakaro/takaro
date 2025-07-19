@@ -31,7 +31,9 @@
           }
         }
       ],
-      "categories": []
+      "categories": [],
+      "stock": null,
+      "stockEnabled": false
     }
   },
   "status": 200,

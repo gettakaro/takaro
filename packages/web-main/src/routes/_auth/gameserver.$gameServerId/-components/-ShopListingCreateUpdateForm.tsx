@@ -49,21 +49,28 @@ interface ShopListingCreateUpdateFormProps {
   gameServerId: string;
 }
 
-const validationSchema = z.object({
-  name: z.string().optional().nullable(),
-  price: z.number().min(0, 'Price is required.'),
-  draft: z.boolean().optional(),
-  categoryIds: z.array(z.string()).optional(),
-  items: z
-    .array(
-      z.object({
-        amount: z.number().min(1, 'Amount must atleast be 1.'),
-        quality: z.string().optional(),
-        itemId: z.string().min(1, 'Item cannot be empty'),
-      }),
-    )
-    .min(1, 'At least one item is required'),
-});
+const validationSchema = z
+  .object({
+    name: z.string().optional().nullable(),
+    price: z.number().min(0, 'Price is required.'),
+    draft: z.boolean().optional(),
+    categoryIds: z.array(z.string()).optional(),
+    stockEnabled: z.boolean().optional(),
+    stock: z.number().min(0).optional().nullable(),
+    items: z
+      .array(
+        z.object({
+          amount: z.number().min(1, 'Amount must atleast be 1.'),
+          quality: z.string().optional(),
+          itemId: z.string().min(1, 'Item cannot be empty'),
+        }),
+      )
+      .min(1, 'At least one item is required'),
+  })
+  .refine((data) => !data.stockEnabled || (data.stock !== null && data.stock !== undefined), {
+    message: 'Stock amount is required when stock tracking is enabled',
+    path: ['stock'],
+  });
 
 export type FormValues = z.infer<typeof validationSchema>;
 
@@ -88,6 +95,8 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
       price: 0,
       draft: undefined,
       categoryIds: [],
+      stockEnabled: false,
+      stock: undefined,
       items: [{ itemId: '', amount: 1, quality: '' }],
     },
   });
@@ -115,6 +124,8 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
         price: initialData.price,
         draft: initialData.draft !== undefined ? initialData.draft : undefined,
         categoryIds: initialData.categories ? initialData.categories.map((cat) => cat.id) : [],
+        stockEnabled: initialData.stockEnabled !== undefined ? initialData.stockEnabled : false,
+        stock: initialData.stock !== undefined ? initialData.stock : undefined,
         items: initialData.items.map((shopListingItemMeta) => {
           return {
             amount: shopListingItemMeta.amount,
@@ -158,6 +169,26 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
               loading={isLoading}
               description="The shop listing cannot be bought and will not be shown to users who don't have MANAGE_SHOP_LISTINGS permissions."
             />
+            <Switch
+              readOnly={readOnly}
+              control={control}
+              name="stockEnabled"
+              label="Enable Stock Tracking"
+              loading={isLoading}
+              description="When enabled, the listing will have limited stock that decreases with each purchase."
+            />
+            {watch('stockEnabled') && (
+              <TextField
+                control={control}
+                type="number"
+                name="stock"
+                label="Stock Amount"
+                readOnly={readOnly}
+                loading={isLoading}
+                description="The number of units available for purchase. Set to 0 to mark as out of stock."
+                required={watch('stockEnabled')}
+              />
+            )}
             <CategorySelector
               selectedCategoryIds={watch('categoryIds') || []}
               onChange={(categoryIds) => setValue('categoryIds', categoryIds)}

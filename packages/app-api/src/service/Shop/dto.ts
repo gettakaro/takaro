@@ -59,6 +59,12 @@ export class ShopListingOutputDTO extends TakaroModelDTO<ShopListingOutputDTO> {
   @Type(() => ShopCategoryOutputDTO)
   @IsOptional()
   categories?: ShopCategoryOutputDTO[];
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  stock?: number;
+  @IsBoolean()
+  stockEnabled: boolean;
 }
 
 export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
@@ -77,6 +83,13 @@ export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
   @IsUUID('4', { each: true })
   @IsOptional()
   categoryIds?: string[];
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  stock?: number;
+  @IsBoolean()
+  @IsOptional()
+  stockEnabled?: boolean;
 }
 
 export class ShopListingUpdateDTO extends TakaroDTO<ShopListingUpdateDTO> {
@@ -99,6 +112,13 @@ export class ShopListingUpdateDTO extends TakaroDTO<ShopListingUpdateDTO> {
   @IsUUID('4', { each: true })
   @IsOptional()
   categoryIds?: string[];
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  stock?: number;
+  @IsBoolean()
+  @IsOptional()
+  stockEnabled?: boolean;
 }
 
 export enum ShopOrderStatus {
@@ -114,8 +134,6 @@ export class ShopOrderOutputDTO extends TakaroModelDTO<ShopOrderOutputDTO> {
   listingId: string;
   @IsUUID()
   playerId: string;
-  @IsUUID()
-  gameServerId: string;
   @IsNumber()
   amount: number;
   @IsEnum(Object.values(ShopOrderStatus))
@@ -139,8 +157,6 @@ export class ShopOrderCreateDTO<T = void> extends TakaroDTO<T> {
 export class ShopOrderCreateInternalDTO extends ShopOrderCreateDTO<ShopOrderCreateInternalDTO> {
   @IsUUID()
   playerId: string;
-  @IsUUID()
-  gameServerId: string;
 }
 
 export class ShopOrderUpdateDTO extends TakaroDTO<ShopOrderUpdateDTO> {

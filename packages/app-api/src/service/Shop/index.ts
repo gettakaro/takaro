@@ -228,44 +228,66 @@ export class ShopListingService extends TakaroService<
     // By this point, we should have a playerId resolved from either the context or the override
     if (!playerId) throw new errors.BadRequestError('Unknown player, make sure you have linked your account');
 
-    const listing = await this.findOne(listingId);
-    if (listing.draft) throw new errors.BadRequestError('Cannot order a draft listing');
-    if (listing.deletedAt) throw new errors.BadRequestError('Cannot order a deleted listing');
-    const gameServerId = listing.gameServerId;
+    // Use transaction for atomic stock and order operations
+    const knex = await this.repo.getKnex();
+    const order = await knex.transaction(async (trx) => {
+      // Lock the listing row for update
+      const listing = await this.repo.findOneForUpdate(listingId, trx);
+      if (listing.draft) throw new errors.BadRequestError('Cannot order a draft listing');
+      if (listing.deletedAt) throw new errors.BadRequestError('Cannot order a deleted listing');
 
-    const playerService = new PlayerService(this.domainId);
-    const { pogs } = await playerService.resolveFromId(playerId, gameServerId);
-    const pog = pogs.find((pog) => pog.gameServerId === gameServerId);
-    if (!pog) throw new errors.BadRequestError('You have not logged in to the game server yet.');
+      // Check stock availability
+      if (listing.stockEnabled) {
+        if (listing.stock === undefined || listing.stock < amount) {
+          throw new errors.BadRequestError(
+            `Insufficient stock. Available: ${listing.stock || 0}, Requested: ${amount}`,
+          );
+        }
+      }
 
-    const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
-    await playerOnGameServerService.deductCurrency(pog.id, listing.price * amount);
+      const gameServerId = listing.gameServerId;
 
-    const order = await this.orderRepo.create(new ShopOrderCreateInternalDTO({ listingId, playerId, amount }));
+      const playerService = new PlayerService(this.domainId);
+      const { pogs } = await playerService.resolveFromId(playerId, gameServerId);
+      const pog = pogs.find((pog) => pog.gameServerId === gameServerId);
+      if (!pog) throw new errors.BadRequestError('You have not logged in to the game server yet.');
 
-    await this.eventService.create(
-      new EventCreateDTO({
-        eventName: EVENT_TYPES.SHOP_ORDER_CREATED,
-        gameserverId: gameServerId,
-        playerId: pog.playerId,
-        meta: new TakaroEventShopOrderCreated({
-          id: order.id,
-          listingName: listing.name,
-          price: listing.price,
-          amount: amount,
-          totalPrice: listing.price * amount,
-          items: listing.items.map(
-            (item) =>
-              new TakaroEventShopItem({
-                name: item.item.name,
-                code: item.item.code,
-                amount: item.amount,
-                quality: item.quality,
-              }),
-          ),
+      const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
+      await playerOnGameServerService.deductCurrency(pog.id, listing.price * amount);
+
+      // Decrement stock if stock tracking is enabled
+      if (listing.stockEnabled) {
+        await this.repo.decrementStock(listingId, amount, trx);
+      }
+
+      const order = await this.orderRepo.create(new ShopOrderCreateInternalDTO({ listingId, playerId, amount }), trx);
+
+      await this.eventService.create(
+        new EventCreateDTO({
+          eventName: EVENT_TYPES.SHOP_ORDER_CREATED,
+          gameserverId: gameServerId,
+          playerId: pog.playerId,
+          meta: new TakaroEventShopOrderCreated({
+            id: order.id,
+            listingName: listing.name,
+            price: listing.price,
+            amount: amount,
+            totalPrice: listing.price * amount,
+            items: listing.items.map(
+              (item) =>
+                new TakaroEventShopItem({
+                  name: item.item.name,
+                  code: item.item.code,
+                  amount: item.amount,
+                  quality: item.quality,
+                }),
+            ),
+          }),
         }),
-      }),
-    );
+      );
+
+      return order;
+    });
 
     return order;
   }
@@ -399,35 +421,66 @@ export class ShopListingService extends TakaroService<
       throw new errors.BadRequestError(
         `Can only cancel paid orders that weren't claimed yet. Current status: ${order.status}`,
       );
+
     const updatedOrder = await this.orderRepo.update(
       orderId,
       new ShopOrderUpdateDTO({ status: ShopOrderStatus.CANCELED }),
     );
 
-    const listing = await this.findOne(order.listingId);
-    const gameServerId = listing.gameServerId;
+    try {
+      const listing = await this.findOne(order.listingId);
+      const gameServerId = listing.gameServerId;
 
-    // Refund the player
-    const pogsService = new PlayerOnGameServerService(this.domainId);
-    const pog = (await pogsService.find({ filters: { playerId: [order.playerId], gameServerId: [gameServerId] } }))
-      .results[0];
-    if (!pog) throw new errors.NotFoundError('Player not found');
-    await pogsService.addCurrency(pog.id, listing.price * order.amount);
+      // Restore stock if stock tracking is enabled and listing wasn't deleted
+      if (listing.stockEnabled && !listing.deletedAt) {
+        await this.repo.incrementStock(order.listingId, order.amount);
+      }
 
-    await this.eventService.create(
-      new EventCreateDTO({
-        eventName: EVENT_TYPES.SHOP_ORDER_STATUS_CHANGED,
-        gameserverId: gameServerId,
-        userId: ctx.data.user,
-        playerId: order.playerId,
-        meta: new TakaroEventShopOrderStatusChanged({
-          id: updatedOrder.id,
-          status: ShopOrderStatus.CANCELED,
+      // Refund the player
+      const pogsService = new PlayerOnGameServerService(this.domainId);
+      const pog = (await pogsService.find({ filters: { playerId: [order.playerId], gameServerId: [gameServerId] } }))
+        .results[0];
+      if (!pog) throw new errors.NotFoundError('Player not found');
+      await pogsService.addCurrency(pog.id, listing.price * order.amount);
+
+      await this.eventService.create(
+        new EventCreateDTO({
+          eventName: EVENT_TYPES.SHOP_ORDER_STATUS_CHANGED,
+          gameserverId: gameServerId,
+          userId: ctx.data.user,
+          playerId: order.playerId,
+          meta: new TakaroEventShopOrderStatusChanged({
+            id: updatedOrder.id,
+            status: ShopOrderStatus.CANCELED,
+          }),
         }),
-      }),
-    );
+      );
+    } catch (error) {
+      // Log error but don't fail the cancellation
+      this.log.error('Error during order cancellation stock restoration', { error, orderId });
+    }
 
     return updatedOrder;
+  }
+
+  async checkStockAvailability(listingId: string, requestedAmount: number): Promise<boolean> {
+    const listing = await this.findOne(listingId);
+
+    if (!listing.stockEnabled) {
+      return true; // Unlimited stock
+    }
+
+    return listing.stock !== undefined && listing.stock >= requestedAmount;
+  }
+
+  private async checkIfUserHasHighPrivileges() {
+    const userId = ctx.data.user;
+    if (!userId) throw new errors.UnauthorizedError();
+    const userService = new UserService(this.domainId);
+    const user = await userService.findOne(userId);
+    if (!user) throw new errors.NotFoundError('User not found');
+    const hasPermission = await checkPermissions([PERMISSIONS.MANAGE_SHOP_LISTINGS], user);
+    if (!hasPermission) throw new errors.ForbiddenError();
   }
 
   async import(data: ShopListingCreateDTO[], options: ShopImportOptions) {

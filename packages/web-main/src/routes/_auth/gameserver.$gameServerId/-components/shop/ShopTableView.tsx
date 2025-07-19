@@ -162,6 +162,27 @@ export const ShopTableView: FC<ShopViewProps> = ({
         dataType: 'number',
       },
     }),
+    columnHelper.accessor('stock', {
+      header: 'Stock',
+      id: 'stock',
+      cell: (info) => {
+        const listing = info.row.original;
+        if (!listing.stockEnabled) {
+          return <span style={{ color: 'var(--color-text-secondary)' }}>Unlimited</span>;
+        }
+        const stock = info.getValue() ?? 0;
+        if (stock === 0) {
+          return <span style={{ color: 'var(--color-error)' }}>Out of stock</span>;
+        }
+        if (stock <= 5) {
+          return <span style={{ color: 'var(--color-warning)' }}>{stock}</span>;
+        }
+        return <span style={{ color: 'var(--color-success)' }}>{stock}</span>;
+      },
+      meta: {
+        dataType: 'number',
+      },
+    }),
     columnHelper.accessor('categories', {
       header: 'Categories',
       id: 'categories',
@@ -239,6 +260,8 @@ export const ShopTableView: FC<ShopViewProps> = ({
                 price={info.row.original.price}
                 playerCurrencyAmount={currency || 0}
                 shopListingId={info.row.original.id}
+                stock={info.row.original.stock}
+                stockEnabled={info.row.original.stockEnabled}
               />
             </ShopListingBuyFormContainer>
           </Popover.Content>
