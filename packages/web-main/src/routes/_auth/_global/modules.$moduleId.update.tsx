@@ -49,6 +49,8 @@ function Component() {
       id: mod.id,
       moduleUpdate: {
         name: fields.name,
+        author: fields.author,
+        supportedGames: fields.supportedGames,
         latestVersion: {
           description: fields.description,
           configSchema: fields.schema, // this is already stringified
@@ -64,6 +66,8 @@ function Component() {
       {view === 'manual' && (
         <ModuleFormManual
           moduleName={mod.name}
+          moduleAuthor={mod.author}
+          moduleSupportedGames={mod.supportedGames}
           moduleVersion={mod.latestVersion}
           onSubmit={onSubmit}
           isLoading={isSubmitting}
@@ -73,6 +77,8 @@ function Component() {
       {view === 'builder' && (
         <ModuleFormBuilder
           moduleName={mod.name}
+          moduleAuthor={mod.author}
+          moduleSupportedGames={mod.supportedGames}
           moduleVersion={mod.latestVersion}
           onSubmit={onSubmit}
           isLoading={isSubmitting}

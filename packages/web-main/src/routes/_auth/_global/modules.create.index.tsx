@@ -31,6 +31,8 @@ function Component() {
   const onSubmit = async (fields: ModuleFormSubmitProps) => {
     mutate({
       name: fields.name,
+      author: fields.author,
+      supportedGames: fields.supportedGames,
       latestVersion: {
         description: fields.description,
         configSchema: fields.schema,
