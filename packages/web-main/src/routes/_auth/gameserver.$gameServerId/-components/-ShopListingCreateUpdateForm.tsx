@@ -65,7 +65,13 @@ const validationSchema = z.object({
       }),
     )
     .min(1, 'At least one item is required'),
-});
+}).refine(
+  (data) => !data.stockEnabled || (data.stock !== null && data.stock !== undefined),
+  {
+    message: "Stock amount is required when stock tracking is enabled",
+    path: ["stock"],
+  }
+);
 
 export type FormValues = z.infer<typeof validationSchema>;
 
