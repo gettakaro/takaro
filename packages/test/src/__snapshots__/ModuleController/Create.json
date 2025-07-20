@@ -23,7 +23,19 @@
         "functions": [],
         "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}",
         "defaultSystemConfig": null
-      }
+      },
+      "author": null,
+      "supportedGames": [
+        "all"
+      ],
+      "versions": [
+        {
+          "createdAt": "2025-07-20T10:02:10.377Z",
+          "updatedAt": "2025-07-20T10:02:10.381Z",
+          "id": "7791aa74-d5d6-458e-bac2-bc739c7b623d",
+          "tag": "latest"
+        }
+      ]
     }
   },
   "status": 200,
