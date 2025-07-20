@@ -52,11 +52,20 @@ export class ShopListingService extends TakaroService<
     return new ShopOrderRepo(this.domainId);
   }
 
+  private async canManageOrders(): Promise<boolean> {
+    const userId = ctx.data.user;
+    if (!userId) return false;
+
+    const userService = new UserService(this.domainId);
+    const user = await userService.findOne(userId);
+    return checkPermissions([PERMISSIONS.MANAGE_SHOP_ORDERS], user);
+  }
+
   private async checkIfOrderBelongsToUser(order: ShopOrderOutputDTO) {
     const callingUserId = ctx.data.user;
     if (!callingUserId) throw new errors.UnauthorizedError();
 
-    const userHasHighPrivileges = await this.userHasHighPrivileges();
+    const userHasHighPrivileges = await this.canManageOrders();
     if (userHasHighPrivileges) {
       this.log.debug(`User ${callingUserId} has high privileges, skipping order ownership check`);
       return;
@@ -75,17 +84,6 @@ export class ShopListingService extends TakaroService<
       });
       throw new errors.NotFoundError('Shop order not found');
     }
-  }
-
-  private async userHasHighPrivileges() {
-    const userId = ctx.data.user;
-    if (!userId) throw new errors.UnauthorizedError();
-
-    const userService = new UserService(this.domainId);
-    const user = await userService.findOne(userId);
-    const userHasHighPrivileges = checkPermissions([PERMISSIONS.MANAGE_SHOP_ORDERS], user);
-
-    return userHasHighPrivileges;
   }
 
   async find(filters: ITakaroQuery<ShopListingOutputDTO>): Promise<PaginatedOutput<ShopListingOutputDTO>> {
@@ -182,11 +180,12 @@ export class ShopListingService extends TakaroService<
   async findOrders(filters: ITakaroQuery<ShopOrderOutputDTO>): Promise<PaginatedOutput<ShopOrderOutputDTO>> {
     const userId = ctx.data.user;
     if (!userId) throw new errors.UnauthorizedError();
-    const userService = new UserService(this.domainId);
-    const user = await userService.findOne(userId);
-    const userHasHighPrivileges = checkPermissions([PERMISSIONS.MANAGE_SHOP_ORDERS], user);
+
+    const userHasHighPrivileges = await this.canManageOrders();
 
     if (!userHasHighPrivileges) {
+      const userService = new UserService(this.domainId);
+      const user = await userService.findOne(userId);
       if (!user.playerId)
         return {
           results: [],
@@ -218,7 +217,7 @@ export class ShopListingService extends TakaroService<
     }
 
     if (playerIdOverride) {
-      if (!(await this.userHasHighPrivileges()))
+      if (!(await this.canManageOrders()))
         throw new errors.BadRequestError(
           'You cannot create an order for another user. Remove the userId field to create an order for yourself',
         );
@@ -471,16 +470,6 @@ export class ShopListingService extends TakaroService<
     }
 
     return listing.stock !== undefined && listing.stock >= requestedAmount;
-  }
-
-  private async checkIfUserHasHighPrivileges() {
-    const userId = ctx.data.user;
-    if (!userId) throw new errors.UnauthorizedError();
-    const userService = new UserService(this.domainId);
-    const user = await userService.findOne(userId);
-    if (!user) throw new errors.NotFoundError('User not found');
-    const hasPermission = await checkPermissions([PERMISSIONS.MANAGE_SHOP_LISTINGS], user);
-    if (!hasPermission) throw new errors.ForbiddenError();
   }
 
   async import(data: ShopListingCreateDTO[], options: ShopImportOptions) {
