@@ -21,9 +21,6 @@ import { ModuleExportDialog } from '../../../components/dialogs/ModuleExportDial
 import { ModuleDeleteDialog } from '../../../components/dialogs/ModuleDeleteDialog';
 import { DeleteImperativeHandle } from '../../../components/dialogs';
 
-import { useQuery } from '@tanstack/react-query';
-import { moduleTagsQueryOptions } from '../../../queries/module';
-
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
   canCopyModule: boolean;
@@ -41,12 +38,12 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule 
   const [openExportDialog, setOpenExportDialog] = useState<boolean>(false);
   const [openCopyDialog, setOpenCopyDialog] = useState<boolean>(false);
   const deleteDialogRef = useRef<DeleteImperativeHandle>(null);
-  const { data } = useQuery(moduleTagsQueryOptions({ limit: 2, moduleId: mod.id }));
   const theme = useTheme();
   const navigate = useNavigate();
 
-  const tags = data?.data ?? [];
-  const newestTag = tags.length > 1 ? tags[1].tag : null;
+  // Get the latest tag from mod.versions (skip 'latest' tag)
+  const newestTag =
+    mod.versions && mod.versions.length > 0 ? (mod.versions.find((v) => v.tag !== 'latest')?.tag ?? null) : null;
 
   const { latestVersion } = mod;
 
@@ -220,7 +217,9 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule 
           </InnerBody>
         </Card.Body>
       </Card>
-      <ModuleTagDialog moduleId={mod.id} moduleName={mod.name} open={openTagDialog} onOpenChange={setOpenTagDialog} />
+      {openTagDialog && (
+        <ModuleTagDialog moduleId={mod.id} moduleName={mod.name} open={openTagDialog} onOpenChange={setOpenTagDialog} />
+      )}
       <ModuleDeleteDialog
         ref={deleteDialogRef}
         moduleId={mod.id}

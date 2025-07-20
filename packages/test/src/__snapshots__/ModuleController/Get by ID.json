@@ -27,6 +27,14 @@
       "author": "Unknown",
       "supportedGames": [
         "all"
+      ],
+      "versions": [
+        {
+          "createdAt": "2025-07-20T10:02:09.656Z",
+          "updatedAt": "2025-07-20T10:02:09.660Z",
+          "id": "2fa19806-d87a-4d30-ab65-3106102e38dc",
+          "tag": "latest"
+        }
       ]
     }
   },

@@ -129,9 +129,11 @@ const main = pwTest.extend<IBaseFixtures>({
       await client.settings.settingsControllerSet('developerMode', { value: 'true' });
 
       // get versionId of the module
-      const versionId = (await client.module.moduleControllerGetTags(mods.data.data[0].id)).data.data.find(
-        (smallVersion) => smallVersion.tag !== 'latest',
-      )?.id!;
+      const versionId = (
+        await client.module.moduleVersionControllerSearchVersions({
+          filters: { moduleId: [mods.data.data[0].id] },
+        })
+      ).data.data.find((smallVersion) => smallVersion.tag !== 'latest')?.id!;
 
       // Install utils module
       await client.module.moduleInstallationsControllerInstallModule({
