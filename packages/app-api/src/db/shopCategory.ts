@@ -347,36 +347,33 @@ export class ShopCategoryRepo extends ITakaroRepo<
   ): Promise<void> {
     const knex = await this.getKnex();
 
-    // Start a transaction to ensure atomicity
-    await knex.transaction(async (trx) => {
-      // Remove categories if specified
-      if (removeCategoryIds && removeCategoryIds.length > 0) {
-        await trx(SHOP_LISTING_CATEGORY_TABLE_NAME)
-          .whereIn('shopListingId', listingIds)
-          .whereIn('shopCategoryId', removeCategoryIds)
-          .delete();
-      }
+    // Remove categories if specified
+    if (removeCategoryIds && removeCategoryIds.length > 0) {
+      await knex(SHOP_LISTING_CATEGORY_TABLE_NAME)
+        .whereIn('shopListingId', listingIds)
+        .whereIn('shopCategoryId', removeCategoryIds)
+        .delete();
+    }
 
-      // Add categories if specified
-      if (addCategoryIds && addCategoryIds.length > 0) {
-        const assignments = [];
+    // Add categories if specified
+    if (addCategoryIds && addCategoryIds.length > 0) {
+      const assignments = [];
 
-        for (const listingId of listingIds) {
-          for (const categoryId of addCategoryIds) {
-            assignments.push({
-              shopListingId: listingId,
-              shopCategoryId: categoryId,
-              domain: this.domainId,
-            });
-          }
+      for (const listingId of listingIds) {
+        for (const categoryId of addCategoryIds) {
+          assignments.push({
+            shopListingId: listingId,
+            shopCategoryId: categoryId,
+            domain: this.domainId,
+          });
         }
-
-        // Insert only if not already assigned (ignore duplicates)
-        await trx(SHOP_LISTING_CATEGORY_TABLE_NAME)
-          .insert(assignments)
-          .onConflict(['shopListingId', 'shopCategoryId'])
-          .ignore();
       }
-    });
+
+      // Insert only if not already assigned (ignore duplicates)
+      await knex(SHOP_LISTING_CATEGORY_TABLE_NAME)
+        .insert(assignments)
+        .onConflict(['shopListingId', 'shopCategoryId'])
+        .ignore();
+    }
   }
 }

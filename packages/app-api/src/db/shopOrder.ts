@@ -3,7 +3,6 @@ import { Model } from 'objection';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { SHOP_LISTING_TABLE_NAME, ShopListingModel } from './shopListing.js';
-import { Knex } from 'knex';
 import {
   ShopOrderStatus,
   ShopOrderOutputDTO,
@@ -91,14 +90,9 @@ export class ShopOrderRepo extends ITakaroRepo<
     return new ShopOrderOutputDTO(res);
   }
 
-  async create(data: ShopOrderCreateInternalDTO, trx?: any): Promise<ShopOrderOutputDTO> {
-    let query;
-    if (trx) {
-      query = ShopOrderModel.bindKnex(trx).query();
-    } else {
-      const model = await this.getModel();
-      query = model.query;
-    }
+  async create(data: ShopOrderCreateInternalDTO): Promise<ShopOrderOutputDTO> {
+    const knex = await this.getKnex();
+    const query = ShopOrderModel.bindKnex(knex).query();
 
     const order = await query
       .insert({
@@ -110,8 +104,6 @@ export class ShopOrderRepo extends ITakaroRepo<
       })
       .returning('*');
 
-    // If we're in a transaction, just return the order directly
-    // since findOne would need to be refactored to support transactions
     return new ShopOrderOutputDTO(order);
   }
 
@@ -125,23 +117,21 @@ export class ShopOrderRepo extends ITakaroRepo<
     throw new errors.NotImplementedError();
   }
 
-  async findOneForUpdate(id: string, trx: Knex.Transaction): Promise<ShopOrderOutputDTO> {
+  async findOneForUpdate(id: string): Promise<ShopOrderOutputDTO> {
+    const knex = await this.getKnex();
     const { model } = await this.getModel();
-    const res = await model.query(trx).modify('domainScoped', this.domainId).forUpdate().findById(id);
+    const res = await model.query(knex).modify('domainScoped', this.domainId).forUpdate().findById(id);
     if (!res) {
       throw new errors.NotFoundError();
     }
     return new ShopOrderOutputDTO(res);
   }
 
-  async updateWithTransaction(
-    id: string,
-    data: ShopOrderUpdateDTO,
-    trx: Knex.Transaction,
-  ): Promise<ShopOrderOutputDTO> {
+  async updateWithTransaction(id: string, data: ShopOrderUpdateDTO): Promise<ShopOrderOutputDTO> {
+    const knex = await this.getKnex();
     const { model } = await this.getModel();
     const order = await model
-      .query(trx)
+      .query(knex)
       .modify('domainScoped', this.domainId)
       .updateAndFetchById(id, { status: data.status })
       .returning('*');

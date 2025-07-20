@@ -281,14 +281,14 @@ export class PlayerOnGameServerService extends TakaroService<
     }
     const updatedPlayerOnGameServer = await this.repo.deductCurrency(id, amount);
     const eventsService = new EventService(this.domainId);
-    const record = await this.findOne(id);
     const userId = ctx.data.user;
 
+    // Use the updated record instead of making another query
     await eventsService.create(
       new EventCreateDTO({
         eventName: EVENT_TYPES.CURRENCY_DEDUCTED,
-        playerId: record.playerId,
-        gameserverId: record.gameServerId,
+        playerId: updatedPlayerOnGameServer.playerId,
+        gameserverId: updatedPlayerOnGameServer.gameServerId,
         userId,
         meta: new TakaroEventCurrencyDeducted({
           amount,

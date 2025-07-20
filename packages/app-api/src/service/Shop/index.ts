@@ -228,10 +228,9 @@ export class ShopListingService extends TakaroService<
     if (!playerId) throw new errors.BadRequestError('Unknown player, make sure you have linked your account');
 
     // Use transaction for atomic stock and order operations
-    const knex = await this.repo.getKnex();
-    const order = await knex.transaction(async (trx) => {
+    const order = await ctx.runInTransaction(async () => {
       // Lock the listing row for update
-      const listing = await this.repo.findOneForUpdate(listingId, trx);
+      const listing = await this.repo.findOneForUpdate(listingId);
       if (listing.draft) throw new errors.BadRequestError('Cannot order a draft listing');
       if (listing.deletedAt) throw new errors.BadRequestError('Cannot order a deleted listing');
 
@@ -256,10 +255,10 @@ export class ShopListingService extends TakaroService<
 
       // Decrement stock if stock tracking is enabled
       if (listing.stockEnabled) {
-        await this.repo.decrementStock(listingId, amount, trx);
+        await this.repo.decrementStock(listingId, amount);
       }
 
-      const order = await this.orderRepo.create(new ShopOrderCreateInternalDTO({ listingId, playerId, amount }), trx);
+      const order = await this.orderRepo.create(new ShopOrderCreateInternalDTO({ listingId, playerId, amount }));
 
       await this.eventService.create(
         new EventCreateDTO({
@@ -292,8 +291,6 @@ export class ShopListingService extends TakaroService<
   }
 
   async claimOrder(orderId: string): Promise<ShopOrderOutputDTO> {
-    const { model } = await this.orderRepo.getModel();
-
     // First, check if the order exists and belongs to user, and get necessary data
     const initialOrder = await this.orderRepo.findOne(orderId);
     if (!initialOrder) throw new errors.NotFoundError(`Shop order with id ${orderId} not found`);
@@ -313,9 +310,9 @@ export class ShopListingService extends TakaroService<
       );
 
     // Phase 1: Quick database transaction to update order status
-    const transactionResult = await model.transaction(async (trx) => {
+    const transactionResult = await ctx.runInTransaction(async () => {
       // Lock the order row for update to prevent concurrent claims
-      const order = await this.orderRepo.findOneForUpdate(orderId, trx);
+      const order = await this.orderRepo.findOneForUpdate(orderId);
       if (!order) throw new errors.NotFoundError(`Shop order with id ${orderId} not found`);
 
       // Check status again within the transaction with the lock held
@@ -326,7 +323,6 @@ export class ShopListingService extends TakaroService<
       const updatedOrder = await this.orderRepo.updateWithTransaction(
         orderId,
         new ShopOrderUpdateDTO({ status: ShopOrderStatus.COMPLETED }),
-        trx,
       );
 
       return { updatedOrder, order };

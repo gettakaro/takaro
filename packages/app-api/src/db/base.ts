@@ -1,5 +1,5 @@
 import { getKnex, ITakaroQuery, TakaroModel, NOT_DOMAIN_SCOPED_TakaroModel } from '@takaro/db';
-import { TakaroDTO, logger } from '@takaro/util';
+import { TakaroDTO, logger, ctx } from '@takaro/util';
 import { ModelClass, QueryBuilder } from 'objection';
 
 export class voidDTO extends TakaroDTO<voidDTO> {
@@ -19,7 +19,9 @@ export abstract class NOT_DOMAIN_SCOPED_ITakaroRepo<
 > {
   log = logger(this.constructor.name);
 
-  async getKnex() {
+  async getKnex(): Promise<any> {
+    const transaction = ctx.getTransaction();
+    if (transaction) return transaction;
     return getKnex();
   }
 
@@ -48,7 +50,9 @@ export abstract class ITakaroRepo<
     super();
   }
 
-  async getKnex() {
+  async getKnex(): Promise<any> {
+    const transaction = ctx.getTransaction();
+    if (transaction) return transaction;
     return getKnex();
   }
 }

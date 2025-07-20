@@ -324,24 +324,24 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
   }
 
   async deductCurrency(playerId: string, amount: number): Promise<PlayerOnGameserverOutputDTO> {
-    const { model } = await this.getModel();
+    const knex = await this.getKnex();
 
-    await model.transaction(async (trx) => {
-      const result = await trx.raw(
-        `
-        UPDATE "playerOnGameServer"
-        SET currency = currency - ?
-        WHERE id = ?
-        RETURNING *;
-      `,
-        [amount, playerId],
-      );
+    const result = await knex.raw(
+      `
+      UPDATE "playerOnGameServer"
+      SET currency = currency - ?
+      WHERE id = ?
+      RETURNING *;
+    `,
+      [amount, playerId],
+    );
 
-      if (result.rowCount === 0) {
-        throw new errors.BadRequestError('Player not found');
-      }
-    });
-    return this.findOne(playerId);
+    if (result.rowCount === 0) {
+      throw new errors.BadRequestError('Player not found');
+    }
+
+    // Return the updated record from the RETURNING clause
+    return new PlayerOnGameserverOutputDTO(result.rows[0]);
   }
 
   async addCurrency(playerId: string, amount: number): Promise<PlayerOnGameserverOutputDTO> {

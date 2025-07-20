@@ -352,8 +352,8 @@ export class ShopListingRepo extends ITakaroRepo<
     await query.where('gameServerId', gameServerId).update({ deletedAt: new Date() });
   }
 
-  async decrementStock(listingId: string, amount: number, trx?: any): Promise<void> {
-    const knex = trx || (await this.getKnex());
+  async decrementStock(listingId: string, amount: number): Promise<void> {
+    const knex = await this.getKnex();
 
     const result = await knex('shopListing')
       .where('id', listingId)
@@ -361,24 +361,25 @@ export class ShopListingRepo extends ITakaroRepo<
       .where('stock', '>=', amount)
       .decrement('stock', amount);
 
-    if (!result) {
+    if (result === 0) {
       throw new errors.BadRequestError(`Insufficient stock available`);
     }
   }
 
-  async incrementStock(listingId: string, amount: number, trx?: any): Promise<void> {
-    const knex = trx || (await this.getKnex());
+  async incrementStock(listingId: string, amount: number): Promise<void> {
+    const knex = await this.getKnex();
 
     await knex('shopListing').where('id', listingId).where('stockEnabled', true).increment('stock', amount);
   }
 
-  async findOneForUpdate(id: string, trx: any): Promise<ShopListingOutputDTO> {
-    const result = await trx('shopListing').where('id', id).whereNull('deletedAt').forUpdate().first();
+  async findOneForUpdate(id: string): Promise<ShopListingOutputDTO> {
+    const knex = await this.getKnex();
+    const result = await knex('shopListing').where('id', id).whereNull('deletedAt').forUpdate().first();
 
     if (!result) throw new errors.NotFoundError();
 
     // Fetch related data with proper aliasing
-    const itemsJoinResult = await trx(SHOP_LISTING_ITEMS_TABLE_NAME)
+    const itemsJoinResult = await knex(SHOP_LISTING_ITEMS_TABLE_NAME)
       .select(`${SHOP_LISTING_ITEMS_TABLE_NAME}.amount`, `${SHOP_LISTING_ITEMS_TABLE_NAME}.quality`, 'items.*')
       .where('listingId', id)
       .join('items', 'items.id', '=', `${SHOP_LISTING_ITEMS_TABLE_NAME}.itemId`);
@@ -399,7 +400,7 @@ export class ShopListingRepo extends ITakaroRepo<
       },
     }));
 
-    const categories = await trx(SHOP_LISTING_CATEGORY_TABLE_NAME)
+    const categories = await knex(SHOP_LISTING_CATEGORY_TABLE_NAME)
       .where('shopListingId', id)
       .join(
         SHOP_CATEGORY_TABLE_NAME,
