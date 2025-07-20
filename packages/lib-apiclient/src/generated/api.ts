@@ -17519,10 +17519,11 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable.   Required permissions: `READ_PLAYERS`<br> OperationId: `GameServerControllerGetPlayers`
+     * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable. Please use the Player on GameServer (PoG) search endpoint instead: `POST /gameserver/player/search` for more flexible filtering, sorting, and pagination options.   Required permissions: `READ_PLAYERS`<br> OperationId: `GameServerControllerGetPlayers`
      * @summary Get players
      * @param {string} id
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      */
     gameServerControllerGetPlayers: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
@@ -18396,10 +18397,11 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable.   Required permissions: `READ_PLAYERS`<br> OperationId: `GameServerControllerGetPlayers`
+     * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable. Please use the Player on GameServer (PoG) search endpoint instead: `POST /gameserver/player/search` for more flexible filtering, sorting, and pagination options.   Required permissions: `READ_PLAYERS`<br> OperationId: `GameServerControllerGetPlayers`
      * @summary Get players
      * @param {string} id
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      */
     async gameServerControllerGetPlayers(
@@ -18969,10 +18971,11 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable.   Required permissions: `READ_PLAYERS`<br> OperationId: `GameServerControllerGetPlayers`
+     * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable. Please use the Player on GameServer (PoG) search endpoint instead: `POST /gameserver/player/search` for more flexible filtering, sorting, and pagination options.   Required permissions: `READ_PLAYERS`<br> OperationId: `GameServerControllerGetPlayers`
      * @summary Get players
      * @param {string} id
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      */
     gameServerControllerGetPlayers(
@@ -19351,10 +19354,11 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable.   Required permissions: `READ_PLAYERS`<br> OperationId: `GameServerControllerGetPlayers`
+   * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable. Please use the Player on GameServer (PoG) search endpoint instead: `POST /gameserver/player/search` for more flexible filtering, sorting, and pagination options.   Required permissions: `READ_PLAYERS`<br> OperationId: `GameServerControllerGetPlayers`
    * @summary Get players
    * @param {string} id
    * @param {*} [options] Override http request option.
+   * @deprecated
    * @throws {RequiredError}
    * @memberof GameServerApi
    */
