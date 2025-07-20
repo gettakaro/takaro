@@ -10,25 +10,33 @@ import {
   DiscordEmbedAuthor,
 } from '../DiscordService.js';
 import { errors } from '@takaro/util';
+import { discordBot } from '../../lib/DiscordBot.js';
 
-// Mock the DiscordBot
-const _mockDiscordBot = {
-  getChannel: mock.fn(async (channelId: string) => ({
-    id: channelId,
-    guildId: 'test-guild-id',
-    isTextBased: () => true,
-  })),
-  sendMessage: mock.fn(async (channelId: string, content?: string, embed?: any) => ({
-    id: 'test-message-id',
-    content,
-    embeds: embed ? [embed] : [],
-  })),
-};
+// Mock the DiscordBot methods directly
+const mockGetChannel = mock.fn(async (channelId: string) => ({
+  id: channelId,
+  guildId: 'test-guild-id',
+  isTextBased: () => true,
+}));
+
+const mockSendMessage = mock.fn(async (channelId: string, content?: string, embed?: any) => ({
+  id: 'test-message-id',
+  content,
+  embeds: embed ? [embed] : [],
+}));
 
 describe('DiscordService sendMessage', () => {
   let service: DiscordService;
 
   beforeEach(() => {
+    // Reset mock functions
+    mockGetChannel.mock.resetCalls();
+    mockSendMessage.mock.resetCalls();
+
+    // Override discordBot methods with mocks
+    (discordBot as any).getChannel = mockGetChannel;
+    (discordBot as any).sendMessage = mockSendMessage;
+
     service = new DiscordService('test-domain');
 
     // Mock the find method to return a valid guild
