@@ -13,6 +13,8 @@ export class Teleports extends ModuleTransferDTO<Teleports> {
     super();
 
     this.name = 'teleports';
+    this.author = 'Takaro';
+    this.supportedGames = ['7 days to die', 'rust', 'minecraft'];
     this.versions = [
       new ModuleTransferVersionDTO({
         tag: '0.0.4',

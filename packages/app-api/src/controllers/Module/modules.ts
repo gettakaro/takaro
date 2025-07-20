@@ -50,6 +50,12 @@ class ModuleSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsString({ each: true })
   builtin: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  author: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  supportedGames: string[];
 }
 
 class ModuleSearchInputAllowedSearch extends AllowedSearch {

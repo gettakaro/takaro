@@ -6378,6 +6378,18 @@ export interface ModuleCreateAPIDTO {
   name: string;
   /**
    *
+   * @type {string}
+   * @memberof ModuleCreateAPIDTO
+   */
+  author?: string;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleCreateAPIDTO
+   */
+  supportedGames?: Array<string>;
+  /**
+   *
    * @type {ModuleCreateVersionInputDTO}
    * @memberof ModuleCreateAPIDTO
    */
@@ -6401,6 +6413,18 @@ export interface ModuleCreateDTO {
    * @memberof ModuleCreateDTO
    */
   builtin?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleCreateDTO
+   */
+  author?: string;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleCreateDTO
+   */
+  supportedGames?: Array<string>;
 }
 /**
  *
@@ -6420,6 +6444,18 @@ export interface ModuleCreateInternalDTO {
    * @memberof ModuleCreateInternalDTO
    */
   name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleCreateInternalDTO
+   */
+  author?: string;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleCreateInternalDTO
+   */
+  supportedGames?: Array<string>;
   /**
    *
    * @type {ModuleCreateVersionInputDTO}
@@ -6754,6 +6790,18 @@ export interface ModuleOutputDTO {
   builtin?: string;
   /**
    *
+   * @type {string}
+   * @memberof ModuleOutputDTO
+   */
+  author?: string;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleOutputDTO
+   */
+  supportedGames: Array<string>;
+  /**
+   *
    * @type {ModuleVersionOutputDTO}
    * @memberof ModuleOutputDTO
    */
@@ -6820,6 +6868,18 @@ export interface ModuleSearchInputAllowedFilters {
    * @memberof ModuleSearchInputAllowedFilters
    */
   builtin?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleSearchInputAllowedFilters
+   */
+  author?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleSearchInputAllowedFilters
+   */
+  supportedGames?: Array<string>;
   /**
    *
    * @type {Array<string>}
@@ -6930,6 +6990,18 @@ export interface ModuleTransferDTO {
   takaroVersion?: string;
   /**
    *
+   * @type {string}
+   * @memberof ModuleTransferDTO
+   */
+  author?: string;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleTransferDTO
+   */
+  supportedGames?: Array<string>;
+  /**
+   *
    * @type {Array<ModuleTransferVersionDTO>}
    * @memberof ModuleTransferDTO
    */
@@ -7008,6 +7080,18 @@ export interface ModuleUpdateDTO {
    * @memberof ModuleUpdateDTO
    */
   name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleUpdateDTO
+   */
+  author?: string;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleUpdateDTO
+   */
+  supportedGames?: Array<string>;
   /**
    *
    * @type {ModuleVersionUpdateDTO}
@@ -17435,10 +17519,11 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable.   Required permissions: `READ_PLAYERS`<br> OperationId: `GameServerControllerGetPlayers`
+     * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable. Please use the Player on GameServer (PoG) search endpoint instead: `POST /gameserver/player/search` for more flexible filtering, sorting, and pagination options.   Required permissions: `READ_PLAYERS`<br> OperationId: `GameServerControllerGetPlayers`
      * @summary Get players
      * @param {string} id
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      */
     gameServerControllerGetPlayers: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
@@ -18312,10 +18397,11 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable.   Required permissions: `READ_PLAYERS`<br> OperationId: `GameServerControllerGetPlayers`
+     * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable. Please use the Player on GameServer (PoG) search endpoint instead: `POST /gameserver/player/search` for more flexible filtering, sorting, and pagination options.   Required permissions: `READ_PLAYERS`<br> OperationId: `GameServerControllerGetPlayers`
      * @summary Get players
      * @param {string} id
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      */
     async gameServerControllerGetPlayers(
@@ -18885,10 +18971,11 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable.   Required permissions: `READ_PLAYERS`<br> OperationId: `GameServerControllerGetPlayers`
+     * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable. Please use the Player on GameServer (PoG) search endpoint instead: `POST /gameserver/player/search` for more flexible filtering, sorting, and pagination options.   Required permissions: `READ_PLAYERS`<br> OperationId: `GameServerControllerGetPlayers`
      * @summary Get players
      * @param {string} id
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      */
     gameServerControllerGetPlayers(
@@ -19267,10 +19354,11 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable.   Required permissions: `READ_PLAYERS`<br> OperationId: `GameServerControllerGetPlayers`
+   * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable. Please use the Player on GameServer (PoG) search endpoint instead: `POST /gameserver/player/search` for more flexible filtering, sorting, and pagination options.   Required permissions: `READ_PLAYERS`<br> OperationId: `GameServerControllerGetPlayers`
    * @summary Get players
    * @param {string} id
    * @param {*} [options] Override http request option.
+   * @deprecated
    * @throws {RequiredError}
    * @memberof GameServerApi
    */
