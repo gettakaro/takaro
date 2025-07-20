@@ -1,7 +1,7 @@
-import { FC, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { FC, useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createColumnHelper } from '@tanstack/react-table';
-import { Table, useTableActions, styled, IconButton, Dropdown } from '@takaro/lib-components';
+import { Table, useTableActions, styled, IconButton, Dropdown, Chip } from '@takaro/lib-components';
 import { ModuleOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import {
   AiOutlineSetting as ConfigIcon,
@@ -22,7 +22,7 @@ import { useSnackbar } from 'notistack';
 import { moduleInstallationsOptions } from '../../../../queries/gameserver';
 import { modulesQueryOptions } from '../../../../queries/module';
 import { UncontrolledModuleVersionSelectQueryField } from '../../../../components/selects';
-import { useQueryClient } from '@tanstack/react-query';
+import { getNewestVersionExcludingLatestTag } from '../../../../util/ModuleVersionHelpers';
 
 const ActionsContainer = styled.div`
   display: flex;
@@ -72,24 +72,43 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
     return { ...module, installation };
   });
 
-  const installedModules = combinedModules.filter((mod) => mod.installation);
-  const availableModules = combinedModules.filter((mod) => !mod.installation);
+  // No longer need to separate modules - use combinedModules directly
 
-  const handleInstall = async (moduleId: string) => {
-    const versionId = selectedVersions[moduleId];
-    if (!versionId) return;
+  // Set default versions for uninstalled modules
+  useEffect(() => {
+    const defaultVersions: { [moduleId: string]: string } = {};
 
-    try {
-      await getApiClient().module.moduleInstallationsControllerInstallModule({
-        gameServerId,
-        versionId,
-      });
-      enqueueSnackbar('Module installed successfully', { variant: 'default', type: 'success' });
-      setSelectedVersions((prev) => ({ ...prev, [moduleId]: '' }));
-      queryClient.invalidateQueries();
-    } catch (error: any) {
-      enqueueSnackbar(`Failed to install module: ${error.message}`, { variant: 'default', type: 'error' });
+    combinedModules.forEach((module) => {
+      // Only set default for uninstalled modules that don't already have a selection
+      if (!module.installation && !selectedVersions[module.id] && module.versions && module.versions.length > 0) {
+        // Try to get the newest semver version (excluding 'latest')
+        const semverVersions = module.versions.filter((v) => v.tag !== 'latest');
+
+        if (semverVersions.length > 0) {
+          // Use the helper to get the newest semver version
+          const newestVersion = getNewestVersionExcludingLatestTag(module.versions);
+          defaultVersions[module.id] = newestVersion.tag;
+        } else {
+          // If no semver versions exist, default to 'latest'
+          defaultVersions[module.id] = 'latest';
+        }
+      }
+    });
+
+    // Only update state if there are new defaults to set
+    if (Object.keys(defaultVersions).length > 0) {
+      setSelectedVersions((prev) => ({ ...prev, ...defaultVersions }));
     }
+  }, [modules, installations]); // Don't include selectedVersions to avoid infinite loop
+
+  const handleInstall = (moduleId: string) => {
+    const versionTag = selectedVersions[moduleId];
+    if (!versionTag) return;
+
+    navigate({
+      to: '/gameserver/$gameServerId/modules/$moduleId/$moduleVersionTag/install',
+      params: { gameServerId, moduleId, moduleVersionTag: versionTag },
+    });
   };
 
   const handleToggleEnabled = async (installation: ModuleInstallationOutputDTO) => {
@@ -115,8 +134,7 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
 
   const columnHelper = createColumnHelper<CombinedModule>();
 
-  // Columns for installed modules table
-  const installedColumns = [
+  const columns = [
     columnHelper.accessor('id', {
       header: 'ID',
       id: 'id',
@@ -140,6 +158,20 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
       enableSorting: true,
     }),
     columnHelper.display({
+      header: 'Installed',
+      id: 'installed',
+      cell: ({ row }) => {
+        const module = row.original;
+        return module.installation ? (
+          <Chip variant="outline" color="success" label="Installed" />
+        ) : (
+          <Chip variant="outline" color="error" label="Not Installed" />
+        );
+      },
+      enableColumnFilter: true,
+      enableSorting: false,
+    }),
+    columnHelper.display({
       header: 'Version',
       id: 'version',
       cell: ({ row }) => {
@@ -150,7 +182,7 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
       enableSorting: false,
     }),
     columnHelper.display({
-      header: 'Status',
+      header: 'Enabled',
       id: 'status',
       cell: ({ row }) => {
         const module = row.original;
@@ -204,8 +236,28 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
       enableHiding: false,
       cell: ({ row }) => {
         const module = row.original;
-        if (!module.installation) return null;
 
+        // For not installed modules, show version selector and install button
+        if (!module.installation) {
+          return (
+            <InstallContainer>
+              <UncontrolledModuleVersionSelectQueryField
+                value={selectedVersions[module.id] || ''}
+                onChange={(value) => setSelectedVersions((prev) => ({ ...prev, [module.id]: value as string }))}
+                moduleId={module.id}
+                name={`version-select-${module.id}`}
+              />
+              <IconButton
+                icon={<InstallIcon />}
+                ariaLabel="Install module"
+                onClick={() => handleInstall(module.id)}
+                disabled={!selectedVersions[module.id] || !canManageGameServers}
+              />
+            </InstallContainer>
+          );
+        }
+
+        // For installed modules, show action dropdown
         const menuItems: any[] = [];
 
         if (canReadGameServers) {
@@ -284,7 +336,7 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
               <Dropdown.Menu>
                 {menuItems.map((item: any, index) => (
                   <Dropdown.Menu.Item
-                    key={`installed-module-action-${index}`}
+                    key={`module-action-${index}`}
                     onClick={item.onClick}
                     label={item.label}
                     icon={item.icon}
@@ -298,96 +350,7 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
     }),
   ];
 
-  // Columns for available modules table
-  const availableColumns = [
-    columnHelper.accessor('id', {
-      header: 'ID',
-      id: 'id',
-      cell: (info) => info.getValue(),
-      enableColumnFilter: false,
-      enableHiding: true,
-      meta: { hideColumn: true },
-    }),
-    columnHelper.accessor('name', {
-      header: 'Name',
-      id: 'name',
-      cell: (info) => {
-        const module = info.row.original;
-        return (
-          <Link to="/modules/$moduleId/view" params={{ moduleId: module.id }}>
-            {info.getValue()}
-          </Link>
-        );
-      },
-      enableColumnFilter: true,
-      enableSorting: true,
-    }),
-    columnHelper.accessor('latestVersion', {
-      header: 'Latest Version',
-      id: 'latestVersion',
-      cell: (info) => info.getValue() || 'N/A',
-      enableColumnFilter: false,
-      enableSorting: false,
-    }),
-    columnHelper.display({
-      header: 'Commands',
-      id: 'commands',
-      cell: ({ row }) => row.original.latestVersion?.commands?.length || 0,
-      enableColumnFilter: false,
-      enableSorting: false,
-    }),
-    columnHelper.display({
-      header: 'Hooks',
-      id: 'hooks',
-      cell: ({ row }) => row.original.latestVersion?.hooks?.length || 0,
-      enableColumnFilter: false,
-      enableSorting: false,
-    }),
-    columnHelper.display({
-      header: 'Cronjobs',
-      id: 'cronjobs',
-      cell: ({ row }) => row.original.latestVersion?.cronJobs?.length || 0,
-      enableColumnFilter: false,
-      enableSorting: false,
-    }),
-    columnHelper.display({
-      header: 'Permissions',
-      id: 'permissions',
-      cell: ({ row }) =>
-        row.original.latestVersion?.permissions?.filter((p: any) => !p.permission.startsWith('SYSTEM_')).length || 0,
-      enableColumnFilter: false,
-      enableSorting: false,
-    }),
-    columnHelper.display({
-      header: 'Actions',
-      id: 'actions',
-      enableSorting: false,
-      enableColumnFilter: false,
-      enableHiding: false,
-      cell: ({ row }) => {
-        const module = row.original;
-        return (
-          <InstallContainer>
-            <UncontrolledModuleVersionSelectQueryField
-              value={selectedVersions[module.id] || ''}
-              onChange={(value) => setSelectedVersions((prev) => ({ ...prev, [module.id]: value as string }))}
-              moduleId={module.id}
-              name={`version-select-${module.id}`}
-            />
-            <IconButton
-              icon={<InstallIcon />}
-              ariaLabel="Install module"
-              onClick={() => handleInstall(module.id)}
-              disabled={!selectedVersions[module.id] || !canManageGameServers}
-            />
-          </InstallContainer>
-        );
-      },
-    }),
-  ];
-
-  const installedTableActions = useTableActions<CombinedModule>({ pageSize: 25 });
-  const availableTableActions = useTableActions<CombinedModule>({ pageSize: 25 });
+  const tableActions = useTableActions<CombinedModule>({ pageSize: 25 });
 
   if (modulesPending || installationsPending) {
     return <div>Loading...</div>;
@@ -395,45 +358,22 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
 
   return (
     <>
-      <div>
-        <h3>Installed Modules</h3>
-        <Table
-          id="installed-modules"
-          data={installedModules}
-          columns={installedColumns}
-          pagination={{
-            paginationState: installedTableActions.pagination.paginationState,
-            setPaginationState: installedTableActions.pagination.setPaginationState,
-            pageOptions: installedTableActions.pagination.getPageOptions({
-              data: installedModules,
-              meta: { total: installedModules.length, serverTime: Date.now().toString(), error: null as any },
-            }),
-          }}
-          columnFiltering={installedTableActions.columnFilters}
-          columnSearch={installedTableActions.columnSearch}
-          sorting={installedTableActions.sorting}
-        />
-      </div>
-
-      <div style={{ marginTop: '3rem' }}>
-        <h3>Available Modules</h3>
-        <Table
-          id="available-modules"
-          data={availableModules}
-          columns={availableColumns}
-          pagination={{
-            paginationState: availableTableActions.pagination.paginationState,
-            setPaginationState: availableTableActions.pagination.setPaginationState,
-            pageOptions: availableTableActions.pagination.getPageOptions({
-              data: availableModules,
-              meta: { total: availableModules.length, serverTime: Date.now().toString(), error: null as any },
-            }),
-          }}
-          columnFiltering={availableTableActions.columnFilters}
-          columnSearch={availableTableActions.columnSearch}
-          sorting={availableTableActions.sorting}
-        />
-      </div>
+      <Table
+        id="modules"
+        data={combinedModules}
+        columns={columns}
+        pagination={{
+          paginationState: tableActions.pagination.paginationState,
+          setPaginationState: tableActions.pagination.setPaginationState,
+          pageOptions: tableActions.pagination.getPageOptions({
+            data: combinedModules,
+            meta: { total: combinedModules.length, serverTime: Date.now().toString(), error: null as any },
+          }),
+        }}
+        columnFiltering={tableActions.columnFilters}
+        columnSearch={tableActions.columnSearch}
+        sorting={tableActions.sorting}
+      />
 
       {openUninstallDialog && (
         <ModuleUninstallDialog

@@ -1,4 +1,4 @@
-import { useQuery, useQueries } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Table, useTableActions, IconButton, styled } from '@takaro/lib-components';
 import { ModuleOutputDTO, ModuleSearchInputDTO } from '@takaro/apiclient';
@@ -22,7 +22,6 @@ import {
   ModuleExportDialog,
   ModuleTagDialog,
 } from '../../../../components/dialogs';
-import { moduleTagsQueryOptions } from '../../../../queries/module';
 
 const ActionsContainer = styled.div`
   display: flex;
@@ -34,7 +33,7 @@ const ActionsContainer = styled.div`
 export const modulesQueryOptions = (queryParams: ModuleSearchInputDTO = {}) => ({
   queryKey: ['modules', queryParams],
   queryFn: async () => {
-    const result = await getApiClient().module.moduleControllerSearch(queryParams);
+    const result = await getApiClient().module.moduleControllerSearch({ ...queryParams, extend: ['versions'] });
     return result.data;
   },
 });
@@ -73,20 +72,15 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
   const { data } = useQuery(modulesQueryOptions(queryParams));
 
   const modules = data?.data || [];
-  const tagsQueries = useQueries({
-    queries: modules.map((module) => ({
-      ...moduleTagsQueryOptions({ moduleId: module.id, limit: 2 }),
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    })),
-  });
-
   const moduleTagsMap = new Map<string, string>();
-  tagsQueries.forEach((query, index) => {
-    if (query.data && modules[index]) {
-      const tags = query.data.data || [];
-      const newestTag = tags.length > 1 ? tags[1].tag : null;
-      if (newestTag) {
-        moduleTagsMap.set(modules[index].id, newestTag);
+
+  modules.forEach((module) => {
+    if (module.versions && module.versions.length > 1) {
+      // Get the second tag (first non-latest tag)
+      const nonLatestVersions = module.versions.filter((v) => v.tag !== 'latest');
+      if (nonLatestVersions.length > 0) {
+        const newestTag = nonLatestVersions[0].tag;
+        moduleTagsMap.set(module.id, newestTag);
       }
     }
   });
