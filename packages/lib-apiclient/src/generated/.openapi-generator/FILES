@@ -53,8 +53,17 @@ docs/CronJobSearchInputDTO.md
 docs/CronJobTriggerDTO.md
 docs/CronJobUpdateDTO.md
 docs/DiscordApi.md
+docs/DiscordChannelOutputArrayDTOAPI.md
+docs/DiscordChannelOutputDTO.md
+docs/DiscordEmbedAuthor.md
+docs/DiscordEmbedField.md
+docs/DiscordEmbedFooter.md
+docs/DiscordEmbedImage.md
+docs/DiscordEmbedInputDTO.md
 docs/DiscordInviteOutputDTO.md
 docs/DiscordParamId.md
+docs/DiscordRoleOutputArrayDTOAPI.md
+docs/DiscordRoleOutputDTO.md
 docs/DomainApi.md
 docs/DomainCreateInputDTO.md
 docs/DomainCreateOutputDTO.md

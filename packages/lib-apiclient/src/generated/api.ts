@@ -1546,6 +1546,205 @@ export interface CronJobUpdateDTO {
 /**
  *
  * @export
+ * @interface DiscordChannelOutputArrayDTOAPI
+ */
+export interface DiscordChannelOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<DiscordChannelOutputDTO>}
+   * @memberof DiscordChannelOutputArrayDTOAPI
+   */
+  data: Array<DiscordChannelOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof DiscordChannelOutputArrayDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface DiscordChannelOutputDTO
+ */
+export interface DiscordChannelOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordChannelOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordChannelOutputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {number}
+   * @memberof DiscordChannelOutputDTO
+   */
+  type: number;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordChannelOutputDTO
+   */
+  parentId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordChannelOutputDTO
+   */
+  topic?: string;
+}
+/**
+ *
+ * @export
+ * @interface DiscordEmbedAuthor
+ */
+export interface DiscordEmbedAuthor {
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedAuthor
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedAuthor
+   */
+  iconUrl?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedAuthor
+   */
+  url?: string;
+}
+/**
+ *
+ * @export
+ * @interface DiscordEmbedField
+ */
+export interface DiscordEmbedField {
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedField
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedField
+   */
+  value: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof DiscordEmbedField
+   */
+  inline?: boolean;
+}
+/**
+ *
+ * @export
+ * @interface DiscordEmbedFooter
+ */
+export interface DiscordEmbedFooter {
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedFooter
+   */
+  text: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedFooter
+   */
+  iconUrl?: string;
+}
+/**
+ *
+ * @export
+ * @interface DiscordEmbedImage
+ */
+export interface DiscordEmbedImage {
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedImage
+   */
+  url: string;
+}
+/**
+ *
+ * @export
+ * @interface DiscordEmbedInputDTO
+ */
+export interface DiscordEmbedInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedInputDTO
+   */
+  title?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedInputDTO
+   */
+  description?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof DiscordEmbedInputDTO
+   */
+  color?: number;
+  /**
+   *
+   * @type {Array<DiscordEmbedField>}
+   * @memberof DiscordEmbedInputDTO
+   */
+  fields?: Array<DiscordEmbedField>;
+  /**
+   *
+   * @type {DiscordEmbedFooter}
+   * @memberof DiscordEmbedInputDTO
+   */
+  footer?: DiscordEmbedFooter;
+  /**
+   *
+   * @type {DiscordEmbedImage}
+   * @memberof DiscordEmbedInputDTO
+   */
+  thumbnail?: DiscordEmbedImage;
+  /**
+   *
+   * @type {DiscordEmbedImage}
+   * @memberof DiscordEmbedInputDTO
+   */
+  image?: DiscordEmbedImage;
+  /**
+   *
+   * @type {DiscordEmbedAuthor}
+   * @memberof DiscordEmbedInputDTO
+   */
+  author?: DiscordEmbedAuthor;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof DiscordEmbedInputDTO
+   */
+  timestamp?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
  * @interface DiscordInviteOutputDTO
  */
 export interface DiscordInviteOutputDTO {
@@ -1574,6 +1773,50 @@ export interface DiscordParamId {
    * @memberof DiscordParamId
    */
   id: string;
+}
+/**
+ *
+ * @export
+ * @interface DiscordRoleOutputArrayDTOAPI
+ */
+export interface DiscordRoleOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<DiscordRoleOutputDTO>}
+   * @memberof DiscordRoleOutputArrayDTOAPI
+   */
+  data: Array<DiscordRoleOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof DiscordRoleOutputArrayDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface DiscordRoleOutputDTO
+ */
+export interface DiscordRoleOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordRoleOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordRoleOutputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {number}
+   * @memberof DiscordRoleOutputDTO
+   */
+  color: number;
 }
 /**
  *
@@ -7489,6 +7732,8 @@ export const PERMISSIONS = {
   ManageEntities: 'MANAGE_ENTITIES',
   ManageShopListings: 'MANAGE_SHOP_LISTINGS',
   ManageShopOrders: 'MANAGE_SHOP_ORDERS',
+  ViewDiscordInfo: 'VIEW_DISCORD_INFO',
+  SendDiscordMessage: 'SEND_DISCORD_MESSAGE',
 } as const;
 
 export type PERMISSIONS = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -9884,7 +10129,13 @@ export interface SendMessageInputDTO {
    * @type {string}
    * @memberof SendMessageInputDTO
    */
-  message: string;
+  message?: string;
+  /**
+   *
+   * @type {DiscordEmbedInputDTO}
+   * @memberof SendMessageInputDTO
+   */
+  embed?: DiscordEmbedInputDTO;
 }
 /**
  *
@@ -14758,8 +15009,39 @@ export class CronJobApi extends BaseAPI {
 export const DiscordApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * <br> OperationId: `DiscordControllerGetInvite`
-     * @summary Get invite
+     * Retrieve all channels (text, voice, etc.) in a specific Discord guild. Useful for selecting channels for notifications or commands.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetChannels`
+     * @summary Get guild channels
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerGetChannels: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('discordControllerGetChannels', 'id', id);
+      const localVarPath = `/discord/guilds/{id}/channels`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Get the invite link to add the Takaro bot to a Discord server, along with the developer Discord server link.<br> OperationId: `DiscordControllerGetInvite`
+     * @summary Get bot invite links
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -14786,8 +15068,39 @@ export const DiscordApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     * <br> OperationId: `DiscordControllerSearch`
-     * @summary Search
+     * Retrieve all roles available in a specific Discord guild. Useful for role-based integrations and permissions mapping.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetRoles`
+     * @summary Get guild roles
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerGetRoles: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('discordControllerGetRoles', 'id', id);
+      const localVarPath = `/discord/guilds/{id}/roles`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Search for Discord guilds (servers) that the bot has access to. Supports filtering by name, Discord ID, and whether Takaro is enabled.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerSearch`
+     * @summary Search Discord guilds
      * @param {GuildSearchInputDTO} [guildSearchInputDTO] GuildSearchInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -14821,8 +15134,8 @@ export const DiscordApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     * <br> OperationId: `DiscordControllerSendMessage`
-     * @summary Send message
+     * Send a text message or rich embed to a specific Discord channel. Requires the bot to have appropriate permissions in the channel.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerSendMessage`
+     * @summary Send message to Discord channel
      * @param {string} id
      * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
      * @param {*} [options] Override http request option.
@@ -14860,8 +15173,8 @@ export const DiscordApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     * <br> OperationId: `DiscordControllerUpdateGuild`
-     * @summary Update guild
+     * Update Takaro-specific settings for a Discord guild, such as enabling or disabling Takaro features.   Required permissions: `MANAGE_SETTINGS`<br> OperationId: `DiscordControllerUpdateGuild`
+     * @summary Update guild settings
      * @param {string} id
      * @param {GuildApiUpdateDTO} [guildApiUpdateDTO] GuildApiUpdateDTO
      * @param {*} [options] Override http request option.
@@ -14909,8 +15222,31 @@ export const DiscordApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = DiscordApiAxiosParamCreator(configuration);
   return {
     /**
-     * <br> OperationId: `DiscordControllerGetInvite`
-     * @summary Get invite
+     * Retrieve all channels (text, voice, etc.) in a specific Discord guild. Useful for selecting channels for notifications or commands.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetChannels`
+     * @summary Get guild channels
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async discordControllerGetChannels(
+      id: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DiscordChannelOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.discordControllerGetChannels(id, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['DiscordApi.discordControllerGetChannels']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Get the invite link to add the Takaro bot to a Discord server, along with the developer Discord server link.<br> OperationId: `DiscordControllerGetInvite`
+     * @summary Get bot invite links
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -14930,8 +15266,31 @@ export const DiscordApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * <br> OperationId: `DiscordControllerSearch`
-     * @summary Search
+     * Retrieve all roles available in a specific Discord guild. Useful for role-based integrations and permissions mapping.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetRoles`
+     * @summary Get guild roles
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async discordControllerGetRoles(
+      id: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DiscordRoleOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.discordControllerGetRoles(id, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['DiscordApi.discordControllerGetRoles']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Search for Discord guilds (servers) that the bot has access to. Supports filtering by name, Discord ID, and whether Takaro is enabled.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerSearch`
+     * @summary Search Discord guilds
      * @param {GuildSearchInputDTO} [guildSearchInputDTO] GuildSearchInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -14953,8 +15312,8 @@ export const DiscordApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * <br> OperationId: `DiscordControllerSendMessage`
-     * @summary Send message
+     * Send a text message or rich embed to a specific Discord channel. Requires the bot to have appropriate permissions in the channel.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerSendMessage`
+     * @summary Send message to Discord channel
      * @param {string} id
      * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
      * @param {*} [options] Override http request option.
@@ -14982,8 +15341,8 @@ export const DiscordApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * <br> OperationId: `DiscordControllerUpdateGuild`
-     * @summary Update guild
+     * Update Takaro-specific settings for a Discord guild, such as enabling or disabling Takaro features.   Required permissions: `MANAGE_SETTINGS`<br> OperationId: `DiscordControllerUpdateGuild`
+     * @summary Update guild settings
      * @param {string} id
      * @param {GuildApiUpdateDTO} [guildApiUpdateDTO] GuildApiUpdateDTO
      * @param {*} [options] Override http request option.
@@ -15021,8 +15380,21 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
   const localVarFp = DiscordApiFp(configuration);
   return {
     /**
-     * <br> OperationId: `DiscordControllerGetInvite`
-     * @summary Get invite
+     * Retrieve all channels (text, voice, etc.) in a specific Discord guild. Useful for selecting channels for notifications or commands.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetChannels`
+     * @summary Get guild channels
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerGetChannels(
+      id: string,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<DiscordChannelOutputArrayDTOAPI> {
+      return localVarFp.discordControllerGetChannels(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     * Get the invite link to add the Takaro bot to a Discord server, along with the developer Discord server link.<br> OperationId: `DiscordControllerGetInvite`
+     * @summary Get bot invite links
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -15030,8 +15402,18 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
       return localVarFp.discordControllerGetInvite(options).then((request) => request(axios, basePath));
     },
     /**
-     * <br> OperationId: `DiscordControllerSearch`
-     * @summary Search
+     * Retrieve all roles available in a specific Discord guild. Useful for role-based integrations and permissions mapping.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetRoles`
+     * @summary Get guild roles
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerGetRoles(id: string, options?: RawAxiosRequestConfig): AxiosPromise<DiscordRoleOutputArrayDTOAPI> {
+      return localVarFp.discordControllerGetRoles(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     * Search for Discord guilds (servers) that the bot has access to. Supports filtering by name, Discord ID, and whether Takaro is enabled.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerSearch`
+     * @summary Search Discord guilds
      * @param {GuildSearchInputDTO} [guildSearchInputDTO] GuildSearchInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -15045,8 +15427,8 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
         .then((request) => request(axios, basePath));
     },
     /**
-     * <br> OperationId: `DiscordControllerSendMessage`
-     * @summary Send message
+     * Send a text message or rich embed to a specific Discord channel. Requires the bot to have appropriate permissions in the channel.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerSendMessage`
+     * @summary Send message to Discord channel
      * @param {string} id
      * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
      * @param {*} [options] Override http request option.
@@ -15062,8 +15444,8 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
         .then((request) => request(axios, basePath));
     },
     /**
-     * <br> OperationId: `DiscordControllerUpdateGuild`
-     * @summary Update guild
+     * Update Takaro-specific settings for a Discord guild, such as enabling or disabling Takaro features.   Required permissions: `MANAGE_SETTINGS`<br> OperationId: `DiscordControllerUpdateGuild`
+     * @summary Update guild settings
      * @param {string} id
      * @param {GuildApiUpdateDTO} [guildApiUpdateDTO] GuildApiUpdateDTO
      * @param {*} [options] Override http request option.
@@ -15089,8 +15471,22 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
  */
 export class DiscordApi extends BaseAPI {
   /**
-   * <br> OperationId: `DiscordControllerGetInvite`
-   * @summary Get invite
+   * Retrieve all channels (text, voice, etc.) in a specific Discord guild. Useful for selecting channels for notifications or commands.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetChannels`
+   * @summary Get guild channels
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DiscordApi
+   */
+  public discordControllerGetChannels(id: string, options?: RawAxiosRequestConfig) {
+    return DiscordApiFp(this.configuration)
+      .discordControllerGetChannels(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Get the invite link to add the Takaro bot to a Discord server, along with the developer Discord server link.<br> OperationId: `DiscordControllerGetInvite`
+   * @summary Get bot invite links
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof DiscordApi
@@ -15102,8 +15498,22 @@ export class DiscordApi extends BaseAPI {
   }
 
   /**
-   * <br> OperationId: `DiscordControllerSearch`
-   * @summary Search
+   * Retrieve all roles available in a specific Discord guild. Useful for role-based integrations and permissions mapping.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetRoles`
+   * @summary Get guild roles
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DiscordApi
+   */
+  public discordControllerGetRoles(id: string, options?: RawAxiosRequestConfig) {
+    return DiscordApiFp(this.configuration)
+      .discordControllerGetRoles(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Search for Discord guilds (servers) that the bot has access to. Supports filtering by name, Discord ID, and whether Takaro is enabled.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerSearch`
+   * @summary Search Discord guilds
    * @param {GuildSearchInputDTO} [guildSearchInputDTO] GuildSearchInputDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
@@ -15116,8 +15526,8 @@ export class DiscordApi extends BaseAPI {
   }
 
   /**
-   * <br> OperationId: `DiscordControllerSendMessage`
-   * @summary Send message
+   * Send a text message or rich embed to a specific Discord channel. Requires the bot to have appropriate permissions in the channel.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerSendMessage`
+   * @summary Send message to Discord channel
    * @param {string} id
    * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
    * @param {*} [options] Override http request option.
@@ -15135,8 +15545,8 @@ export class DiscordApi extends BaseAPI {
   }
 
   /**
-   * <br> OperationId: `DiscordControllerUpdateGuild`
-   * @summary Update guild
+   * Update Takaro-specific settings for a Discord guild, such as enabling or disabling Takaro features.   Required permissions: `MANAGE_SETTINGS`<br> OperationId: `DiscordControllerUpdateGuild`
+   * @summary Update guild settings
    * @param {string} id
    * @param {GuildApiUpdateDTO} [guildApiUpdateDTO] GuildApiUpdateDTO
    * @param {*} [options] Override http request option.
