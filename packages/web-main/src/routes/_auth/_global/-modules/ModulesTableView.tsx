@@ -42,6 +42,7 @@ type ModulesTableViewProps = Record<string, never>;
 
 export const ModulesTableView: FC<ModulesTableViewProps> = () => {
   const navigate = useNavigate();
+  const [quickSearchInput, setQuickSearchInput] = useState<string>('');
   const [openCopyDialog, setOpenCopyDialog] = useState<{ module: ModuleOutputDTO } | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<{ module: ModuleOutputDTO } | null>(null);
   const [openExportDialog, setOpenExportDialog] = useState<{ module: ModuleOutputDTO } | null>(null);
@@ -66,7 +67,7 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
       name: f.columnFiltersState.find((f) => f.id === 'name')?.value as string[] | undefined,
       builtin: f.columnFiltersState.find((f) => f.id === 'builtin')?.value as string[] | undefined,
     },
-    search: (c.columnSearchState as any).query,
+    search: quickSearchInput ? { name: [quickSearchInput] } : undefined,
   };
 
   const { data } = useQuery(modulesQueryOptions(queryParams));
@@ -109,6 +110,13 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
         return module.builtin ? 'Built-in' : 'Custom';
       },
       enableColumnFilter: true,
+    }),
+    columnHelper.accessor('author', {
+      header: 'Author',
+      id: 'author',
+      cell: (info) => info.getValue() || 'Unknown',
+      enableColumnFilter: true,
+      enableSorting: true,
     }),
     columnHelper.accessor('latestVersion', {
       header: 'Latest Version',
@@ -275,6 +283,8 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
         id="modules"
         data={allModules}
         columns={columnDefs}
+        searchInputPlaceholder="Search modules by name..."
+        onSearchInputChanged={setQuickSearchInput}
         pagination={{
           paginationState: p.paginationState,
           setPaginationState: p.setPaginationState,

@@ -49,6 +49,7 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
   const { gameServerId } = useParams({ from: '/_auth/gameserver/$gameServerId/modules' });
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
+  const [quickSearchInput, setQuickSearchInput] = useState<string>('');
   const [openUninstallDialog, setOpenUninstallDialog] = useState<{ installation: ModuleInstallationOutputDTO } | null>(
     null,
   );
@@ -169,6 +170,13 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
         );
       },
       enableColumnFilter: true,
+      enableSorting: false,
+    }),
+    columnHelper.display({
+      header: 'Author',
+      id: 'author',
+      cell: ({ row }) => row.original.author || 'Unknown',
+      enableColumnFilter: false,
       enableSorting: false,
     }),
     columnHelper.display({
@@ -356,18 +364,25 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
     return <div>Loading...</div>;
   }
 
+  // Filter modules based on search input
+  const filteredModules = quickSearchInput
+    ? combinedModules.filter((module) => module.name.toLowerCase().includes(quickSearchInput.toLowerCase()))
+    : combinedModules;
+
   return (
     <>
       <Table
         id="modules"
-        data={combinedModules}
+        data={filteredModules}
         columns={columns}
+        searchInputPlaceholder="Search modules by name..."
+        onSearchInputChanged={setQuickSearchInput}
         pagination={{
           paginationState: tableActions.pagination.paginationState,
           setPaginationState: tableActions.pagination.setPaginationState,
           pageOptions: tableActions.pagination.getPageOptions({
-            data: combinedModules,
-            meta: { total: combinedModules.length, serverTime: Date.now().toString(), error: null as any },
+            data: filteredModules,
+            meta: { total: filteredModules.length, serverTime: Date.now().toString(), error: null as any },
           }),
         }}
         columnFiltering={tableActions.columnFilters}
