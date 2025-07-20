@@ -6,8 +6,19 @@ async function main() {
 
   const moduleCommands = await Promise.all(
     enabledModules.data.data.map(async (mod) => {
+      // Check if the module itself is enabled
+      if (!mod.systemConfig.enabled) {
+        return [];
+      }
+
       const installedVersion = await takaro.module.moduleVersionControllerGetModuleVersion(mod.versionId);
-      return installedVersion.data.data.commands;
+      const commands = installedVersion.data.data.commands;
+
+      // Filter out disabled commands
+      return commands.filter((command) => {
+        const commandConfig = mod.systemConfig.commands && mod.systemConfig.commands[command.name];
+        return commandConfig && commandConfig.enabled;
+      });
     }),
   );
   const allCommandsFlat = moduleCommands.flat();
