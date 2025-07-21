@@ -128,7 +128,11 @@ const tests = [
         })
       ).data.data;
 
-      const tags = (await this.client.module.moduleControllerGetTags(importedModule[0].id)).data.data;
+      const tags = (
+        await this.client.module.moduleVersionControllerSearchVersions({
+          filters: { moduleId: [importedModule[0].id] },
+        })
+      ).data.data;
 
       expect(importedModule.length).to.be.eq(1);
       expect(tags.length).to.be.eq(1);
@@ -155,7 +159,11 @@ const tests = [
           filters: { name: ['hvb_serverMessages_v2'] },
         })
       ).data.data;
-      const tags = (await this.client.module.moduleControllerGetTags(importedModule[0].id)).data.data;
+      const tags = (
+        await this.client.module.moduleVersionControllerSearchVersions({
+          filters: { moduleId: [importedModule[0].id] },
+        })
+      ).data.data;
 
       expect(importedModule.length).to.be.eq(1);
       expect(tags.length).to.be.eq(1);
@@ -441,6 +449,29 @@ const tests = [
         if (!isAxiosError(error)) throw error;
         expect(error.response?.status).to.be.eq(400);
         expect(error.response?.data.meta.error.message).to.be.eq('Invalid UUID. Passed a string instead of a UUID');
+      }
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Search endpoint filters validation - should throw error when filters is not an object with arrays',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      try {
+        await this.client.module.moduleControllerSearch({
+          filters: {
+            // @ts-expect-error - we are testing invalid input
+            name: 'blabla',
+          },
+        });
+        throw new Error('Should have thrown a validation error');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.be.eq(400);
+        expect(error.response?.data.meta.error.message).to.contain(
+          'Filter values must be arrays or boolean. Found invalid value for',
+        );
       }
     },
   }),

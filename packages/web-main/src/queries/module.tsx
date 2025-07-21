@@ -36,7 +36,6 @@ import {
   ModuleVersionOutputArrayDTOAPI,
   ModuleVersionOutputDTO,
   ModuleVersionSearchInputDTO,
-  SmallModuleOutputArrayDTOAPI,
 } from '@takaro/apiclient';
 
 import { queryParamsToArray, getNextPage, mutationWrapper } from './util';
@@ -51,7 +50,6 @@ export const moduleKeys = {
   export: (versionId: string) => [...moduleKeys.all, 'export', versionId] as const,
   list: () => [...moduleKeys.all, 'list'] as const,
   count: () => [...moduleKeys.all, 'count'] as const,
-  tags: (moduleId: string) => [...moduleKeys.all, 'tags', moduleId] as const,
 
   versions: {
     all: ['versions'] as const,
@@ -125,37 +123,6 @@ export const customModuleCountQueryOptions = () =>
     queryFn: async () =>
       (await getApiClient().module.moduleControllerSearch({ filters: { builtin: ['null'] }, limit: 1 })).data.meta
         .total!,
-  });
-
-interface ModuleTagsInput {
-  page?: number;
-  limit?: number;
-  moduleId: string;
-}
-
-export const moduleTagsInfiniteQueryOptions = (queryParams: ModuleTagsInput, queryOptions?: { enabled?: boolean }) => {
-  return infiniteQueryOptions<SmallModuleOutputArrayDTOAPI, AxiosError<SmallModuleOutputArrayDTOAPI>>({
-    queryKey: [...moduleKeys.tags(queryParams.moduleId), 'infinite', queryParams.page, queryParams.limit],
-    queryFn: async ({ pageParam }) =>
-      (
-        await getApiClient().module.moduleControllerGetTags(
-          queryParams.moduleId,
-          pageParam as number,
-          queryParams.limit,
-        )
-      ).data,
-    initialPageParam: 0,
-    getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
-    placeholderData: keepPreviousData,
-    enabled: queryOptions?.enabled,
-  });
-};
-
-export const moduleTagsQueryOptions = (queryParams: { moduleId: string; limit?: number }) =>
-  queryOptions<SmallModuleOutputArrayDTOAPI, AxiosError<SmallModuleOutputArrayDTOAPI>>({
-    queryKey: [...moduleKeys.tags(queryParams.moduleId), 'search', queryParams.limit],
-    queryFn: async () =>
-      (await getApiClient().module.moduleControllerGetTags(queryParams.moduleId, undefined, queryParams.limit)).data,
   });
 
 export const moduleVersionsQueryOptions = (queryParams: ModuleVersionSearchInputDTO) =>
@@ -233,7 +200,6 @@ export const useTagModule = () => {
         // TODO: we could be smarter with deleting specific cache.
         await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.tags(moduleId) });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.versions.all });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.versions.list(moduleId) });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.versions.detail(moduleId) });

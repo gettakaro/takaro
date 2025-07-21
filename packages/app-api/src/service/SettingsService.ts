@@ -1,5 +1,5 @@
 import { TakaroDTO, TakaroModelDTO, ctx, traceableClass, errors } from '@takaro/util';
-import { IsEnum, IsString } from 'class-validator';
+import { IsEnum, IsString, IsBoolean } from 'class-validator';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsModel, SettingsRepo } from '../db/settings.js';
 import { TakaroService } from './Base.js';
@@ -16,15 +16,57 @@ export enum SETTINGS_KEYS {
   domainName = 'domainName',
 }
 
-export const DEFAULT_SETTINGS: Record<SETTINGS_KEYS, string> = {
-  commandPrefix: '/',
-  serverChatName: 'Takaro',
-  economyEnabled: 'false',
-  currencyName: 'Takaro coins',
-  developerMode: 'false',
-  messagePrefix: '',
-  domainName: '',
+export interface SettingDefinition {
+  defaultValue: string;
+  description: string;
+  canHaveGameServerOverride: boolean;
+}
+
+export const SETTINGS_DEFINITIONS: Record<SETTINGS_KEYS, SettingDefinition> = {
+  commandPrefix: {
+    defaultValue: '/',
+    description: 'The prefix character(s) that players must use before commands in chat',
+    canHaveGameServerOverride: true,
+  },
+  serverChatName: {
+    defaultValue: 'Takaro',
+    description: 'The name displayed when Takaro sends messages in game chat',
+    canHaveGameServerOverride: true,
+  },
+  economyEnabled: {
+    defaultValue: 'false',
+    description: 'Enable or disable the economy system for earning and spending currency',
+    canHaveGameServerOverride: true,
+  },
+  currencyName: {
+    defaultValue: 'Takaro coins',
+    description: 'The name of the currency used in the economy system',
+    canHaveGameServerOverride: true,
+  },
+  developerMode: {
+    defaultValue: 'false',
+    description: 'Enable developer mode for custom modules and advanced features',
+    canHaveGameServerOverride: false,
+  },
+  messagePrefix: {
+    defaultValue: '',
+    description: 'A prefix added to all messages sent by Takaro in game chat',
+    canHaveGameServerOverride: true,
+  },
+  domainName: {
+    defaultValue: '',
+    description: 'The domain name for this Takaro instance',
+    canHaveGameServerOverride: false,
+  },
 };
+
+export const DEFAULT_SETTINGS: Record<SETTINGS_KEYS, string> = Object.entries(SETTINGS_DEFINITIONS).reduce(
+  (acc, [key, definition]) => {
+    acc[key as SETTINGS_KEYS] = definition.defaultValue;
+    return acc;
+  },
+  {} as Record<SETTINGS_KEYS, string>,
+);
 export class Settings extends TakaroModelDTO<Settings> {
   @IsString()
   commandPrefix: string;
@@ -58,6 +100,12 @@ export class SettingsOutputDTO extends TakaroDTO<SettingsOutputDTO> {
 
   @IsEnum(SettingsMode)
   type: SettingsMode;
+
+  @IsString()
+  description: string;
+
+  @IsBoolean()
+  canHaveGameServerOverride: boolean;
 }
 
 @traceableClass('service:settings')

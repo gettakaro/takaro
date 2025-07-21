@@ -116,6 +116,11 @@ function Component() {
   } | null>(null);
   const { enqueueSnackbar } = useSnackbar();
 
+  // Stable timestamp for pagination - set on page load or when date range changes
+  const [stableLessThan, setStableLessThan] = useState<string | undefined>(
+    () => search.dateRange?.end || new Date().toISOString(),
+  );
+
   useEventSubscription({
     enabled: live,
     search: { eventName: search.eventNames.length > 0 ? search.eventNames : undefined },
@@ -140,8 +145,8 @@ function Component() {
       },
       sortBy: 'createdAt',
       sortDirection: 'desc',
-      greaterThan: { createdAt: live ? undefined : search.dateRange?.start },
-      lessThan: { createdAt: live ? undefined : search.dateRange?.end },
+      greaterThan: { createdAt: search.dateRange?.start },
+      lessThan: { createdAt: stableLessThan },
       extend: ['gameServer', 'module', 'player', 'user'],
     }),
     initialData: loaderData,
@@ -172,6 +177,11 @@ function Component() {
   }, [isExporting, events.length, isFetching, search.dateRange]);
 
   const onFilterChangeSubmit = (filter: EventFilterInputs) => {
+    // Update stable timestamp if date range changes
+    if (filter.dateRange?.end !== search.dateRange?.end) {
+      setStableLessThan(filter.dateRange?.end || new Date().toISOString());
+    }
+
     navigate({
       search: {
         gameServerIds: filter.gameServerIds.length > 0 ? filter.gameServerIds : [],

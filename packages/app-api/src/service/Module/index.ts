@@ -37,9 +37,9 @@ import {
   ModuleUpdateDTO,
   ModuleVersionOutputDTO,
   ModuleVersionUpdateDTO,
+  SmallModuleVersionOutputDTO,
 } from './dto.js';
 import { DomainService } from '../DomainService.js';
-import { PaginationParams } from '../../controllers/shared.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true, allErrors: true });
@@ -60,18 +60,36 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     return new ModuleRepo(this.domainId);
   }
 
-  private async extendModuleDTO(mod: ModuleOutputDTO): Promise<ModuleOutputDTO> {
+  private async extendModuleDTO(
+    mod: ModuleOutputDTO,
+    versionsMap?: Map<string, SmallModuleVersionOutputDTO[]>,
+  ): Promise<ModuleOutputDTO> {
     const latestVersion = await this.getLatestVersion(mod.id);
     mod.latestVersion = latestVersion;
+
+    // Include versions if provided (from bulk fetch) or fetch individually
+    if (versionsMap) {
+      mod.versions = versionsMap.get(mod.id) || [];
+    } else {
+      const individualVersionsMap = await this.repo.getVersionsForModules([mod.id]);
+      mod.versions = individualVersionsMap.get(mod.id) || [];
+    }
+
     return mod;
   }
 
   async find(filters: ITakaroQuery<ModuleOutputDTO>): Promise<PaginatedOutput<ModuleOutputDTO>> {
     const results = await this.repo.find(filters);
 
+    // Fetch versions for all modules in bulk
+    const moduleIds = results.results.map((m) => m.id);
+    const versionsMap = await this.repo.getVersionsForModules(moduleIds);
+
+    const extendedResults = await Promise.all(results.results.map((m) => this.extendModuleDTO(m, versionsMap)));
+
     return {
       total: results.total,
-      results: await Promise.all(results.results.map((m) => this.extendModuleDTO(m))),
+      results: extendedResults,
     };
   }
 
@@ -101,10 +119,6 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
   async create(_mod: ModuleCreateDTO): Promise<ModuleOutputDTO> {
     // Use the init() method instead
     throw new errors.NotImplementedError();
-  }
-
-  async getTags(moduleId: string, query: PaginationParams) {
-    return this.repo.getTags(moduleId, query);
   }
 
   async init(mod: ModuleCreateAPIDTO): Promise<ModuleOutputDTO> {
@@ -304,6 +318,23 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
     let mod = existingModule.results[0];
 
+    // Update existing module's author and supportedGames if they're different
+    if (
+      mod &&
+      (mod.author !== data.author || JSON.stringify(mod.supportedGames) !== JSON.stringify(data.supportedGames))
+    ) {
+      const updated = await this.update(
+        mod.id,
+        new ModuleUpdateDTO({
+          author: data.author,
+          supportedGames: data.supportedGames,
+        }),
+      );
+      if (updated) {
+        mod = updated;
+      }
+    }
+
     // New module, create it
     if (!mod) {
       this.log.info(`Creating new module ${data.name}`, { name: data.name });
@@ -311,6 +342,8 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         new ModuleCreateInternalDTO({
           name: data.name,
           builtin: isBuiltin ? data.name : null,
+          author: data.author,
+          supportedGames: data.supportedGames,
         }),
       );
     }

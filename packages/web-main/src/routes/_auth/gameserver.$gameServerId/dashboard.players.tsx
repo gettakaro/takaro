@@ -168,7 +168,9 @@ function Component() {
     ...playersOnGameServersQueryOptions(queryParams),
     // Only use initialData if the query params match the initial load
     initialData:
-      pagination.paginationState.pageIndex === 0 && columnFilters.columnFiltersState.length === 0
+      pagination.paginationState.pageIndex === 0 &&
+      columnFilters.columnFiltersState.length === 0 &&
+      sorting.sortingState.length === 0
         ? loaderData.playersData
         : undefined,
   });

@@ -9,6 +9,8 @@ function createModuleDTO(moduleVersionOverrides: Partial<ModuleVersionOutputDTO>
   return {
     id: 'module-123',
     name: 'test',
+    author: 'Test Author',
+    supportedGames: ['all'],
     latestVersion: {
       createdAt: DateTime.now().toISO(),
       updatedAt: DateTime.now().toISO(),
@@ -41,6 +43,8 @@ describe('Render ConfigFields', () => {
           onSubmit={() => {}}
           isLoading={false}
           moduleName={mod.name}
+          moduleAuthor={mod.author}
+          moduleSupportedGames={mod.supportedGames}
           moduleVersion={mod.latestVersion}
           error={null}
         />,
@@ -57,6 +61,8 @@ describe('Render ConfigFields', () => {
           onSubmit={() => {}}
           isLoading={false}
           moduleName={mod.name}
+          moduleAuthor={mod.author}
+          moduleSupportedGames={mod.supportedGames}
           moduleVersion={mod.latestVersion}
           error={null}
         />,

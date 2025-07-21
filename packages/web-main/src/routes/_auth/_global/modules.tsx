@@ -1,8 +1,19 @@
-import { Divider, Skeleton, styled, useTheme, InfiniteScroll, Dropdown, Button } from '@takaro/lib-components';
+import {
+  Divider,
+  Skeleton,
+  styled,
+  useTheme,
+  InfiniteScroll,
+  Dropdown,
+  Button,
+  useLocalStorage,
+} from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { PermissionsGuard } from '../../../components/PermissionsGuard';
 import { CardList, ModuleDefinitionCard } from '../../../components/cards';
+import { TableListToggleButton } from '../../../components/TableListToggleButton';
+import { ModulesTableView } from './-modules/ModulesTableView';
 import { useNavigate, Outlet, redirect, createFileRoute } from '@tanstack/react-router';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { hasPermission } from '../../../hooks/useHasPermission';
@@ -49,11 +60,14 @@ function PendingComponent() {
   return <Skeleton variant="rectangular" height="100%" width="100%" />;
 }
 
+type ViewType = 'list' | 'table';
+
 function Component() {
   useDocumentTitle('Modules');
   const navigate = useNavigate();
   const theme = useTheme();
   const loaderData = Route.useLoaderData();
+  const { setValue: setView, storedValue: view } = useLocalStorage<ViewType>('modules-view-select', 'list');
 
   const {
     data: modules,
@@ -87,75 +101,96 @@ function Component() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing[1] }}>
-      <p>
-        Modules are the building blocks of your game server. They consist of commands, cronjobs, or hooks. You can
-        install the built-in modules easily, just configure them!. Advanced users can create their own modules.
-      </p>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: theme.spacing[2],
+        }}
+      >
+        <p style={{ margin: 0, flex: 1 }}>
+          Modules are the building blocks of your game server. They consist of commands, cronjobs, or hooks. You can
+          install the built-in modules easily, just configure them!. Advanced users can create their own modules.
+        </p>
+        <TableListToggleButton onChange={setView} value={view} />
+      </div>
 
       <Divider />
-      <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageModules]}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <SubHeader>Custom</SubHeader>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-            <MaxUsage value={customModuleCount} total={maxModulesCount} unit="Modules" />
-            <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageModules]}>
-              <Dropdown placement="bottom-end">
-                <Dropdown.Trigger asChild>
-                  <Button>Module actions</Button>
-                </Dropdown.Trigger>
-                <Dropdown.Menu>
-                  <Dropdown.Menu.Group>
-                    <Dropdown.Menu.Item
-                      icon={<CreateModuleIcon />}
-                      onClick={() => navigate({ to: '/modules/create', search: { view: 'builder' } })}
-                      label="Create module with builder"
-                      disabled={!canCreateModule}
-                    />
-                    <Dropdown.Menu.Item
-                      icon={<CreateModuleIcon />}
-                      onClick={() => navigate({ to: '/modules/create', search: { view: 'manual' } })}
-                      label="Create module from schema"
-                      disabled={!canCreateModule}
-                    />
-                    <Dropdown.Menu.Item
-                      icon={<ImportModuleIcon />}
-                      onClick={() => navigate({ to: '/modules/create/import' })}
-                      label="Import module from file"
-                      disabled={!canCreateModule}
-                    />
-                  </Dropdown.Menu.Group>
-                </Dropdown.Menu>
-              </Dropdown>
-            </PermissionsGuard>
-          </div>
-        </div>
-        <SubText>
-          You can create your own modules by starting from scratch or by copying a built-in module. To copy a built-in
-          module click on a built-in module & inside the editor click on the copy icon next to it's name.
-        </SubText>
-        <CardList>
-          {customModules.map((mod) => (
-            <ModuleDefinitionCard key={mod.id} mod={mod} canCopyModule={canCreateModule} />
-          ))}
-        </CardList>
-      </PermissionsGuard>
-      <SubHeader>Built-in</SubHeader>
-      <SubText>
-        These modules are built-in from Takaro and can be installed per server through the modules page for a selected
-        gameserver. If you want to view how they are implemented, you can view the source by clicking on a module.
-      </SubText>
-      <CardList>
-        {builtinModules.map((mod) => (
-          <ModuleDefinitionCard key={mod.id} mod={mod} canCopyModule={canCreateModule} />
-        ))}
-        <Outlet />
-      </CardList>
-      <InfiniteScroll
-        isFetching={isFetching}
-        hasNextPage={hasNextPage}
-        fetchNextPage={fetchNextPage}
-        isFetchingNextPage={isFetchingNextPage}
-      />
+      {view === 'table' && (
+        <>
+          <ModulesTableView />
+          <Outlet />
+        </>
+      )}
+      {view === 'list' && (
+        <>
+          <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageModules]}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <SubHeader>Custom</SubHeader>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                <MaxUsage value={customModuleCount} total={maxModulesCount} unit="Modules" />
+                <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageModules]}>
+                  <Dropdown placement="bottom-end">
+                    <Dropdown.Trigger asChild>
+                      <Button>Module actions</Button>
+                    </Dropdown.Trigger>
+                    <Dropdown.Menu>
+                      <Dropdown.Menu.Group>
+                        <Dropdown.Menu.Item
+                          icon={<CreateModuleIcon />}
+                          onClick={() => navigate({ to: '/modules/create', search: { view: 'builder' } })}
+                          label="Create module with builder"
+                          disabled={!canCreateModule}
+                        />
+                        <Dropdown.Menu.Item
+                          icon={<CreateModuleIcon />}
+                          onClick={() => navigate({ to: '/modules/create', search: { view: 'manual' } })}
+                          label="Create module from schema"
+                          disabled={!canCreateModule}
+                        />
+                        <Dropdown.Menu.Item
+                          icon={<ImportModuleIcon />}
+                          onClick={() => navigate({ to: '/modules/create/import' })}
+                          label="Import module from file"
+                          disabled={!canCreateModule}
+                        />
+                      </Dropdown.Menu.Group>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </PermissionsGuard>
+              </div>
+            </div>
+            <SubText>
+              You can create your own modules by starting from scratch or by copying a built-in module. To copy a
+              built-in module click on a built-in module & inside the editor click on the copy icon next to it's name.
+            </SubText>
+            <CardList>
+              {customModules.map((mod) => (
+                <ModuleDefinitionCard key={mod.id} mod={mod} canCopyModule={canCreateModule} />
+              ))}
+            </CardList>
+          </PermissionsGuard>
+          <SubHeader>Built-in</SubHeader>
+          <SubText>
+            These modules are built-in from Takaro and can be installed per server through the modules page for a
+            selected gameserver. If you want to view how they are implemented, you can view the source by clicking on a
+            module.
+          </SubText>
+          <CardList>
+            {builtinModules.map((mod) => (
+              <ModuleDefinitionCard key={mod.id} mod={mod} canCopyModule={canCreateModule} />
+            ))}
+            <Outlet />
+          </CardList>
+          <InfiniteScroll
+            isFetching={isFetching}
+            hasNextPage={hasNextPage}
+            fetchNextPage={fetchNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
+        </>
+      )}
     </div>
   );
 }

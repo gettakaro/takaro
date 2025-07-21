@@ -171,7 +171,11 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      await waitForBuyEvents;
+      const buyEvents = await waitForBuyEvents;
+      expect(buyEvents.length).to.be.eq(1);
+      expect(buyEvents[0].data.meta.msg).to.be.eq(
+        `You have successfully bought ${wantAmount} tickets for ${wantAmount * ticketCost} Takaro coins. Good luck!`,
+      );
 
       const waitForViewEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 

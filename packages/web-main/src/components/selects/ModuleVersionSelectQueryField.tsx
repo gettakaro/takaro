@@ -1,8 +1,8 @@
 import { PaginationProps, SelectQueryField, Skeleton, UnControlledSelectQueryField } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectQueryProps, CustomUncontrolledSelectQueryFieldProps } from '.';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { moduleTagsInfiniteQueryOptions } from '../../queries/module';
+import { useQuery } from '@tanstack/react-query';
+import { moduleQueryOptions } from '../../queries/module';
 import { SmallModuleVersionOutputDTO } from '@takaro/apiclient';
 
 type returnVariant = 'tag' | 'versionId';
@@ -32,25 +32,28 @@ export const ModuleVersionSelectQueryField: FC<ModuleVersionSelectQueryFieldProp
   addAllVersionsOption,
   returnVariant,
 }) => {
-  const { data, isFetching, hasNextPage, isFetchingNextPage, fetchNextPage, refetch } = useInfiniteQuery(
-    moduleTagsInfiniteQueryOptions({ moduleId, limit: 20 }, { enabled: false }),
-  );
+  const { data, isFetching, refetch } = useQuery({
+    ...moduleQueryOptions(moduleId),
+    enabled: false,
+  });
 
-  let smallVersions = data?.pages.flatMap((page) => page.data) ?? [];
+  let smallVersions = data?.versions ?? [];
   if (filter) {
     smallVersions = smallVersions.filter(filter);
   }
 
-  smallVersions = [
-    {
-      name: 'Global - applies to all gameservers',
-      id: 'null',
-      tag: 'All versions',
-      createdAt: 'placeholder',
-      updatedAt: 'placeholder',
-    } as SmallModuleVersionOutputDTO,
-    ...smallVersions,
-  ];
+  if (addAllVersionsOption) {
+    smallVersions = [
+      {
+        name: 'Global - applies to all gameservers',
+        id: 'null',
+        tag: 'All versions',
+        createdAt: 'placeholder',
+        updatedAt: 'placeholder',
+      } as SmallModuleVersionOutputDTO,
+      ...smallVersions,
+    ];
+  }
 
   const handleOpen = (isOpen: boolean) => {
     if (isOpen) {
@@ -71,10 +74,10 @@ export const ModuleVersionSelectQueryField: FC<ModuleVersionSelectQueryFieldProp
       label={label}
       moduleVersions={smallVersions}
       multiple={multiple}
-      fetchNextPage={fetchNextPage}
+      fetchNextPage={() => {}}
       isFetching={isFetching}
-      hasNextPage={hasNextPage}
-      isFetchingNextPage={isFetchingNextPage}
+      hasNextPage={false}
+      isFetchingNextPage={false}
       canClear={canClear}
       onOpenChange={handleOpen}
       placeholder={placeholder}
@@ -157,16 +160,15 @@ export const UnControlledModuleVersionSelectQueryField: FC<
     data,
     isLoading: isLoadingData,
     isFetching,
-    hasNextPage,
-    isFetchingNextPage,
-    fetchNextPage,
-  } = useInfiniteQuery(moduleTagsInfiniteQueryOptions({ moduleId, limit: 20 }));
+  } = useQuery({
+    ...moduleQueryOptions(moduleId),
+  });
 
   if (isLoadingData) {
     return <Skeleton variant="rectangular" width="100%" height="25px" />;
   }
 
-  const moduleVersions = data?.pages.flatMap((page) => page.data);
+  const moduleVersions = data?.versions;
   if (!moduleVersions) {
     return <div>no modules found</div>;
   }
@@ -185,9 +187,9 @@ export const UnControlledModuleVersionSelectQueryField: FC<
       canClear={canClear}
       placeholder={placeholder}
       isFetching={isFetching}
-      hasNextPage={hasNextPage}
-      isFetchingNextPage={isFetchingNextPage}
-      fetchNextPage={fetchNextPage}
+      hasNextPage={false}
+      isFetchingNextPage={false}
+      fetchNextPage={() => {}}
       render={(selectedVersions) => {
         if (selectedVersions.length === 0) {
           return <div>Select version...</div>;

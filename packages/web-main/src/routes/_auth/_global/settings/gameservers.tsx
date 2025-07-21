@@ -108,15 +108,29 @@ function Component() {
     const settingsComponents: ReactElement[] = [];
     if (data) {
       // TODO: this should be mapped using the new config generator
-      data.forEach(({ key, value }) => {
+      data.forEach(({ key, value, description }) => {
         if (booleanFields.includes(key)) {
           settingsComponents.push(
-            <Switch readOnly={readOnly} control={control} label={camelCaseToSpaces(key)} name={key} key={key} />,
+            <Switch
+              readOnly={readOnly}
+              control={control}
+              label={camelCaseToSpaces(key)}
+              name={key}
+              key={key}
+              description={description}
+            />,
           );
           setValue(key, value === 'true');
         } else {
           settingsComponents.push(
-            <TextField readOnly={readOnly} control={control} label={camelCaseToSpaces(key)} name={key} key={key} />,
+            <TextField
+              readOnly={readOnly}
+              control={control}
+              label={camelCaseToSpaces(key)}
+              name={key}
+              key={key}
+              description={description}
+            />,
           );
           if (value !== undefined && value !== null) setValue(key, value);
         }

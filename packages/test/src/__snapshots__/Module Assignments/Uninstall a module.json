@@ -72,7 +72,11 @@
         "updatedAt": "2024-12-15T21:32:53.036Z",
         "id": "b5faf711-cb7f-455a-9d11-a24659577161",
         "name": "utils",
-        "builtin": "utils"
+        "builtin": "utils",
+        "author": "Takaro",
+        "supportedGames": [
+          "all"
+        ]
       }
     }
   },

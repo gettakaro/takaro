@@ -21,6 +21,8 @@ export const Default: StoryFn<ModuleSelectViewProps> = () => {
       createdAt: '',
       updatedAt: '',
       name: 'Online Mock Server 1',
+      supportedGames: ['all'],
+      author: 'Takaro',
       latestVersion: {
         description: '',
         hooks: [],
