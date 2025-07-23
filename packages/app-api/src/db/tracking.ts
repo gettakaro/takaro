@@ -293,12 +293,10 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
       .select('playerLocation.*', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as actualPlayerId`)
       .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerLocation.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
       .where(`${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`, gameserverId)
-      .andWhereRaw('sqrt((playerLocation.x - ?) ^ 2 + (playerLocation.y - ?) ^ 2 + (playerLocation.z - ?) ^ 2) <= ?', [
-        x,
-        y,
-        z,
-        radius,
-      ]);
+      .andWhereRaw(
+        'sqrt(("playerLocation"."x" - ?) ^ 2 + ("playerLocation"."y" - ?) ^ 2 + ("playerLocation"."z" - ?) ^ 2) <= ?',
+        [x, y, z, radius],
+      );
 
     if (startDate) {
       qb.andWhere('playerLocation.createdAt', '>=', startDate);
