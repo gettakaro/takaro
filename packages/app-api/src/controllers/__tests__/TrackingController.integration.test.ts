@@ -302,7 +302,7 @@ async function setupInventoryData(
     },
     testPoints: {
       inventoryTest: {
-        playerId: pogs.length > 0 ? pogs[0].id : '',
+        playerId: pogs.length > 0 ? pogs[0].playerId : '',
         itemCode: items.length > 0 ? items[0].code : '',
         startDate: '2024-01-14T00:00:00Z',
         endDate: '2024-01-16T00:00:00Z',
@@ -310,7 +310,8 @@ async function setupInventoryData(
       },
       itemSearchTest: {
         itemId: items.length > 3 ? items[3].id : items.length > 0 ? items[0].id : '',
-        expectedPlayers: items.length > 3 && pogs.length > 3 ? [pogs[3].id] : pogs.length > 0 ? [pogs[0].id] : [],
+        expectedPlayers:
+          items.length > 3 && pogs.length > 3 ? [pogs[3].playerId] : pogs.length > 0 ? [pogs[0].playerId] : [],
         dateRange: {
           start: '2024-01-10T00:00:00Z',
           end: '2024-01-25T00:00:00Z',
@@ -418,7 +419,7 @@ const tests = [
       await setupHistoricalData(this.standardDomainId, this.setupData.pogs1);
 
       // Select first two players only
-      const selectedPlayerIds = this.setupData.pogs1.slice(0, 2).map((pog) => pog.id);
+      const selectedPlayerIds = this.setupData.pogs1.slice(0, 2).map((pog) => pog.playerId);
 
       const res = await this.client.tracking.trackingControllerGetPlayerMovementHistory({
         playerId: selectedPlayerIds,
@@ -1039,7 +1040,7 @@ const tests = [
       }
 
       // Use a player that has no inventory data
-      const playerWithoutInventory = this.setupData.pogs1[2].id;
+      const playerWithoutInventory = this.setupData.pogs1[2].playerId;
 
       const res = await this.client.tracking.trackingControllerGetPlayerInventoryHistory({
         playerId: playerWithoutInventory,
@@ -1206,12 +1207,12 @@ const tests = [
       // Test that both location and inventory endpoints work
       const [locationRes, inventoryRes] = await Promise.all([
         this.client.tracking.trackingControllerGetPlayerMovementHistory({
-          playerId: [this.setupData.pogs1[0].id],
+          playerId: [this.setupData.pogs1[0].playerId],
           startDate: '2024-01-01T00:00:00Z',
           endDate: '2024-01-10T00:00:00Z',
         }),
         this.client.tracking.trackingControllerGetPlayerInventoryHistory({
-          playerId: this.setupData.pogs1[0].id,
+          playerId: this.setupData.pogs1[0].playerId,
           startDate: '2024-01-01T00:00:00Z',
           endDate: '2024-01-10T00:00:00Z',
         }),
@@ -1226,28 +1227,28 @@ const tests = [
 
       // Verify all data belongs to the same player
       locationData.forEach((item) => {
-        expect(item.playerId).to.equal(this.setupData.pogs1[0].id);
+        expect(item.playerId).to.equal(this.setupData.pogs1[0].playerId);
       });
       inventoryData.forEach((item) => {
-        expect(item.playerId).to.equal(this.setupData.pogs1[0].id);
+        expect(item.playerId).to.equal(this.setupData.pogs1[0].playerId);
       });
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: false,
-    name: 'Returns helpful error when Player ID is used instead of PoG ID for movement history',
+    name: 'Returns helpful error when PoG ID is used instead of Player ID for movement history',
     setup: SetupGameServerPlayers.setup,
     expectedStatus: 400,
     test: async function () {
       if (!this.standardDomainId) throw new Error('standardDomainId is not set');
 
-      // Get the actual player ID (not PoG ID)
-      const playerId = this.setupData.players[0].id;
+      // Get the POG ID (not Player ID)
+      const pogId = this.setupData.pogs1[0].id;
 
       try {
         await this.client.tracking.trackingControllerGetPlayerMovementHistory({
-          playerId: [playerId], // Using player ID instead of PoG ID
+          playerId: [pogId], // Using POG ID instead of Player ID
           startDate: '2024-01-01T00:00:00Z',
           endDate: '2024-01-10T00:00:00Z',
         });
@@ -1255,9 +1256,8 @@ const tests = [
       } catch (error) {
         if (isAxiosError(error)) {
           expect(error.response?.status).to.equal(400);
-          expect(error.response?.data.meta.error.message).to.include('This appears to be a Player ID');
-          expect(error.response?.data.meta.error.message).to.include('PlayerOnGameserver ID');
-          expect(error.response?.data.meta.error.message).to.include('/gameservers/{gameServerId}/players/{playerId}');
+          expect(error.response?.data.meta.error.message).to.include('This appears to be a PlayerOnGameserver ID');
+          expect(error.response?.data.meta.error.message).to.include('this endpoint now requires a Player ID');
         } else {
           throw error;
         }
@@ -1267,18 +1267,18 @@ const tests = [
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: false,
-    name: 'Returns helpful error when Player ID is used instead of PoG ID for inventory history',
+    name: 'Returns helpful error when PoG ID is used instead of Player ID for inventory history',
     setup: SetupGameServerPlayers.setup,
     expectedStatus: 400,
     test: async function () {
       if (!this.standardDomainId) throw new Error('standardDomainId is not set');
 
-      // Get the actual player ID (not PoG ID)
-      const playerId = this.setupData.players[0].id;
+      // Get the POG ID (not Player ID)
+      const pogId = this.setupData.pogs1[0].id;
 
       try {
         await this.client.tracking.trackingControllerGetPlayerInventoryHistory({
-          playerId: playerId, // Using player ID instead of PoG ID
+          playerId: pogId, // Using POG ID instead of Player ID
           startDate: '2024-01-01T00:00:00Z',
           endDate: '2024-01-10T00:00:00Z',
         });
@@ -1286,9 +1286,8 @@ const tests = [
       } catch (error) {
         if (isAxiosError(error)) {
           expect(error.response?.status).to.equal(400);
-          expect(error.response?.data.meta.error.message).to.include('This appears to be a Player ID');
-          expect(error.response?.data.meta.error.message).to.include('PlayerOnGameserver ID');
-          expect(error.response?.data.meta.error.message).to.include('/gameservers/{gameServerId}/players/{playerId}');
+          expect(error.response?.data.meta.error.message).to.include('This appears to be a PlayerOnGameserver ID');
+          expect(error.response?.data.meta.error.message).to.include('this endpoint now requires a Player ID');
         } else {
           throw error;
         }
