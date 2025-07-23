@@ -148,14 +148,14 @@ async function setupHistoricalData(domainId: string, pogs: PlayerOnGameserverOut
         box: { minX: 0, maxX: 200, minY: 0, maxY: 100, minZ: 0, maxZ: 200 },
         startDate: '2024-01-15T11:30:00Z',
         endDate: '2024-01-15T12:30:00Z',
-        expectedPlayers: pogs.length > 0 ? [pogs[0].id] : [],
+        expectedPlayers: pogs.length > 0 ? [pogs[0].playerId] : [],
       },
       radiusTest: {
         center: { x: 500, y: 100, z: 500 },
         radius: 50,
         startDate: '2024-01-15T11:30:00Z',
         endDate: '2024-01-15T12:30:00Z',
-        expectedPlayers: pogs.length > 1 ? [pogs[1].id] : [],
+        expectedPlayers: pogs.length > 1 ? [pogs[1].playerId] : [],
       },
     },
   };
@@ -1002,7 +1002,7 @@ const tests = [
         throw new Error('Test setup failed: No players found in setupData.pogs1');
       }
 
-      const playerId = this.setupData.pogs1[0].id;
+      const playerId = this.setupData.pogs1[0].playerId;
       const startDate = '2024-01-05T00:00:00Z';
       const endDate = '2024-01-10T23:59:59Z';
 
