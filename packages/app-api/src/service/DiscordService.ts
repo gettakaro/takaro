@@ -28,6 +28,9 @@ import { GameServerService } from './GameServerService.js';
 import { DiscordErrorHandler } from '../lib/DiscordErrorHandler.js';
 
 import { EventDiscordChannel, EventDiscordUser, HookEventDiscordMessage } from '@takaro/modules';
+import { UserService } from './User/index.js';
+import { checkPermissions } from './AuthService.js';
+import { PERMISSIONS } from '@takaro/auth';
 
 @ValidatorConstraint({ name: 'messageOrEmbed', async: false })
 class MessageOrEmbedConstraint implements ValidatorConstraintInterface {
@@ -356,13 +359,16 @@ export class DiscordService extends TakaroService<
 
       // Check user permissions if user context is available
       const userId = ctx.data.user;
-      if (userId) {
-        const serversWithPermission = await this.repo.getServersWithManagePermission(userId);
+      if (!userId) throw new errors.ForbiddenError();
+      const user = await new UserService(this.domainId).findOne(userId);
+      if (!user) throw new errors.NotFoundError(`User with id ${userId} not found`);
+      const hasRoot = checkPermissions([PERMISSIONS.ROOT], user);
 
-        if (!serversWithPermission.find((server) => server.id === guild.results[0].id)) {
-          this.log.warn(`User ${userId} lacks permission to send messages to guild ${guild.results[0].id}`);
-          throw new errors.ForbiddenError();
-        }
+      const serversWithPermission = await this.repo.getServersWithManagePermission(userId);
+
+      if (!hasRoot && !serversWithPermission.find((server) => server.id === guild.results[0].id)) {
+        this.log.warn(`User ${userId} lacks permission to send messages to guild ${guild.results[0].id}`);
+        throw new errors.ForbiddenError();
       }
 
       // Send the message through DiscordBot (which now includes rate limiting and metrics)

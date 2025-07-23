@@ -379,4 +379,41 @@ export class ShopCategoryRepo extends ITakaroRepo<
       }
     });
   }
+
+  async getDescendantCategoryIds(categoryIds: string[]): Promise<string[]> {
+    if (categoryIds.length === 0) return [];
+
+    const knex = await this.getKnex();
+
+    try {
+      // Use a recursive CTE to get all descendants
+      const result = await knex.raw(
+        `
+        WITH RECURSIVE recursive_categories AS (
+          -- Base case: start with the provided category IDs
+          SELECT id, "parentId"
+          FROM "${SHOP_CATEGORY_TABLE_NAME}"
+          WHERE id = ANY(?)
+            AND domain = ?
+          
+          UNION ALL
+          
+          -- Recursive case: find children of current level
+          SELECT c.id, c."parentId"
+          FROM "${SHOP_CATEGORY_TABLE_NAME}" c
+          JOIN recursive_categories rc ON c."parentId" = rc.id
+          WHERE c.domain = ?
+        )
+        SELECT DISTINCT id FROM recursive_categories;
+      `,
+        [categoryIds, this.domainId, this.domainId],
+      );
+
+      return result.rows.map((row: any) => row.id);
+    } catch (error) {
+      // If recursive CTE fails, fall back to simple implementation
+      console.error('Recursive CTE failed, falling back to simple implementation:', error);
+      return categoryIds;
+    }
+  }
 }

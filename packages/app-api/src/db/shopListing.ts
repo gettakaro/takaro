@@ -6,7 +6,12 @@ import { ItemRepo, ItemsModel } from './items.js';
 import { RoleModel } from './role.js';
 import { ITakaroRepo } from './base.js';
 import { ShopListingOutputDTO, ShopListingUpdateDTO, ShopListingCreateDTO } from '../service/Shop/dto.js';
-import { ShopCategoryModel, SHOP_CATEGORY_TABLE_NAME, SHOP_LISTING_CATEGORY_TABLE_NAME } from './shopCategory.js';
+import {
+  ShopCategoryModel,
+  ShopCategoryRepo,
+  SHOP_CATEGORY_TABLE_NAME,
+  SHOP_LISTING_CATEGORY_TABLE_NAME,
+} from './shopCategory.js';
 
 export const SHOP_LISTING_TABLE_NAME = 'shopListing';
 export const SHOP_LISTING_ITEMS_TABLE_NAME = 'itemOnShopListing';
@@ -218,10 +223,15 @@ export class ShopListingRepo extends ITakaroRepo<
       filters.filters.categoryIds.length > 0
     ) {
       const domainId = this.domainId;
+
+      // Get all descendant category IDs (includes the provided IDs and all their children)
+      const shopCategoryRepo = new ShopCategoryRepo(this.domainId);
+      const allCategoryIds = await shopCategoryRepo.getDescendantCategoryIds(filters.filters.categoryIds as string[]);
+
       query.whereIn('id', function () {
         this.select('shopListingId')
           .from(SHOP_LISTING_CATEGORY_TABLE_NAME)
-          .whereIn('shopCategoryId', filters.filters!.categoryIds as string[])
+          .whereIn('shopCategoryId', allCategoryIds)
           .andWhere('domain', '=', domainId);
       });
     }
