@@ -94,6 +94,7 @@ export class EventController {
   async export(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: EventSearchInputDTO) {
     const service = new EventService(req.domainId);
     await service.exportToCsv(query, res);
+    return res;
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_EVENTS]))

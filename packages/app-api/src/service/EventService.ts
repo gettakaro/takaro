@@ -17,6 +17,9 @@ import { HookService } from './HookService.js';
 import { eventsMetric } from '../lib/metrics.js';
 import { Response } from 'express';
 import { stringify } from 'csv-stringify';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 
 export const EVENT_TYPES = {
   ...TakaroEvents,
@@ -310,15 +313,9 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
     query.greaterThan = { ...query.greaterThan, createdAt: startDate.toISOString() };
     query.lessThan = { ...query.lessThan, createdAt: endDate.toISOString() };
 
-    // Set CSV response headers
-    const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-    const filename = `events_${currentDate}.csv`;
-
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-
     // Track event count for error reporting
     let eventCount = 0;
+    let tempFilePath: string | null = null;
 
     try {
       this.log.info('CSV export started', {
@@ -329,6 +326,15 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
           days: Math.ceil(diffInDays),
         },
       });
+
+      // Create temporary directory and file
+      const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'takaro-export-'));
+      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+      const filename = `events_${currentDate}.csv`;
+      tempFilePath = path.join(tempDir, filename);
+
+      // Create write stream for temporary file
+      const writeStream = fs.createWriteStream(tempFilePath);
 
       // First, collect a sample of events to determine all possible columns
       const sampleResult = await this.find({
@@ -391,8 +397,8 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
         escape: '"',
       });
 
-      // Pipe the stringifier stream directly to the HTTP response stream
-      stringifier.pipe(res);
+      // Pipe the stringifier to the temporary file
+      stringifier.pipe(writeStream);
 
       // If there are no events, write a message row and end the stream
       if (hasNoEvents) {
@@ -403,6 +409,40 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
         }
         stringifier.write(emptyRow);
         stringifier.end();
+
+        // Wait for the write stream to finish
+        await new Promise((resolve, reject) => {
+          writeStream.on('finish', resolve);
+          writeStream.on('error', reject);
+        });
+
+        // Now send the file to the client
+        // Set headers right before sending
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+        const readStream = fs.createReadStream(tempFilePath);
+
+        // Wait for the piping to complete
+        await new Promise<void>((resolve, reject) => {
+          readStream.on('error', reject);
+          res.on('error', reject);
+          res.on('finish', () => {
+            // Clean up temp file after sending
+            if (tempFilePath) {
+              fs.promises
+                .unlink(tempFilePath)
+                .then(() => fs.promises.rmdir(tempDir))
+                .catch((cleanupError) => {
+                  this.log.warn('Failed to clean up temp file', { error: cleanupError, tempFilePath });
+                })
+                .finally(() => resolve());
+            } else {
+              resolve();
+            }
+          });
+          readStream.pipe(res);
+        });
 
         this.log.info('CSV export completed - no events found', {
           domainId: this.domainId,
@@ -478,6 +518,12 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
       // End the stream when done
       stringifier.end();
 
+      // Wait for the write stream to finish
+      await new Promise((resolve, reject) => {
+        writeStream.on('finish', resolve);
+        writeStream.on('error', reject);
+      });
+
       this.log.info('CSV export completed', {
         domainId: this.domainId,
         totalEvents: eventCount,
@@ -486,6 +532,35 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
           end: endDate.toISOString(),
           days: Math.ceil(diffInDays),
         },
+        tempFilePath,
+      });
+
+      // Now send the completed file to the client
+      // Set headers right before sending - this is critical for error handling
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+      const readStream = fs.createReadStream(tempFilePath);
+
+      // Wait for the piping to complete
+      await new Promise<void>((resolve, reject) => {
+        readStream.on('error', reject);
+        res.on('error', reject);
+        res.on('finish', () => {
+          // Clean up temp file after sending
+          if (tempFilePath) {
+            fs.promises
+              .unlink(tempFilePath)
+              .then(() => fs.promises.rmdir(tempDir))
+              .catch((cleanupError) => {
+                this.log.warn('Failed to clean up temp file', { error: cleanupError, tempFilePath });
+              })
+              .finally(() => resolve());
+          } else {
+            resolve();
+          }
+        });
+        readStream.pipe(res);
       });
     } catch (error) {
       const errorDetails = {
@@ -496,6 +571,17 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
       };
 
       this.log.error('CSV export failed', errorDetails);
+
+      // Clean up temp file if it exists
+      if (tempFilePath) {
+        try {
+          await fs.promises.unlink(tempFilePath);
+          const tempDir = path.dirname(tempFilePath);
+          await fs.promises.rmdir(tempDir);
+        } catch (cleanupError) {
+          this.log.warn('Failed to clean up temp file after error', { error: cleanupError, tempFilePath });
+        }
+      }
 
       // If streaming has already started, we can't send a proper error response
       // The best we can do is end the stream
@@ -517,6 +603,10 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
         // Memory errors
         else if (error.message.includes('memory') || error.message.includes('heap')) {
           throw new errors.BadRequestError('Export too large. Please reduce the date range or apply more filters.');
+        }
+        // Disk space errors
+        else if (error.message.includes('ENOSPC') || error.message.includes('no space')) {
+          throw new errors.InternalServerError();
         }
       }
 
