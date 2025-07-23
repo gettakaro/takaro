@@ -2,7 +2,7 @@ import { IsEnum, IsOptional, IsString, IsUUID, ValidateNested } from 'class-vali
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import { Body, Post, JsonController, UseBefore, Req, Res, Get, Params } from 'routing-controllers';
+import { Body, Post, JsonController, UseBefore, Req, Res, Get, Params, QueryParams } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { PERMISSIONS } from '@takaro/auth';
@@ -85,13 +85,13 @@ export class EventController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_EVENTS]))
-  @Post('/event/export')
+  @Get('/event/export')
   @OpenAPI({
     summary: 'Export events to CSV',
     description:
       'Export events matching the search criteria to CSV format. Accepts the same parameters as the search endpoint. Maximum time range is 90 days.',
   })
-  async export(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: EventSearchInputDTO) {
+  async export(@Req() req: AuthenticatedRequest, @Res() res: Response, @QueryParams() query: EventSearchInputDTO) {
     const service = new EventService(req.domainId);
     await service.exportToCsv(query, res);
     return res;

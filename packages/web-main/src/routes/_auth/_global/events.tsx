@@ -194,63 +194,29 @@ function Component() {
   };
 
   const performExport = async () => {
-    try {
-      setIsExporting(true);
+    setIsExporting(true);
 
-      // Build the query parameters matching the current filters
-      const queryParams: EventSearchInputDTO = {
-        filters: {
-          playerId: search.playerIds.length > 0 ? search.playerIds : undefined,
-          gameserverId: search.gameServerIds.length > 0 ? search.gameServerIds : undefined,
-          eventName: search.eventNames.length > 0 ? search.eventNames : undefined,
-          moduleId: search.moduleIds.length > 0 ? search.moduleIds : undefined,
-        },
-        greaterThan: search.dateRange?.start ? { createdAt: search.dateRange.start } : undefined,
-        lessThan: search.dateRange?.end ? { createdAt: search.dateRange.end } : undefined,
-        extend: ['gameServer', 'module', 'player', 'user'],
-      };
+    // Build the query parameters matching the current filters
+    const queryParams: EventSearchInputDTO = {
+      filters: {
+        playerId: search.playerIds.length > 0 ? search.playerIds : undefined,
+        gameserverId: search.gameServerIds.length > 0 ? search.gameServerIds : undefined,
+        eventName: search.eventNames.length > 0 ? search.eventNames : undefined,
+        moduleId: search.moduleIds.length > 0 ? search.moduleIds : undefined,
+      },
+      greaterThan: search.dateRange?.start ? { createdAt: search.dateRange.start } : undefined,
+      lessThan: search.dateRange?.end ? { createdAt: search.dateRange.end } : undefined,
+      extend: ['gameServer', 'module', 'player', 'user'],
+    };
 
-      await exportEventsToCsv(queryParams);
-      enqueueSnackbar('Events exported successfully', { variant: 'default', type: 'success' });
-    } catch (error) {
-      console.error('Export failed:', error);
+    // Trigger the download
+    await exportEventsToCsv(queryParams);
 
-      // Parse error message for specific types
-      let errorMessage = 'Failed to export events';
-
-      if (error instanceof Error) {
-        // Network errors
-        if (error.message.includes('network') || error.message.includes('Network')) {
-          errorMessage = 'Network error. Please check your connection and try again.';
-        }
-        // Timeout errors
-        else if (error.message.includes('timeout')) {
-          errorMessage = 'Export timed out. Try reducing the date range or applying more filters.';
-        }
-        // Server errors from our API
-        else if (error.message.includes('Database connection')) {
-          errorMessage = 'Database connection failed. Please try again later.';
-        } else if (error.message.includes('too large')) {
-          errorMessage = 'Export too large. Please reduce the date range or apply more filters.';
-        }
-        // Validation errors
-        else if (error.message.includes('90 days')) {
-          errorMessage = error.message;
-        }
-        // Generic server error
-        else if (error.message.includes('500') || error.message.includes('Internal Server Error')) {
-          errorMessage = 'Server error. Please try again later.';
-        }
-        // Use the error message if it's informative
-        else if (error.message && error.message !== 'Export failed') {
-          errorMessage = error.message;
-        }
-      }
-
-      enqueueSnackbar(errorMessage, { variant: 'default', type: 'error' });
-    } finally {
+    // Reset loading state after a short delay (browser handles the actual download)
+    setTimeout(() => {
       setIsExporting(false);
-    }
+      enqueueSnackbar('Export started - check your downloads', { variant: 'default', type: 'info' });
+    }, 1000);
   };
 
   const handleExport = async () => {

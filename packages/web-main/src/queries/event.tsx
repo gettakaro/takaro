@@ -157,49 +157,44 @@ const addEventToData = (prev: InfiniteData<EventOutputArrayDTOAPI>, newEvent: Ev
 export const exportEventsToCsv = async (queryParams: EventSearchInputDTO) => {
   const apiUrl = getConfigVar('apiUrl');
 
-  // Prepare the request
-  const response = await fetch(`${apiUrl}/event/export`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify(queryParams),
-  });
+  // Build query string from parameters
+  const params = new URLSearchParams();
 
-  if (!response.ok) {
-    // Try to parse error response
-    let errorMessage = `Export failed: ${response.statusText}`;
-    try {
-      const errorData = await response.json();
-      if (errorData.error) {
-        errorMessage = errorData.error;
+  // Add filters
+  if (queryParams.filters) {
+    Object.entries(queryParams.filters).forEach(([key, value]) => {
+      if (value !== undefined) {
+        if (Array.isArray(value)) {
+          value.forEach((v) => params.append(`filters.${key}`, v));
+        } else {
+          params.append(`filters.${key}`, value as string);
+        }
       }
-    } catch {
-      // If JSON parsing fails, use the default error message
-    }
-    throw new Error(errorMessage);
+    });
   }
 
-  // Get the blob from response
-  const blob = await response.blob();
+  // Add date range
+  if (queryParams.greaterThan?.createdAt) {
+    params.append('greaterThan.createdAt', queryParams.greaterThan.createdAt);
+  }
+  if (queryParams.lessThan?.createdAt) {
+    params.append('lessThan.createdAt', queryParams.lessThan.createdAt);
+  }
 
-  // Extract filename from Content-Disposition header or use default
-  const contentDisposition = response.headers.get('Content-Disposition');
-  const filenameMatch = contentDisposition?.match(/filename="(.+)"/);
-  const filename = filenameMatch ? filenameMatch[1] : `events_${new Date().toISOString().split('T')[0]}.csv`;
+  // Add extend array
+  if (queryParams.extend) {
+    queryParams.extend.forEach((e) => params.append('extend', e));
+  }
 
-  // Create a temporary URL for the blob
-  const url = window.URL.createObjectURL(blob);
+  // Add sorting
+  if (queryParams.sortBy) {
+    params.append('sortBy', queryParams.sortBy);
+  }
+  if (queryParams.sortDirection) {
+    params.append('sortDirection', queryParams.sortDirection);
+  }
 
-  // Create a temporary anchor element and trigger download
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-
-  // Clean up
-  document.body.removeChild(a);
-  window.URL.revokeObjectURL(url);
+  // Trigger download by navigating to the URL
+  const downloadUrl = `${apiUrl}/event/export?${params.toString()}`;
+  window.location.href = downloadUrl;
 };
