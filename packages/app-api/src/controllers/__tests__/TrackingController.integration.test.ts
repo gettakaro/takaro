@@ -507,7 +507,7 @@ const tests = [
 
       // Should find at least player 0
       const playerIds = data.map((location) => location.playerId);
-      expect(playerIds).to.include(this.setupData.pogs1[0].id);
+      expect(playerIds).to.include(this.setupData.pogs1[0].playerId);
     },
   }),
 
@@ -574,7 +574,7 @@ const tests = [
 
       // Should find at least player 2
       const playerIds = data.map((location) => location.playerId);
-      expect(playerIds).to.include(this.setupData.pogs1[2].id);
+      expect(playerIds).to.include(this.setupData.pogs1[2].playerId);
     },
   }),
 
