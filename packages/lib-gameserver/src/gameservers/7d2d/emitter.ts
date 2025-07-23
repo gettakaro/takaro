@@ -46,7 +46,7 @@ const EventRegexMap = {
   [GameEvents.PLAYER_DEATH]:
     /GMSG: Player '(?<name1>.+)' died|\[CSMM_Patrons\]playerDied: (?<name2>.+) \((?<steamOrXboxId>.+)\) died @ (?<xCoord>[-\d]+) (?<yCoord>[-\d]+) (?<zCoord>[-\d]+)/,
   [GameEvents.ENTITY_KILLED]:
-    /\[CSMM_Patrons\]entityKilled: (?<killerName>.+) \((?<steamOrXboxId>.+)\) killed (?<entityType>\w+) (?<entityName>[\w\s\u00C0-\u024F]+) with (?<weapon>.+)|Entity (?<entityName2>[\w\s\u00C0-\u024F]+) \d+ killed by (?<killerName2>.+) \d+/,
+    /\[CSMM_Patrons\]entityKilled: (?<killerName>.+) \((?<steamOrXboxId>.+)\) killed (?<entityType>\w+) (?<entityName>[\w\s\u00C0-\u024F\[\]-]+) with (?<weapon>.+)|Entity (?<entityName2>[\w\s\u00C0-\u024F]+) \d+ killed by (?<killerName2>.+) \d+/,
 };
 
 export class SevenDaysToDieEmitter extends TakaroEmitter {
