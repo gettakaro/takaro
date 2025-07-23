@@ -858,7 +858,7 @@ const tests = [
       // Should only find records from hour 10
       data.forEach((location) => {
         const date = new Date(location.createdAt);
-        expect(date.getHours()).to.equal(10);
+        expect(date.getUTCHours()).to.equal(10);
         expect(date.toISOString().startsWith('2024-01-01')).to.be.true;
       });
     },

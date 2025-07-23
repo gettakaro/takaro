@@ -225,6 +225,7 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     }
 
     const qb = query
+      .distinct()
       .select('playerLocation.*', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as actualPlayerId`)
       .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerLocation.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
       .where('playerLocation.createdAt', '>=', startDate);
@@ -259,6 +260,7 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     const { minX, maxX, minY, maxY, minZ, maxZ, startDate, endDate, gameserverId } = input;
 
     const qb = query
+      .distinct()
       .select('playerLocation.*', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as actualPlayerId`)
       .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerLocation.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
       .where(`${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`, gameserverId)
@@ -290,6 +292,7 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     const { x, y, z, radius, startDate, endDate, gameserverId } = input;
 
     const qb = query
+      .distinct()
       .select('playerLocation.*', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as actualPlayerId`)
       .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerLocation.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
       .where(`${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`, gameserverId)
@@ -319,6 +322,7 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     const { playerId, startDate, endDate } = input;
 
     const qb = query
+      .distinct()
       .select(
         'playerInventoryHistory.playerId',
         'playerInventoryHistory.itemId',
@@ -349,6 +353,7 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     const { itemId, startDate, endDate } = input;
 
     const qb = query
+      .distinct()
       .select(
         'playerInventoryHistory.playerId',
         'playerInventoryHistory.quantity',
