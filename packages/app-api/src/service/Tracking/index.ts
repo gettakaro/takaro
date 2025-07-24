@@ -79,10 +79,10 @@ export class TrackingService extends TakaroService<
       for (const id of input.playerId) {
         const { isPlayerId, isPogId } = await this.checkIdType(id);
 
-        if (isPlayerId && !isPogId) {
+        if (isPogId && !isPlayerId) {
           throw new errors.BadRequestError(
-            `No tracking data found for ID: ${id}. This appears to be a Player ID, but this endpoint requires a PlayerOnGameserver ID. ` +
-              `Please use the PlayerOnGameserver ID instead. You can find the correct ID by querying /gameservers/{gameServerId}/players/{playerId}`,
+            `No tracking data found for ID: ${id}. This appears to be a PlayerOnGameserver ID, but this endpoint now requires a Player ID. ` +
+              `Please use the Player ID instead.`,
           );
         }
       }
@@ -106,10 +106,10 @@ export class TrackingService extends TakaroService<
     if (result.length === 0) {
       const { isPlayerId, isPogId } = await this.checkIdType(input.playerId);
 
-      if (isPlayerId && !isPogId) {
+      if (isPogId && !isPlayerId) {
         throw new errors.BadRequestError(
-          `No tracking data found for ID: ${input.playerId}. This appears to be a Player ID, but this endpoint requires a PlayerOnGameserver ID. ` +
-            `Please use the PlayerOnGameserver ID instead. You can find the correct ID by querying /gameservers/{gameServerId}/players/{playerId}`,
+          `No tracking data found for ID: ${input.playerId}. This appears to be a PlayerOnGameserver ID, but this endpoint now requires a Player ID. ` +
+            `Please use the Player ID instead.`,
         );
       }
     }

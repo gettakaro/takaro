@@ -28,13 +28,25 @@ const mockGamePlayer = new IGamePlayer({
   steamId: '76561198028175941',
 });
 
+const mockGamePlayerWithBrackets = new IGamePlayer({
+  name: '[ptz]stoun',
+  ping: undefined,
+  gameId: '0002b5d970954287afdcb5dc35af0425',
+  steamId: '76561198013829487',
+});
+
 describe('7d2d event detection', () => {
   let emitStub = sandbox.stub(SevenDaysToDieEmitter.prototype, 'emit');
 
   beforeEach(() => {
     sandbox.restore();
     emitStub = sandbox.stub(SevenDaysToDieEmitter.prototype, 'emit');
-    sandbox.stub(SevenDaysToDie.prototype, 'steamIdOrXboxToGameId').resolves(mockGamePlayer);
+    sandbox.stub(SevenDaysToDie.prototype, 'steamIdOrXboxToGameId').callsFake(async (id: string) => {
+      if (id === '76561198013829487' || id === 'Steam_76561198013829487') {
+        return mockGamePlayerWithBrackets;
+      }
+      return mockGamePlayer;
+    });
   });
 
   it('[PlayerConnected]: Can detect simple player connected', async () => {
@@ -339,5 +351,22 @@ describe('7d2d event detection', () => {
     expect((emitStub.getCalls()[1].args[1] as EventEntityKilled).entity).to.equal('zombieFrançaise');
     expect((emitStub.getCalls()[1].args[1] as EventEntityKilled).player.name).to.equal(mockGamePlayer.name);
     expect((emitStub.getCalls()[1].args[1] as EventEntityKilled).weapon).to.equal('Molotov Cocktail');
+  });
+
+  it('[EntityKilled] Can detect entity killed with color codes in name', async () => {
+    const emitter = new SevenDaysToDieEmitter(await mockConnectionInfo({ useCPM: true }));
+
+    await emitter.parseMessage({
+      msg: `[CSMM_Patrons]entityKilled: [ptz]stoun (Steam_76561198013829487) killed zombie [94CBFF]ELITE[-] Hazmat with Stun Baton`,
+    });
+
+    expect(emitStub).to.have.been.calledTwice;
+
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.ENTITY_KILLED);
+    expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
+
+    expect((emitStub.getCalls()[0].args[1] as EventEntityKilled).entity).to.equal('[94CBFF]ELITE[-] Hazmat');
+    expect((emitStub.getCalls()[0].args[1] as EventEntityKilled).player.name).to.equal('[ptz]stoun');
+    expect((emitStub.getCalls()[0].args[1] as EventEntityKilled).weapon).to.equal('Stun Baton');
   });
 });

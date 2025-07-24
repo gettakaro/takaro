@@ -224,14 +224,18 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
       startDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     }
 
-    const qb = query.where('createdAt', '>=', startDate);
+    const qb = query
+      .distinct()
+      .select('playerLocation.*', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as actualPlayerId`)
+      .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerLocation.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
+      .where('playerLocation.createdAt', '>=', startDate);
 
     if (playerId && playerId.length > 0) {
-      qb.whereIn('playerId', playerId);
+      qb.whereIn(`${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId`, playerId);
     }
 
     if (endDate) {
-      qb.where('createdAt', '<=', endDate);
+      qb.where('playerLocation.createdAt', '<=', endDate);
     }
 
     if (limit) {
@@ -240,11 +244,14 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
       qb.limit(1000);
     }
 
-    qb.orderBy('createdAt', 'DESC');
+    qb.orderBy('playerLocation.createdAt', 'DESC');
 
     const result = await qb;
-    return result.map((item) => {
-      return new PlayerLocationOutputDTO(item);
+    return result.map((item: any) => {
+      return new PlayerLocationOutputDTO({
+        ...item,
+        playerId: item.actualPlayerId,
+      });
     });
   }
 
@@ -253,14 +260,16 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     const { minX, maxX, minY, maxY, minZ, maxZ, startDate, endDate, gameserverId } = input;
 
     const qb = query
+      .distinct()
+      .select('playerLocation.*', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as actualPlayerId`)
       .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerLocation.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
       .where(`${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`, gameserverId)
-      .andWhere('x', '>=', minX)
-      .andWhere('x', '<=', maxX)
-      .andWhere('y', '>=', minY)
-      .andWhere('y', '<=', maxY)
-      .andWhere('z', '>=', minZ)
-      .andWhere('z', '<=', maxZ);
+      .andWhere('playerLocation.x', '>=', minX)
+      .andWhere('playerLocation.x', '<=', maxX)
+      .andWhere('playerLocation.y', '>=', minY)
+      .andWhere('playerLocation.y', '<=', maxY)
+      .andWhere('playerLocation.z', '>=', minZ)
+      .andWhere('playerLocation.z', '<=', maxZ);
 
     if (startDate) {
       qb.andWhere('playerLocation.createdAt', '>=', startDate);
@@ -270,8 +279,11 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     }
 
     const result = await qb;
-    return result.map((item) => {
-      return new PlayerLocationOutputDTO(item);
+    return result.map((item: any) => {
+      return new PlayerLocationOutputDTO({
+        ...item,
+        playerId: item.actualPlayerId,
+      });
     });
   }
 
@@ -280,9 +292,14 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     const { x, y, z, radius, startDate, endDate, gameserverId } = input;
 
     const qb = query
+      .distinct()
+      .select('playerLocation.*', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as actualPlayerId`)
       .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerLocation.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
       .where(`${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`, gameserverId)
-      .andWhereRaw('sqrt((x - ?) ^ 2 + (y - ?) ^ 2 + (z - ?) ^ 2) <= ?', [x, y, z, radius]);
+      .andWhereRaw(
+        'sqrt(("playerLocation"."x" - ?) ^ 2 + ("playerLocation"."y" - ?) ^ 2 + ("playerLocation"."z" - ?) ^ 2) <= ?',
+        [x, y, z, radius],
+      );
 
     if (startDate) {
       qb.andWhere('playerLocation.createdAt', '>=', startDate);
@@ -292,8 +309,11 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     }
 
     const result = await qb;
-    return result.map((item) => {
-      return new PlayerLocationOutputDTO(item);
+    return result.map((item: any) => {
+      return new PlayerLocationOutputDTO({
+        ...item,
+        playerId: item.actualPlayerId,
+      });
     });
   }
 
@@ -302,6 +322,7 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     const { playerId, startDate, endDate } = input;
 
     const qb = query
+      .distinct()
       .select(
         'playerInventoryHistory.playerId',
         'playerInventoryHistory.itemId',
@@ -309,16 +330,21 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
         'items.code as itemCode',
         'playerInventoryHistory.quantity',
         'playerInventoryHistory.createdAt',
+        `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as actualPlayerId`,
       )
       .join('items', 'items.id', '=', 'playerInventoryHistory.itemId')
-      .where('playerInventoryHistory.playerId', playerId)
+      .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerInventoryHistory.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
+      .where(`${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId`, playerId)
       .andWhere('playerInventoryHistory.createdAt', '>=', startDate)
       .andWhere('playerInventoryHistory.createdAt', '<=', endDate)
       .orderBy('playerInventoryHistory.createdAt', 'desc');
 
     const result = await qb;
-    return result.map((item) => {
-      return new PlayerInventoryOutputDTO(item);
+    return result.map((item: any) => {
+      return new PlayerInventoryOutputDTO({
+        ...item,
+        playerId: item.actualPlayerId,
+      });
     });
   }
 
@@ -327,7 +353,14 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     const { itemId, startDate, endDate } = input;
 
     const qb = query
-      .select('playerInventoryHistory.playerId', 'playerInventoryHistory.quantity', 'playerInventoryHistory.createdAt')
+      .distinct()
+      .select(
+        'playerInventoryHistory.playerId',
+        'playerInventoryHistory.quantity',
+        'playerInventoryHistory.createdAt',
+        `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as actualPlayerId`,
+      )
+      .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerInventoryHistory.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
       .where('playerInventoryHistory.itemId', itemId);
 
     if (startDate) {
@@ -341,8 +374,11 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     qb.orderBy('playerInventoryHistory.createdAt', 'desc');
 
     const result = await qb;
-    return result.map((item) => {
-      return new PlayerItemHistoryOutputDTO(item);
+    return result.map((item: any) => {
+      return new PlayerItemHistoryOutputDTO({
+        ...item,
+        playerId: item.actualPlayerId,
+      });
     });
   }
 }
