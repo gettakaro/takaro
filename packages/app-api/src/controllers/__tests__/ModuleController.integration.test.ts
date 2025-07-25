@@ -223,20 +223,47 @@ const tests = [
         });
       }
 
-      const tagsRes = await this.client.module.moduleControllerGetTags(imported.id, 0, 3);
+      const tagsRes = await this.client.module.moduleVersionControllerSearchVersions({
+        filters: { moduleId: [imported.id] },
+        page: 0,
+        limit: 3,
+        sortBy: 'createdAt',
+        sortDirection: 'desc' as any,
+      });
 
       expect(tagsRes.data.data).to.have.length(3);
       expect(tagsRes.data.meta.total).to.equal(22); // 20 tags + 1 latest + 1 from the core module
 
-      expect(tagsRes.data.data[0].tag).to.equal('latest');
-      expect(tagsRes.data.data[1].tag).to.equal('0.20.20');
-      expect(tagsRes.data.data[2].tag).to.equal('0.19.19');
+      // The results should be sorted by creation date (newest first)
+      // Since we created tags 0.1.1 through 0.20.20, the newest should be 0.20.20
+      const tags = tagsRes.data.data.map((v) => v.tag);
 
-      const secondPage = await this.client.module.moduleControllerGetTags(imported.id, 1, 3);
+      // Get all tags to verify 'latest' exists somewhere
+      const allTagsRes = await this.client.module.moduleVersionControllerSearchVersions({
+        filters: { moduleId: [imported.id] },
+        limit: 100,
+      });
+      const allTags = allTagsRes.data.data.map((v) => v.tag);
+      expect(allTags).to.include('latest');
+
+      // First page should have the most recent tags
+      expect(tags[0]).to.equal('0.20.20');
+      expect(tags[1]).to.equal('0.19.19');
+      expect(tags[2]).to.equal('0.18.18');
+
+      const secondPage = await this.client.module.moduleVersionControllerSearchVersions({
+        filters: { moduleId: [imported.id] },
+        page: 1,
+        limit: 3,
+        sortBy: 'createdAt',
+        sortDirection: 'desc' as any,
+      });
       expect(secondPage.data.data).to.have.length(3);
-      expect(secondPage.data.data[0].tag).to.equal('0.18.18');
-      expect(secondPage.data.data[1].tag).to.equal('0.17.17');
-      expect(secondPage.data.data[2].tag).to.equal('0.16.16');
+      // Check that we get the next set of tags
+      const secondPageTags = secondPage.data.data.map((v) => v.tag);
+      expect(secondPageTags[0]).to.equal('0.17.17');
+      expect(secondPageTags[1]).to.equal('0.16.16');
+      expect(secondPageTags[2]).to.equal('0.15.15');
     },
     filteredFields: ['moduleId'],
   }),
