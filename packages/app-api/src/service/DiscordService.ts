@@ -807,6 +807,25 @@ export class DiscordService extends TakaroService<
       takaroRoles.filter((role) => role.linkedDiscordRoleId).map((role) => [role.linkedDiscordRoleId!, role]),
     );
 
+    // Debug logging
+    this.log.info('[ROLE_SYNC_DEBUG] Starting role sync for guild', {
+      userId,
+      discordId,
+      guildId,
+      sourceOfTruthIsDiscord,
+      userTakaroRoles: userTakaroRoles.map((r: any) => ({
+        roleId: r.role?.id || r.roleId,
+        roleName: r.role?.name,
+        linkedDiscordRoleId: r.role?.linkedDiscordRoleId,
+      })),
+      userDiscordRoles,
+      availableRoleMappings: Array.from(roleMap.entries()).map(([discordId, role]) => ({
+        discordRoleId: discordId,
+        takaroRoleId: role.id,
+        takaroRoleName: role.name,
+      })),
+    });
+
     // Calculate changes
     const changes = this.calculateRoleChanges(
       userTakaroRoles.map((r: any) => r.role),
@@ -843,6 +862,22 @@ export class DiscordService extends TakaroService<
     const takaroRoleIds = new Set(takaroRoles.map((r) => r.id));
     const discordRoleSet = new Set(discordRoleIds);
 
+    this.log.info('[ROLE_SYNC_DEBUG] calculateRoleChanges input', {
+      sourceOfTruthIsDiscord,
+      takaroRoles: takaroRoles.map((r) => ({
+        id: r.id,
+        linkedDiscordRoleId: r.linkedDiscordRoleId,
+      })),
+      takaroRoleIds: Array.from(takaroRoleIds),
+      discordRoleIds,
+      roleMapSize: roleMap.size,
+      roleMapEntries: Array.from(roleMap.entries()).map(([k, v]) => ({
+        discordRoleId: k,
+        takaroRoleId: v.id,
+        takaroLinkedDiscordId: v.linkedDiscordRoleId,
+      })),
+    });
+
     const changes = {
       addToTakaro: [] as string[],
       removeFromTakaro: [] as string[],
@@ -855,22 +890,61 @@ export class DiscordService extends TakaroService<
       const hasInTakaro = takaroRoleIds.has(takaroRole.id);
       const hasInDiscord = discordRoleSet.has(discordRoleId);
 
+      this.log.info('[ROLE_SYNC_DEBUG] Checking role mapping', {
+        discordRoleId,
+        takaroRoleId: takaroRole.id,
+        hasInTakaro,
+        hasInDiscord,
+        sourceOfTruthIsDiscord,
+      });
+
       if (hasInTakaro && !hasInDiscord) {
         if (!sourceOfTruthIsDiscord) {
           // Takaro is source of truth
+          this.log.info('[ROLE_SYNC_DEBUG] User has role in Takaro but not Discord, adding to Discord', {
+            discordRoleId,
+            takaroRoleId: takaroRole.id,
+          });
           changes.addToDiscord.push(discordRoleId);
         } else {
+          this.log.info(
+            '[ROLE_SYNC_DEBUG] User has role in Takaro but not Discord, removing from Takaro (Discord is source)',
+            {
+              discordRoleId,
+              takaroRoleId: takaroRole.id,
+            },
+          );
           changes.removeFromTakaro.push(takaroRole.id);
         }
       } else if (!hasInTakaro && hasInDiscord) {
         if (sourceOfTruthIsDiscord) {
           // Discord is source of truth
+          this.log.info('[ROLE_SYNC_DEBUG] User has role in Discord but not Takaro, adding to Takaro', {
+            discordRoleId,
+            takaroRoleId: takaroRole.id,
+          });
           changes.addToTakaro.push(takaroRole.id);
         } else {
+          this.log.info(
+            '[ROLE_SYNC_DEBUG] User has role in Discord but not Takaro, removing from Discord (Takaro is source)',
+            {
+              discordRoleId,
+              takaroRoleId: takaroRole.id,
+            },
+          );
           changes.removeFromDiscord.push(discordRoleId);
         }
+      } else {
+        this.log.info('[ROLE_SYNC_DEBUG] Role is in sync', {
+          discordRoleId,
+          takaroRoleId: takaroRole.id,
+          hasInBoth: hasInTakaro && hasInDiscord,
+          hasInNeither: !hasInTakaro && !hasInDiscord,
+        });
       }
     }
+
+    this.log.info('[ROLE_SYNC_DEBUG] Calculated changes', changes);
 
     return changes;
   }
@@ -886,6 +960,13 @@ export class DiscordService extends TakaroService<
       removeFromDiscord: string[];
     },
   ): Promise<{ rolesAdded: number; rolesRemoved: number }> {
+    this.log.info('[ROLE_SYNC_DEBUG] Applying role changes', {
+      userId,
+      discordId,
+      guildId,
+      changes,
+    });
+
     const userService = new UserService(this.domainId);
     let rolesAdded = 0;
     let rolesRemoved = 0;
@@ -895,9 +976,9 @@ export class DiscordService extends TakaroService<
       try {
         await userService.assignRole(roleId, userId);
         rolesAdded++;
-        this.log.debug('Added role to Takaro user', { userId, roleId });
+        this.log.info('[ROLE_SYNC_DEBUG] Successfully added role to Takaro user', { userId, roleId });
       } catch (error) {
-        this.log.error('Failed to add role to Takaro user', { userId, roleId, error });
+        this.log.error('[ROLE_SYNC_DEBUG] Failed to add role to Takaro user', { userId, roleId, error });
       }
     }
 
@@ -905,9 +986,9 @@ export class DiscordService extends TakaroService<
       try {
         await userService.removeRole(roleId, userId);
         rolesRemoved++;
-        this.log.debug('Removed role from Takaro user', { userId, roleId });
+        this.log.info('[ROLE_SYNC_DEBUG] Successfully removed role from Takaro user', { userId, roleId });
       } catch (error) {
-        this.log.error('Failed to remove role from Takaro user', { userId, roleId, error });
+        this.log.error('[ROLE_SYNC_DEBUG] Failed to remove role from Takaro user', { userId, roleId, error });
       }
     }
 
@@ -916,9 +997,9 @@ export class DiscordService extends TakaroService<
       try {
         await discordBot.assignRole(guildId, discordId, roleId);
         rolesAdded++;
-        this.log.debug('Added role to Discord member', { discordId, roleId });
+        this.log.info('[ROLE_SYNC_DEBUG] Successfully added role to Discord member', { discordId, roleId, guildId });
       } catch (error) {
-        this.log.error('Failed to add role to Discord member', { discordId, roleId, error });
+        this.log.error('[ROLE_SYNC_DEBUG] Failed to add role to Discord member', { discordId, roleId, guildId, error });
       }
     }
 
@@ -926,11 +1007,25 @@ export class DiscordService extends TakaroService<
       try {
         await discordBot.removeRole(guildId, discordId, roleId);
         rolesRemoved++;
-        this.log.debug('Removed role from Discord member', { discordId, roleId });
+        this.log.info('[ROLE_SYNC_DEBUG] Successfully removed role from Discord member', {
+          discordId,
+          roleId,
+          guildId,
+        });
       } catch (error) {
-        this.log.error('Failed to remove role from Discord member', { discordId, roleId, error });
+        this.log.error('[ROLE_SYNC_DEBUG] Failed to remove role from Discord member', {
+          discordId,
+          roleId,
+          guildId,
+          error,
+        });
       }
     }
+
+    this.log.info('[ROLE_SYNC_DEBUG] Completed applying changes', {
+      rolesAdded,
+      rolesRemoved,
+    });
 
     return { rolesAdded, rolesRemoved };
   }
