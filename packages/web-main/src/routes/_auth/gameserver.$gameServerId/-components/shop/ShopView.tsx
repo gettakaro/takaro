@@ -254,6 +254,7 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
           onCategoryChange={setSelectedCategories}
           showUncategorized={showUncategorized}
           onUncategorizedChange={setShowUncategorized}
+          gameServerId={gameServerId}
         />
 
         <ShopContent>

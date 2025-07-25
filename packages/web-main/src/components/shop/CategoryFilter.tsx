@@ -72,6 +72,7 @@ interface CategoryFilterProps {
   onCategoryChange: (categoryIds: string[]) => void;
   showUncategorized?: boolean;
   onUncategorizedChange?: (show: boolean) => void;
+  gameServerId?: string;
 }
 
 interface CategoryNodeProps {
@@ -123,12 +124,16 @@ export const CategoryFilter: FC<CategoryFilterProps> = ({
   onCategoryChange,
   showUncategorized = false,
   onUncategorizedChange,
+  gameServerId,
 }) => {
   const { data: categoriesData, isLoading } = useQuery(
-    shopCategoriesQueryOptions({
-      limit: 100,
-      extend: ['children'],
-    }),
+    shopCategoriesQueryOptions(
+      {
+        limit: 100,
+        extend: ['children'],
+      },
+      gameServerId,
+    ),
   );
 
   const handleCategoryToggle = (categoryId: string) => {

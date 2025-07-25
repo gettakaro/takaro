@@ -24,8 +24,8 @@ export class ShopCategoryService extends TakaroService<
     return this.repo.find(filters);
   }
 
-  async findOne(id: string): Promise<ShopCategoryOutputDTO> {
-    return this.repo.findOne(id);
+  async findOne(id: string, filters?: ITakaroQuery<ShopCategoryOutputDTO>): Promise<ShopCategoryOutputDTO> {
+    return this.repo.findOne(id, filters);
   }
 
   async create(item: ShopCategoryCreateDTO): Promise<ShopCategoryOutputDTO> {
