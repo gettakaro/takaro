@@ -27,19 +27,19 @@ Set up the foundational data layer for Discord role synchronization.
 ## Phase 2: Discord Bot Enhancement
 Add role management capabilities to the Discord bot.
 
-- [ ] Task 4: Add GuildMembers intent to Discord bot
+- [x] Task 4: Add GuildMembers intent to Discord bot
   - **Prompt**: Update the Discord bot client configuration to include the GuildMembers intent. This is required to receive guildMemberUpdate events for role changes.
   - **Requirements**: REQ-002
   - **Design ref**: Section: Enhanced Discord Bot
   - **Files**: packages/app-api/src/lib/DiscordBot.ts
 
-- [ ] Task 5: Implement Discord role management methods
+- [x] Task 5: Implement Discord role management methods
   - **Prompt**: Add assignRole, removeRole, and getMemberRoles methods to the DiscordBot class. Each method should handle Discord API interactions, include proper error handling, and record metrics. Follow the existing method patterns in DiscordBot.
   - **Requirements**: REQ-001
   - **Design ref**: Section: Enhanced Discord Bot
   - **Files**: packages/app-api/src/lib/DiscordBot.ts
 
-- [ ] Task 6: Add guildMemberUpdate event listener
+- [x] Task 6: Add guildMemberUpdate event listener
   - **Prompt**: Implement the guildMemberUpdate event listener in DiscordBot. When roles change, resolve the domain ID and forward to DiscordService. Include error handling and logging.
   - **Requirements**: REQ-002
   - **Design ref**: Section: Enhanced Discord Bot
@@ -48,31 +48,31 @@ Add role management capabilities to the Discord bot.
 ## Phase 3: Backend Services
 Implement core synchronization logic in services.
 
-- [ ] Task 7: Add sync methods to DiscordService
+- [x] Task 7: Add sync methods to DiscordService
   - **Prompt**: Implement syncUserRoles method in DiscordService that compares user roles between platforms and applies changes based on source of truth. Include proper logging and error handling. Skip users without Discord ID linked.
   - **Requirements**: REQ-000, REQ-001, REQ-004
   - **Design ref**: Section: Enhanced DiscordService, Role Sync Algorithm
   - **Files**: packages/app-api/src/service/DiscordService.ts
 
-- [ ] Task 8: Implement Discord event handlers in DiscordService
+- [x] Task 8: Implement Discord event handlers in DiscordService
   - **Prompt**: Add handleDiscordMemberUpdate method that processes Discord role changes and syncs to Takaro. Only sync roles that have linkedDiscordRoleId configured. Include conflict resolution based on source of truth setting.
   - **Requirements**: REQ-001, REQ-002
   - **Design ref**: Section: Discord → Takaro Flow
   - **Files**: packages/app-api/src/service/DiscordService.ts
 
-- [ ] Task 9: Add Takaro role event listeners
+- [x] Task 9: Add Takaro role event listeners
   - **Prompt**: Implement handleRoleAssignment and handleRoleRemoval methods that listen to ROLE_ASSIGNED and ROLE_REMOVED events. Sync changes to Discord for users with Discord ID linked and roles with linkedDiscordRoleId.
   - **Requirements**: REQ-001, REQ-002
   - **Design ref**: Section: Takaro → Discord Flow
   - **Files**: packages/app-api/src/service/DiscordService.ts
 
-- [ ] Task 10: Implement conflict resolution logic
+- [x] Task 10: Implement conflict resolution logic
   - **Prompt**: Create calculateRoleChanges method that determines which roles to add/remove based on source of truth setting. When sourceOfTruthIsDiscord is true, Discord takes precedence; otherwise Takaro does.
   - **Requirements**: REQ-004
   - **Design ref**: Section: Conflict Resolution
   - **Files**: packages/app-api/src/service/DiscordService.ts
 
-- [ ] Task 11: Register event listeners in service initialization
+- [x] Task 11: Register event listeners in service initialization
   - **Prompt**: Update DiscordService initialization to register event listeners for ROLE_ASSIGNED and ROLE_REMOVED events. Only register if Discord sync is enabled in settings.
   - **Requirements**: REQ-002, REQ-006
   - **Design ref**: Section: Enhanced DiscordService
@@ -81,19 +81,19 @@ Implement core synchronization logic in services.
 ## Phase 4: System Worker Integration
 Implement scheduled synchronization as a fallback mechanism.
 
-- [ ] Task 12: Add SYNC_DISCORD_ROLES task type
+- [x] Task 12: Add SYNC_DISCORD_ROLES task type
   - **Prompt**: Add SYNC_DISCORD_ROLES to SystemTaskType enum and systemTaskDefinitions with perGameserver: false. Follow the existing pattern for system task definitions.
   - **Requirements**: REQ-003
   - **Design ref**: Section: System Worker Integration
   - **Files**: packages/app-api/src/workers/systemWorkerDefinitions.ts
 
-- [ ] Task 13: Implement syncDiscordRoles function
+- [x] Task 13: Implement syncDiscordRoles function
   - **Prompt**: Create syncDiscordRoles function in systemWorker that fetches all users with Discord IDs and syncs their roles in batches of 50. Include progress logging and error handling. Skip if sync is disabled.
   - **Requirements**: REQ-003
   - **Design ref**: Section: System Worker Integration
   - **Files**: packages/app-api/src/workers/systemWorker.ts
 
-- [ ] Task 14: Add system worker case handler
+- [x] Task 14: Add system worker case handler
   - **Prompt**: Add case for SystemTaskType.SYNC_DISCORD_ROLES in the processJob function that calls syncDiscordRoles. Follow the existing pattern for system task handling.
   - **Requirements**: REQ-003
   - **Design ref**: Section: System Worker Integration
@@ -102,19 +102,19 @@ Implement scheduled synchronization as a fallback mechanism.
 ## Phase 5: Frontend Integration
 Update user interfaces to support Discord role linking.
 
-- [ ] Task 15: Add Discord linking to link page
+- [x] Task 15: Add Discord linking to link page
   - **Prompt**: Update the link page component to show LoginDiscordCard for logged-in users. Add a section after the existing form with appropriate heading and description. Only display if user session exists.
   - **Requirements**: REQ-000
   - **Design ref**: Section: Enhanced Link Page
   - **Files**: packages/web-main/src/routes/_single-page/link.tsx
 
-- [ ] Task 16: Update role form with Discord role selection
+- [x] Task 16: Update role form with Discord role selection
   - **Prompt**: Add linkedDiscordRoleId field to RoleCreateUpdateForm using SelectQueryField component. Load Discord roles from available guilds and display role names. Follow existing form field patterns.
   - **Requirements**: REQ-005
   - **Design ref**: Section: Role Configuration UI
   - **Files**: packages/web-main/src/routes/_auth/_global/-roles/RoleCreateUpdateForm.tsx
 
-- [ ] Task 17: Add booleanFields configuration for sync settings
+- [x] Task 17: Add booleanFields configuration for sync settings
   - **Prompt**: Update the booleanFields array to include 'discordRoleSync.enabled' and 'discordRoleSync.sourceOfTruth' so they render as Switch components in the settings page.
   - **Requirements**: REQ-006
   - **Design ref**: Section: Settings Integration

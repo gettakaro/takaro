@@ -4251,6 +4251,7 @@ export const GetJobInputDTOTypeEnum = {
   SyncEntities: 'syncEntities',
   SyncBans: 'syncBans',
   SyncSteam: 'syncSteam',
+  SyncDiscordRoles: 'syncDiscordRoles',
 } as const;
 
 export type GetJobInputDTOTypeEnum = (typeof GetJobInputDTOTypeEnum)[keyof typeof GetJobInputDTOTypeEnum];

@@ -32,7 +32,7 @@ The Platform ID is a flexible system that supports games and platforms beyond St
 - `minecraft:550e8400-e29b-41d4-a716-446655440000` - Minecraft player UUID
 - `battlenet:PlayerName#1234` - Battle.net player tag
 - `origin:OriginPlayerID` - Origin/EA platform
-- `discord:123456789012345678` - Discord user ID
+- `discord:123456789012345678` - Discord user ID (see Discord Integration below)
 - `custom-game:unique-player-id` - Custom game platform
 
 ### How Platform Identification Works
@@ -64,3 +64,32 @@ Players can link to your community and receive login credentials to access it th
 
 If you wish to link to another game community, simply repeat the `/link` process. Within Takaro, you can easily switch between game communities by using the domain widgets in the bottom left.
 To know more about how to use the shop, please visit [Economy page](./economy.md).
+
+## Discord Integration
+
+Players can enhance their Takaro experience by linking their Discord account, enabling additional features like role synchronization.
+
+### Linking Your Discord Account
+
+1. **Complete Player Linking**: First, link your player profile using the `/link` command as described above
+2. **Access the Link Page**: Visit the link page (typically at `/link`) while logged into Takaro
+3. **Connect Discord**: Click the "Connect Discord Account" button
+4. **Authorize Access**: Grant Takaro permission to access your Discord account
+5. **Confirmation**: Your Discord account is now linked to your Takaro profile
+
+### Benefits of Discord Linking
+
+- **Role Synchronization**: Your Discord roles can automatically sync with Takaro roles, granting appropriate in-game permissions
+- **Enhanced Communication**: Receive notifications and updates through Discord
+- **Community Features**: Access Discord-exclusive features and commands
+- **Single Sign-On**: Use your Discord account for easier authentication
+
+### Discord Role Sync
+
+When Discord role sync is enabled by your community administrators:
+- Roles assigned in Discord automatically apply in-game
+- In-game role changes can reflect in your Discord roles
+- Only specifically mapped roles are synchronized
+- System roles (User, Player) are never synchronized
+
+For more information about Discord integration features, see the [Discord Integration guide](./advanced/discord-integration.md).

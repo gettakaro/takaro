@@ -7,6 +7,7 @@ import {
   Role,
   NonThreadGuildBasedChannel,
   EmbedBuilder,
+  GuildMember,
 } from 'discord.js';
 import { errors, logger } from '@takaro/util';
 import { config } from '../config.js';
@@ -19,7 +20,12 @@ class DiscordBot {
 
   constructor() {
     this.client = new Client({
-      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
+      intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMembers,
+      ],
     });
   }
 
@@ -46,6 +52,13 @@ class DiscordBot {
     if (config.get('discord.handleEvents')) {
       this.log.info('Setting up event handling');
       this.client.on('messageCreate', (message) => this.messageHandler(message));
+      this.client.on('guildMemberUpdate', (oldMember, newMember) => {
+        if (oldMember.partial || newMember.partial) {
+          this.log.warn('Received partial guild member update, ignoring');
+          return;
+        }
+        this.handleGuildMemberUpdate(oldMember, newMember);
+      });
     } else {
       this.log.info('Event handling is disabled');
     }
@@ -241,6 +254,109 @@ class DiscordBot {
 
     const service = new DiscordService(domainId);
     await service.handleMessage(message);
+  }
+
+  async assignRole(guildId: string, userId: string, roleId: string): Promise<void> {
+    return await DiscordMetrics.measureOperation(
+      async () => {
+        const guild = await this.client.guilds.fetch(guildId);
+
+        if (!guild) {
+          throw new errors.NotFoundError('Discord guild not found');
+        }
+
+        const member = await guild.members.fetch(userId);
+
+        if (!member) {
+          throw new errors.NotFoundError(`Discord member ${userId} not found in guild ${guildId}`);
+        }
+
+        await member.roles.add(roleId);
+        DiscordMetrics.recordRoleAssigned(guildId, userId, roleId);
+
+        this.log.info('Assigned Discord role', { guildId, userId, roleId });
+      },
+      'assignRole',
+      guildId,
+    );
+  }
+
+  async removeRole(guildId: string, userId: string, roleId: string): Promise<void> {
+    return await DiscordMetrics.measureOperation(
+      async () => {
+        const guild = await this.client.guilds.fetch(guildId);
+
+        if (!guild) {
+          throw new errors.NotFoundError('Discord guild not found');
+        }
+
+        const member = await guild.members.fetch(userId);
+
+        if (!member) {
+          throw new errors.NotFoundError(`Discord member ${userId} not found in guild ${guildId}`);
+        }
+
+        await member.roles.remove(roleId);
+        DiscordMetrics.recordRoleRemoved(guildId, userId, roleId);
+
+        this.log.info('Removed Discord role', { guildId, userId, roleId });
+      },
+      'removeRole',
+      guildId,
+    );
+  }
+
+  async getMemberRoles(guildId: string, userId: string): Promise<string[]> {
+    return await DiscordMetrics.measureOperation(
+      async () => {
+        const guild = await this.client.guilds.fetch(guildId);
+
+        if (!guild) {
+          throw new errors.NotFoundError('Discord guild not found');
+        }
+
+        const member = await guild.members.fetch(userId);
+
+        if (!member) {
+          throw new errors.NotFoundError(`Discord member ${userId} not found in guild ${guildId}`);
+        }
+
+        const roleIds = Array.from(member.roles.cache.keys());
+
+        this.log.debug('Fetched Discord member roles', { guildId, userId, roleCount: roleIds.length });
+
+        return roleIds;
+      },
+      'getMemberRoles',
+      guildId,
+    );
+  }
+
+  private async handleGuildMemberUpdate(oldMember: GuildMember, newMember: GuildMember) {
+    try {
+      this.log.debug('Received guildMemberUpdate event', {
+        guildId: newMember.guild.id,
+        userId: newMember.id,
+        oldRoles: Array.from(oldMember.roles.cache.keys()),
+        newRoles: Array.from(newMember.roles.cache.keys()),
+      });
+
+      const domainId = await DiscordService.NOT_DOMAIN_SCOPED_resolveDomainFromGuildId(newMember.guild.id);
+
+      if (!domainId) {
+        this.log.debug('Guild not linked to any domain, ignoring member update', { guildId: newMember.guild.id });
+        return;
+      }
+
+      const discordService = new DiscordService(domainId);
+      await discordService.handleDiscordMemberUpdate(oldMember, newMember);
+    } catch (error) {
+      this.log.error('Error handling guild member update', {
+        error,
+        guildId: newMember.guild.id,
+        userId: newMember.id,
+      });
+    }
   }
 }
 

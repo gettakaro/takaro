@@ -57,3 +57,61 @@ The `economyUtils` module uses command permissions:
 - `/revokecurrency` - Requires `ECONOMY_UTILS_MANAGE_CURRENCY` permission
 
 This ensures only authorized staff can modify player currencies while allowing all players to view their balance.
+
+## Discord Role Synchronization
+
+Takaro supports bidirectional role synchronization between Discord and Takaro, allowing you to manage permissions across both platforms seamlessly.
+
+### Prerequisites
+
+- Discord bot must be connected to your Takaro instance
+- Users must link their Discord account through the player linking page
+- Discord roles must be mapped to Takaro roles
+
+### How It Works
+
+Discord role sync ensures that role assignments remain consistent between Discord and Takaro:
+
+1. **Real-time Synchronization**: When roles change in either platform, they automatically sync to the other
+2. **Scheduled Sync**: A background task runs periodically to ensure consistency and catch any missed events
+3. **Selective Sync**: Only roles explicitly linked between platforms are synchronized
+
+### Setting Up Role Synchronization
+
+1. **Link Your Discord Account**: 
+   - Navigate to the player link page (`/link`)
+   - Click "Connect Discord Account" if you're logged in
+   - Authorize Takaro to access your Discord account
+
+2. **Map Discord Roles to Takaro Roles**:
+   - Go to Roles management in the dashboard
+   - Create or edit a role
+   - Select a Discord role from the "Linked Discord Role" dropdown
+   - Save the role mapping
+
+3. **Configure Synchronization Settings**:
+   - Navigate to Settings → Game Servers
+   - Enable "Discord Role Sync Enabled"
+   - Choose your source of truth (see below)
+
+### Source of Truth Configuration
+
+The source of truth determines which platform takes precedence when role conflicts occur:
+
+- **Takaro as Source of Truth** (default): 
+  - Takaro role assignments override Discord roles
+  - Changes in Takaro are pushed to Discord
+  - Discord role changes for mapped roles are ignored
+
+- **Discord as Source of Truth**:
+  - Discord role assignments override Takaro roles
+  - Changes in Discord are synced to Takaro
+  - Takaro role changes for mapped roles are ignored
+
+### Important Considerations
+
+- **Initial Sync**: When first enabling sync, roles will be synchronized based on your source of truth setting
+- **Unmapped Roles**: Roles without a Discord mapping are never synchronized
+- **System Roles**: The system roles (Root, User, Player) cannot be synchronized
+- **Permissions**: Users need appropriate Discord permissions for the bot to manage their roles
+- **Multiple Servers**: If you have multiple Discord servers connected, role mappings are server-specific

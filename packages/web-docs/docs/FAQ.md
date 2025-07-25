@@ -46,3 +46,44 @@ We agree, CSMM was much easier to get started with. However, CSMM was also very 
 The idea is that 99% of users will never need to write a custom module. The built-in modules should be sufficient for most use cases. If you do need to write a custom module, you will need to have some programming experience.
 
 We know there is stuff to be added to the built-in modules, and we are working on that. If you have any suggestions, please let us know on Discord!
+
+## How do I enable Discord role synchronization?
+
+Discord role synchronization allows you to keep roles consistent between Discord and Takaro. To enable it:
+
+1. **Connect Discord Bot**: First, ensure your Discord bot is connected via Settings → Discord
+2. **Link User Accounts**: Users must link their Discord accounts at the `/link` page
+3. **Map Roles**: In the Roles section, edit each role you want to sync and select the corresponding Discord role
+4. **Enable Sync**: Go to Settings → Game Servers and enable "Discord Role Sync Enabled"
+5. **Choose Source of Truth**: Select whether Takaro or Discord should be the authoritative source for roles
+
+For detailed setup instructions, see the [Discord Integration guide](./advanced/discord-integration.md).
+
+## What happens when Discord and Takaro roles conflict?
+
+The "Source of Truth" setting determines which platform takes precedence:
+
+- **Takaro as Source of Truth** (default): Takaro roles override Discord roles. If a user has a role in Takaro but not in Discord, it will be added to Discord.
+- **Discord as Source of Truth**: Discord roles override Takaro roles. If a user has a role in Discord but not in Takaro, it will be added to Takaro.
+
+Only roles that are explicitly mapped between platforms are synchronized. Unmapped roles remain independent.
+
+## Can I sync roles for specific game servers only?
+
+Yes! Discord role synchronization can be configured per domain. Each Takaro domain (which can contain multiple game servers) has its own sync settings. This means:
+
+- You can enable sync for some domains while keeping it disabled for others
+- Different domains can have different source of truth settings
+- Role mappings are domain-specific, so the same Discord role can map to different Takaro roles in different domains
+
+## Why isn't Discord role sync working for a user?
+
+Common issues and solutions:
+
+1. **User hasn't linked Discord**: Check if the user has connected their Discord account at `/link`
+2. **Bot permissions**: Ensure the bot has "Manage Roles" permission and is positioned above the roles it needs to manage
+3. **Role not mapped**: Verify the role has a Discord role selected in its configuration
+4. **Sync disabled**: Check that role sync is enabled in Settings → Game Servers
+5. **User not in Discord server**: The user must be a member of the Discord server where the role exists
+
+Check the Takaro logs for specific error messages related to role synchronization.
