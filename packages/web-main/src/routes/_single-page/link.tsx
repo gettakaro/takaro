@@ -9,6 +9,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { zodValidator } from '@tanstack/zod-adapter';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { LoginDiscordCard } from '../_auth/_global/settings/-discord/LoginDiscordCard';
 
 const Container = styled.div`
   max-width: 800px;
@@ -137,6 +138,15 @@ function Component() {
           </Button>
         )}
       </form>
+
+      {/* Add Discord linking section for logged-in users */}
+      {session && (
+        <div style={{ marginTop: '2rem' }}>
+          <h2>Connect Discord Account</h2>
+          <p>Link your Discord account to enable role synchronization between Discord and Takaro.</p>
+          <LoginDiscordCard />
+        </div>
+      )}
     </Container>
   );
 }

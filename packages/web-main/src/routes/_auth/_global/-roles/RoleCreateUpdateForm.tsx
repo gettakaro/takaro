@@ -17,6 +17,7 @@ import { PermissionOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
 import { useForm, SubmitHandler, Control } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { DiscordRoleSelectQueryField } from '../../../../components/selects';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -37,6 +38,7 @@ const PermissionContainer = styled.div<{ hasCount: boolean }>`
 
 const validationSchema = z.object({
   name: z.string().min(3).max(50),
+  linkedDiscordRoleId: z.string().length(18).optional(),
   permissions: z.record(
     z.object({
       enabled: z.boolean().optional(),
@@ -93,6 +95,7 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
     resolver: zodResolver(validationSchema),
     values: initialData && {
       name: initialData.name,
+      linkedDiscordRoleId: initialData.linkedDiscordRoleId,
       permissions: Object.values(permissions).reduce(
         (acc, permission) => ({
           ...acc,
@@ -129,6 +132,15 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
                   placeholder="My cool role"
                   readOnly={readOnly}
                   required
+                />
+                <DiscordRoleSelectQueryField
+                  control={control}
+                  name="linkedDiscordRoleId"
+                  label="Linked Discord Role"
+                  description="Select a Discord role to link with this Takaro role for synchronization"
+                  loading={isLoading}
+                  readOnly={readOnly}
+                  canClear
                 />
               </CollapseList.Item>
               <CollapseList.Item title="System permissions">

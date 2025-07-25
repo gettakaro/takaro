@@ -33,7 +33,7 @@ function Component() {
     navigate({ to: '/roles' });
   }
 
-  const onSubmit: SubmitHandler<IFormInputs> = ({ permissions: formPermissions, name }) => {
+  const onSubmit: SubmitHandler<IFormInputs> = ({ permissions: formPermissions, name, linkedDiscordRoleId }) => {
     const activePermissions = Object.entries(formPermissions)
       .filter(([_key, value]) => value.enabled === true)
       .map(([key, value]) => ({
@@ -44,6 +44,7 @@ function Component() {
       roleId,
       roleDetails: {
         name,
+        linkedDiscordRoleId,
         permissions: activePermissions,
       },
     });
