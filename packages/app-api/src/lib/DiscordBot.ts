@@ -65,7 +65,8 @@ class DiscordBot {
 
     try {
       await this.client.login(config.get('discord.botToken'));
-    } catch {
+    } catch (e) {
+      this.log.error('Failed to login to Discord', { error: e });
       throw new errors.InternalServerError();
     }
   }
