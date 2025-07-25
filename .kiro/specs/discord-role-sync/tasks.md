@@ -6,19 +6,19 @@ Implementation of bidirectional role synchronization between Discord and Takaro 
 ## Phase 1: Database & Data Transfer Objects
 Set up the foundational data layer for Discord role synchronization.
 
-- [ ] Task 1: Create database migration for linkedDiscordRoleId
+- [x] Task 1: Create database migration for linkedDiscordRoleId
   - **Prompt**: Create a Knex migration file that adds a `linkedDiscordRoleId` column to the roles table. The column should be nullable, string type, and indexed. Follow the existing migration pattern in packages/lib-db/src/migrations/sql/.
   - **Requirements**: REQ-005
   - **Design ref**: Section: Database Schema Changes
   - **Files**: packages/lib-db/src/migrations/sql/20250726000000-discord-role-sync.ts
 
-- [ ] Task 2: Update Role DTOs to include linkedDiscordRoleId
+- [x] Task 2: Update Role DTOs to include linkedDiscordRoleId
   - **Prompt**: Update RoleUpdateInputDTO and RoleOutputDTO to include the optional linkedDiscordRoleId field. Add proper validation decorators (@IsString, @IsOptional, @Length(18, 18)) following the existing DTO patterns.
   - **Requirements**: REQ-005
   - **Design ref**: Section: DTOs
   - **Files**: packages/lib-apiclient/src/generated/api.ts
 
-- [ ] Task 3: Add Discord sync settings to SettingsService defaults
+- [x] Task 3: Add Discord sync settings to SettingsService defaults
   - **Prompt**: Add default settings for 'discordRoleSync.enabled' (false) and 'discordRoleSync.sourceOfTruth' (false) to the settings service. Ensure they are included in the SettingsControllerGetKeysEnum and have proper descriptions.
   - **Requirements**: REQ-004, REQ-006
   - **Design ref**: Section: Settings Keys

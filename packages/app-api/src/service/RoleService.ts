@@ -73,6 +73,11 @@ export class RoleUpdateInputDTO extends TakaroDTO<RoleUpdateInputDTO> {
   @Type(() => PermissionInputDTO)
   @IsOptional()
   permissions: PermissionInputDTO[];
+
+  @IsString()
+  @IsOptional()
+  @Length(18, 18)
+  linkedDiscordRoleId?: string;
 }
 
 export class SearchRoleInputDTO {
@@ -165,6 +170,10 @@ export class RoleOutputDTO extends TakaroModelDTO<RoleOutputDTO> {
 
   @IsBoolean()
   system: boolean;
+
+  @IsString()
+  @IsOptional()
+  linkedDiscordRoleId?: string;
 }
 
 export class PlayerRoleAssignmentOutputDTO extends TakaroModelDTO<PlayerRoleAssignmentOutputDTO> {
