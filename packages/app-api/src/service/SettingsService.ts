@@ -15,7 +15,7 @@ export enum SETTINGS_KEYS {
   messagePrefix = 'messagePrefix',
   domainName = 'domainName',
   discordRoleSyncEnabled = 'discordRoleSyncEnabled',
-  discordRoleSyncSourceOfTruth = 'discordRoleSyncSourceOfTruth',
+  discordRoleSyncPreferDiscord = 'discordRoleSyncPreferDiscord',
 }
 
 export interface SettingDefinition {
@@ -65,9 +65,10 @@ export const SETTINGS_DEFINITIONS: Record<SETTINGS_KEYS, SettingDefinition> = {
     description: 'Enable or disable automatic role synchronization between Discord and Takaro',
     canHaveGameServerOverride: false,
   },
-  discordRoleSyncSourceOfTruth: {
+  discordRoleSyncPreferDiscord: {
     defaultValue: 'false',
-    description: 'When true, Discord roles take precedence during conflicts. When false, Takaro roles take precedence',
+    description:
+      'When enabled, Discord roles will override Takaro roles during synchronization. When disabled, Takaro roles will override Discord roles. Only affects roles that are linked between systems.',
     canHaveGameServerOverride: false,
   },
 };
@@ -97,7 +98,7 @@ export class Settings extends TakaroModelDTO<Settings> {
   @IsString()
   discordRoleSyncEnabled: string;
   @IsString()
-  discordRoleSyncSourceOfTruth: string;
+  discordRoleSyncPreferDiscord: string;
 }
 
 export enum SettingsMode {

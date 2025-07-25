@@ -400,4 +400,8 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     const record = await this.repo.permissionCodeToRecord(permissionCode);
     return new PermissionOutputDTO(record);
   }
+
+  async getDiscordLinkedRoles(): Promise<RoleOutputDTO[]> {
+    return this.repo.findDiscordLinkedRoles();
+  }
 }

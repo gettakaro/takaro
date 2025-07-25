@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This feature implements bidirectional role synchronization between Discord and Takaro, ensuring that role assignments remain consistent across both platforms. The system will react to role changes in real-time through event listeners and provide a scheduled sync mechanism as a fallback for missed events. Users can configure which platform serves as the source of truth for role management.
+This feature implements bidirectional role synchronization between Discord and Takaro, ensuring that role assignments remain consistent across both platforms. The system will react to role changes in real-time through event listeners and provide a scheduled sync mechanism as a fallback for missed events. Users can configure which platform takes precedence for role management when conflicts occur.
 
 ## Requirements
 
@@ -51,22 +51,22 @@ This feature implements bidirectional role synchronization between Discord and T
 #### Acceptance Criteria
 
 1. WHEN the scheduled sync runs THEN the system SHALL compare all user roles between Discord and Takaro
-2. IF role inconsistencies are found THEN the system SHALL resolve them based on the configured source of truth
+2. IF role inconsistencies are found THEN the system SHALL resolve them based on the configured preference (Discord or Takaro)
 3. WHEN scheduled sync completes THEN the system SHALL log a summary of changes made
 4. IF scheduled sync encounters errors THEN the system SHALL log detailed error information and continue processing other users
 5. WHEN scheduled sync is configured THEN it SHALL run at intervals between 5 minutes and 24 hours
 
 ### Requirement 4
 
-**User Story:** As a server administrator, I want to configure which platform is the source of truth for role management, so that I can control the direction of synchronization when conflicts occur.
+**User Story:** As a server administrator, I want to configure which platform takes precedence for role management, so that I can control the direction of synchronization when conflicts occur.
 
 #### Acceptance Criteria
 
-1. WHEN source of truth is set to Discord THEN Discord roles SHALL take precedence during conflict resolution
-2. WHEN source of truth is set to Takaro THEN Takaro roles SHALL take precedence during conflict resolution
-3. WHEN source of truth setting is changed THEN the system SHALL apply the new setting to subsequent sync operations
-4. IF no source of truth is configured THEN the system SHALL default to Takaro as the source of truth
-5. WHEN bidirectional sync is enabled THEN both platforms SHALL be kept in sync regardless of source of truth
+1. WHEN Discord is set as preferred THEN Discord roles SHALL take precedence during conflict resolution
+2. WHEN Takaro is set as preferred THEN Takaro roles SHALL take precedence during conflict resolution
+3. WHEN preference setting is changed THEN the system SHALL apply the new setting to subsequent sync operations
+4. IF no preference is configured THEN the system SHALL default to Takaro as preferred
+5. WHEN bidirectional sync is enabled THEN both platforms SHALL be kept in sync regardless of preference
 
 ### Requirement 5
 

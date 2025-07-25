@@ -49,13 +49,13 @@ Add role management capabilities to the Discord bot.
 Implement core synchronization logic in services.
 
 - [x] Task 7: Add sync methods to DiscordService
-  - **Prompt**: Implement syncUserRoles method in DiscordService that compares user roles between platforms and applies changes based on source of truth. Include proper logging and error handling. Skip users without Discord ID linked.
+  - **Prompt**: Implement syncUserRoles method in DiscordService that compares user roles between platforms and applies changes based on preference setting. Include proper logging and error handling. Skip users without Discord ID linked.
   - **Requirements**: REQ-000, REQ-001, REQ-004
   - **Design ref**: Section: Enhanced DiscordService, Role Sync Algorithm
   - **Files**: packages/app-api/src/service/DiscordService.ts
 
 - [x] Task 8: Implement Discord event handlers in DiscordService
-  - **Prompt**: Add handleDiscordMemberUpdate method that processes Discord role changes and syncs to Takaro. Only sync roles that have linkedDiscordRoleId configured. Include conflict resolution based on source of truth setting.
+  - **Prompt**: Add handleDiscordMemberUpdate method that processes Discord role changes and syncs to Takaro. Only sync roles that have linkedDiscordRoleId configured. Include conflict resolution based on preference setting.
   - **Requirements**: REQ-001, REQ-002
   - **Design ref**: Section: Discord → Takaro Flow
   - **Files**: packages/app-api/src/service/DiscordService.ts
@@ -67,7 +67,7 @@ Implement core synchronization logic in services.
   - **Files**: packages/app-api/src/service/DiscordService.ts
 
 - [x] Task 10: Implement conflict resolution logic
-  - **Prompt**: Create calculateRoleChanges method that determines which roles to add/remove based on source of truth setting. When sourceOfTruthIsDiscord is true, Discord takes precedence; otherwise Takaro does.
+  - **Prompt**: Create calculateRoleChanges method that determines which roles to add/remove based on preference setting. When preferDiscord is true, Discord takes precedence; otherwise Takaro does.
   - **Requirements**: REQ-004
   - **Design ref**: Section: Conflict Resolution
   - **Files**: packages/app-api/src/service/DiscordService.ts
@@ -115,7 +115,7 @@ Update user interfaces to support Discord role linking.
   - **Files**: packages/web-main/src/routes/_auth/_global/-roles/RoleCreateUpdateForm.tsx
 
 - [x] Task 17: Add booleanFields configuration for sync settings
-  - **Prompt**: Update the booleanFields array to include 'discordRoleSync.enabled' and 'discordRoleSync.sourceOfTruth' so they render as Switch components in the settings page.
+  - **Prompt**: Update the booleanFields array to include 'discordRoleSync.enabled' and 'discordRoleSync.preferDiscord' so they render as Switch components in the settings page.
   - **Requirements**: REQ-006
   - **Design ref**: Section: Settings Integration
   - **Files**: packages/web-main/src/util/settings.ts
@@ -124,7 +124,7 @@ Update user interfaces to support Discord role linking.
 Comprehensive testing of the Discord role sync feature.
 
 - [ ] Task 18: Unit tests for sync logic
-  - **Prompt**: Write unit tests for DiscordService.syncUserRoles method. Test scenarios: user without Discord ID, source of truth variations, role mapping, and error cases. Use existing test patterns.
+  - **Prompt**: Write unit tests for DiscordService.syncUserRoles method. Test scenarios: user without Discord ID, preference setting variations, role mapping, and error cases. Use existing test patterns.
   - **Requirements**: REQ-001, REQ-004, REQ-007
   - **Design ref**: Section: Unit Tests
   - **Files**: packages/app-api/src/service/__tests__/DiscordService.test.ts

@@ -3,5 +3,5 @@ export const booleanFields = [
   'economyEnabled',
   'developerMode',
   'discordRoleSyncEnabled',
-  'discordRoleSyncSourceOfTruth',
+  'discordRoleSyncPreferDiscord',
 ];

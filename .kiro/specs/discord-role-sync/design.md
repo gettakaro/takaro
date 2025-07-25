@@ -10,7 +10,7 @@ This feature implements bidirectional role synchronization between Discord and T
 - Enable users to link Discord accounts to Takaro profiles
 - Real-time bidirectional role synchronization between Discord and Takaro
 - Event-driven architecture with fallback scheduled sync
-- Configurable source of truth for conflict resolution
+- Configurable preference for conflict resolution
 - Seamless integration with existing role management systems
 
 ### Non-goals and Scope Limitations
@@ -72,7 +72,7 @@ This feature implements bidirectional role synchronization between Discord and T
    - For domains with Discord sync enabled, executes `syncDiscordRoles`
    - Fetches all users with Discord IDs from UserService
    - For each user, compares Discord and Takaro roles
-   - Resolves conflicts based on source of truth setting
+   - Resolves conflicts based on preference setting
    - Batch processes updates through respective services
 
 ## Components and Interfaces
@@ -409,13 +409,13 @@ export async function down(knex: Knex): Promise<void> {
 // Settings stored in existing settings table
 const DISCORD_SYNC_SETTINGS = {
   'discordRoleSync.enabled': 'false', // default - boolean setting
-  'discordRoleSync.sourceOfTruth': 'false', // default - boolean (true = Discord, false = Takaro)
+  'discordRoleSync.preferDiscord': 'false', // default - boolean (true = Discord preferred, false = Takaro preferred)
 };
 ```
 
 These settings will automatically appear in the gameservers settings page:
 - `discordRoleSync.enabled` - Rendered as a Switch component with label "Discord Role Sync Enabled"
-- `discordRoleSync.sourceOfTruth` - Rendered as a Switch component with label "Discord Role Sync Source Of Truth" (on = Discord, off = Takaro)
+- `discordRoleSync.preferDiscord` - Rendered as a Switch component with label "Discord Role Sync Prefer Discord" (on = Discord preferred, off = Takaro preferred)
 
 The backend settings system will provide these keys with appropriate descriptions, and the frontend will dynamically render them without any code changes needed.
 
@@ -519,13 +519,13 @@ private calculateRoleChanges(
     const hasInDiscord = discordRoleSet.has(discordRoleId);
     
     if (hasInTakaro && !hasInDiscord) {
-      if (!sourceOfTruthIsDiscord) { // Takaro is source of truth
+      if (!preferDiscord) { // Takaro is preferred
         changes.addToDiscord.push(discordRoleId);
       } else {
         changes.removeFromTakaro.push(takaroRoleId);
       }
     } else if (!hasInTakaro && hasInDiscord) {
-      if (sourceOfTruthIsDiscord) { // Discord is source of truth
+      if (preferDiscord) { // Discord is preferred
         changes.addToTakaro.push(takaroRoleId);
       } else {
         changes.removeFromDiscord.push(discordRoleId);
@@ -624,7 +624,7 @@ private async handleSyncError(error: Error, context: SyncContext): Promise<void>
    describe('DiscordService', () => {
      describe('syncUserRoles', () => {
        it('should skip users without Discord ID');
-       it('should respect source of truth setting');
+       it('should respect preference setting');
        it('should handle role mapping correctly');
        it('should return sync statistics');
      });
@@ -655,7 +655,7 @@ private async handleSyncError(error: Error, context: SyncContext): Promise<void>
 
 2. **End-to-End Scenarios**
    - User links Discord account → roles appear
-   - Admin changes source of truth → conflicts resolved
+   - Admin changes preference → conflicts resolved
    - Scheduled sync corrects inconsistencies
 
 ## Migration and Rollout

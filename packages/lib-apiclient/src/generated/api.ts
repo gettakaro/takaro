@@ -4285,7 +4285,7 @@ export const GetSettingsInputKeysEnum = {
   MessagePrefix: 'messagePrefix',
   DomainName: 'domainName',
   DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
-  DiscordRoleSyncSourceOfTruth: 'discordRoleSyncSourceOfTruth',
+  DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
 } as const;
 
 export type GetSettingsInputKeysEnum = (typeof GetSettingsInputKeysEnum)[keyof typeof GetSettingsInputKeysEnum];
@@ -7840,7 +7840,7 @@ export const ParamKeyKeyEnum = {
   MessagePrefix: 'messagePrefix',
   DomainName: 'domainName',
   DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
-  DiscordRoleSyncSourceOfTruth: 'discordRoleSyncSourceOfTruth',
+  DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
 } as const;
 
 export type ParamKeyKeyEnum = (typeof ParamKeyKeyEnum)[keyof typeof ParamKeyKeyEnum];
@@ -10238,7 +10238,7 @@ export interface Settings {
    * @type {string}
    * @memberof Settings
    */
-  discordRoleSyncSourceOfTruth: string;
+  discordRoleSyncPreferDiscord: string;
   /**
    *
    * @type {string}
@@ -10324,7 +10324,7 @@ export const SettingsOutputDTOKeyEnum = {
   MessagePrefix: 'messagePrefix',
   DomainName: 'domainName',
   DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
-  DiscordRoleSyncSourceOfTruth: 'discordRoleSyncSourceOfTruth',
+  DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
 } as const;
 
 export type SettingsOutputDTOKeyEnum = (typeof SettingsOutputDTOKeyEnum)[keyof typeof SettingsOutputDTOKeyEnum];
@@ -25490,7 +25490,7 @@ export const SettingsControllerGetKeysEnum = {
   MessagePrefix: 'messagePrefix',
   DomainName: 'domainName',
   DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
-  DiscordRoleSyncSourceOfTruth: 'discordRoleSyncSourceOfTruth',
+  DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
 } as const;
 export type SettingsControllerGetKeysEnum =
   (typeof SettingsControllerGetKeysEnum)[keyof typeof SettingsControllerGetKeysEnum];

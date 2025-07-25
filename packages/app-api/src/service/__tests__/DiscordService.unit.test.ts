@@ -99,9 +99,9 @@ describe('DiscordService', () => {
         canHaveGameServerOverride: false,
       }),
     );
-    mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncSourceOfTruth).resolves(
+    mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncPreferDiscord).resolves(
       new SettingsOutputDTO({
-        key: SETTINGS_KEYS.discordRoleSyncSourceOfTruth,
+        key: SETTINGS_KEYS.discordRoleSyncPreferDiscord,
         value: 'false',
         type: SettingsMode.Override,
         description: 'When true, Discord roles take precedence during conflicts',
@@ -137,6 +137,9 @@ describe('DiscordService', () => {
     });
     sandbox.stub(RoleService.prototype, 'findOne').callsFake(function (this: RoleService, id: string) {
       return mockRoleService.findOne(id);
+    });
+    sandbox.stub(RoleService.prototype, 'getDiscordLinkedRoles').callsFake(function (this: RoleService) {
+      return mockRoleService.getDiscordLinkedRoles();
     });
     sandbox.stub(SettingsService.prototype, 'get').callsFake(function (this: SettingsService, key: SETTINGS_KEYS) {
       return mockSettingsService.get(key);
@@ -202,13 +205,10 @@ describe('DiscordService', () => {
       });
       mockUserService.findOne.resolves(userWithRoles);
 
-      mockRoleService.find.resolves({
-        results: [
-          mockTakaroRole,
-          new RoleOutputDTO({ ...mockTakaroRole.toJSON(), id: 'role-2', linkedDiscordRoleId: '222222222222222222' }),
-        ],
-        total: 2,
-      });
+      mockRoleService.getDiscordLinkedRoles.resolves([
+        mockTakaroRole,
+        new RoleOutputDTO({ ...mockTakaroRole.toJSON(), id: 'role-2', linkedDiscordRoleId: '222222222222222222' }),
+      ]);
 
       // Find guild by discordId
       sandbox.stub(service, 'find').resolves({
@@ -231,19 +231,16 @@ describe('DiscordService', () => {
       sandbox.stub(discordBot, 'getMemberRoles').resolves(['111111111111111111']); // User has Admin in Discord
 
       // Setup
-      mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncSourceOfTruth).resolves(
+      mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncPreferDiscord).resolves(
         new SettingsOutputDTO({
-          key: SETTINGS_KEYS.discordRoleSyncSourceOfTruth,
+          key: SETTINGS_KEYS.discordRoleSyncPreferDiscord,
           value: 'true',
           type: SettingsMode.Override,
-          description: 'When true, Discord roles take precedence during conflicts',
+          description: 'When enabled, Discord roles will override Takaro roles during synchronization',
           canHaveGameServerOverride: false,
         }),
       );
-      mockRoleService.find.resolves({
-        results: [mockTakaroRole],
-        total: 1,
-      });
+      mockRoleService.getDiscordLinkedRoles.resolves([mockTakaroRole]);
       const userWithRoles = Object.assign(new UserOutputWithRolesDTO(), mockUser.toJSON(), { roles: [] });
       mockUserService.findOne.resolves(userWithRoles);
 
@@ -270,10 +267,7 @@ describe('DiscordService', () => {
       // Setup getMemberRoles stub for this test
       sandbox.stub(discordBot, 'getMemberRoles').resolves([]);
 
-      mockRoleService.find.resolves({
-        results: [mockTakaroRoleWithoutLink], // Role without Discord link
-        total: 1,
-      });
+      mockRoleService.getDiscordLinkedRoles.resolves([mockTakaroRoleWithoutLink]); // Role without Discord link
       const userWithRoles = Object.assign(new UserOutputWithRolesDTO(), mockUser.toJSON(), {
         roles: [
           new UserAssignmentOutputDTO({
@@ -321,13 +315,10 @@ describe('DiscordService', () => {
       });
       mockUserService.findOne.resolves(userWithRoles);
 
-      mockRoleService.find.resolves({
-        results: [
-          mockTakaroRole,
-          new RoleOutputDTO({ ...mockTakaroRole.toJSON(), id: 'role-2', linkedDiscordRoleId: '222222222222222222' }),
-        ],
-        total: 2,
-      });
+      mockRoleService.getDiscordLinkedRoles.resolves([
+        mockTakaroRole,
+        new RoleOutputDTO({ ...mockTakaroRole.toJSON(), id: 'role-2', linkedDiscordRoleId: '222222222222222222' }),
+      ]);
 
       // Find guilds - returns multiple guilds
       sandbox.stub(service, 'find').resolves({
@@ -372,10 +363,7 @@ describe('DiscordService', () => {
       });
       mockUserService.findOne.resolves(userWithRoles);
 
-      mockRoleService.find.resolves({
-        results: [mockTakaroRole],
-        total: 1,
-      });
+      mockRoleService.getDiscordLinkedRoles.resolves([mockTakaroRole]);
 
       // Find guilds - returns multiple guilds
       sandbox.stub(service, 'find').resolves({
@@ -402,13 +390,10 @@ describe('DiscordService', () => {
     it('should correctly calculate role changes with Takaro as source', async () => {
       // Setup scenario where user has different roles in each system
       mockUserService.findOne.resolves(mockUser as UserOutputWithRolesDTO);
-      mockRoleService.find.resolves({
-        results: [
-          mockTakaroRole,
-          new RoleOutputDTO({ ...mockTakaroRole.toJSON(), id: 'role-2', linkedDiscordRoleId: '222222222222222222' }),
-        ],
-        total: 2,
-      });
+      mockRoleService.getDiscordLinkedRoles.resolves([
+        mockTakaroRole,
+        new RoleOutputDTO({ ...mockTakaroRole.toJSON(), id: 'role-2', linkedDiscordRoleId: '222222222222222222' }),
+      ]);
       const userWithRoles = Object.assign(new UserOutputWithRolesDTO(), mockUser.toJSON(), {
         roles: [
           new UserAssignmentOutputDTO({
@@ -436,23 +421,20 @@ describe('DiscordService', () => {
     });
 
     it('should correctly calculate role changes with Discord as source', async () => {
-      mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncSourceOfTruth).resolves(
+      mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncPreferDiscord).resolves(
         new SettingsOutputDTO({
-          key: SETTINGS_KEYS.discordRoleSyncSourceOfTruth,
+          key: SETTINGS_KEYS.discordRoleSyncPreferDiscord,
           value: 'true',
           type: SettingsMode.Override,
-          description: 'When true, Discord roles take precedence during conflicts',
+          description: 'When enabled, Discord roles will override Takaro roles during synchronization',
           canHaveGameServerOverride: false,
         }),
       );
       mockUserService.findOne.resolves(mockUser as UserOutputWithRolesDTO);
-      mockRoleService.find.resolves({
-        results: [
-          mockTakaroRole,
-          new RoleOutputDTO({ ...mockTakaroRole.toJSON(), id: 'role-2', linkedDiscordRoleId: '222222222222222222' }),
-        ],
-        total: 2,
-      });
+      mockRoleService.getDiscordLinkedRoles.resolves([
+        mockTakaroRole,
+        new RoleOutputDTO({ ...mockTakaroRole.toJSON(), id: 'role-2', linkedDiscordRoleId: '222222222222222222' }),
+      ]);
       const userWithRoles = Object.assign(new UserOutputWithRolesDTO(), mockUser.toJSON(), {
         roles: [
           new UserAssignmentOutputDTO({
@@ -496,12 +478,12 @@ describe('DiscordService', () => {
           canHaveGameServerOverride: false,
         }),
       );
-      mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncSourceOfTruth).resolves(
+      mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncPreferDiscord).resolves(
         new SettingsOutputDTO({
-          key: SETTINGS_KEYS.discordRoleSyncSourceOfTruth,
+          key: SETTINGS_KEYS.discordRoleSyncPreferDiscord,
           value: 'false',
           type: SettingsMode.Override,
-          description: 'When true, Discord roles take precedence during conflicts',
+          description: 'When enabled, Discord roles will override Takaro roles during synchronization',
           canHaveGameServerOverride: false,
         }),
       );
@@ -514,7 +496,7 @@ describe('DiscordService', () => {
       expect(syncStub).to.have.been.calledWith('user-1');
     });
 
-    it('should skip when Discord is source of truth', async () => {
+    it('should skip when Discord is preferred', async () => {
       mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncEnabled).resolves(
         new SettingsOutputDTO({
           key: SETTINGS_KEYS.discordRoleSyncEnabled,
@@ -524,12 +506,12 @@ describe('DiscordService', () => {
           canHaveGameServerOverride: false,
         }),
       );
-      mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncSourceOfTruth).resolves(
+      mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncPreferDiscord).resolves(
         new SettingsOutputDTO({
-          key: SETTINGS_KEYS.discordRoleSyncSourceOfTruth,
+          key: SETTINGS_KEYS.discordRoleSyncPreferDiscord,
           value: 'true',
           type: SettingsMode.Override,
-          description: 'When true, Discord roles take precedence during conflicts',
+          description: 'When enabled, Discord roles will override Takaro roles during synchronization',
           canHaveGameServerOverride: false,
         }),
       );
@@ -576,12 +558,12 @@ describe('DiscordService', () => {
           canHaveGameServerOverride: false,
         }),
       );
-      mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncSourceOfTruth).resolves(
+      mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncPreferDiscord).resolves(
         new SettingsOutputDTO({
-          key: SETTINGS_KEYS.discordRoleSyncSourceOfTruth,
+          key: SETTINGS_KEYS.discordRoleSyncPreferDiscord,
           value: 'false',
           type: SettingsMode.Override,
-          description: 'When true, Discord roles take precedence during conflicts',
+          description: 'When enabled, Discord roles will override Takaro roles during synchronization',
           canHaveGameServerOverride: false,
         }),
       );
@@ -593,7 +575,7 @@ describe('DiscordService', () => {
       expect(syncStub).to.have.been.calledWith('user-1');
     });
 
-    it('should skip when Discord is source of truth', async () => {
+    it('should skip when Discord is preferred', async () => {
       mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncEnabled).resolves(
         new SettingsOutputDTO({
           key: SETTINGS_KEYS.discordRoleSyncEnabled,
@@ -603,12 +585,12 @@ describe('DiscordService', () => {
           canHaveGameServerOverride: false,
         }),
       );
-      mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncSourceOfTruth).resolves(
+      mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncPreferDiscord).resolves(
         new SettingsOutputDTO({
-          key: SETTINGS_KEYS.discordRoleSyncSourceOfTruth,
+          key: SETTINGS_KEYS.discordRoleSyncPreferDiscord,
           value: 'true',
           type: SettingsMode.Override,
-          description: 'When true, Discord roles take precedence during conflicts',
+          description: 'When enabled, Discord roles will override Takaro roles during synchronization',
           canHaveGameServerOverride: false,
         }),
       );
@@ -664,13 +646,10 @@ describe('DiscordService', () => {
       // Mock getMemberRoles for this test
       sandbox.stub(discordBot, 'getMemberRoles').resolves(['111111111111111111', '222222222222222222']);
 
-      mockRoleService.find.resolves({
-        results: [
-          mockTakaroRole,
-          new RoleOutputDTO({ ...mockTakaroRole.toJSON(), id: 'role-2', linkedDiscordRoleId: '222222222222222222' }),
-        ],
-        total: 2,
-      });
+      mockRoleService.getDiscordLinkedRoles.resolves([
+        mockTakaroRole,
+        new RoleOutputDTO({ ...mockTakaroRole.toJSON(), id: 'role-2', linkedDiscordRoleId: '222222222222222222' }),
+      ]);
 
       // Mock guild find
       sandbox.stub(service, 'find').resolves({
@@ -687,12 +666,12 @@ describe('DiscordService', () => {
           canHaveGameServerOverride: false,
         }),
       );
-      mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncSourceOfTruth).resolves(
+      mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncPreferDiscord).resolves(
         new SettingsOutputDTO({
-          key: SETTINGS_KEYS.discordRoleSyncSourceOfTruth,
+          key: SETTINGS_KEYS.discordRoleSyncPreferDiscord,
           value: 'true',
           type: SettingsMode.Override,
-          description: 'When true, Discord roles take precedence during conflicts',
+          description: 'When enabled, Discord roles will override Takaro roles during synchronization',
           canHaveGameServerOverride: false,
         }),
       );
