@@ -147,15 +147,18 @@ export const CategoryFilter: FC<CategoryFilterProps> = ({
 
   // Build a proper category tree from the flat array
   const buildCategoryTree = (categories: ShopCategoryOutputDTO[]): ShopCategoryOutputDTO[] => {
+    // Filter out categories with no listings
+    const categoriesWithListings = categories.filter((cat) => (cat.listingCount || 0) > 0);
+
     // Create a map of all categories for quick lookup
     const categoryMap = new Map<string, ShopCategoryOutputDTO>();
-    categories.forEach((cat) => {
+    categoriesWithListings.forEach((cat) => {
       categoryMap.set(cat.id, { ...cat });
     });
 
     // Build the tree by assigning children to their parents
     const rootCategories: ShopCategoryOutputDTO[] = [];
-    categories.forEach((cat) => {
+    categoriesWithListings.forEach((cat) => {
       if (cat.parentId) {
         const parent = categoryMap.get(cat.parentId);
         if (parent) {
