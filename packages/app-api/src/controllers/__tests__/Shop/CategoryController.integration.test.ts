@@ -1,6 +1,8 @@
 import { IntegrationTest, expect, IShopCategorySetup, shopCategorySetup } from '@takaro/test';
 import { describe } from 'node:test';
 import { ShopCategorySearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
+import { randomUUID } from 'crypto';
+import { getMockServer } from '@takaro/mock-gameserver';
 
 const group = 'Shop/ShopCategoryController';
 
@@ -572,17 +574,22 @@ const tests = [
         emoji: '🎮',
       });
 
-      // Create another gameserver
-      const gameserver2 = (
-        await this.client.gameserver.gameServerControllerCreate({
-          name: 'Gameserver 2',
-          connectionInfo: JSON.stringify({
-            host: 'localhost',
-            port: 1338,
-          }),
-          type: 'MOCK',
-        })
-      ).data.data;
+      // Create another gameserver using getMockServer
+      const gameServer2IdentityToken = randomUUID();
+      if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
+
+      const mockserver2 = await getMockServer({
+        mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer2IdentityToken },
+      });
+
+      // Find the created gameserver
+      const gameServers = await this.client.gameserver.gameServerControllerSearch({
+        filters: { identityToken: [gameServer2IdentityToken] },
+      });
+      const gameserver2 = gameServers.data.data.find((gs) => gs.identityToken === gameServer2IdentityToken);
+      if (!gameserver2) {
+        throw new Error('Game server 2 not found. Did something fail when registering?');
+      }
 
       // Create listings for gameserver1 with the test category
       await this.client.shopListing.shopListingControllerCreate({
@@ -654,7 +661,7 @@ const tests = [
       expect(singleCategoryWithFilter.data.data.listingCount).to.equal(2);
 
       // Cleanup
-      await this.client.gameserver.gameServerControllerRemove(gameserver2.id);
+      await mockserver2.shutdown();
     },
   }),
 
@@ -677,17 +684,22 @@ const tests = [
         parentId: parentCategory.data.data.id,
       });
 
-      // Create another gameserver
-      const gameserver2 = (
-        await this.client.gameserver.gameServerControllerCreate({
-          name: 'Gameserver 2',
-          connectionInfo: JSON.stringify({
-            host: 'localhost',
-            port: 1339,
-          }),
-          type: 'MOCK',
-        })
-      ).data.data;
+      // Create another gameserver using getMockServer
+      const gameServer2IdentityToken = randomUUID();
+      if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
+
+      const mockserver2 = await getMockServer({
+        mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer2IdentityToken },
+      });
+
+      // Find the created gameserver
+      const gameServers = await this.client.gameserver.gameServerControllerSearch({
+        filters: { identityToken: [gameServer2IdentityToken] },
+      });
+      const gameserver2 = gameServers.data.data.find((gs) => gs.identityToken === gameServer2IdentityToken);
+      if (!gameserver2) {
+        throw new Error('Game server 2 not found. Did something fail when registering?');
+      }
 
       // Create listings for gameserver1
       // 1 listing in parent category
@@ -750,7 +762,7 @@ const tests = [
       expect(childInServer2?.listingCount).to.equal(1);
 
       // Cleanup
-      await this.client.gameserver.gameServerControllerRemove(gameserver2.id);
+      await mockserver2.shutdown();
     },
   }),
 ];
