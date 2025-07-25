@@ -37,7 +37,7 @@ import {
 import { UserService } from './User/index.js';
 import { checkPermissions } from './AuthService.js';
 import { PERMISSIONS } from '@takaro/auth';
-import { RoleService } from './RoleService.js';
+import { RoleService, RoleOutputDTO } from './RoleService.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 
 @ValidatorConstraint({ name: 'messageOrEmbed', async: false })
@@ -734,24 +734,68 @@ export class DiscordService extends TakaroService<
     const userWithRoles = (await userService.findOne(userId)) as any;
     const userTakaroRoles = userWithRoles?.roles || [];
 
-    // Get Discord guild for this domain
-    const guilds = await this.find({ filters: { takaroEnabled: [true] }, limit: 1 });
+    // Get ALL Discord guilds for this domain
+    const guilds = await this.find({ filters: { takaroEnabled: [true] }, limit: 1000 });
     if (!guilds.results.length) {
       this.log.warn('No enabled Discord guild found for domain', { domainId: this.domainId });
       return { rolesAdded: 0, rolesRemoved: 0 };
     }
 
-    const guildId = guilds.results[0].discordId;
+    let totalRolesAdded = 0;
+    let totalRolesRemoved = 0;
 
-    // Get user's current roles in Discord
+    // Sync roles for each guild
+    for (const guild of guilds.results) {
+      try {
+        const result = await this.syncUserRolesForGuild(
+          userId,
+          user.discordId,
+          guild.discordId,
+          takaroRoles.results,
+          userTakaroRoles,
+          settings.sourceOfTruthIsDiscord,
+        );
+        totalRolesAdded += result.rolesAdded;
+        totalRolesRemoved += result.rolesRemoved;
+      } catch (error: any) {
+        // Log error but continue with other guilds
+        this.log.error('Failed to sync roles for guild', {
+          userId,
+          guildId: guild.discordId,
+          guildName: guild.name,
+          error: error.message,
+        });
+      }
+    }
+
+    this.log.info('Completed role sync for user across all guilds', {
+      userId,
+      discordId: user.discordId,
+      guildsProcessed: guilds.results.length,
+      totalRolesAdded,
+      totalRolesRemoved,
+    });
+
+    return { rolesAdded: totalRolesAdded, rolesRemoved: totalRolesRemoved };
+  }
+
+  private async syncUserRolesForGuild(
+    userId: string,
+    discordId: string,
+    guildId: string,
+    takaroRoles: RoleOutputDTO[],
+    userTakaroRoles: any[],
+    sourceOfTruthIsDiscord: boolean,
+  ): Promise<{ rolesAdded: number; rolesRemoved: number }> {
+    // Get user's current roles in Discord for this specific guild
     let userDiscordRoles: string[] = [];
     try {
-      userDiscordRoles = await discordBot.getMemberRoles(guildId, user.discordId);
+      userDiscordRoles = await discordBot.getMemberRoles(guildId, discordId);
     } catch (error: any) {
       // User might not be in the guild
       if (error.code === 10007) {
         // Unknown Member
-        this.log.debug('User not found in Discord guild', { userId, discordId: user.discordId, guildId });
+        this.log.debug('User not found in Discord guild', { userId, discordId, guildId });
         userDiscordRoles = [];
       } else {
         throw error;
@@ -760,7 +804,7 @@ export class DiscordService extends TakaroService<
 
     // Build role mappings
     const roleMap = new Map(
-      takaroRoles.results.filter((role) => role.linkedDiscordRoleId).map((role) => [role.linkedDiscordRoleId!, role]),
+      takaroRoles.filter((role) => role.linkedDiscordRoleId).map((role) => [role.linkedDiscordRoleId!, role]),
     );
 
     // Calculate changes
@@ -768,15 +812,16 @@ export class DiscordService extends TakaroService<
       userTakaroRoles.map((r: any) => r.role),
       userDiscordRoles,
       roleMap,
-      settings.sourceOfTruthIsDiscord,
+      sourceOfTruthIsDiscord,
     );
 
     // Apply changes
-    const result = await this.applyRoleChanges(userId, user.discordId, guildId, changes);
+    const result = await this.applyRoleChanges(userId, discordId, guildId, changes);
 
-    this.log.info('Completed role sync for user', {
+    this.log.debug('Completed role sync for user in guild', {
       userId,
-      discordId: user.discordId,
+      discordId,
+      guildId,
       rolesAdded: result.rolesAdded,
       rolesRemoved: result.rolesRemoved,
     });

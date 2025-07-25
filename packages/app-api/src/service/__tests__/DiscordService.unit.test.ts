@@ -69,6 +69,13 @@ describe('DiscordService', () => {
     takaroEnabled: true,
   });
 
+  const mockGuild2 = new GuildOutputDTO({
+    id: 'guild-2',
+    discordId: '987654321098765432',
+    name: 'Test Guild 2',
+    takaroEnabled: true,
+  });
+
   beforeEach(() => {
     sandbox = sinon.createSandbox();
 
@@ -291,6 +298,100 @@ describe('DiscordService', () => {
       expect(discordBot.assignRole).not.to.have.been.called;
       expect(discordBot.removeRole).not.to.have.been.called;
       expect(result.rolesAdded).to.equal(0);
+      expect(result.rolesRemoved).to.equal(0);
+    });
+
+    it('should sync roles across multiple guilds', async () => {
+      // Setup getMemberRoles stubs for both guilds
+      const getMemberRolesStub = sandbox.stub(discordBot, 'getMemberRoles');
+      getMemberRolesStub.withArgs(guildId, mockUser.discordId).resolves(['222222222222222222']); // Guild 1 has different role
+      getMemberRolesStub.withArgs(mockGuild2.discordId, mockUser.discordId).resolves([]); // Guild 2 has no roles
+
+      // Setup - mock user with roles attached
+      const userWithRoles = Object.assign(new UserOutputWithRolesDTO(), mockUser.toJSON(), {
+        roles: [
+          new UserAssignmentOutputDTO({
+            userId: mockUser.id,
+            roleId: mockTakaroRole.id,
+            role: mockTakaroRole,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          }),
+        ],
+      });
+      mockUserService.findOne.resolves(userWithRoles);
+
+      mockRoleService.find.resolves({
+        results: [
+          mockTakaroRole,
+          new RoleOutputDTO({ ...mockTakaroRole.toJSON(), id: 'role-2', linkedDiscordRoleId: '222222222222222222' }),
+        ],
+        total: 2,
+      });
+
+      // Find guilds - returns multiple guilds
+      sandbox.stub(service, 'find').resolves({
+        results: [mockGuild, mockGuild2],
+        total: 2,
+      });
+
+      const result = await service.syncUserRoles('user-1');
+
+      // Should sync both guilds
+      // Guild 1: add Admin, remove Mod
+      expect(discordBot.assignRole).to.have.been.calledWith(guildId, mockUser.discordId, '111111111111111111');
+      expect(discordBot.removeRole).to.have.been.calledWith(guildId, mockUser.discordId, '222222222222222222');
+
+      // Guild 2: add Admin (no roles to remove)
+      expect(discordBot.assignRole).to.have.been.calledWith(
+        mockGuild2.discordId,
+        mockUser.discordId,
+        '111111111111111111',
+      );
+
+      expect(result.rolesAdded).to.equal(2); // 1 per guild
+      expect(result.rolesRemoved).to.equal(1); // Only from guild 1
+    });
+
+    it('should handle errors in one guild without affecting others', async () => {
+      // Setup getMemberRoles stubs
+      const getMemberRolesStub = sandbox.stub(discordBot, 'getMemberRoles');
+      getMemberRolesStub.withArgs(guildId, mockUser.discordId).rejects(new Error('API Error'));
+      getMemberRolesStub.withArgs(mockGuild2.discordId, mockUser.discordId).resolves([]);
+
+      const userWithRoles = Object.assign(new UserOutputWithRolesDTO(), mockUser.toJSON(), {
+        roles: [
+          new UserAssignmentOutputDTO({
+            userId: mockUser.id,
+            roleId: mockTakaroRole.id,
+            role: mockTakaroRole,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          }),
+        ],
+      });
+      mockUserService.findOne.resolves(userWithRoles);
+
+      mockRoleService.find.resolves({
+        results: [mockTakaroRole],
+        total: 1,
+      });
+
+      // Find guilds - returns multiple guilds
+      sandbox.stub(service, 'find').resolves({
+        results: [mockGuild, mockGuild2],
+        total: 2,
+      });
+
+      const result = await service.syncUserRoles('user-1');
+
+      // Should still sync guild 2 even though guild 1 failed
+      expect(discordBot.assignRole).to.have.been.calledWith(
+        mockGuild2.discordId,
+        mockUser.discordId,
+        '111111111111111111',
+      );
+      expect(result.rolesAdded).to.equal(1); // Only from guild 2
       expect(result.rolesRemoved).to.equal(0);
     });
   });
