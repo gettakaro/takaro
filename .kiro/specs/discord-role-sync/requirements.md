@@ -6,6 +6,20 @@ This feature implements bidirectional role synchronization between Discord and T
 
 ## Requirements
 
+### Requirement 0 - Discord Account Linking (Prerequisite)
+
+**User Story:** As a user, I want to link my Discord account to my Takaro profile, so that the system can synchronize my roles between both platforms.
+
+#### Acceptance Criteria
+
+1. WHEN a user visits the link page while logged in THEN the system SHALL display a "Connect Discord" button
+2. WHEN a user is not logged in THEN the system SHALL NOT display Discord connection options on the link page
+3. WHEN a user clicks "Connect Discord" THEN the system SHALL redirect to Discord OAuth flow
+4. WHEN Discord OAuth completes successfully THEN the system SHALL store the user's Discord ID in their profile
+5. WHEN a user has already linked Discord THEN the button SHALL display "Update connection" instead
+6. IF Discord OAuth fails THEN the system SHALL display an appropriate error message
+7. WHEN role sync attempts to sync a user without linked Discord THEN the system SHALL skip that user and log a warning
+
 ### Requirement 1
 
 **User Story:** As a server administrator, I want roles to automatically sync between Discord and Takaro when assigned or removed, so that users have consistent permissions across both platforms.
