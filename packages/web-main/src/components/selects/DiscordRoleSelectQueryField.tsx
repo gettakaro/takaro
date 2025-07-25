@@ -53,7 +53,7 @@ export const DiscordRoleSelectQueryField: FC<CustomSelectProps> = ({
 
   // Fetch roles for each guild
   const roleQueries = useQueries({
-    queries: guilds.map((guild) => discordGuildRolesQueryOptions(guild.id)),
+    queries: guilds.map((guild) => discordGuildRolesQueryOptions(guild.discordId)),
   });
 
   const isLoadingRoles = roleQueries.some((query) => query.isLoading);
