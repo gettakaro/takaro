@@ -12,6 +12,8 @@ import {
   AiOutlineEye as ViewIcon,
   AiOutlineTag as TagIcon,
   AiOutlineMore as ActionsIcon,
+  AiOutlineLink as LinkIcon,
+  AiOutlineBook as DocumentationIcon,
 } from 'react-icons/ai';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { getApiClient } from '../../../../util/getApiClient';
@@ -249,6 +251,22 @@ export const ModulesTableView: FC<ModulesTableViewProps> = () => {
             },
           });
         }
+
+        menuItems.push({
+          label: 'Open in Module Builder',
+          icon: <LinkIcon />,
+          onClick: () => {
+            window.open(`/module-builder/${module.id}`, '_blank');
+          },
+        });
+
+        menuItems.push({
+          label: 'View module documentation',
+          icon: <DocumentationIcon />,
+          onClick: () => {
+            window.open('https://docs.takaro.io/advanced/modules', '_blank');
+          },
+        });
 
         return (
           <ActionsContainer>
