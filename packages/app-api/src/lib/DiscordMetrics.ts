@@ -73,6 +73,20 @@ export class DiscordMetrics {
     registers: [register],
   });
 
+  static readonly messagesUpdated = new Counter({
+    name: `${this.METRICS_PREFIX}messages_updated_total`,
+    help: 'Total number of Discord messages updated',
+    labelNames: ['guild_id', 'channel_id'],
+    registers: [register],
+  });
+
+  static readonly messagesDeleted = new Counter({
+    name: `${this.METRICS_PREFIX}messages_deleted_total`,
+    help: 'Total number of Discord messages deleted',
+    labelNames: ['guild_id', 'channel_id'],
+    registers: [register],
+  });
+
   static readonly embedsSent = new Counter({
     name: `${this.METRICS_PREFIX}embeds_sent_total`,
     help: 'Total number of Discord embeds sent',
@@ -225,6 +239,40 @@ export class DiscordMetrics {
       guildId,
       channelId,
       hasEmbed,
+    });
+  }
+
+  /**
+   * Records a message updated
+   */
+  static recordMessageUpdated(guildId: string | undefined, channelId: string): void {
+    const labels = {
+      guild_id: guildId || 'unknown',
+      channel_id: channelId,
+    };
+
+    this.messagesUpdated.inc(labels);
+
+    log.debug('Recorded Discord message updated metric', {
+      guildId,
+      channelId,
+    });
+  }
+
+  /**
+   * Records a message deleted
+   */
+  static recordMessageDeleted(guildId: string | undefined, channelId: string): void {
+    const labels = {
+      guild_id: guildId || 'unknown',
+      channel_id: channelId,
+    };
+
+    this.messagesDeleted.inc(labels);
+
+    log.debug('Recorded Discord message deleted metric', {
+      guildId,
+      channelId,
     });
   }
 
