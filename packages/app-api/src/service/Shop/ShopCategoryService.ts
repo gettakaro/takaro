@@ -1,6 +1,6 @@
 import { TakaroService } from '../Base.js';
 import { ShopCategoryModel, ShopCategoryRepo } from '../../db/shopCategory.js';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../../db/base.js';
 import { ShopCategoryOutputDTO, ShopCategoryCreateDTO, ShopCategoryUpdateDTO } from './dto.js';
@@ -112,29 +112,34 @@ export class ShopCategoryService extends TakaroService<
       throw new errors.BadRequestError('Must provide at least one category to add or remove');
     }
 
-    // Validate all category IDs exist
-    if (addCategoryIds && addCategoryIds.length > 0) {
-      const categories = await this.find({ filters: { id: addCategoryIds } });
-      if (categories.results.length !== addCategoryIds.length) {
-        throw new errors.BadRequestError('One or more categories not found');
+    const { knex } = await this.repo.getModel();
+
+    // Execute all operations in a single transaction
+    await ctx.runInTransaction(knex, async () => {
+      // Validate all category IDs exist within the transaction
+      if (addCategoryIds && addCategoryIds.length > 0) {
+        const categories = await this.find({ filters: { id: addCategoryIds } });
+        if (categories.results.length !== addCategoryIds.length) {
+          throw new errors.BadRequestError('One or more categories not found');
+        }
       }
-    }
 
-    if (removeCategoryIds && removeCategoryIds.length > 0) {
-      const categories = await this.find({ filters: { id: removeCategoryIds } });
-      if (categories.results.length !== removeCategoryIds.length) {
-        throw new errors.BadRequestError('One or more categories not found');
+      if (removeCategoryIds && removeCategoryIds.length > 0) {
+        const categories = await this.find({ filters: { id: removeCategoryIds } });
+        if (categories.results.length !== removeCategoryIds.length) {
+          throw new errors.BadRequestError('One or more categories not found');
+        }
       }
-    }
 
-    // Validate all listing IDs exist
-    const shopListingService = new ShopListingService(this.domainId);
-    const listings = await shopListingService.find({ filters: { id: listingIds } });
-    if (listings.results.length !== listingIds.length) {
-      throw new errors.BadRequestError('One or more listings not found');
-    }
+      // Validate all listing IDs exist within the transaction
+      const shopListingService = new ShopListingService(this.domainId);
+      const listings = await shopListingService.find({ filters: { id: listingIds } });
+      if (listings.results.length !== listingIds.length) {
+        throw new errors.BadRequestError('One or more listings not found');
+      }
 
-    // Use the repo to handle the bulk assignments
-    await this.repo.bulkAssignCategories(listingIds, addCategoryIds, removeCategoryIds);
+      // Use the repo to handle the bulk assignments
+      await this.repo.bulkAssignCategories(listingIds, addCategoryIds, removeCategoryIds);
+    });
   }
 }
