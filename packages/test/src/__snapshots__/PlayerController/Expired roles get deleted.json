@@ -29,7 +29,8 @@
             "id": "113b3eeb-407e-4c27-a3d2-c2ed923d4d93",
             "name": "Player",
             "system": true,
-            "permissions": []
+            "permissions": [],
+            "linkedDiscordRoleId": null
           }
         }
       ],

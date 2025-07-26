@@ -1,6 +1,6 @@
 import { ITakaroQuery, QueryBuilder, TakaroModel, Redis } from '@takaro/db';
 import { Model } from 'objection';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { IItemDTO } from '@takaro/gameserver';
 import { GameServerModel } from './gameserver.js';
@@ -95,9 +95,13 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
   async getModel() {
     const knex = await this.getKnex();
     const model = PlayerOnGameServerModel.bindKnex(knex);
+
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 
@@ -281,87 +285,77 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
   }
 
   async transact(senderId: string, receiverId: string, amount: number) {
-    const { model } = await this.getModel();
+    const { query } = await this.getModel();
 
-    await model.transaction(async (trx) => {
-      const txQuery = () => model.query(trx).modify('domainScoped', this.domainId);
+    // Lock the rows for sender and receiver
+    const senderData = await query.clone().forUpdate().findById(senderId);
+    const receiverData = await query.clone().forUpdate().findById(receiverId);
 
-      // Lock the rows for sender and receiver
-      const senderData = await txQuery().forUpdate().findById(senderId);
-      const receiverData = await txQuery().forUpdate().findById(receiverId);
+    if (!senderData || !receiverData) {
+      throw new errors.NotFoundError();
+    }
 
-      if (!senderData || !receiverData) {
-        throw new errors.NotFoundError();
-      }
+    if (senderData.gameServerId !== receiverData.gameServerId) {
+      throw new errors.BadRequestError('Players are not on the same game server');
+    }
 
-      if (senderData.gameServerId !== receiverData.gameServerId) {
-        throw new errors.BadRequestError('Players are not on the same game server');
-      }
+    if (senderData.currency < amount) {
+      throw new errors.BadRequestError('Insufficient funds');
+    }
 
-      if (senderData.currency < amount) {
-        throw new errors.BadRequestError('Insufficient funds');
-      }
+    // Update sender and receiver using context transaction
+    await this.raw(
+      `
+      UPDATE "playerOnGameServer"
+      SET currency = currency - ?
+      WHERE id = ?
+    `,
+      [amount, senderId],
+    );
 
-      // Update sender and receiver in the same transaction
-      await trx.raw(
-        `
-        UPDATE "playerOnGameServer"
-        SET currency = currency - ?
-        WHERE id = ?
-      `,
-        [amount, senderId],
-      );
-
-      await trx.raw(
-        `
-        UPDATE "playerOnGameServer"
-        SET currency = currency + ?
-        WHERE id = ?
-      `,
-        [amount, receiverId],
-      );
-    });
+    await this.raw(
+      `
+      UPDATE "playerOnGameServer"
+      SET currency = currency + ?
+      WHERE id = ?
+    `,
+      [amount, receiverId],
+    );
   }
 
   async deductCurrency(playerId: string, amount: number): Promise<PlayerOnGameserverOutputDTO> {
-    const { model } = await this.getModel();
+    const result = await this.raw(
+      `
+      UPDATE "playerOnGameServer"
+      SET currency = currency - ?
+      WHERE id = ?
+      RETURNING *;
+    `,
+      [amount, playerId],
+    );
 
-    await model.transaction(async (trx) => {
-      const result = await trx.raw(
-        `
-        UPDATE "playerOnGameServer"
-        SET currency = currency - ?
-        WHERE id = ?
-        RETURNING *;
-      `,
-        [amount, playerId],
-      );
+    if (result.rowCount === 0) {
+      throw new errors.BadRequestError('Player not found');
+    }
 
-      if (result.rowCount === 0) {
-        throw new errors.BadRequestError('Player not found');
-      }
-    });
     return this.findOne(playerId);
   }
 
   async addCurrency(playerId: string, amount: number): Promise<PlayerOnGameserverOutputDTO> {
-    const { model } = await this.getModel();
+    const result = await this.raw(
+      `
+      UPDATE "playerOnGameServer"
+      SET currency = currency + ?
+      WHERE id = ?
+      RETURNING *;
+    `,
+      [amount, playerId],
+    );
 
-    await model.transaction(async (trx) => {
-      const result = await trx.raw(
-        `
-        UPDATE "playerOnGameServer"
-        SET currency = currency + ?
-        WHERE id = ?
-        RETURNING *;
-      `,
-        [amount, playerId],
-      );
+    if (result.rowCount === 0) {
+      throw new errors.BadRequestError('Player not found');
+    }
 
-      if (result.rowCount === 0) {
-        throw new errors.BadRequestError('Player not found');
-      }
-    });
     return this.findOne(playerId);
   }
 

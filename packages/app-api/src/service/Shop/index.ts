@@ -271,7 +271,7 @@ export class ShopListingService extends TakaroService<
   }
 
   async claimOrder(orderId: string): Promise<ShopOrderOutputDTO> {
-    const { model } = await this.orderRepo.getModel();
+    const { knex } = await this.orderRepo.getModel();
 
     // First, check if the order exists and belongs to user, and get necessary data
     const initialOrder = await this.orderRepo.findOne(orderId);
@@ -292,9 +292,9 @@ export class ShopListingService extends TakaroService<
       );
 
     // Phase 1: Quick database transaction to update order status
-    const transactionResult = await model.transaction(async (trx) => {
+    const transactionResult = await ctx.runInTransaction(knex, async () => {
       // Lock the order row for update to prevent concurrent claims
-      const order = await this.orderRepo.findOneForUpdate(orderId, trx);
+      const order = await this.orderRepo.findOneForUpdate(orderId);
       if (!order) throw new errors.NotFoundError(`Shop order with id ${orderId} not found`);
 
       // Check status again within the transaction with the lock held
@@ -302,10 +302,9 @@ export class ShopListingService extends TakaroService<
         throw new errors.BadRequestError(`Can only claim paid, unclaimed orders. Current status: ${order.status}`);
 
       // Update status immediately after checking to minimize race condition window
-      const updatedOrder = await this.orderRepo.updateWithTransaction(
+      const updatedOrder = await this.orderRepo.update(
         orderId,
         new ShopOrderUpdateDTO({ status: ShopOrderStatus.COMPLETED }),
-        trx,
       );
 
       return { updatedOrder, order };

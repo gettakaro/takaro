@@ -1,5 +1,7 @@
 import {
   DiscordInviteOutputDTO,
+  DiscordRoleOutputArrayDTOAPI,
+  DiscordRoleOutputDTO,
   GuildOutputArrayDTOAPI,
   GuildOutputDTO,
   GuildOutputDTOAPI,
@@ -16,6 +18,7 @@ import { useSnackbar } from 'notistack';
 export const discordKeys = {
   guilds: ['discordGuilds'] as const,
   invite: ['discordInvite'] as const,
+  guildRoles: (guildId: string) => ['discordGuildRoles', guildId] as const,
 };
 
 export const discordGuildQueryOptions = (opts: GuildSearchInputDTO) =>
@@ -37,6 +40,12 @@ export const discordInviteQueryOptions = () =>
   queryOptions<InviteOutputDTO, AxiosError<DiscordInviteOutputDTO>>({
     queryKey: discordKeys.invite,
     queryFn: async () => (await getApiClient().discord.discordControllerGetInvite()).data.data,
+  });
+
+export const discordGuildRolesQueryOptions = (guildId: string) =>
+  queryOptions<DiscordRoleOutputDTO[], AxiosError<DiscordRoleOutputArrayDTOAPI>>({
+    queryKey: discordKeys.guildRoles(guildId),
+    queryFn: async () => (await getApiClient().discord.discordControllerGetRoles(guildId)).data.data,
   });
 
 interface GuildUpdateInput {

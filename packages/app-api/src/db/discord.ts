@@ -3,7 +3,7 @@ import { Model } from 'objection';
 import { USER_TABLE_NAME, UserModel } from './user.js';
 import { ITakaroRepo } from './base.js';
 import { GuildCreateInputDTO, GuildOutputDTO, GuildUpdateDTO } from '../service/DiscordService.js';
-import { errors, logger, traceableClass } from '@takaro/util';
+import { errors, logger, traceableClass, ctx } from '@takaro/util';
 
 const DISCORD_GUILDS_TABLE_NAME = 'discordGuilds';
 const USER_ON_DISCORD_GUILD_TABLE_NAME = 'userOnDiscordGuild';
@@ -80,11 +80,17 @@ export class DiscordRepo extends ITakaroRepo<DiscordGuildModel, GuildOutputDTO, 
     const knex = await this.getKnex();
     const model = DiscordGuildModel.bindKnex(knex);
     const userModel = UserOnGuildModel.bindKnex(knex);
+
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
+    const userQuery = ctx.transaction ? userModel.query(ctx.transaction) : userModel.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
       userModel,
-      userQuery: userModel.query().modify('domainScoped', this.domainId),
+      userQuery: userQuery.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 

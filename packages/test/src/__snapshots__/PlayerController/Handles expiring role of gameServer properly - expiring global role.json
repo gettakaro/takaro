@@ -53,7 +53,8 @@
                   "moduleVersionId": null
                 }
               }
-            ]
+            ],
+            "linkedDiscordRoleId": null
           }
         },
         {
@@ -65,7 +66,8 @@
             "id": "d08b0028-dd03-4a8a-89a3-f982dc076aa4",
             "name": "Player",
             "system": true,
-            "permissions": []
+            "permissions": [],
+            "linkedDiscordRoleId": null
           }
         }
       ],

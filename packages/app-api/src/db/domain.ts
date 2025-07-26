@@ -1,6 +1,6 @@
 import { NOT_DOMAIN_SCOPED_TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { NOT_DOMAIN_SCOPED_ITakaroRepo } from './base.js';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { DomainOutputDTO, DomainCreateInputDTO, DomainUpdateInputDTO } from '../service/DomainService.js';
 import { UserRepo } from './user.js';
 
@@ -42,7 +42,14 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<
   async getModel() {
     const knex = await this.getKnex();
     const model = DomainModel.bindKnex(knex);
-    return { model, query: model.query() };
+
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
+    return {
+      model,
+      query,
+      knex,
+    };
   }
   async find(filters: ITakaroQuery<DomainOutputDTO>) {
     const { query } = await this.getModel();

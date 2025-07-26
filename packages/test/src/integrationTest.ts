@@ -127,7 +127,7 @@ export class IntegrationTest<SetupData> {
 
           console.error(error.response?.data);
           throw new Error(
-            `Setup failed: ${error.config?.method} ${error.config?.url} ${JSON.stringify(error.response?.data)}}`,
+            `Setup failed: ${error.config?.method} ${error.config?.url} ${JSON.stringify(error.response?.data)}} (Domain ID: ${integrationTestContext.standardDomainId || 'not yet created'})`,
           );
         }
       }
@@ -154,7 +154,9 @@ export class IntegrationTest<SetupData> {
           const failedFunctionsRes = await integrationTestContext.client.event.eventControllerGetFailedFunctions();
 
           if (failedFunctionsRes.data.data.length > 0) {
-            console.warn(`There were ${failedFunctionsRes.data.data.length} failed functions`);
+            console.warn(
+              `There were ${failedFunctionsRes.data.data.length} failed functions (Domain ID: ${integrationTestContext.standardDomainId})`,
+            );
             for (const failedFn of failedFunctionsRes.data.data) {
               const name = (failedFn.meta as TakaroEventCommandExecuted).command?.name;
               const msgs = (failedFn.meta as TakaroEventCommandExecuted)?.result.logs.map((l) => l.msg);
@@ -187,7 +189,9 @@ export class IntegrationTest<SetupData> {
       for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
           if (attempt > 0) {
-            console.log(`Retry attempt ${attempt}/${maxRetries} for test: ${integrationTestContext.test.name}`);
+            console.log(
+              `Retry attempt ${attempt}/${maxRetries} for test: ${integrationTestContext.test.name} (Domain ID: ${integrationTestContext.standardDomainId || 'not yet created'})`,
+            );
           }
 
           await setup();
@@ -198,7 +202,7 @@ export class IntegrationTest<SetupData> {
             if (!response) {
               throw new Error('No response returned from test');
             }
-            await matchSnapshot(integrationTestContext.test, response);
+            await matchSnapshot(integrationTestContext.test, response, integrationTestContext.standardDomainId);
             if (response.status !== integrationTestContext.test.expectedStatus) {
               if (integrationTestContext.test.expectedStatus === 200) {
                 console.error(JSON.stringify(response.data));
@@ -217,7 +221,7 @@ export class IntegrationTest<SetupData> {
               response = error.response;
               try {
                 if (!response) throw new Error('No response returned from test');
-                await matchSnapshot(integrationTestContext.test, response);
+                await matchSnapshot(integrationTestContext.test, response, integrationTestContext.standardDomainId);
                 expect(response?.status).to.equal(integrationTestContext.test.expectedStatus);
                 return; // Snapshot matched, test passed
               } catch (snapshotError) {
@@ -225,7 +229,10 @@ export class IntegrationTest<SetupData> {
                 lastError = snapshotError as Error;
               }
             } else if (error.response?.data) {
-              console.error(`Attempt ${attempt + 1} failed:`, error.response?.data);
+              console.error(
+                `Attempt ${attempt + 1} failed (Domain ID: ${integrationTestContext.standardDomainId || 'not yet created'}):`,
+                error.response?.data,
+              );
             }
           }
 
@@ -236,7 +243,7 @@ export class IntegrationTest<SetupData> {
           if (attempt === maxRetries) {
             if (isAxiosError(lastError)) {
               console.log(
-                `Request ${lastError.config?.method} ${lastError.config?.url} failed with status ${lastError.response?.status}`,
+                `Request ${lastError.config?.method} ${lastError.config?.url} failed with status ${lastError.response?.status} (Domain ID: ${integrationTestContext.standardDomainId || 'not yet created'})`,
               );
               console.log('Response data:');
               console.log(JSON.stringify(lastError.response?.data, null, 2));
@@ -244,10 +251,13 @@ export class IntegrationTest<SetupData> {
               console.log(JSON.stringify(lastError.config?.data, null, 2));
               // Throw a sanitized error
               throw new Error(
-                `Request ${lastError.config?.method} ${lastError.config?.url} failed with status ${lastError.response?.status}`,
+                `Request ${lastError.config?.method} ${lastError.config?.url} failed with status ${lastError.response?.status} (Domain ID: ${integrationTestContext.standardDomainId || 'not yet created'})`,
               );
             }
-            throw lastError;
+            // Wrap non-Axios errors with domain ID information
+            throw new Error(
+              `${lastError.message} (Domain ID: ${integrationTestContext.standardDomainId || 'not yet created'})`,
+            );
           }
         }
       }

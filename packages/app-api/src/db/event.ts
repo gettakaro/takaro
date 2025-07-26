@@ -1,5 +1,5 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { EventCreateDTO, EventOutputDTO, EventTypes, EventUpdateDTO } from '../service/EventService.js';
 import { MODULE_TABLE_NAME, ModuleModel } from './module.js';
@@ -85,9 +85,13 @@ export class EventRepo extends ITakaroRepo<EventModel, EventOutputDTO, EventCrea
   async getModel() {
     const knex = await this.getKnex();
     const model = EventModel.bindKnex(knex);
+
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 

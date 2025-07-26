@@ -14,6 +14,9 @@ import { PlayerService } from '../service/Player/index.js';
 import { steamApi } from '../lib/steamApi.js';
 import { ISystemJobData, systemTaskDefinitions, SystemTaskType } from './systemWorkerDefinitions.js';
 import { TrackingService } from '../service/Tracking/index.js';
+import { DiscordService } from '../service/DiscordService.js';
+import { UserService } from '../service/User/index.js';
+import { SettingsService, SETTINGS_KEYS } from '../service/SettingsService.js';
 
 const log = logger(`worker:${config.get('queues.system.name')}`);
 
@@ -132,6 +135,9 @@ export async function processJob(job: Job<ISystemJobData>) {
         break;
       case SystemTaskType.SYNC_STEAM:
         await syncSteam(job.data.domainId);
+        break;
+      case SystemTaskType.SYNC_DISCORD_ROLES:
+        await syncDiscordRoles(job.data.domainId);
         break;
       default:
         log.error(`❌ Unknown task type: ${job.data.taskType}`);
@@ -305,4 +311,74 @@ async function syncSteam(domainId: string) {
   log.info(`🔄 Syncing Steam data for domain ${domainId}`);
   const syncedCount = await playerService.handleSteamSync();
   log.info(`✅ Successfully synced ${syncedCount} players for domain ${domainId}`);
+}
+
+async function syncDiscordRoles(domainId: string) {
+  log.info('🔄 Syncing Discord roles');
+
+  const settingsService = new SettingsService(domainId);
+  const settings = await settingsService.getAll();
+  const enabled = settings.find((s) => s.key === SETTINGS_KEYS.discordRoleSyncEnabled);
+
+  if (enabled?.value !== 'true') {
+    log.debug('Discord role sync disabled for domain', { domainId });
+    return;
+  }
+
+  const discordService = new DiscordService(domainId);
+  const userService = new UserService(domainId);
+
+  try {
+    // Get all users with Discord IDs
+    const allUsers = await userService.find({});
+    const users = allUsers.results.filter((user) => user.discordId);
+
+    if (users.length === 0) {
+      log.debug('No users with Discord IDs found', { domainId });
+      return;
+    }
+
+    log.info('Starting Discord role sync', {
+      domainId,
+      userCount: users.length,
+    });
+
+    let rolesAdded = 0;
+    let rolesRemoved = 0;
+    let errors = 0;
+
+    // Process users in batches
+    const batchSize = 50;
+    for (let i = 0; i < users.length; i += batchSize) {
+      const batch = users.slice(i, i + batchSize);
+
+      await Promise.all(
+        batch.map(async (user) => {
+          try {
+            const result = await discordService.syncUserRoles(user.id);
+            rolesAdded += result.rolesAdded;
+            rolesRemoved += result.rolesRemoved;
+          } catch (error) {
+            errors++;
+            log.error('Failed to sync Discord roles for user', {
+              userId: user.id,
+              domainId,
+              error,
+            });
+          }
+        }),
+      );
+    }
+
+    log.info('Discord role sync completed', {
+      domainId,
+      usersProcessed: users.length,
+      rolesAdded,
+      rolesRemoved,
+      errors,
+    });
+  } catch (error) {
+    log.error('Discord role sync failed', { domainId, error });
+    throw error;
+  }
 }

@@ -1,5 +1,5 @@
 import { TakaroService } from '../Base.js';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../../db/base.js';
 import { BanCreateDTO, BanOutputDTO, BanUpdateDTO } from './dto.js';
@@ -186,6 +186,10 @@ export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateD
     }
 
     const banInputs = banPromises.map((b) => (b.status === 'fulfilled' ? b.value : null)).filter((b) => b !== null);
-    await this.repo.syncBans(gameServerId, banInputs);
+
+    const { knex } = await this.repo.getModel();
+    await ctx.runInTransaction(knex, async () => {
+      await this.repo.syncBans(gameServerId, banInputs);
+    });
   }
 }

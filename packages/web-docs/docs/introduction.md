@@ -39,7 +39,14 @@ You can control access to modules by assigning [roles and permissions](./roles-a
 
 ## Discord
 
-Takaro seamlessly integrates with Discord, linking communication between your game servers and communities.
+Takaro seamlessly integrates with Discord, linking communication between your game servers and communities. Key features include:
+
+- **Chat Bridge**: Two-way communication between game chat and Discord channels
+- **Role Synchronization**: Automatically sync roles between Discord and Takaro for consistent permissions
+- **Event Notifications**: Get real-time updates about game events in Discord
+- **Bot Commands**: Control your game servers directly from Discord
+
+Learn more about [Discord Integration →](./advanced/discord-integration.md)
 
 ## Economy and Shop
 

@@ -426,6 +426,11 @@ const tests = [
           ).data.data[0];
           const exportRes = await this.client.module.moduleControllerExport(mod.id);
           expect(exportRes.data.data.name).to.be.equal(builtin.name);
+          // Check author and supportedGames fields
+          expect(exportRes.data.data.author).to.equal('Takaro');
+          expect(exportRes.data.data.supportedGames).to.exist;
+          expect(exportRes.data.data.supportedGames).to.be.an('array');
+          expect(exportRes.data.data.supportedGames).to.deep.equal(builtin.supportedGames);
 
           const expectedTags = builtin.versions.map((v) => v.tag);
           for (const tag of expectedTags) {
@@ -534,6 +539,11 @@ const tests = [
 
       const exportRes = await this.client.module.moduleControllerExport(this.setupData.id);
 
+      // Check author and supportedGames fields
+      expect(exportRes.data.data.author).to.exist;
+      expect(exportRes.data.data.supportedGames).to.exist;
+      expect(exportRes.data.data.supportedGames).to.be.an('array');
+
       expect(exportRes.data.data.versions[0].hooks).to.have.length(1);
       if (!exportRes.data.data.versions[0]) throw new Error('Version not found');
       const exportedVersion = exportRes.data.data.versions[0];
@@ -561,6 +571,54 @@ const tests = [
       expect(importedHook.name).to.equal(hook.name);
       expect(importedHook.eventType).to.equal(hook.eventType);
       expect(importedHook.regex).to.equal(hook.regex);
+    },
+  }),
+  new IntegrationTest<ModuleOutputDTO>({
+    group,
+    snapshot: false,
+    name: 'User-created modules include author and supportedGames fields in exports',
+    setup,
+    test: async function () {
+      // Update the module to set author and supportedGames
+      await this.client.module.moduleControllerUpdate(this.setupData.id, {
+        author: 'Test Author',
+        supportedGames: ['7 days to die', 'rust'],
+      });
+
+      const exportRes = await this.client.module.moduleControllerExport(this.setupData.id);
+
+      // Check that author and supportedGames fields are included
+      expect(exportRes.data.data.author).to.equal('Test Author');
+      expect(exportRes.data.data.supportedGames).to.exist;
+      expect(exportRes.data.data.supportedGames).to.be.an('array');
+      expect(exportRes.data.data.supportedGames).to.deep.equal(['7 days to die', 'rust']);
+
+      // Import the module and verify fields are preserved
+      await this.client.module.moduleControllerImport(exportRes.data.data);
+      const imported = (
+        await this.client.module.moduleControllerSearch({
+          filters: {
+            name: [`${this.setupData.name}-imported`],
+          },
+        })
+      ).data.data[0];
+
+      expect(imported.author).to.equal('Test Author');
+      expect(imported.supportedGames).to.deep.equal(['7 days to die', 'rust']);
+    },
+  }),
+  new IntegrationTest<ModuleOutputDTO>({
+    group,
+    snapshot: false,
+    name: 'User-created modules without author/supportedGames still export successfully',
+    setup,
+    test: async function () {
+      // Don't set author or supportedGames - they should be optional
+      const exportRes = await this.client.module.moduleControllerExport(this.setupData.id);
+
+      // Fields should exist but may be undefined/null/empty
+      expect(exportRes.data.data).to.have.property('author');
+      expect(exportRes.data.data).to.have.property('supportedGames');
     },
   }),
   // #endregion Import/export

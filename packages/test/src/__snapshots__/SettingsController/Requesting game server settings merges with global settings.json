@@ -50,6 +50,20 @@
         "type": "default",
         "description": "The domain name for this Takaro instance",
         "canHaveGameServerOverride": false
+      },
+      {
+        "key": "discordRoleSyncEnabled",
+        "value": "false",
+        "type": "default",
+        "description": "Enable or disable automatic role synchronization between Discord and Takaro",
+        "canHaveGameServerOverride": false
+      },
+      {
+        "key": "discordRoleSyncPreferDiscord",
+        "value": "false",
+        "type": "default",
+        "description": "When enabled, Discord roles will override Takaro roles during synchronization. When disabled, Takaro roles will override Discord roles. Only affects roles that are linked between systems.",
+        "canHaveGameServerOverride": false
       }
     ]
   },

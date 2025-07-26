@@ -32,7 +32,7 @@ The Platform ID is a flexible system that supports games and platforms beyond St
 - `minecraft:550e8400-e29b-41d4-a716-446655440000` - Minecraft player UUID
 - `battlenet:PlayerName#1234` - Battle.net player tag
 - `origin:OriginPlayerID` - Origin/EA platform
-- `discord:123456789012345678` - Discord user ID
+- `discord:123456789012345678` - Discord user ID (see Discord Integration below)
 - `custom-game:unique-player-id` - Custom game platform
 
 ### How Platform Identification Works
@@ -64,3 +64,29 @@ Players can link to your community and receive login credentials to access it th
 
 If you wish to link to another game community, simply repeat the `/link` process. Within Takaro, you can easily switch between game communities by using the domain widgets in the bottom left.
 To know more about how to use the shop, please visit [Economy page](./economy.md).
+
+## Discord Integration
+
+Link your Discord account for role sync and community features.
+
+### Link Your Discord Account
+
+1. Link your player profile with `/link` first
+2. Visit `/link` while logged in
+3. Click "Connect Discord Account"
+4. Authorize Takaro access
+5. You're linked!
+
+### Why Link Discord?
+
+Linking Discord lets your roles sync between platforms, so Discord roles automatically apply in-game. You'll get notifications through Discord, access Discord-exclusive commands, and can sign in using your Discord account.
+
+### How Role Sync Works
+
+When admins enable role sync:
+- Discord roles automatically apply in-game
+- Game roles can update your Discord roles
+- Only mapped roles sync
+- System roles never sync
+
+See the [Discord Integration guide](./advanced/discord-integration.md) for more.

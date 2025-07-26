@@ -30,7 +30,7 @@ export const Route = createFileRoute('/_auth/_global/settings/discord')({
 
 const Flex = styled.div`
   display: grid;
-  grid-template-columns: 300px 400px;
+  grid-template-columns: 420px 280px;
   grid-gap: ${({ theme }) => theme.spacing[1]};
   margin-bottom: ${({ theme }) => theme.spacing[2]};
 `;

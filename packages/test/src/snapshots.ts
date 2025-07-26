@@ -133,6 +133,7 @@ function filterFields(data: unknown, filteredFields = DEFAULT_FILTERED_FIELDS): 
 export async function matchSnapshot<SetupData>(
   test: IIntegrationTest<SetupData>,
   response: ITakaroAPIAxiosResponse<unknown>,
+  domainId?: string | null,
 ) {
   const snapshotPath = path.resolve(__dirname, '../src/__snapshots__', test.group, normalizePath(`${test.name}.json`));
   let existingSnapshot: unknown;
@@ -180,13 +181,16 @@ export async function matchSnapshot<SetupData>(
       throw new Error(`Snapshot updated: ${snapshotPath}\nChanged fields: ${changedPaths.join(', ')}`);
     }
 
-    console.error(generateReadableDiff(getDifferences(fullData, existingSnapshot, filteredFields)));
+    console.error(generateReadableDiff(getDifferences(fullData, existingSnapshot, filteredFields), domainId));
 
     throw error;
   }
 }
 
-function generateReadableDiff(differences: Array<{ path: string[]; current: unknown; snapshot: unknown }>): string {
+function generateReadableDiff(
+  differences: Array<{ path: string[]; current: unknown; snapshot: unknown }>,
+  domainId?: string | null,
+): string {
   if (differences.length === 0) return 'No differences found.';
 
   // Group differences by path prefix for better organization
@@ -204,7 +208,8 @@ function generateReadableDiff(differences: Array<{ path: string[]; current: unkn
   }
 
   // Format the diff as a readable string
-  let result = '\n=== SNAPSHOT DIFFERENCE ===\n';
+  const domainInfo = domainId ? ` (Domain ID: ${domainId})` : '';
+  let result = `\n=== SNAPSHOT DIFFERENCE${domainInfo} ===\n`;
 
   Object.entries(pathGroups).forEach(([groupPath, groupDiffs]) => {
     result += `\n${groupPath === 'root' ? 'Root level' : `In ${groupPath}`}:\n`;

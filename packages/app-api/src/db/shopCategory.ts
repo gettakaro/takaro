@@ -1,6 +1,6 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { ShopCategoryOutputDTO, ShopCategoryCreateDTO, ShopCategoryUpdateDTO } from '../service/Shop/dto.js';
 import { ShopListingModel, SHOP_LISTING_TABLE_NAME } from './shopListing.js';
@@ -96,9 +96,13 @@ export class ShopCategoryRepo extends ITakaroRepo<
   async getModel() {
     const knex = await this.getKnex();
     const model = ShopCategoryModel.bindKnex(knex);
+
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 
@@ -405,39 +409,36 @@ export class ShopCategoryRepo extends ITakaroRepo<
     addCategoryIds?: string[],
     removeCategoryIds?: string[],
   ): Promise<void> {
-    const knex = await this.getKnex();
+    // Remove categories if specified
+    if (removeCategoryIds && removeCategoryIds.length > 0) {
+      const knex = await this.getKnex();
+      const query = ctx.transaction
+        ? knex(SHOP_LISTING_CATEGORY_TABLE_NAME).transacting(ctx.transaction)
+        : knex(SHOP_LISTING_CATEGORY_TABLE_NAME);
+      await query.whereIn('shopListingId', listingIds).whereIn('shopCategoryId', removeCategoryIds).delete();
+    }
 
-    // Start a transaction to ensure atomicity
-    await knex.transaction(async (trx) => {
-      // Remove categories if specified
-      if (removeCategoryIds && removeCategoryIds.length > 0) {
-        await trx(SHOP_LISTING_CATEGORY_TABLE_NAME)
-          .whereIn('shopListingId', listingIds)
-          .whereIn('shopCategoryId', removeCategoryIds)
-          .delete();
-      }
+    // Add categories if specified
+    if (addCategoryIds && addCategoryIds.length > 0) {
+      const assignments = [];
 
-      // Add categories if specified
-      if (addCategoryIds && addCategoryIds.length > 0) {
-        const assignments = [];
-
-        for (const listingId of listingIds) {
-          for (const categoryId of addCategoryIds) {
-            assignments.push({
-              shopListingId: listingId,
-              shopCategoryId: categoryId,
-              domain: this.domainId,
-            });
-          }
+      for (const listingId of listingIds) {
+        for (const categoryId of addCategoryIds) {
+          assignments.push({
+            shopListingId: listingId,
+            shopCategoryId: categoryId,
+            domain: this.domainId,
+          });
         }
-
-        // Insert only if not already assigned (ignore duplicates)
-        await trx(SHOP_LISTING_CATEGORY_TABLE_NAME)
-          .insert(assignments)
-          .onConflict(['shopListingId', 'shopCategoryId'])
-          .ignore();
       }
-    });
+
+      // Insert only if not already assigned (ignore duplicates)
+      const knex = await this.getKnex();
+      const query = ctx.transaction
+        ? knex(SHOP_LISTING_CATEGORY_TABLE_NAME).transacting(ctx.transaction)
+        : knex(SHOP_LISTING_CATEGORY_TABLE_NAME);
+      await query.insert(assignments).onConflict(['shopListingId', 'shopCategoryId']).ignore();
+    }
   }
 
   async getDescendantCategoryIds(categoryIds: string[]): Promise<string[]> {
