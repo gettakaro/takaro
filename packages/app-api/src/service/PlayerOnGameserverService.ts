@@ -244,8 +244,15 @@ export class PlayerOnGameServerService extends TakaroService<
     if (amount <= 0) {
       throw new errors.BadRequestError('Amount must be greater than 0');
     }
-    await this.repo.transact(senderId, receiverId, amount);
 
+    const { knex } = await this.repo.getModel();
+
+    // Execute transact in a single transaction
+    await ctx.runInTransaction(knex, async () => {
+      await this.repo.transact(senderId, receiverId, amount);
+    });
+
+    // Emit events after transaction commits
     const eventsService = new EventService(this.domainId);
     const senderRecord = await this.findOne(senderId);
     const receiverRecord = await this.findOne(receiverId);

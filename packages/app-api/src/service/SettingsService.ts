@@ -14,6 +14,8 @@ export enum SETTINGS_KEYS {
   developerMode = 'developerMode',
   messagePrefix = 'messagePrefix',
   domainName = 'domainName',
+  discordRoleSyncEnabled = 'discordRoleSyncEnabled',
+  discordRoleSyncPreferDiscord = 'discordRoleSyncPreferDiscord',
 }
 
 export interface SettingDefinition {
@@ -58,6 +60,17 @@ export const SETTINGS_DEFINITIONS: Record<SETTINGS_KEYS, SettingDefinition> = {
     description: 'The domain name for this Takaro instance',
     canHaveGameServerOverride: false,
   },
+  discordRoleSyncEnabled: {
+    defaultValue: 'false',
+    description: 'Enable or disable automatic role synchronization between Discord and Takaro',
+    canHaveGameServerOverride: false,
+  },
+  discordRoleSyncPreferDiscord: {
+    defaultValue: 'false',
+    description:
+      'When enabled, Discord roles will override Takaro roles during synchronization. When disabled, Takaro roles will override Discord roles. Only affects roles that are linked between systems.',
+    canHaveGameServerOverride: false,
+  },
 };
 
 export const DEFAULT_SETTINGS: Record<SETTINGS_KEYS, string> = Object.entries(SETTINGS_DEFINITIONS).reduce(
@@ -82,6 +95,10 @@ export class Settings extends TakaroModelDTO<Settings> {
   messagePrefix: string;
   @IsString()
   domainName: string;
+  @IsString()
+  discordRoleSyncEnabled: string;
+  @IsString()
+  discordRoleSyncPreferDiscord: string;
 }
 
 export enum SettingsMode {

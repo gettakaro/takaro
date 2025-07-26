@@ -1,5 +1,5 @@
 import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { VariableCreateDTO, VariableOutputDTO, VariableUpdateDTO } from '../service/VariablesService.js';
 import { GameServerModel } from './gameserver.js';
@@ -53,9 +53,13 @@ export class VariableRepo extends ITakaroRepo<VariablesModel, VariableOutputDTO,
   async getModel() {
     const knex = await this.getKnex();
     const model = VariablesModel.bindKnex(knex);
+
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
+      knex,
     };
   }
   async find(filters: ITakaroQuery<VariableOutputDTO>) {

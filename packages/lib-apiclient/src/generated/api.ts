@@ -4283,6 +4283,7 @@ export const GetJobInputDTOTypeEnum = {
   SyncEntities: 'syncEntities',
   SyncBans: 'syncBans',
   SyncSteam: 'syncSteam',
+  SyncDiscordRoles: 'syncDiscordRoles',
 } as const;
 
 export type GetJobInputDTOTypeEnum = (typeof GetJobInputDTOTypeEnum)[keyof typeof GetJobInputDTOTypeEnum];
@@ -4315,6 +4316,8 @@ export const GetSettingsInputKeysEnum = {
   DeveloperMode: 'developerMode',
   MessagePrefix: 'messagePrefix',
   DomainName: 'domainName',
+  DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
+  DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
 } as const;
 
 export type GetSettingsInputKeysEnum = (typeof GetSettingsInputKeysEnum)[keyof typeof GetSettingsInputKeysEnum];
@@ -7924,6 +7927,8 @@ export const ParamKeyKeyEnum = {
   DeveloperMode: 'developerMode',
   MessagePrefix: 'messagePrefix',
   DomainName: 'domainName',
+  DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
+  DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
 } as const;
 
 export type ParamKeyKeyEnum = (typeof ParamKeyKeyEnum)[keyof typeof ParamKeyKeyEnum];
@@ -9959,6 +9964,12 @@ export interface RoleOutputDTO {
    * @type {string}
    * @memberof RoleOutputDTO
    */
+  linkedDiscordRoleId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof RoleOutputDTO
+   */
   id: string;
   /**
    *
@@ -10118,6 +10129,12 @@ export interface RoleUpdateInputDTO {
    * @memberof RoleUpdateInputDTO
    */
   permissions?: Array<PermissionInputDTO>;
+  /**
+   *
+   * @type {string}
+   * @memberof RoleUpdateInputDTO
+   */
+  linkedDiscordRoleId?: string;
 }
 /**
  *
@@ -10303,6 +10320,18 @@ export interface Settings {
    * @type {string}
    * @memberof Settings
    */
+  discordRoleSyncEnabled: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
+  discordRoleSyncPreferDiscord: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
   id: string;
   /**
    *
@@ -10382,6 +10411,8 @@ export const SettingsOutputDTOKeyEnum = {
   DeveloperMode: 'developerMode',
   MessagePrefix: 'messagePrefix',
   DomainName: 'domainName',
+  DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
+  DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
 } as const;
 
 export type SettingsOutputDTOKeyEnum = (typeof SettingsOutputDTOKeyEnum)[keyof typeof SettingsOutputDTOKeyEnum];
@@ -25770,6 +25801,8 @@ export const SettingsControllerGetKeysEnum = {
   DeveloperMode: 'developerMode',
   MessagePrefix: 'messagePrefix',
   DomainName: 'domainName',
+  DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
+  DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
 } as const;
 export type SettingsControllerGetKeysEnum =
   (typeof SettingsControllerGetKeysEnum)[keyof typeof SettingsControllerGetKeysEnum];

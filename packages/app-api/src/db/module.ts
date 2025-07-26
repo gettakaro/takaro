@@ -1,6 +1,6 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import Objection, { Model } from 'objection';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { CronJobModel, CRONJOB_TABLE_NAME } from './cronjob.js';
 import { HookModel, HOOKS_TABLE_NAME } from './hook.js';
@@ -189,11 +189,18 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     const versionModel = ModuleVersion.bindKnex(knex);
     const installationsModel = ModuleInstallationModel.bindKnex(knex);
 
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
+    const queryVersion = ctx.transaction ? versionModel.query(ctx.transaction) : versionModel.query();
+
+    const queryInstallations = ctx.transaction ? installationsModel.query(ctx.transaction) : installationsModel.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
-      queryVersion: versionModel.query().modify('domainScoped', this.domainId),
-      queryInstallations: installationsModel.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
+      queryVersion: queryVersion.modify('domainScoped', this.domainId),
+      queryInstallations: queryInstallations.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 

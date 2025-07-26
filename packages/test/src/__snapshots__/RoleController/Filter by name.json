@@ -31,7 +31,8 @@
             "roleId": "b7653a04-6d64-44a4-9325-0621a2caf6a1"
           }
         ],
-        "system": false
+        "system": false,
+        "linkedDiscordRoleId": null
       }
     ]
   },

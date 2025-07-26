@@ -3,7 +3,7 @@ import { DiscordGuildModel, DiscordRepo } from '../db/discord.js';
 import { TakaroService } from './Base.js';
 import { ITakaroQuery } from '@takaro/db';
 import { RESTGetAPICurrentUserGuildsResult } from 'discord-api-types/v10';
-import { Message, PermissionsBitField } from 'discord.js';
+import { Message, PermissionsBitField, GuildMember } from 'discord.js';
 import { discordBot } from '../lib/DiscordBot.js';
 import {
   IsBoolean,
@@ -27,10 +27,18 @@ import { HookService } from './HookService.js';
 import { GameServerService } from './GameServerService.js';
 import { DiscordErrorHandler } from '../lib/DiscordErrorHandler.js';
 
-import { EventDiscordChannel, EventDiscordUser, HookEventDiscordMessage } from '@takaro/modules';
+import {
+  EventDiscordChannel,
+  EventDiscordUser,
+  HookEventDiscordMessage,
+  TakaroEventRoleAssigned,
+  TakaroEventRoleRemoved,
+} from '@takaro/modules';
 import { UserService } from './User/index.js';
 import { checkPermissions } from './AuthService.js';
 import { PERMISSIONS } from '@takaro/auth';
+import { RoleService, RoleOutputDTO } from './RoleService.js';
+import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 
 @ValidatorConstraint({ name: 'messageOrEmbed', async: false })
 class MessageOrEmbedConstraint implements ValidatorConstraintInterface {
@@ -809,5 +817,432 @@ export class DiscordService extends TakaroService<
 
   static async NOT_DOMAIN_SCOPED_resolveDomainFromGuildId(guildId: string): Promise<string | null> {
     return DiscordRepo.NOT_DOMAIN_SCOPED_resolveDomainFromGuildId(guildId);
+  }
+
+  private async getSettings() {
+    const settingsService = new SettingsService(this.domainId);
+    const [enabled, sourceOfTruth] = await Promise.all([
+      settingsService.get(SETTINGS_KEYS.discordRoleSyncEnabled),
+      settingsService.get(SETTINGS_KEYS.discordRoleSyncPreferDiscord),
+    ]);
+
+    return {
+      discordRoleSyncEnabled: enabled.value === 'true',
+      preferDiscord: sourceOfTruth.value === 'true',
+    };
+  }
+
+  async syncUserRoles(userId: string): Promise<{ rolesAdded: number; rolesRemoved: number }> {
+    const userService = new UserService(this.domainId);
+    const user = await userService.findOne(userId);
+
+    if (!user) {
+      throw new errors.NotFoundError(`User with id ${userId} not found`);
+    }
+
+    if (!user.discordId) {
+      this.log.warn('User has no Discord ID linked, skipping sync', { userId });
+      return { rolesAdded: 0, rolesRemoved: 0 };
+    }
+
+    const settings = await this.getSettings();
+    if (!settings.discordRoleSyncEnabled) {
+      this.log.debug('Discord role sync disabled, skipping', { userId });
+      return { rolesAdded: 0, rolesRemoved: 0 };
+    }
+
+    const roleService = new RoleService(this.domainId);
+
+    // Get all roles with Discord links
+    const takaroRoles = await roleService.getDiscordLinkedRoles();
+
+    // Get user's current roles in Takaro
+    const userWithRoles = (await userService.findOne(userId)) as any;
+    const userTakaroRoles = userWithRoles?.roles || [];
+
+    // Get ALL Discord guilds for this domain
+    const guilds = await this.find({ filters: { takaroEnabled: [true] }, limit: 1000 });
+    if (!guilds.results.length) {
+      this.log.warn('No enabled Discord guild found for domain', { domainId: this.domainId });
+      return { rolesAdded: 0, rolesRemoved: 0 };
+    }
+
+    let totalRolesAdded = 0;
+    let totalRolesRemoved = 0;
+
+    // Sync roles for each guild
+    for (const guild of guilds.results) {
+      try {
+        const result = await this.syncUserRolesForGuild(
+          userId,
+          user.discordId,
+          guild.discordId,
+          takaroRoles,
+          userTakaroRoles,
+          settings.preferDiscord,
+        );
+        totalRolesAdded += result.rolesAdded;
+        totalRolesRemoved += result.rolesRemoved;
+      } catch (error: any) {
+        // Log error but continue with other guilds
+        this.log.error('Failed to sync roles for guild', {
+          userId,
+          guildId: guild.discordId,
+          guildName: guild.name,
+          error: error.message,
+        });
+      }
+    }
+
+    this.log.info('Completed role sync for user across all guilds', {
+      userId,
+      discordId: user.discordId,
+      guildsProcessed: guilds.results.length,
+      totalRolesAdded,
+      totalRolesRemoved,
+    });
+
+    return { rolesAdded: totalRolesAdded, rolesRemoved: totalRolesRemoved };
+  }
+
+  private async syncUserRolesForGuild(
+    userId: string,
+    discordId: string,
+    guildId: string,
+    takaroRoles: RoleOutputDTO[],
+    userTakaroRoles: any[],
+    preferDiscord: boolean,
+  ): Promise<{ rolesAdded: number; rolesRemoved: number }> {
+    // Get user's current roles in Discord for this specific guild
+    let userDiscordRoles: string[] = [];
+    try {
+      userDiscordRoles = await discordBot.getMemberRoles(guildId, discordId);
+    } catch (error: any) {
+      // User might not be in the guild
+      if (error.code === 10007) {
+        // Unknown Member
+        this.log.debug('User not found in Discord guild', { userId, discordId, guildId });
+        userDiscordRoles = [];
+      } else {
+        throw error;
+      }
+    }
+
+    // Build role mappings
+    const roleMap = new Map(
+      takaroRoles.filter((role) => role.linkedDiscordRoleId).map((role) => [role.linkedDiscordRoleId!, role]),
+    );
+
+    // Debug logging
+    this.log.debug('Starting role sync for guild', {
+      userId,
+      discordId,
+      guildId,
+      preferDiscord,
+      userTakaroRoles: userTakaroRoles.map((r: any) => ({
+        roleId: r.role?.id || r.roleId,
+        roleName: r.role?.name,
+        linkedDiscordRoleId: r.role?.linkedDiscordRoleId,
+      })),
+      userDiscordRoles,
+      availableRoleMappings: Array.from(roleMap.entries()).map(([discordId, role]) => ({
+        discordRoleId: discordId,
+        takaroRoleId: role.id,
+        takaroRoleName: role.name,
+      })),
+    });
+
+    // Calculate changes
+    const changes = this.calculateRoleChanges(
+      userTakaroRoles.map((r: any) => r.role),
+      userDiscordRoles,
+      roleMap,
+      preferDiscord,
+    );
+
+    // Apply changes
+    const result = await this.applyRoleChanges(userId, discordId, guildId, changes);
+
+    this.log.debug('Completed role sync for user in guild', {
+      userId,
+      discordId,
+      guildId,
+      rolesAdded: result.rolesAdded,
+      rolesRemoved: result.rolesRemoved,
+    });
+
+    return result;
+  }
+
+  private calculateRoleChanges(
+    takaroRoles: Array<{ id: string; linkedDiscordRoleId?: string }>,
+    discordRoleIds: string[],
+    roleMap: Map<string, { id: string; linkedDiscordRoleId?: string }>,
+    preferDiscord: boolean,
+  ): {
+    addToTakaro: string[];
+    removeFromTakaro: string[];
+    addToDiscord: string[];
+    removeFromDiscord: string[];
+  } {
+    const takaroRoleIds = new Set(takaroRoles.map((r) => r.id));
+    const discordRoleSet = new Set(discordRoleIds);
+
+    this.log.debug('calculateRoleChanges input', {
+      preferDiscord,
+      takaroRoles: takaroRoles.map((r) => ({
+        id: r.id,
+        linkedDiscordRoleId: r.linkedDiscordRoleId,
+      })),
+      takaroRoleIds: Array.from(takaroRoleIds),
+      discordRoleIds,
+      roleMapSize: roleMap.size,
+      roleMapEntries: Array.from(roleMap.entries()).map(([k, v]) => ({
+        discordRoleId: k,
+        takaroRoleId: v.id,
+        takaroLinkedDiscordId: v.linkedDiscordRoleId,
+      })),
+    });
+
+    const changes = {
+      addToTakaro: [] as string[],
+      removeFromTakaro: [] as string[],
+      addToDiscord: [] as string[],
+      removeFromDiscord: [] as string[],
+    };
+
+    // Check each mapped role
+    for (const [discordRoleId, takaroRole] of roleMap) {
+      const hasInTakaro = takaroRoleIds.has(takaroRole.id);
+      const hasInDiscord = discordRoleSet.has(discordRoleId);
+
+      this.log.debug('Checking role mapping', {
+        discordRoleId,
+        takaroRoleId: takaroRole.id,
+        hasInTakaro,
+        hasInDiscord,
+        preferDiscord,
+      });
+
+      if (hasInTakaro && !hasInDiscord) {
+        if (!preferDiscord) {
+          // Takaro is source of truth
+          this.log.debug('User has role in Takaro but not Discord, adding to Discord', {
+            discordRoleId,
+            takaroRoleId: takaroRole.id,
+          });
+          changes.addToDiscord.push(discordRoleId);
+        } else {
+          this.log.debug('User has role in Takaro but not Discord, removing from Takaro (Discord is source)', {
+            discordRoleId,
+            takaroRoleId: takaroRole.id,
+          });
+          changes.removeFromTakaro.push(takaroRole.id);
+        }
+      } else if (!hasInTakaro && hasInDiscord) {
+        if (preferDiscord) {
+          // Discord is source of truth
+          this.log.debug('User has role in Discord but not Takaro, adding to Takaro', {
+            discordRoleId,
+            takaroRoleId: takaroRole.id,
+          });
+          changes.addToTakaro.push(takaroRole.id);
+        } else {
+          this.log.debug('User has role in Discord but not Takaro, removing from Discord (Takaro is source)', {
+            discordRoleId,
+            takaroRoleId: takaroRole.id,
+          });
+          changes.removeFromDiscord.push(discordRoleId);
+        }
+      } else {
+        this.log.debug('Role is in sync', {
+          discordRoleId,
+          takaroRoleId: takaroRole.id,
+          hasInBoth: hasInTakaro && hasInDiscord,
+          hasInNeither: !hasInTakaro && !hasInDiscord,
+        });
+      }
+    }
+
+    this.log.debug('Calculated changes', changes);
+
+    return changes;
+  }
+
+  private async applyRoleChanges(
+    userId: string,
+    discordId: string,
+    guildId: string,
+    changes: {
+      addToTakaro: string[];
+      removeFromTakaro: string[];
+      addToDiscord: string[];
+      removeFromDiscord: string[];
+    },
+  ): Promise<{ rolesAdded: number; rolesRemoved: number }> {
+    this.log.debug('Applying role changes', {
+      userId,
+      discordId,
+      guildId,
+      changes,
+    });
+
+    const userService = new UserService(this.domainId);
+    let rolesAdded = 0;
+    let rolesRemoved = 0;
+
+    // Apply Takaro changes
+    for (const roleId of changes.addToTakaro) {
+      try {
+        await userService.assignRole(roleId, userId);
+        rolesAdded++;
+        this.log.debug('Successfully added role to Takaro user', { userId, roleId });
+      } catch (error) {
+        this.log.error('Failed to add role to Takaro user', { userId, roleId, error });
+      }
+    }
+
+    for (const roleId of changes.removeFromTakaro) {
+      try {
+        await userService.removeRole(roleId, userId);
+        rolesRemoved++;
+        this.log.debug('Successfully removed role from Takaro user', { userId, roleId });
+      } catch (error) {
+        this.log.error('Failed to remove role from Takaro user', { userId, roleId, error });
+      }
+    }
+
+    // Apply Discord changes
+    for (const roleId of changes.addToDiscord) {
+      try {
+        await discordBot.assignRole(guildId, discordId, roleId);
+        rolesAdded++;
+        this.log.debug('Successfully added role to Discord member', { discordId, roleId, guildId });
+      } catch (error) {
+        this.log.error('Failed to add role to Discord member', { discordId, roleId, guildId, error });
+      }
+    }
+
+    for (const roleId of changes.removeFromDiscord) {
+      try {
+        await discordBot.removeRole(guildId, discordId, roleId);
+        rolesRemoved++;
+        this.log.debug('Successfully removed role from Discord member', {
+          discordId,
+          roleId,
+          guildId,
+        });
+      } catch (error) {
+        this.log.error('Failed to remove role from Discord member', {
+          discordId,
+          roleId,
+          guildId,
+          error,
+        });
+      }
+    }
+
+    this.log.debug('Completed applying changes', {
+      rolesAdded,
+      rolesRemoved,
+    });
+
+    return { rolesAdded, rolesRemoved };
+  }
+
+  async handleDiscordMemberUpdate(oldMember: GuildMember, newMember: GuildMember) {
+    const settings = await this.getSettings();
+    if (!settings.discordRoleSyncEnabled) {
+      this.log.debug('Discord role sync disabled, ignoring member update', {
+        guildId: newMember.guild.id,
+      });
+      return;
+    }
+
+    // Get the roles that changed
+    const oldRoles = Array.from(oldMember.roles.cache.keys());
+    const newRoles = Array.from(newMember.roles.cache.keys());
+
+    const addedRoles = newRoles.filter((role) => !oldRoles.includes(role));
+    const removedRoles = oldRoles.filter((role) => !newRoles.includes(role));
+
+    if (addedRoles.length === 0 && removedRoles.length === 0) {
+      // No role changes
+      return;
+    }
+
+    this.log.debug('Discord member roles changed', {
+      guildId: newMember.guild.id,
+      userId: newMember.id,
+      addedRoles,
+      removedRoles,
+    });
+
+    // Find user by Discord ID
+    const userService = new UserService(this.domainId);
+    const users = await userService.find({
+      filters: {
+        discordId: [newMember.id],
+      },
+      limit: 1,
+    });
+
+    if (!users.results.length) {
+      this.log.debug('No Takaro user found with Discord ID', {
+        discordId: newMember.id,
+      });
+      return;
+    }
+
+    const user = users.results[0];
+
+    // Only sync if Discord is the source of truth
+    if (!settings.preferDiscord) {
+      this.log.debug('Takaro is source of truth, ignoring Discord role changes', {
+        userId: user.id,
+      });
+      return;
+    }
+
+    // Sync the user's roles
+    await this.syncUserRoles(user.id);
+  }
+
+  async handleRoleAssignment(userId: string, event: TakaroEventRoleAssigned) {
+    const settings = await this.getSettings();
+    if (!settings.discordRoleSyncEnabled) {
+      return;
+    }
+
+    // Only sync if Takaro is the source of truth
+    if (settings.preferDiscord) {
+      this.log.debug('Discord is source of truth, ignoring Takaro role assignment', {
+        userId,
+        roleId: event.role.id,
+      });
+      return;
+    }
+
+    // Sync the user's roles
+    await this.syncUserRoles(userId);
+  }
+
+  async handleRoleRemoval(userId: string, event: TakaroEventRoleRemoved) {
+    const settings = await this.getSettings();
+    if (!settings.discordRoleSyncEnabled) {
+      return;
+    }
+
+    // Only sync if Takaro is the source of truth
+    if (settings.preferDiscord) {
+      this.log.debug('Discord is source of truth, ignoring Takaro role removal', {
+        userId,
+        roleId: event.role.id,
+      });
+      return;
+    }
+
+    // Sync the user's roles
+    await this.syncUserRoles(userId);
   }
 }

@@ -57,3 +57,52 @@ The `economyUtils` module uses command permissions:
 - `/revokecurrency` - Requires `ECONOMY_UTILS_MANAGE_CURRENCY` permission
 
 This ensures only authorized staff can modify player currencies while allowing all players to view their balance.
+
+## Discord Role Synchronization
+
+Keep Discord and Takaro roles in sync. Update roles in one place, they update everywhere.
+
+### Prerequisites
+
+- Discord bot connected to Takaro
+- Users linked their Discord accounts
+- Roles mapped between platforms
+
+### How It Works
+
+Changes apply instantly when roles are modified, with a scheduled backup that catches any missed updates. Only the roles you've mapped between platforms will synchronize.
+
+### Set Up Role Sync
+
+**1. Link Discord accounts**
+
+Users connect at `/link`. They'll see "Connect Discord Account" when logged in.
+
+**2. Map your roles**
+
+1. Go to **Roles**
+2. Edit a role
+3. Pick a Discord role from "Linked Discord Role"
+4. Save
+
+**3. Configure sync**
+
+1. Go to **Settings → Game Servers**
+2. Enable "Discord Role Sync Enabled"
+3. Pick your source of truth
+
+### Source of Truth
+
+Choose which platform controls roles:
+
+Takaro controls (default):
+- Takaro overrides Discord
+- Best for game-driven permissions
+
+Discord controls:
+- Discord overrides Takaro
+- Best for Discord-driven communities
+
+### Important Notes
+
+The first sync uses your source of truth setting to determine which platform wins. Unmapped roles never synchronize, and system roles (Root, User, Player) can't be synced. The bot needs role management permissions to work. If you have multiple Discord servers, remember that mappings are server-specific.
