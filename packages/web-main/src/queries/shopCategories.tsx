@@ -33,10 +33,12 @@ export const shopCategoryQueryOptions = (shopCategoryId: string) =>
     queryFn: async () => (await getApiClient().shopCategory.shopCategoryControllerGetOne(shopCategoryId)).data.data,
   });
 
-export const shopCategoriesQueryOptions = (queryParams: ShopCategorySearchInputDTO = {}) =>
+export const shopCategoriesQueryOptions = (queryParams: ShopCategorySearchInputDTO = {}, gameServerId?: string) =>
   queryOptions<ShopCategoryOutputArrayDTOAPI, AxiosError<ShopCategoryOutputArrayDTOAPI>>({
-    queryKey: [...shopCategoryKeys.list(), 'table', ...queryParamsToArray(queryParams)],
-    queryFn: async () => (await getApiClient().shopCategory.shopCategoryControllerGetAll()).data,
+    queryKey: [...shopCategoryKeys.list(), 'table', gameServerId, ...queryParamsToArray(queryParams)],
+    queryFn: async () => {
+      return (await getApiClient().shopCategory.shopCategoryControllerGetAll(gameServerId)).data;
+    },
   });
 
 export const shopCategoryInfiniteQueryOptions = (queryParams: ShopCategorySearchInputDTO = {}) => {

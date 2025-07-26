@@ -267,6 +267,8 @@ export class ModuleController {
 
     const output = new ModuleTransferDTO({
       name: mod.name,
+      author: mod.author,
+      supportedGames: mod.supportedGames,
       versions: preparedVersions,
     });
 

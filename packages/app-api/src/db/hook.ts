@@ -1,6 +1,6 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
 import { EventTypes } from '@takaro/modules';
@@ -49,9 +49,13 @@ export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDT
   async getModel() {
     const knex = await this.getKnex();
     const model = HookModel.bindKnex(knex);
+
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 

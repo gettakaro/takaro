@@ -43,6 +43,7 @@ export {
   ModuleVersionSelectQueryField,
   UnControlledModuleVersionSelectQueryField as UncontrolledModuleVersionSelectQueryField,
 } from './ModuleVersionSelectQueryField';
+export { DiscordRoleSelectQueryField } from './DiscordRoleSelectQueryField';
 
 export { TimePeriodSelectField } from './TimePeriodSelectField';
 export { CountrySelectField } from './CountrySelectField';
