@@ -13,6 +13,8 @@ interface ShopListingBuyFormProps {
   price: number;
   currencyName: string;
   isDraft: boolean;
+  stock?: number | null;
+  stockEnabled?: boolean;
 }
 
 const validationSchema = z.object({
@@ -25,11 +27,13 @@ export const ShopListingBuyForm: FC<ShopListingBuyFormProps> = ({
   price,
   isDraft,
   currencyName,
+  stock,
+  stockEnabled,
 }) => {
   const { enqueueSnackbar } = useSnackbar();
   const { mutateAsync: createShopOrderMutate, isPending: isPendingShopOrderCreate } = useShopOrderCreate();
-  const { handleSubmit, control, watch } = useForm<z.infer<typeof validationSchema>>({
-    mode: 'onSubmit',
+  const { handleSubmit, control, watch, setError } = useForm<z.infer<typeof validationSchema>>({
+    mode: 'onChange',
     defaultValues: {
       amount: 1,
     },
@@ -37,6 +41,12 @@ export const ShopListingBuyForm: FC<ShopListingBuyFormProps> = ({
   });
 
   const handleOnBuyClick: SubmitHandler<z.infer<typeof validationSchema>> = async ({ amount }) => {
+    // Final validation before purchase
+    if (stockEnabled && stock !== null && stock !== undefined && amount > stock) {
+      setError('amount', { message: `Only ${stock} available` });
+      return;
+    }
+
     try {
       await createShopOrderMutate({
         amount,
@@ -49,9 +59,24 @@ export const ShopListingBuyForm: FC<ShopListingBuyFormProps> = ({
         message: `successfully bought listing for ${amount * price} ${currencyName}!`,
       });
     } catch {
-      enqueueSnackbar({ variant: 'default', type: 'error', message: 'Failed to buy listing ${}' });
+      enqueueSnackbar({ variant: 'default', type: 'error', message: 'Failed to buy listing' });
     }
   };
+
+  const currentAmount = watch('amount');
+  const totalPrice = price * currentAmount;
+  const isOutOfStock = stockEnabled && stock === 0;
+  const exceedsStock = stockEnabled && stock !== null && stock !== undefined && currentAmount > stock;
+  const insufficientFunds = playerCurrencyAmount < totalPrice;
+
+  const getButtonText = () => {
+    if (isOutOfStock) return 'Out of stock';
+    if (exceedsStock) return `Only ${stock} available`;
+    if (insufficientFunds) return 'Insufficient funds';
+    return `Buy for ${totalPrice} ${currencyName}`;
+  };
+
+  const isDisabled = isDraft || isOutOfStock || exceedsStock || insufficientFunds;
 
   return (
     <form onSubmit={handleSubmit(handleOnBuyClick)}>
@@ -67,9 +92,10 @@ export const ShopListingBuyForm: FC<ShopListingBuyFormProps> = ({
         isLoading={isPendingShopOrderCreate}
         fullWidth
         type="submit"
-        disabled={playerCurrencyAmount < price || isDraft}
+        disabled={isDisabled}
+        color={isOutOfStock ? 'error' : undefined}
       >
-        Buy for {price * watch('amount')} {currencyName}
+        {getButtonText()}
       </Button>
     </form>
   );
