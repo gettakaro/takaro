@@ -1,6 +1,6 @@
 import { TakaroModel, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
 import { CronJobCreateDTO, CronJobOutputDTO, CronJobUpdateDTO } from '../service/CronJobService.js';
@@ -49,9 +49,13 @@ export class CronJobRepo extends ITakaroRepo<CronJobModel, CronJobOutputDTO, Cro
   async getModel() {
     const knex = await this.getKnex();
     const model = CronJobModel.bindKnex(knex);
+
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 
