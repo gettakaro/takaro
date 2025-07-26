@@ -3,7 +3,19 @@ import { ITakaroQuery, SortDirection } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { ShopCategoryService } from '../../service/Shop/ShopCategoryService.js';
 import { AuthenticatedRequest, AuthService } from '../../service/AuthService.js';
-import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res, Delete, Put } from 'routing-controllers';
+import {
+  Body,
+  Get,
+  Post,
+  JsonController,
+  UseBefore,
+  Req,
+  Params,
+  Res,
+  Delete,
+  Put,
+  QueryParams,
+} from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../../lib/validators.js';
@@ -37,6 +49,9 @@ class ShopCategorySearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsUUID(4, { each: true })
   parentId!: string[];
+  @IsOptional()
+  @IsUUID(4, { each: true })
+  gameServerId!: string[];
 }
 
 class ShopCategorySearchInputAllowedSearch {
@@ -67,6 +82,12 @@ class ShopCategorySearchInputDTO extends ITakaroQuery<ShopCategorySearchInputAll
   @ValidateNested()
   @Type(() => RangeFilterCreatedAndUpdatedAt)
   declare lessThan: RangeFilterCreatedAndUpdatedAt;
+}
+
+class GameServerIdQueryParam {
+  @IsOptional()
+  @IsUUID(4)
+  gameServerId?: string;
 }
 
 @OpenAPI({
@@ -100,9 +121,14 @@ export class ShopCategoryController {
   @OpenAPI({
     description: 'Get a shop category by id',
   })
-  async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
+  async getOne(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId,
+    @QueryParams() query: GameServerIdQueryParam,
+  ) {
     const service = new ShopCategoryService(req.domainId);
-    return apiResponse(await service.findOne(params.id));
+    const filters = query.gameServerId ? { filters: { gameServerId: [query.gameServerId] } } : undefined;
+    return apiResponse(await service.findOne(params.id, filters));
   }
 
   @Get('/')
@@ -111,13 +137,14 @@ export class ShopCategoryController {
   @OpenAPI({
     description: 'Get all shop categories',
   })
-  async getAll(@Req() req: AuthenticatedRequest, @Res() res: Response) {
+  async getAll(@Req() req: AuthenticatedRequest, @Res() res: Response, @QueryParams() query: GameServerIdQueryParam) {
     const service = new ShopCategoryService(req.domainId);
     const result = await service.find({
       page: res.locals.page,
       limit: res.locals.limit,
       sortBy: 'name',
       sortDirection: SortDirection.asc,
+      filters: query.gameServerId ? { gameServerId: [query.gameServerId] } : {},
     });
     return apiResponse(result.results, {
       meta: { total: result.total },

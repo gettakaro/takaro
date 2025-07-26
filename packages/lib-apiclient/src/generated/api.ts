@@ -3810,6 +3810,19 @@ export type GameServerCreateDTOTypeEnum =
 /**
  *
  * @export
+ * @interface GameServerIdQueryParam
+ */
+export interface GameServerIdQueryParam {
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerIdQueryParam
+   */
+  gameServerId?: string;
+}
+/**
+ *
+ * @export
  * @interface GameServerOutputArrayDTOAPI
  */
 export interface GameServerOutputArrayDTOAPI {
@@ -10530,6 +10543,12 @@ export interface ShopCategorySearchInputAllowedFilters {
    * @memberof ShopCategorySearchInputAllowedFilters
    */
   parentId?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopCategorySearchInputAllowedFilters
+   */
+  gameServerId?: Array<string>;
 }
 /**
  *
@@ -25549,10 +25568,14 @@ export const ShopCategoryApiAxiosParamCreator = function (configuration?: Config
     /**
      * Get all shop categories<br> OperationId: `ShopCategoryControllerGetAll`
      * @summary Get all
+     * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopCategoryControllerGetAll: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+    shopCategoryControllerGetAll: async (
+      gameServerId?: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
       const localVarPath = `/shop/category/`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -25567,6 +25590,10 @@ export const ShopCategoryApiAxiosParamCreator = function (configuration?: Config
 
       // authentication domainAuth required
 
+      if (gameServerId !== undefined) {
+        localVarQueryParameter['gameServerId'] = gameServerId;
+      }
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
@@ -25580,10 +25607,15 @@ export const ShopCategoryApiAxiosParamCreator = function (configuration?: Config
      * Get a shop category by id<br> OperationId: `ShopCategoryControllerGetOne`
      * @summary Get one
      * @param {string} id
+     * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopCategoryControllerGetOne: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+    shopCategoryControllerGetOne: async (
+      id: string,
+      gameServerId?: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
       assertParamExists('shopCategoryControllerGetOne', 'id', id);
       const localVarPath = `/shop/category/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
@@ -25599,6 +25631,10 @@ export const ShopCategoryApiAxiosParamCreator = function (configuration?: Config
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
+
+      if (gameServerId !== undefined) {
+        localVarQueryParameter['gameServerId'] = gameServerId;
+      }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -25830,13 +25866,15 @@ export const ShopCategoryApiFp = function (configuration?: Configuration) {
     /**
      * Get all shop categories<br> OperationId: `ShopCategoryControllerGetAll`
      * @summary Get all
+     * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async shopCategoryControllerGetAll(
+      gameServerId?: string,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopCategoryOutputArrayDTOAPI>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerGetAll(options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerGetAll(gameServerId, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['ShopCategoryApi.shopCategoryControllerGetAll']?.[localVarOperationServerIndex]?.url;
@@ -25852,14 +25890,16 @@ export const ShopCategoryApiFp = function (configuration?: Configuration) {
      * Get a shop category by id<br> OperationId: `ShopCategoryControllerGetOne`
      * @summary Get one
      * @param {string} id
+     * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async shopCategoryControllerGetOne(
       id: string,
+      gameServerId?: string,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopCategoryOutputDTOAPI>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerGetOne(id, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerGetOne(id, gameServerId, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['ShopCategoryApi.shopCategoryControllerGetOne']?.[localVarOperationServerIndex]?.url;
@@ -26025,21 +26065,32 @@ export const ShopCategoryApiFactory = function (
     /**
      * Get all shop categories<br> OperationId: `ShopCategoryControllerGetAll`
      * @summary Get all
+     * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopCategoryControllerGetAll(options?: RawAxiosRequestConfig): AxiosPromise<ShopCategoryOutputArrayDTOAPI> {
-      return localVarFp.shopCategoryControllerGetAll(options).then((request) => request(axios, basePath));
+    shopCategoryControllerGetAll(
+      gameServerId?: string,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ShopCategoryOutputArrayDTOAPI> {
+      return localVarFp.shopCategoryControllerGetAll(gameServerId, options).then((request) => request(axios, basePath));
     },
     /**
      * Get a shop category by id<br> OperationId: `ShopCategoryControllerGetOne`
      * @summary Get one
      * @param {string} id
+     * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopCategoryControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<ShopCategoryOutputDTOAPI> {
-      return localVarFp.shopCategoryControllerGetOne(id, options).then((request) => request(axios, basePath));
+    shopCategoryControllerGetOne(
+      id: string,
+      gameServerId?: string,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ShopCategoryOutputDTOAPI> {
+      return localVarFp
+        .shopCategoryControllerGetOne(id, gameServerId, options)
+        .then((request) => request(axios, basePath));
     },
     /**
      * Move a shop category to a different parent   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerMove`
@@ -26144,13 +26195,14 @@ export class ShopCategoryApi extends BaseAPI {
   /**
    * Get all shop categories<br> OperationId: `ShopCategoryControllerGetAll`
    * @summary Get all
+   * @param {string} [gameServerId]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof ShopCategoryApi
    */
-  public shopCategoryControllerGetAll(options?: RawAxiosRequestConfig) {
+  public shopCategoryControllerGetAll(gameServerId?: string, options?: RawAxiosRequestConfig) {
     return ShopCategoryApiFp(this.configuration)
-      .shopCategoryControllerGetAll(options)
+      .shopCategoryControllerGetAll(gameServerId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -26158,13 +26210,14 @@ export class ShopCategoryApi extends BaseAPI {
    * Get a shop category by id<br> OperationId: `ShopCategoryControllerGetOne`
    * @summary Get one
    * @param {string} id
+   * @param {string} [gameServerId]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof ShopCategoryApi
    */
-  public shopCategoryControllerGetOne(id: string, options?: RawAxiosRequestConfig) {
+  public shopCategoryControllerGetOne(id: string, gameServerId?: string, options?: RawAxiosRequestConfig) {
     return ShopCategoryApiFp(this.configuration)
-      .shopCategoryControllerGetOne(id, options)
+      .shopCategoryControllerGetOne(id, gameServerId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

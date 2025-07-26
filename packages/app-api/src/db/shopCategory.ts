@@ -106,6 +106,12 @@ export class ShopCategoryRepo extends ITakaroRepo<
     const { query } = await this.getModel();
     const knex = await this.getKnex();
 
+    // Extract gameServerId from filters
+    const gameServerId =
+      filters.filters?.gameServerId && Array.isArray(filters.filters.gameServerId)
+        ? filters.filters.gameServerId[0]
+        : undefined;
+
     // First, get the basic results using QueryBuilder for pagination, filtering, etc.
     const basicResult = await new QueryBuilder<ShopCategoryModel, ShopCategoryOutputDTO>({
       ...filters,
@@ -122,23 +128,47 @@ export class ShopCategoryRepo extends ITakaroRepo<
           const childIds = category.children.map((child) => child.id);
           const allCategoryIds = [category.id, ...childIds];
 
-          const countResult = await knex
+          let countQuery = knex
             .select(knex.raw(`COUNT(DISTINCT "${SHOP_LISTING_CATEGORY_TABLE_NAME}"."shopListingId") as count`))
             .from(SHOP_LISTING_CATEGORY_TABLE_NAME)
             .whereIn(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`, allCategoryIds)
-            .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, category.domain)
-            .first();
+            .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, category.domain);
 
+          // If gameServerId is provided, join with shopListing table and filter
+          if (gameServerId) {
+            countQuery = countQuery
+              .join(
+                SHOP_LISTING_TABLE_NAME,
+                `${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopListingId`,
+                `${SHOP_LISTING_TABLE_NAME}.id`,
+              )
+              .where(`${SHOP_LISTING_TABLE_NAME}.gameServerId`, gameServerId)
+              .whereNull(`${SHOP_LISTING_TABLE_NAME}.deletedAt`);
+          }
+
+          const countResult = await countQuery.first();
           listingCount = parseInt((countResult as any)?.count || '0', 10);
         } else {
           // For child/leaf categories: count only listings assigned directly to this category
-          const countResult = await knex
+          let countQuery = knex
             .select(knex.raw(`COUNT(DISTINCT "${SHOP_LISTING_CATEGORY_TABLE_NAME}"."shopListingId") as count`))
             .from(SHOP_LISTING_CATEGORY_TABLE_NAME)
             .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`, category.id)
-            .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, category.domain)
-            .first();
+            .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, category.domain);
 
+          // If gameServerId is provided, join with shopListing table and filter
+          if (gameServerId) {
+            countQuery = countQuery
+              .join(
+                SHOP_LISTING_TABLE_NAME,
+                `${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopListingId`,
+                `${SHOP_LISTING_TABLE_NAME}.id`,
+              )
+              .where(`${SHOP_LISTING_TABLE_NAME}.gameServerId`, gameServerId)
+              .whereNull(`${SHOP_LISTING_TABLE_NAME}.deletedAt`);
+          }
+
+          const countResult = await countQuery.first();
           listingCount = parseInt((countResult as any)?.count || '0', 10);
         }
 
@@ -165,9 +195,15 @@ export class ShopCategoryRepo extends ITakaroRepo<
     };
   }
 
-  async findOne(id: string): Promise<ShopCategoryOutputDTO> {
+  async findOne(id: string, filters?: ITakaroQuery<ShopCategoryOutputDTO>): Promise<ShopCategoryOutputDTO> {
     const { query } = await this.getModel();
     const knex = await this.getKnex();
+
+    // Extract gameServerId from filters
+    const gameServerId =
+      filters?.filters?.gameServerId && Array.isArray(filters.filters.gameServerId)
+        ? filters.filters.gameServerId[0]
+        : undefined;
 
     // Get the basic category with parent/children relationships
     const res = await query.findById(id).withGraphFetched('[parent, children]');
@@ -182,23 +218,47 @@ export class ShopCategoryRepo extends ITakaroRepo<
       const childIds = res.children.map((child) => child.id);
       const allCategoryIds = [res.id, ...childIds];
 
-      const countResult = await knex
+      let countQuery = knex
         .select(knex.raw(`COUNT(DISTINCT "${SHOP_LISTING_CATEGORY_TABLE_NAME}"."shopListingId") as count`))
         .from(SHOP_LISTING_CATEGORY_TABLE_NAME)
         .whereIn(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`, allCategoryIds)
-        .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, res.domain)
-        .first();
+        .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, res.domain);
 
+      // If gameServerId is provided, join with shopListing table and filter
+      if (gameServerId) {
+        countQuery = countQuery
+          .join(
+            SHOP_LISTING_TABLE_NAME,
+            `${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopListingId`,
+            `${SHOP_LISTING_TABLE_NAME}.id`,
+          )
+          .where(`${SHOP_LISTING_TABLE_NAME}.gameServerId`, gameServerId)
+          .whereNull(`${SHOP_LISTING_TABLE_NAME}.deletedAt`);
+      }
+
+      const countResult = await countQuery.first();
       listingCount = parseInt((countResult as any)?.count || '0', 10);
     } else {
       // For child/leaf categories: count only listings assigned directly to this category
-      const countResult = await knex
+      let countQuery = knex
         .select(knex.raw(`COUNT(DISTINCT "${SHOP_LISTING_CATEGORY_TABLE_NAME}"."shopListingId") as count`))
         .from(SHOP_LISTING_CATEGORY_TABLE_NAME)
         .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`, res.id)
-        .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, res.domain)
-        .first();
+        .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, res.domain);
 
+      // If gameServerId is provided, join with shopListing table and filter
+      if (gameServerId) {
+        countQuery = countQuery
+          .join(
+            SHOP_LISTING_TABLE_NAME,
+            `${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopListingId`,
+            `${SHOP_LISTING_TABLE_NAME}.id`,
+          )
+          .where(`${SHOP_LISTING_TABLE_NAME}.gameServerId`, gameServerId)
+          .whereNull(`${SHOP_LISTING_TABLE_NAME}.deletedAt`);
+      }
+
+      const countResult = await countQuery.first();
       listingCount = parseInt((countResult as any)?.count || '0', 10);
     }
 

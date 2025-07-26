@@ -189,6 +189,7 @@ export class ShopListingController {
                 code: item.item.code,
               }),
           ),
+          categoryIds: listing.categories?.map((cat: any) => cat.id) || [],
         }),
     );
     const options = new ShopImportOptions(rawOptions);

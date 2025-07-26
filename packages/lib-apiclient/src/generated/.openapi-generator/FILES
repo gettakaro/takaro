@@ -113,6 +113,7 @@ docs/FunctionSearchInputDTO.md
 docs/FunctionUpdateDTO.md
 docs/GameServerApi.md
 docs/GameServerCreateDTO.md
+docs/GameServerIdQueryParam.md
 docs/GameServerOutputArrayDTOAPI.md
 docs/GameServerOutputDTO.md
 docs/GameServerOutputDTOAPI.md
