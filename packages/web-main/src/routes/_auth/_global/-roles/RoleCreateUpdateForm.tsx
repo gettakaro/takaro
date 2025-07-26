@@ -38,7 +38,13 @@ const PermissionContainer = styled.div<{ hasCount: boolean }>`
 
 const validationSchema = z.object({
   name: z.string().min(3).max(50),
-  linkedDiscordRoleId: z.string().length(18).optional(),
+  linkedDiscordRoleId: z
+    .string()
+    .length(18)
+    .nullable()
+    .optional()
+    .or(z.literal(''))
+    .transform((val) => (val === '' || val === null ? undefined : val)),
   permissions: z.record(
     z.object({
       enabled: z.boolean().optional(),

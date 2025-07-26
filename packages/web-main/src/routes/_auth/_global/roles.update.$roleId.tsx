@@ -40,13 +40,20 @@ function Component() {
         permissionId: key,
         count: value.count,
       }));
+
+    const roleDetails: any = {
+      name,
+      permissions: activePermissions,
+    };
+
+    // Only include linkedDiscordRoleId if it has a value
+    if (linkedDiscordRoleId && linkedDiscordRoleId.length === 18) {
+      roleDetails.linkedDiscordRoleId = linkedDiscordRoleId;
+    }
+
     mutate({
       roleId,
-      roleDetails: {
-        name,
-        linkedDiscordRoleId,
-        permissions: activePermissions,
-      },
+      roleDetails,
     });
   };
 
