@@ -286,6 +286,11 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
   }
 
   async transact(senderId: string, receiverId: string, amount: number) {
+    // Ensure we're in a transaction context for row locking
+    if (!ctx.hasTransaction()) {
+      throw new errors.BadRequestError('transact() must be called within a transaction context');
+    }
+
     const { query } = await this.getModel();
 
     // Lock the rows for sender and receiver
