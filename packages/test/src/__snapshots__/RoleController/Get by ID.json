@@ -26,7 +26,8 @@
           "roleId": "46812c6f-2935-44c4-b6e6-9df6782df3bd"
         }
       ],
-      "system": false
+      "system": false,
+      "linkedDiscordRoleId": null
     }
   },
   "status": 200,
