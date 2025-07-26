@@ -8,6 +8,7 @@ import {
   Min,
   IsISO8601,
   IsBoolean,
+  ValidateIf,
 } from 'class-validator';
 import { TakaroModelDTO, TakaroDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
@@ -59,6 +60,11 @@ export class ShopListingOutputDTO extends TakaroModelDTO<ShopListingOutputDTO> {
   @Type(() => ShopCategoryOutputDTO)
   @IsOptional()
   categories?: ShopCategoryOutputDTO[];
+  @IsBoolean()
+  stockManagementEnabled: boolean;
+  @IsNumber()
+  @IsOptional()
+  stock?: number;
 }
 
 export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
@@ -77,6 +83,14 @@ export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
   @IsUUID('4', { each: true })
   @IsOptional()
   categoryIds?: string[];
+  @IsBoolean()
+  @IsOptional()
+  stockManagementEnabled?: boolean = false;
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  @ValidateIf((o) => o.stockManagementEnabled === true)
+  stock?: number;
 }
 
 export class ShopListingUpdateDTO extends TakaroDTO<ShopListingUpdateDTO> {
@@ -99,6 +113,14 @@ export class ShopListingUpdateDTO extends TakaroDTO<ShopListingUpdateDTO> {
   @IsUUID('4', { each: true })
   @IsOptional()
   categoryIds?: string[];
+  @IsBoolean()
+  @IsOptional()
+  stockManagementEnabled?: boolean;
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  @ValidateIf((o) => o.stockManagementEnabled === true)
+  stock?: number;
 }
 
 export enum ShopOrderStatus {

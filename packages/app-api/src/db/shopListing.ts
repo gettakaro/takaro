@@ -59,6 +59,9 @@ export class ShopListingModel extends TakaroModel {
   deletedAt?: Date;
   draft: boolean;
 
+  stockManagementEnabled: boolean;
+  stock?: number;
+
   items: ItemsModel[];
 
   static get relationMappings() {

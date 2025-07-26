@@ -7,19 +7,19 @@ This implementation adds optional stock management capabilities to the existing 
 ## Phase 1: Database Schema for Stock
 Add stock management fields to the shop listing table.
 
-- [ ] Task 1: Create stock management database migration
+- [x] Task 1: Create stock management database migration
   - **Prompt**: Create a new migration file that adds stockManagementEnabled (boolean, default false) and stock (integer, nullable) columns to the shopListing table. Add a check constraint ensuring stock is null when stockManagementEnabled is false, or >= 0 when true. Add a partial index on stock fields for performance.
   - **Requirements**: REQ-001, REQ-002, REQ-003, REQ-024
   - **Design ref**: Section "Database Migration"
   - **Files**: packages/lib-db/src/migrations/sql/[timestamp]-add-shop-stock.ts
 
-- [ ] Task 2: Update ShopListingModel with stock fields
+- [x] Task 2: Update ShopListingModel with stock fields
   - **Prompt**: Add stockManagementEnabled and stock fields to ShopListingModel in the database model. Ensure proper TypeScript types are used.
   - **Requirements**: REQ-001
   - **Design ref**: Section "ShopListingModel Extension"
   - **Files**: packages/app-api/src/db/shopListing.ts
 
-- [ ] Task 3: Update Shop DTOs with stock fields
+- [x] Task 3: Update Shop DTOs with stock fields
   - **Prompt**: Add stock management fields to ShopListingCreateDTO, ShopListingUpdateDTO, and ShopListingOutputDTO. Include proper validation decorators: stockManagementEnabled as optional boolean, stock as optional number with @Min(0) and @ValidateIf for when stock management is enabled.
   - **Requirements**: REQ-001, REQ-002
   - **Design ref**: Section "ShopListing DTOs Extension"
