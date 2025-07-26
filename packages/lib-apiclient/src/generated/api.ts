@@ -1764,6 +1764,25 @@ export interface DiscordInviteOutputDTO {
 /**
  *
  * @export
+ * @interface DiscordMessageParams
+ */
+export interface DiscordMessageParams {
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordMessageParams
+   */
+  channelId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordMessageParams
+   */
+  messageId: string;
+}
+/**
+ *
+ * @export
  * @interface DiscordParamId
  */
 export interface DiscordParamId {
@@ -6566,6 +6585,62 @@ export interface MeOutputDTO {
    * @memberof MeOutputDTO
    */
   pogs: Array<PlayerOnGameserverOutputDTO>;
+}
+/**
+ *
+ * @export
+ * @interface MessageOutputDTO
+ */
+export interface MessageOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof MessageOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof MessageOutputDTO
+   */
+  channelId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof MessageOutputDTO
+   */
+  guildId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof MessageOutputDTO
+   */
+  content?: string;
+  /**
+   *
+   * @type {DiscordEmbedInputDTO}
+   * @memberof MessageOutputDTO
+   */
+  embed?: DiscordEmbedInputDTO;
+}
+/**
+ *
+ * @export
+ * @interface MessageOutputDTOAPI
+ */
+export interface MessageOutputDTOAPI {
+  /**
+   *
+   * @type {MessageOutputDTO}
+   * @memberof MessageOutputDTOAPI
+   */
+  data: MessageOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof MessageOutputDTOAPI
+   */
+  meta: MetadataOutput;
 }
 /**
  *
@@ -15059,6 +15134,46 @@ export class CronJobApi extends BaseAPI {
 export const DiscordApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
+     * Delete a Discord message. The bot must have sent the original message or have appropriate permissions. Returns an empty response on success.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerDeleteMessage`
+     * @summary Delete Discord message
+     * @param {string} channelId
+     * @param {string} messageId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerDeleteMessage: async (
+      channelId: string,
+      messageId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'channelId' is not null or undefined
+      assertParamExists('discordControllerDeleteMessage', 'channelId', channelId);
+      // verify required parameter 'messageId' is not null or undefined
+      assertParamExists('discordControllerDeleteMessage', 'messageId', messageId);
+      const localVarPath = `/discord/channels/{channelId}/messages/{messageId}`
+        .replace(`{${'channelId'}}`, encodeURIComponent(String(channelId)))
+        .replace(`{${'messageId'}}`, encodeURIComponent(String(messageId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Retrieve all channels (text, voice, etc.) in a specific Discord guild. Useful for selecting channels for notifications or commands.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetChannels`
      * @summary Get guild channels
      * @param {string} id
@@ -15261,6 +15376,51 @@ export const DiscordApiAxiosParamCreator = function (configuration?: Configurati
         options: localVarRequestOptions,
       };
     },
+    /**
+     * Update an existing Discord message with new content or embed. Requires the bot to have sent the original message.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerUpdateMessage`
+     * @summary Update Discord message
+     * @param {string} channelId
+     * @param {string} messageId
+     * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerUpdateMessage: async (
+      channelId: string,
+      messageId: string,
+      sendMessageInputDTO?: SendMessageInputDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'channelId' is not null or undefined
+      assertParamExists('discordControllerUpdateMessage', 'channelId', channelId);
+      // verify required parameter 'messageId' is not null or undefined
+      assertParamExists('discordControllerUpdateMessage', 'messageId', messageId);
+      const localVarPath = `/discord/channels/{channelId}/messages/{messageId}`
+        .replace(`{${'channelId'}}`, encodeURIComponent(String(channelId)))
+        .replace(`{${'messageId'}}`, encodeURIComponent(String(messageId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(sendMessageInputDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
   };
 };
 
@@ -15271,6 +15431,35 @@ export const DiscordApiAxiosParamCreator = function (configuration?: Configurati
 export const DiscordApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = DiscordApiAxiosParamCreator(configuration);
   return {
+    /**
+     * Delete a Discord message. The bot must have sent the original message or have appropriate permissions. Returns an empty response on success.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerDeleteMessage`
+     * @summary Delete Discord message
+     * @param {string} channelId
+     * @param {string} messageId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async discordControllerDeleteMessage(
+      channelId: string,
+      messageId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.discordControllerDeleteMessage(
+        channelId,
+        messageId,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['DiscordApi.discordControllerDeleteMessage']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
     /**
      * Retrieve all channels (text, voice, etc.) in a specific Discord guild. Useful for selecting channels for notifications or commands.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetChannels`
      * @summary Get guild channels
@@ -15373,7 +15562,7 @@ export const DiscordApiFp = function (configuration?: Configuration) {
       id: string,
       sendMessageInputDTO?: SendMessageInputDTO,
       options?: RawAxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MessageOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.discordControllerSendMessage(
         id,
         sendMessageInputDTO,
@@ -15419,6 +15608,38 @@ export const DiscordApiFp = function (configuration?: Configuration) {
           configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
+    /**
+     * Update an existing Discord message with new content or embed. Requires the bot to have sent the original message.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerUpdateMessage`
+     * @summary Update Discord message
+     * @param {string} channelId
+     * @param {string} messageId
+     * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async discordControllerUpdateMessage(
+      channelId: string,
+      messageId: string,
+      sendMessageInputDTO?: SendMessageInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MessageOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.discordControllerUpdateMessage(
+        channelId,
+        messageId,
+        sendMessageInputDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['DiscordApi.discordControllerUpdateMessage']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
   };
 };
 
@@ -15429,6 +15650,23 @@ export const DiscordApiFp = function (configuration?: Configuration) {
 export const DiscordApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
   const localVarFp = DiscordApiFp(configuration);
   return {
+    /**
+     * Delete a Discord message. The bot must have sent the original message or have appropriate permissions. Returns an empty response on success.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerDeleteMessage`
+     * @summary Delete Discord message
+     * @param {string} channelId
+     * @param {string} messageId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerDeleteMessage(
+      channelId: string,
+      messageId: string,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .discordControllerDeleteMessage(channelId, messageId, options)
+        .then((request) => request(axios, basePath));
+    },
     /**
      * Retrieve all channels (text, voice, etc.) in a specific Discord guild. Useful for selecting channels for notifications or commands.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetChannels`
      * @summary Get guild channels
@@ -15488,7 +15726,7 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
       id: string,
       sendMessageInputDTO?: SendMessageInputDTO,
       options?: RawAxiosRequestConfig,
-    ): AxiosPromise<APIOutput> {
+    ): AxiosPromise<MessageOutputDTOAPI> {
       return localVarFp
         .discordControllerSendMessage(id, sendMessageInputDTO, options)
         .then((request) => request(axios, basePath));
@@ -15510,6 +15748,25 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
         .discordControllerUpdateGuild(id, guildApiUpdateDTO, options)
         .then((request) => request(axios, basePath));
     },
+    /**
+     * Update an existing Discord message with new content or embed. Requires the bot to have sent the original message.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerUpdateMessage`
+     * @summary Update Discord message
+     * @param {string} channelId
+     * @param {string} messageId
+     * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerUpdateMessage(
+      channelId: string,
+      messageId: string,
+      sendMessageInputDTO?: SendMessageInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<MessageOutputDTOAPI> {
+      return localVarFp
+        .discordControllerUpdateMessage(channelId, messageId, sendMessageInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
   };
 };
 
@@ -15520,6 +15777,21 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
  * @extends {BaseAPI}
  */
 export class DiscordApi extends BaseAPI {
+  /**
+   * Delete a Discord message. The bot must have sent the original message or have appropriate permissions. Returns an empty response on success.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerDeleteMessage`
+   * @summary Delete Discord message
+   * @param {string} channelId
+   * @param {string} messageId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DiscordApi
+   */
+  public discordControllerDeleteMessage(channelId: string, messageId: string, options?: RawAxiosRequestConfig) {
+    return DiscordApiFp(this.configuration)
+      .discordControllerDeleteMessage(channelId, messageId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
   /**
    * Retrieve all channels (text, voice, etc.) in a specific Discord guild. Useful for selecting channels for notifications or commands.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetChannels`
    * @summary Get guild channels
@@ -15610,6 +15882,27 @@ export class DiscordApi extends BaseAPI {
   ) {
     return DiscordApiFp(this.configuration)
       .discordControllerUpdateGuild(id, guildApiUpdateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Update an existing Discord message with new content or embed. Requires the bot to have sent the original message.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerUpdateMessage`
+   * @summary Update Discord message
+   * @param {string} channelId
+   * @param {string} messageId
+   * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DiscordApi
+   */
+  public discordControllerUpdateMessage(
+    channelId: string,
+    messageId: string,
+    sendMessageInputDTO?: SendMessageInputDTO,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return DiscordApiFp(this.configuration)
+      .discordControllerUpdateMessage(channelId, messageId, sendMessageInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
