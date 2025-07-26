@@ -218,6 +218,26 @@ export class SendMessageInputDTO extends TakaroDTO<SendMessageInputDTO> {
   private _validation?: any;
 }
 
+export class MessageOutputDTO extends TakaroDTO<MessageOutputDTO> {
+  @IsString()
+  id!: string;
+
+  @IsString()
+  channelId!: string;
+
+  @IsString()
+  guildId!: string;
+
+  @IsString()
+  @IsOptional()
+  content?: string;
+
+  @Type(() => DiscordEmbedInputDTO)
+  @ValidateNested()
+  @IsOptional()
+  embed?: DiscordEmbedInputDTO;
+}
+
 @traceableClass('service:discord')
 export class DiscordService extends TakaroService<
   DiscordGuildModel,
@@ -324,7 +344,7 @@ export class DiscordService extends TakaroService<
     }
   }
 
-  async sendMessage(channelId: string, message: SendMessageInputDTO) {
+  async sendMessage(channelId: string, message: SendMessageInputDTO): Promise<MessageOutputDTO> {
     this.log.info(`Sending message to Discord channel ${channelId}`);
 
     try {
@@ -380,7 +400,16 @@ export class DiscordService extends TakaroService<
         hasContent: !!message.message,
       });
 
-      return sentMessage;
+      // Transform to MessageOutputDTO
+      const outputDTO = new MessageOutputDTO({
+        id: sentMessage.id,
+        channelId: sentMessage.channelId,
+        guildId: sentMessage.guildId || sentMessage.guild?.id || channel.guildId,
+        content: sentMessage.content || undefined,
+        embed: message.embed, // Return the input embed if provided
+      });
+
+      return outputDTO;
     } catch (error: any) {
       // Log error with Discord error handler for appropriate level
       DiscordErrorHandler.logError(error, {
@@ -674,6 +703,130 @@ export class DiscordService extends TakaroService<
     }
 
     return guild;
+  }
+
+  async updateMessage(channelId: string, messageId: string, update: SendMessageInputDTO): Promise<MessageOutputDTO> {
+    this.log.info(`Updating Discord message ${messageId} in channel ${channelId}`);
+
+    try {
+      // Validate input - either message or embed must be provided
+      if (!update.message && !update.embed) {
+        throw new errors.BadRequestError('Either message content or embed must be provided');
+      }
+
+      // Validate embed content and structure if provided
+      if (update.embed) {
+        this.validateEmbedContent(update.embed);
+      }
+
+      // Fetch the message to get guild information for permission validation
+      const message = await discordBot.fetchMessage(channelId, messageId);
+
+      if (!message.guild) {
+        throw new errors.BadRequestError('Cannot update messages in DM channels');
+      }
+
+      // Validate guild access and permissions
+      const guild = await this.validateGuildAccess(message.guild.id);
+
+      // Check user permissions if user context is available
+      const userId = ctx.data.user;
+      if (!userId) throw new errors.ForbiddenError();
+      const user = await new UserService(this.domainId).findOne(userId);
+      if (!user) throw new errors.NotFoundError(`User with id ${userId} not found`);
+      const hasRoot = checkPermissions([PERMISSIONS.ROOT], user);
+
+      const serversWithPermission = await this.repo.getServersWithManagePermission(userId);
+
+      if (!hasRoot && !serversWithPermission.find((server) => server.id === guild.id)) {
+        this.log.warn(`User ${userId} lacks permission to update messages in guild ${guild.id}`);
+        throw new errors.ForbiddenError();
+      }
+
+      // Update the message through DiscordBot
+      const updatedMessage = await discordBot.updateMessage(channelId, messageId, update.message, update.embed);
+
+      this.log.info(`Successfully updated Discord message ${messageId}`, {
+        hasEmbed: !!update.embed,
+        hasContent: !!update.message,
+      });
+
+      // Transform to MessageOutputDTO
+      const outputDTO = new MessageOutputDTO({
+        id: updatedMessage.id,
+        channelId: updatedMessage.channelId,
+        guildId: updatedMessage.guildId || updatedMessage.guild?.id || message.guild.id,
+        content: updatedMessage.content || undefined,
+        embed: update.embed, // Return the input embed if provided
+      });
+
+      return outputDTO;
+    } catch (error: any) {
+      // Log error with Discord error handler for appropriate level
+      DiscordErrorHandler.logError(error, {
+        operation: 'updateMessage',
+        messageId,
+        hasEmbed: !!update.embed,
+        hasContent: !!update.message,
+      });
+
+      // Re-throw known errors
+      if (error instanceof errors.TakaroError) {
+        throw error;
+      }
+
+      // Map Discord errors to appropriate Takaro errors
+      throw DiscordErrorHandler.mapDiscordError(error);
+    }
+  }
+
+  async deleteMessage(channelId: string, messageId: string): Promise<void> {
+    this.log.info(`Deleting Discord message ${messageId} from channel ${channelId}`);
+
+    try {
+      // Fetch the message to get guild information for permission validation
+      const message = await discordBot.fetchMessage(channelId, messageId);
+
+      if (!message.guild) {
+        throw new errors.BadRequestError('Cannot delete messages in DM channels');
+      }
+
+      // Validate guild access
+      const guild = await this.validateGuildAccess(message.guild.id);
+
+      // Check user permissions if user context is available
+      const userId = ctx.data.user;
+      if (!userId) throw new errors.ForbiddenError();
+      const user = await new UserService(this.domainId).findOne(userId);
+      if (!user) throw new errors.NotFoundError(`User with id ${userId} not found`);
+      const hasRoot = checkPermissions([PERMISSIONS.ROOT], user);
+
+      const serversWithPermission = await this.repo.getServersWithManagePermission(userId);
+
+      if (!hasRoot && !serversWithPermission.find((server) => server.id === guild.id)) {
+        this.log.warn(`User ${userId} lacks permission to delete messages in guild ${guild.id}`);
+        throw new errors.ForbiddenError();
+      }
+
+      // Delete the message through DiscordBot
+      await discordBot.deleteMessage(channelId, messageId);
+
+      this.log.info(`Successfully deleted Discord message ${messageId}`);
+    } catch (error: any) {
+      // Log error with Discord error handler for appropriate level
+      DiscordErrorHandler.logError(error, {
+        operation: 'deleteMessage',
+        messageId,
+      });
+
+      // Re-throw known errors
+      if (error instanceof errors.TakaroError) {
+        throw error;
+      }
+
+      // Map Discord errors to appropriate Takaro errors
+      throw DiscordErrorHandler.mapDiscordError(error);
+    }
   }
 
   static async NOT_DOMAIN_SCOPED_resolveDomainFromGuildId(guildId: string): Promise<string | null> {
