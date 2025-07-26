@@ -67,29 +67,26 @@ To know more about how to use the shop, please visit [Economy page](./economy.md
 
 ## Discord Integration
 
-Players can enhance their Takaro experience by linking their Discord account, enabling additional features like role synchronization.
+Link your Discord account for role sync and community features.
 
-### Linking Your Discord Account
+### Link Your Discord Account
 
-1. **Complete Player Linking**: First, link your player profile using the `/link` command as described above
-2. **Access the Link Page**: Visit the link page (typically at `/link`) while logged into Takaro
-3. **Connect Discord**: Click the "Connect Discord Account" button
-4. **Authorize Access**: Grant Takaro permission to access your Discord account
-5. **Confirmation**: Your Discord account is now linked to your Takaro profile
+1. Link your player profile with `/link` first
+2. Visit `/link` while logged in
+3. Click "Connect Discord Account"
+4. Authorize Takaro access
+5. You're linked!
 
-### Benefits of Discord Linking
+### Why Link Discord?
 
-- **Role Synchronization**: Your Discord roles can automatically sync with Takaro roles, granting appropriate in-game permissions
-- **Enhanced Communication**: Receive notifications and updates through Discord
-- **Community Features**: Access Discord-exclusive features and commands
-- **Single Sign-On**: Use your Discord account for easier authentication
+Linking Discord lets your roles sync between platforms, so Discord roles automatically apply in-game. You'll get notifications through Discord, access Discord-exclusive commands, and can sign in using your Discord account.
 
-### Discord Role Sync
+### How Role Sync Works
 
-When Discord role sync is enabled by your community administrators:
-- Roles assigned in Discord automatically apply in-game
-- In-game role changes can reflect in your Discord roles
-- Only specifically mapped roles are synchronized
-- System roles (User, Player) are never synchronized
+When admins enable role sync:
+- Discord roles automatically apply in-game
+- Game roles can update your Discord roles
+- Only mapped roles sync
+- System roles never sync
 
-For more information about Discord integration features, see the [Discord Integration guide](./advanced/discord-integration.md).
+See the [Discord Integration guide](./advanced/discord-integration.md) for more.

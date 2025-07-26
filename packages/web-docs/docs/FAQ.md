@@ -49,24 +49,21 @@ We know there is stuff to be added to the built-in modules, and we are working o
 
 ## How do I enable Discord role synchronization?
 
-Discord role synchronization allows you to keep roles consistent between Discord and Takaro. To enable it:
+To sync Discord and Takaro roles:
 
-1. **Connect Discord Bot**: First, ensure your Discord bot is connected via Settings → Discord
-2. **Link User Accounts**: Users must link their Discord accounts at the `/link` page
-3. **Map Roles**: In the Roles section, edit each role you want to sync and select the corresponding Discord role
-4. **Enable Sync**: Go to Settings → Game Servers and enable "Discord Role Sync Enabled"
-5. **Choose Source of Truth**: Select whether Takaro or Discord should be the authoritative source for roles
+1. Connect Discord bot in **Settings → Discord**
+2. Users link accounts at `/link`
+3. Map roles in **Roles** → edit → select Discord role
+4. Enable sync in **Settings → Game Servers**
+5. Choose who controls roles (Takaro or Discord)
 
-For detailed setup instructions, see the [Discord Integration guide](./advanced/discord-integration.md).
+See the [Discord Integration guide](./advanced/discord-integration.md) for details.
 
 ## What happens when Discord and Takaro roles conflict?
 
-The "Source of Truth" setting determines which platform takes precedence:
+Your "Source of Truth" setting decides which platform wins. With Takaro controls (default), Takaro roles take precedence. With Discord controls, Discord roles take precedence.
 
-- **Takaro as Source of Truth** (default): Takaro roles override Discord roles. If a user has a role in Takaro but not in Discord, it will be added to Discord.
-- **Discord as Source of Truth**: Discord roles override Takaro roles. If a user has a role in Discord but not in Takaro, it will be added to Takaro.
-
-Only roles that are explicitly mapped between platforms are synchronized. Unmapped roles remain independent.
+Only mapped roles sync. Unmapped roles stay independent.
 
 ## Can I sync roles for specific game servers only?
 
