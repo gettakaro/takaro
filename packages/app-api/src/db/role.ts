@@ -225,4 +225,14 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, ServiceRoleC
 
     return await Promise.all(res.map((c) => new PermissionOutputDTO(c)));
   }
+
+  async findDiscordLinkedRoles(): Promise<RoleOutputDTO[]> {
+    const { query } = await this.getModel();
+    const result = await query
+      .whereNotNull('linkedDiscordRoleId')
+      .withGraphJoined('permissions.permission')
+      .orderBy('name');
+
+    return Promise.all(result.map((item) => this.transformToDTO(item)));
+  }
 }

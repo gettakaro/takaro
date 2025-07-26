@@ -13,6 +13,7 @@ import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDT
 import { UserSearchInputDTO } from '../../controllers/UserController.js';
 import { DomainService } from '../DomainService.js';
 import { PlayerService } from '../Player/index.js';
+import { DiscordService } from '../DiscordService.js';
 
 export * from './dto.js';
 
@@ -137,6 +138,19 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
         meta: new TakaroEventRoleAssigned({ role: { id: role.id, name: role.name } }),
       }),
     );
+
+    // Sync Discord roles if enabled
+    try {
+      const discordService = new DiscordService(this.domainId);
+      await discordService.syncUserRoles(userId);
+    } catch (error) {
+      // Log error but don't throw - we don't want to break role assignment
+      this.log.error('Failed to sync Discord roles after role assignment', {
+        userId,
+        roleId,
+        error,
+      });
+    }
   }
 
   async removeRole(roleId: string, userId: string): Promise<void> {
@@ -154,6 +168,19 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
         meta: new TakaroEventRoleRemoved({ role: { id: role.id, name: role.name } }),
       }),
     );
+
+    // Sync Discord roles if enabled
+    try {
+      const discordService = new DiscordService(this.domainId);
+      await discordService.syncUserRoles(userId);
+    } catch (error) {
+      // Log error but don't throw - we don't want to break role removal
+      this.log.error('Failed to sync Discord roles after role removal', {
+        userId,
+        roleId,
+        error,
+      });
+    }
   }
 
   async inviteUser(email: string, opts = { isDashboardUser: true }): Promise<UserOutputDTO> {

@@ -87,7 +87,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
           <Grid>
             <IconContainer variant={variant}>{getIcon()}</IconContainer>
             {title && <h2>{title}</h2>}
-            <p>{renderText()}</p>
+            {renderText()}
             <ButtonContainer
               hasTitle={hasTitle}
               show={dismiss || action ? true : false}
