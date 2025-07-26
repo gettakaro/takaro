@@ -143,8 +143,8 @@ function Component() {
       {session && (
         <div style={{ marginTop: '2rem' }}>
           <h2>Connect Discord Account</h2>
-          <p>Link your Discord account to enable role synchronization between Discord and Takaro.</p>
-          <LoginDiscordCard />
+          <p>Link your Discord account to unlock Discord-based features and integrations.</p>
+          <LoginDiscordCard session={session} />
         </div>
       )}
     </Container>
