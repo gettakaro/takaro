@@ -81,7 +81,6 @@ export class DiscordRepo extends ITakaroRepo<DiscordGuildModel, GuildOutputDTO, 
     const model = DiscordGuildModel.bindKnex(knex);
     const userModel = UserOnGuildModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     const userQuery = ctx.transaction ? userModel.query(ctx.transaction) : userModel.query();

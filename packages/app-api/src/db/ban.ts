@@ -51,7 +51,6 @@ export class BanRepo extends ITakaroRepo<BanModel, BanOutputDTO, BanCreateDTO, B
     const knex = await this.getKnex();
     const model = BanModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     return {

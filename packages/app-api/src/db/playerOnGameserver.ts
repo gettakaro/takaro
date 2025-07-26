@@ -96,7 +96,6 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     const knex = await this.getKnex();
     const model = PlayerOnGameServerModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     return {
@@ -286,11 +285,6 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
   }
 
   async transact(senderId: string, receiverId: string, amount: number) {
-    // Ensure we're in a transaction context for row locking
-    if (!ctx.hasTransaction()) {
-      throw new errors.BadRequestError('transact() must be called within a transaction context');
-    }
-
     const { query } = await this.getModel();
 
     // Lock the rows for sender and receiver

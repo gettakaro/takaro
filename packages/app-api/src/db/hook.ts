@@ -50,7 +50,6 @@ export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDT
     const knex = await this.getKnex();
     const model = HookModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     return {

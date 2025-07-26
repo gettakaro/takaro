@@ -36,7 +36,6 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
     const knex = await this.getKnex();
     const model = ItemsModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     return {

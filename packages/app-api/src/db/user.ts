@@ -66,7 +66,6 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
     const knex = await this.getKnex();
     const model = UserModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     return {

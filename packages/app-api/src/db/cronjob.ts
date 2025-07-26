@@ -50,7 +50,6 @@ export class CronJobRepo extends ITakaroRepo<CronJobModel, CronJobOutputDTO, Cro
     const knex = await this.getKnex();
     const model = CronJobModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     return {

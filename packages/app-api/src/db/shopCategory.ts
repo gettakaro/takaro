@@ -97,7 +97,6 @@ export class ShopCategoryRepo extends ITakaroRepo<
     const knex = await this.getKnex();
     const model = ShopCategoryModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     return {

@@ -189,7 +189,6 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     const versionModel = ModuleVersion.bindKnex(knex);
     const installationsModel = ModuleInstallationModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     const queryVersion = ctx.transaction ? versionModel.query(ctx.transaction) : versionModel.query();

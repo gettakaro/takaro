@@ -76,7 +76,6 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     const knex = await this.getKnex();
     const model = PlayerLocationTrackingModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     return {
@@ -90,7 +89,6 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     const knex = await this.getKnex();
     const model = PlayerInventoryTrackingModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     return {

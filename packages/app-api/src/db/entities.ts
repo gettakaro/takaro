@@ -37,7 +37,6 @@ export class EntityRepo extends ITakaroRepo<EntitiesModel, EntityOutputDTO, Enti
     const knex = await this.getKnex();
     const model = EntitiesModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     return {

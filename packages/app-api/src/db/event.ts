@@ -86,7 +86,6 @@ export class EventRepo extends ITakaroRepo<EventModel, EventOutputDTO, EventCrea
     const knex = await this.getKnex();
     const model = EventModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     return {

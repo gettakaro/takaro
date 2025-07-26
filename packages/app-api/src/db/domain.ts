@@ -43,7 +43,6 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<
     const knex = await this.getKnex();
     const model = DomainModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     return {

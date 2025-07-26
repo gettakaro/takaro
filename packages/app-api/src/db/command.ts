@@ -90,7 +90,6 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
     const model = CommandModel.bindKnex(knex);
     const argumentModel = CommandArgumentModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     const argumentQuery = ctx.transaction ? argumentModel.query(ctx.transaction) : argumentModel.query();

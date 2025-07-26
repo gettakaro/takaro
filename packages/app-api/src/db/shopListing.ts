@@ -147,7 +147,6 @@ export class ShopListingRepo extends ITakaroRepo<
     const knex = await this.getKnex();
     const model = ShopListingModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     return {
@@ -161,7 +160,6 @@ export class ShopListingRepo extends ITakaroRepo<
     const knex = await this.getKnex();
     const model = ShopListingRoleModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     return {

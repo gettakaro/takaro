@@ -54,7 +54,6 @@ export class VariableRepo extends ITakaroRepo<VariablesModel, VariableOutputDTO,
     const knex = await this.getKnex();
     const model = VariablesModel.bindKnex(knex);
 
-    // Use transaction from context if available
     const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
 
     return {
