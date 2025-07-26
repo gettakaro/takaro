@@ -34,7 +34,7 @@ describe('DiscordService', () => {
     service = new DiscordService(mockDomainId);
 
     // Stub UserService - return a user with no permissions by default
-    findOneStub = sandbox.stub(UserService.prototype, 'findOne').resolves({
+    sandbox.stub(UserService.prototype, 'findOne').resolves({
       id: mockUserId,
       permissions: [],
       roles: [], // Empty roles array means no permissions

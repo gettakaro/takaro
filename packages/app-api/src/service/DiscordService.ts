@@ -257,11 +257,20 @@ export class DiscordService extends TakaroService<
     if (input.takaroEnabled !== undefined) {
       const userId = ctx.data.user;
       if (!userId) throw new errors.ForbiddenError();
-      const serversWithPermission = await this.repo.getServersWithManagePermission(userId);
 
-      if (!serversWithPermission.find((server) => server.id === id)) {
-        this.log.warn(`User ${userId} tried to update guild ${id} without permission`);
-        throw new errors.ForbiddenError();
+      // Get user to check for ROOT permission
+      const user = await new UserService(this.domainId).findOne(userId);
+      if (!user) throw new errors.NotFoundError(`User with id ${userId} not found`);
+
+      // ROOT permission bypasses all other permission checks
+      const hasRoot = checkPermissions([PERMISSIONS.ROOT], user);
+      if (!hasRoot) {
+        const serversWithPermission = await this.repo.getServersWithManagePermission(userId);
+
+        if (!serversWithPermission.find((server) => server.id === id)) {
+          this.log.warn(`User ${userId} tried to update guild ${id} without permission`);
+          throw new errors.ForbiddenError();
+        }
       }
     }
 
@@ -364,32 +373,8 @@ export class DiscordService extends TakaroService<
         throw new errors.NotFoundError(`Discord channel ${channelId} not found`);
       }
 
-      // Validate guild exists and is enabled for Takaro
-      const guild = await this.find({ filters: { discordId: [channel.guildId] } });
-
-      if (!guild.results.length) {
-        this.log.warn(`Guild not found for channel ${channelId} (guild ID: ${channel.guildId})`);
-        throw new errors.BadRequestError(`Guild not found for channel ${channelId}`);
-      }
-
-      if (!guild.results[0].takaroEnabled) {
-        this.log.warn(`Takaro not enabled for guild ${guild.results[0].id} (Discord ID: ${channel.guildId})`);
-        throw new errors.BadRequestError(`Takaro not enabled for guild ${guild.results[0].id}`);
-      }
-
-      // Check user permissions if user context is available
-      const userId = ctx.data.user;
-      if (!userId) throw new errors.ForbiddenError();
-      const user = await new UserService(this.domainId).findOne(userId);
-      if (!user) throw new errors.NotFoundError(`User with id ${userId} not found`);
-      const hasRoot = checkPermissions([PERMISSIONS.ROOT], user);
-
-      const serversWithPermission = await this.repo.getServersWithManagePermission(userId);
-
-      if (!hasRoot && !serversWithPermission.find((server) => server.id === guild.results[0].id)) {
-        this.log.warn(`User ${userId} lacks permission to send messages to guild ${guild.results[0].id}`);
-        throw new errors.ForbiddenError();
-      }
+      // Validate guild access and permissions
+      await this.validateGuildAccess(channel.guildId);
 
       // Send the message through DiscordBot (which now includes rate limiting and metrics)
       const sentMessage = await discordBot.sendMessage(channelId, message.message, message.embed);
@@ -675,7 +660,7 @@ export class DiscordService extends TakaroService<
     }
   }
 
-  private async validateGuildAccess(guildId: string): Promise<GuildOutputDTO> {
+  private async validateGuildAccess(guildId: string, requireManagePermission: boolean = true): Promise<GuildOutputDTO> {
     // Find guild by Discord ID
     const guildResult = await this.find({ filters: { discordId: [guildId] } });
 
@@ -691,11 +676,28 @@ export class DiscordService extends TakaroService<
       throw new errors.BadRequestError(`Takaro not enabled for guild ${guild.id}`);
     }
 
-    // Check user permissions if user context is available
-    const userId = ctx.data.user;
-    if (userId) {
-      const serversWithPermission = await this.repo.getServersWithManagePermission(userId);
+    // Check user permissions if required and user context is available
+    if (requireManagePermission) {
+      const userId = ctx.data.user;
+      if (!userId) {
+        throw new errors.ForbiddenError();
+      }
 
+      // Get user to check for ROOT permission
+      const user = await new UserService(this.domainId).findOne(userId);
+      if (!user) {
+        throw new errors.NotFoundError(`User with id ${userId} not found`);
+      }
+
+      // ROOT permission bypasses all other permission checks
+      const hasRoot = checkPermissions([PERMISSIONS.ROOT], user);
+      if (hasRoot) {
+        this.log.debug(`User ${userId} has ROOT permission, bypassing guild permission check`);
+        return guild;
+      }
+
+      // Check if user has manage permission on this specific guild
+      const serversWithPermission = await this.repo.getServersWithManagePermission(userId);
       if (!serversWithPermission.find((server) => server.id === guild.id)) {
         this.log.warn(`User ${userId} lacks permission to access guild ${guild.id} (Discord ID: ${guildId})`);
         throw new errors.ForbiddenError();
@@ -727,21 +729,7 @@ export class DiscordService extends TakaroService<
       }
 
       // Validate guild access and permissions
-      const guild = await this.validateGuildAccess(message.guild.id);
-
-      // Check user permissions if user context is available
-      const userId = ctx.data.user;
-      if (!userId) throw new errors.ForbiddenError();
-      const user = await new UserService(this.domainId).findOne(userId);
-      if (!user) throw new errors.NotFoundError(`User with id ${userId} not found`);
-      const hasRoot = checkPermissions([PERMISSIONS.ROOT], user);
-
-      const serversWithPermission = await this.repo.getServersWithManagePermission(userId);
-
-      if (!hasRoot && !serversWithPermission.find((server) => server.id === guild.id)) {
-        this.log.warn(`User ${userId} lacks permission to update messages in guild ${guild.id}`);
-        throw new errors.ForbiddenError();
-      }
+      await this.validateGuildAccess(message.guild.id);
 
       // Update the message through DiscordBot
       const updatedMessage = await discordBot.updateMessage(channelId, messageId, update.message, update.embed);
@@ -791,22 +779,8 @@ export class DiscordService extends TakaroService<
         throw new errors.BadRequestError('Cannot delete messages in DM channels');
       }
 
-      // Validate guild access
-      const guild = await this.validateGuildAccess(message.guild.id);
-
-      // Check user permissions if user context is available
-      const userId = ctx.data.user;
-      if (!userId) throw new errors.ForbiddenError();
-      const user = await new UserService(this.domainId).findOne(userId);
-      if (!user) throw new errors.NotFoundError(`User with id ${userId} not found`);
-      const hasRoot = checkPermissions([PERMISSIONS.ROOT], user);
-
-      const serversWithPermission = await this.repo.getServersWithManagePermission(userId);
-
-      if (!hasRoot && !serversWithPermission.find((server) => server.id === guild.id)) {
-        this.log.warn(`User ${userId} lacks permission to delete messages in guild ${guild.id}`);
-        throw new errors.ForbiddenError();
-      }
+      // Validate guild access and permissions
+      await this.validateGuildAccess(message.guild.id);
 
       // Delete the message through DiscordBot
       await discordBot.deleteMessage(channelId, messageId);
