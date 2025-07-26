@@ -18,7 +18,8 @@
             "id": "360acf75-2026-495d-bab2-18607f05471c",
             "name": "User",
             "system": true,
-            "permissions": []
+            "permissions": [],
+            "linkedDiscordRoleId": null
           },
           "roleId": "360acf75-2026-495d-bab2-18607f05471c",
           "userId": "5bfc27e9-a33f-4d6f-906b-bc8b4b9dba9f"

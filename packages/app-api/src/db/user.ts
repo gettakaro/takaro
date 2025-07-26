@@ -1,7 +1,7 @@
 import { TakaroModel, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
 import { PermissionOnRoleModel, ROLE_TABLE_NAME, RoleModel } from './role.js';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO } from '../service/User/dto.js';
 import { UserSearchInputDTO } from '../controllers/UserController.js';
@@ -65,9 +65,13 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
   async getModel() {
     const knex = await this.getKnex();
     const model = UserModel.bindKnex(knex);
+
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 

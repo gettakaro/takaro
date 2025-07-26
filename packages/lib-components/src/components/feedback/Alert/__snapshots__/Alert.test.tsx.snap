@@ -31,9 +31,7 @@ exports[`Should render <Alert/> 1`] = `
         Alert title
       </h2>
       <p>
-        <p>
-          Alert text
-        </p>
+        Alert text
       </p>
       <div
         class="sc-fqkvVR JhYnd action"

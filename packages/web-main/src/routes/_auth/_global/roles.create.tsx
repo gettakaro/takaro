@@ -28,17 +28,25 @@ function Component() {
     navigate({ to: '/roles' });
   }
 
-  const onSubmit: SubmitHandler<IFormInputs> = ({ name, permissions: formPermissions }) => {
+  const onSubmit: SubmitHandler<IFormInputs> = ({ name, permissions: formPermissions, linkedDiscordRoleId }) => {
     const activePermissions = Object.entries(formPermissions)
       .filter(([_key, value]) => value.enabled === true)
       .map(([key, value]) => ({
         permissionId: key,
         count: value.count,
       }));
-    mutate({
+
+    const roleData: any = {
       name,
       permissions: activePermissions,
-    });
+    };
+
+    // Only include linkedDiscordRoleId if it has a value
+    if (linkedDiscordRoleId && linkedDiscordRoleId.length === 18) {
+      roleData.linkedDiscordRoleId = linkedDiscordRoleId;
+    }
+
+    mutate(roleData);
   };
 
   return <RoleForm onSubmit={onSubmit} isLoading={isCreatingRole} permissions={permissions} error={error} />;

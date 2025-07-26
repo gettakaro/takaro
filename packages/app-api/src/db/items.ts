@@ -1,5 +1,5 @@
 import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { ItemCreateDTO, ItemsOutputDTO, ItemUpdateDTO } from '../service/ItemsService.js';
 import { GAMESERVER_TABLE_NAME, GameServerModel } from './gameserver.js';
@@ -35,9 +35,13 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
   async getModel() {
     const knex = await this.getKnex();
     const model = ItemsModel.bindKnex(knex);
+
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 

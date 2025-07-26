@@ -1,5 +1,5 @@
 import { TakaroModel } from '@takaro/db';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroRepo, PaginatedOutput } from './base.js';
 import {
   DEFAULT_SETTINGS,
@@ -31,9 +31,13 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, ne
   async getModel() {
     const knex = await this.getKnex();
     const model = SettingsModel.bindKnex(knex);
+
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 

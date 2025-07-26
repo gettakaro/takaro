@@ -3,7 +3,7 @@ import { Model } from 'objection';
 import { USER_TABLE_NAME, UserModel } from './user.js';
 import { ITakaroRepo } from './base.js';
 import { GuildCreateInputDTO, GuildOutputDTO, GuildUpdateDTO } from '../service/DiscordService.js';
-import { errors, logger, traceableClass } from '@takaro/util';
+import { errors, logger, traceableClass, ctx } from '@takaro/util';
 
 const DISCORD_GUILDS_TABLE_NAME = 'discordGuilds';
 const USER_ON_DISCORD_GUILD_TABLE_NAME = 'userOnDiscordGuild';
@@ -80,11 +80,17 @@ export class DiscordRepo extends ITakaroRepo<DiscordGuildModel, GuildOutputDTO, 
     const knex = await this.getKnex();
     const model = DiscordGuildModel.bindKnex(knex);
     const userModel = UserOnGuildModel.bindKnex(knex);
+
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
+    const userQuery = ctx.transaction ? userModel.query(ctx.transaction) : userModel.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
       userModel,
-      userQuery: userModel.query().modify('domainScoped', this.domainId),
+      userQuery: userQuery.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 
@@ -174,5 +180,37 @@ export class DiscordRepo extends ITakaroRepo<DiscordGuildModel, GuildOutputDTO, 
       .where(`${USER_ON_DISCORD_GUILD_TABLE_NAME}.hasManageServer`, true);
 
     return result;
+  }
+
+  async findAccessibleGuilds(userId: string, filters: ITakaroQuery<GuildOutputDTO>) {
+    const { query } = await this.getModel();
+    const knex = await getKnex();
+
+    // Start with base query
+    const baseQuery = query
+      .select(`${DISCORD_GUILDS_TABLE_NAME}.*`)
+      .leftJoin(`${USER_ON_DISCORD_GUILD_TABLE_NAME}`, function () {
+        this.on(`${DISCORD_GUILDS_TABLE_NAME}.id`, '=', `${USER_ON_DISCORD_GUILD_TABLE_NAME}.discordGuildId`).andOn(
+          `${USER_ON_DISCORD_GUILD_TABLE_NAME}.userId`,
+          '=',
+          knex.raw('?', [userId]),
+        );
+      })
+      .where(function () {
+        this.where(`${USER_ON_DISCORD_GUILD_TABLE_NAME}.hasManageServer`, true).orWhere(
+          `${DISCORD_GUILDS_TABLE_NAME}.takaroEnabled`,
+          true,
+        );
+      });
+
+    // Apply additional filters using QueryBuilder
+    const result = await new QueryBuilder<DiscordGuildModel, GuildOutputDTO>({
+      ...filters,
+    }).build(baseQuery);
+
+    return {
+      total: result.total,
+      results: await Promise.all(result.results.map(async (guild) => new GuildOutputDTO(guild))),
+    };
   }
 }

@@ -73,6 +73,20 @@ export class DiscordMetrics {
     registers: [register],
   });
 
+  static readonly messagesUpdated = new Counter({
+    name: `${this.METRICS_PREFIX}messages_updated_total`,
+    help: 'Total number of Discord messages updated',
+    labelNames: ['guild_id', 'channel_id'],
+    registers: [register],
+  });
+
+  static readonly messagesDeleted = new Counter({
+    name: `${this.METRICS_PREFIX}messages_deleted_total`,
+    help: 'Total number of Discord messages deleted',
+    labelNames: ['guild_id', 'channel_id'],
+    registers: [register],
+  });
+
   static readonly embedsSent = new Counter({
     name: `${this.METRICS_PREFIX}embeds_sent_total`,
     help: 'Total number of Discord embeds sent',
@@ -92,6 +106,21 @@ export class DiscordMetrics {
     name: `${this.METRICS_PREFIX}channels_fetched_total`,
     help: 'Total number of Discord channels fetched',
     labelNames: ['guild_id'],
+    registers: [register],
+  });
+
+  // Role management metrics
+  static readonly rolesAssigned = new Counter({
+    name: `${this.METRICS_PREFIX}roles_assigned_total`,
+    help: 'Total number of Discord roles assigned',
+    labelNames: ['guild_id', 'user_id', 'role_id'],
+    registers: [register],
+  });
+
+  static readonly rolesRemoved = new Counter({
+    name: `${this.METRICS_PREFIX}roles_removed_total`,
+    help: 'Total number of Discord roles removed',
+    labelNames: ['guild_id', 'user_id', 'role_id'],
     registers: [register],
   });
 
@@ -229,6 +258,40 @@ export class DiscordMetrics {
   }
 
   /**
+   * Records a message updated
+   */
+  static recordMessageUpdated(guildId: string | undefined, channelId: string): void {
+    const labels = {
+      guild_id: guildId || 'unknown',
+      channel_id: channelId,
+    };
+
+    this.messagesUpdated.inc(labels);
+
+    log.debug('Recorded Discord message updated metric', {
+      guildId,
+      channelId,
+    });
+  }
+
+  /**
+   * Records a message deleted
+   */
+  static recordMessageDeleted(guildId: string | undefined, channelId: string): void {
+    const labels = {
+      guild_id: guildId || 'unknown',
+      channel_id: channelId,
+    };
+
+    this.messagesDeleted.inc(labels);
+
+    log.debug('Recorded Discord message deleted metric', {
+      guildId,
+      channelId,
+    });
+  }
+
+  /**
    * Records roles fetched
    */
   static recordRolesFetched(guildId: string, count: number): void {
@@ -263,6 +326,44 @@ export class DiscordMetrics {
     log.debug('Recorded Discord channels fetched metric', {
       guildId,
       count,
+    });
+  }
+
+  /**
+   * Records a role assignment
+   */
+  static recordRoleAssigned(guildId: string, userId: string, roleId: string): void {
+    const labels = {
+      guild_id: guildId,
+      user_id: userId,
+      role_id: roleId,
+    };
+
+    this.rolesAssigned.inc(labels);
+
+    log.debug('Recorded Discord role assigned metric', {
+      guildId,
+      userId,
+      roleId,
+    });
+  }
+
+  /**
+   * Records a role removal
+   */
+  static recordRoleRemoved(guildId: string, userId: string, roleId: string): void {
+    const labels = {
+      guild_id: guildId,
+      user_id: userId,
+      role_id: roleId,
+    };
+
+    this.rolesRemoved.inc(labels);
+
+    log.debug('Recorded Discord role removed metric', {
+      guildId,
+      userId,
+      roleId,
     });
   }
 
