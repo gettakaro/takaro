@@ -175,4 +175,36 @@ export class DiscordRepo extends ITakaroRepo<DiscordGuildModel, GuildOutputDTO, 
 
     return result;
   }
+
+  async findAccessibleGuilds(userId: string, filters: ITakaroQuery<GuildOutputDTO>) {
+    const { query } = await this.getModel();
+    const knex = await getKnex();
+
+    // Start with base query
+    const baseQuery = query
+      .select(`${DISCORD_GUILDS_TABLE_NAME}.*`)
+      .leftJoin(`${USER_ON_DISCORD_GUILD_TABLE_NAME}`, function () {
+        this.on(`${DISCORD_GUILDS_TABLE_NAME}.id`, '=', `${USER_ON_DISCORD_GUILD_TABLE_NAME}.discordGuildId`).andOn(
+          `${USER_ON_DISCORD_GUILD_TABLE_NAME}.userId`,
+          '=',
+          knex.raw('?', [userId]),
+        );
+      })
+      .where(function () {
+        this.where(`${USER_ON_DISCORD_GUILD_TABLE_NAME}.hasManageServer`, true).orWhere(
+          `${DISCORD_GUILDS_TABLE_NAME}.takaroEnabled`,
+          true,
+        );
+      });
+
+    // Apply additional filters using QueryBuilder
+    const result = await new QueryBuilder<DiscordGuildModel, GuildOutputDTO>({
+      ...filters,
+    }).build(baseQuery);
+
+    return {
+      total: result.total,
+      results: await Promise.all(result.results.map(async (guild) => new GuildOutputDTO(guild))),
+    };
+  }
 }

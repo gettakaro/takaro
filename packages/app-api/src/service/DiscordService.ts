@@ -272,7 +272,17 @@ export class DiscordService extends TakaroService<
   }
 
   async find(filters: ITakaroQuery<GuildOutputDTO>) {
-    return this.repo.find(filters);
+    const userId = ctx.data.user;
+
+    // If no user context, return empty results
+    if (!userId) {
+      return { results: [], total: 0 };
+    }
+
+    // Use the efficient filtered query that only returns:
+    // 1. Guilds where the user has MANAGE_SERVER permission
+    // 2. OR guilds that have takaroEnabled = true
+    return this.repo.findAccessibleGuilds(userId, filters);
   }
 
   async findOne(id: string) {
@@ -655,8 +665,8 @@ export class DiscordService extends TakaroService<
   }
 
   private async validateGuildAccess(guildId: string, requireManagePermission: boolean = true): Promise<GuildOutputDTO> {
-    // Find guild by Discord ID
-    const guildResult = await this.find({ filters: { discordId: [guildId] } });
+    // Find guild by Discord ID - use repo directly to avoid filtered query
+    const guildResult = await this.repo.find({ filters: { discordId: [guildId] } });
 
     if (!guildResult.results.length) {
       this.log.warn(`Guild not found for Discord ID ${guildId}`);
