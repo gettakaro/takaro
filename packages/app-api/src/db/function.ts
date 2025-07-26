@@ -1,5 +1,5 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { Model } from 'objection';
 import { CRONJOB_TABLE_NAME, CronJobModel } from './cronjob.js';
@@ -62,9 +62,14 @@ export class FunctionRepo extends ITakaroRepo<FunctionModel, FunctionOutputDTO, 
   async getModel() {
     const knex = await this.getKnex();
     const model = FunctionModel.bindKnex(knex);
+
+    // Use transaction from context if available
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 

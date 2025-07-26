@@ -1,6 +1,6 @@
 import { ITakaroQuery, TakaroModel, Redis } from '@takaro/db';
-import { errors, traceableClass } from '@takaro/util';
-import { Model, ModelClass, QueryBuilder } from 'objection';
+import { errors, traceableClass, ctx } from '@takaro/util';
+import { Model } from 'objection';
 import { ITakaroRepo, PaginatedOutput, voidDTO } from './base.js';
 import { PlayerOnGameServerModel, PLAYER_ON_GAMESERVER_TABLE_NAME } from './playerOnGameserver.js';
 import {
@@ -72,24 +72,31 @@ export class PlayerInventoryTrackingModel extends TakaroModel {
 
 @traceableClass('repo:tracking')
 export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, PlayerLocationOutputDTO, voidDTO, voidDTO> {
-  async getModel(): Promise<{
-    model: ModelClass<PlayerLocationTrackingModel>;
-    query: QueryBuilder<PlayerLocationTrackingModel, PlayerLocationTrackingModel[]>;
-  }> {
+  async getModel() {
     const knex = await this.getKnex();
     const model = PlayerLocationTrackingModel.bindKnex(knex);
-    const query = model.query().modify('domainScoped', this.domainId);
-    return { model, query };
+
+    // Use transaction from context if available
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
+    return {
+      model,
+      query: query.modify('domainScoped', this.domainId),
+      knex,
+    };
   }
 
-  async getInventoryModel(): Promise<{
-    model: ModelClass<PlayerInventoryTrackingModel>;
-    query: QueryBuilder<PlayerInventoryTrackingModel, PlayerInventoryTrackingModel[]>;
-  }> {
+  async getInventoryModel() {
     const knex = await this.getKnex();
     const model = PlayerInventoryTrackingModel.bindKnex(knex);
-    const query = model.query().modify('domainScoped', this.domainId);
-    return { model, query };
+
+    // Use transaction from context if available
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
+    return {
+      model,
+      query: query.modify('domainScoped', this.domainId),
+    };
   }
 
   async find(_filters: ITakaroQuery<PlayerLocationOutputDTO>): Promise<PaginatedOutput<PlayerLocationOutputDTO>> {

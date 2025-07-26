@@ -1,9 +1,8 @@
 import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
 import { Model } from 'objection';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { SHOP_LISTING_TABLE_NAME, ShopListingModel } from './shopListing.js';
-import { Knex } from 'knex';
 import {
   ShopOrderStatus,
   ShopOrderOutputDTO,
@@ -49,9 +48,14 @@ export class ShopOrderRepo extends ITakaroRepo<
   async getModel() {
     const knex = await this.getKnex();
     const model = ShopOrderModel.bindKnex(knex);
+
+    // Use transaction from context if available
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 
@@ -118,26 +122,15 @@ export class ShopOrderRepo extends ITakaroRepo<
     throw new errors.NotImplementedError();
   }
 
-  async findOneForUpdate(id: string, trx: Knex.Transaction): Promise<ShopOrderOutputDTO> {
-    const { model } = await this.getModel();
-    const res = await model.query(trx).modify('domainScoped', this.domainId).forUpdate().findById(id);
-    if (!res) {
-      throw new errors.NotFoundError();
-    }
-    return new ShopOrderOutputDTO(res);
-  }
+  // Override base class findOneForUpdate to return proper DTO
+  async findOneForUpdate(id: string): Promise<ShopOrderOutputDTO> {
+    const { query } = await this.getModel();
+    const res = await query.where('id', id).forUpdate().first();
 
-  async updateWithTransaction(
-    id: string,
-    data: ShopOrderUpdateDTO,
-    trx: Knex.Transaction,
-  ): Promise<ShopOrderOutputDTO> {
-    const { model } = await this.getModel();
-    const order = await model
-      .query(trx)
-      .modify('domainScoped', this.domainId)
-      .updateAndFetchById(id, { status: data.status })
-      .returning('*');
-    return new ShopOrderOutputDTO(order);
+    if (!res) {
+      throw new errors.NotFoundError(`Resource with id ${id} not found`);
+    }
+
+    return new ShopOrderOutputDTO(res);
   }
 }

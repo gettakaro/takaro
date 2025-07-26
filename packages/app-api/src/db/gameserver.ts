@@ -1,6 +1,6 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder, encrypt, decrypt } from '@takaro/db';
 import { Model } from 'objection';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { GAME_SERVER_TYPE } from '@takaro/gameserver';
 import { ITakaroRepo } from './base.js';
 import { PLAYER_ON_GAMESERVER_TABLE_NAME, PlayerOnGameServerModel } from './playerOnGameserver.js';
@@ -55,9 +55,14 @@ export class GameServerRepo extends ITakaroRepo<
   async getModel() {
     const knex = await this.getKnex();
     const model = GameServerModel.bindKnex(knex);
+
+    // Use transaction from context if available
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 

@@ -1,6 +1,6 @@
 import { TakaroModel, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
 import {
@@ -89,11 +89,18 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
     const knex = await this.getKnex();
     const model = CommandModel.bindKnex(knex);
     const argumentModel = CommandArgumentModel.bindKnex(knex);
+
+    // Use transaction from context if available
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
+    const argumentQuery = ctx.transaction ? argumentModel.query(ctx.transaction) : argumentModel.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
       argumentModel,
-      argumentQuery: argumentModel.query().modify('domainScoped', this.domainId),
+      argumentQuery: argumentQuery.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 

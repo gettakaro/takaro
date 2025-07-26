@@ -1,6 +1,7 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import { errors } from './main.js';
 import { Span, trace, Tracer } from '@opentelemetry/api';
+import { Knex } from 'knex';
 
 interface TransactionStore {
   domain?: string;
@@ -8,13 +9,19 @@ interface TransactionStore {
   jobId?: string;
   user?: string;
   module?: string;
+  transaction?: Knex.Transaction;
 }
 
 function isValidTransactionStore(store: unknown): store is TransactionStore {
   return (
     typeof store === 'object' &&
     store !== null &&
-    Object.values(store).every((val) => typeof val === 'string' || val === undefined || val === null)
+    Object.entries(store).every(([key, val]) => {
+      if (key === 'transaction') {
+        return val === undefined || val === null || (typeof val === 'object' && val !== null);
+      }
+      return typeof val === 'string' || val === undefined || val === null;
+    })
   );
 }
 
@@ -47,9 +54,39 @@ class Context {
     };
   }
 
+  async runInTransaction<T>(knex: Knex, callback: () => Promise<T>): Promise<T> {
+    // If already in a transaction, use it
+    if (this.data.transaction) {
+      return callback();
+    }
+
+    // Start new transaction and store in context
+    return knex.transaction(async (trx) => {
+      this.addData({ transaction: trx });
+      try {
+        const result = await callback();
+        return result;
+      } finally {
+        // Clean up transaction from context
+        const { transaction: _transaction, ...rest } = this.data;
+        this.asyncLocalStorage.enterWith(rest);
+      }
+    });
+  }
+
+  get transaction(): Knex.Transaction | undefined {
+    return this.data.transaction;
+  }
+
+  hasTransaction(): boolean {
+    return !!this.data.transaction;
+  }
+
   private setContextAttributes(obj: TransactionStore, span: Span) {
     Object.entries(obj).forEach(([key, value]) => {
-      span.setAttribute(key, value);
+      if (key !== 'transaction' && value !== undefined && value !== null) {
+        span.setAttribute(key, String(value));
+      }
     });
   }
 
