@@ -258,19 +258,13 @@ export class DiscordService extends TakaroService<
       const userId = ctx.data.user;
       if (!userId) throw new errors.ForbiddenError();
 
-      // Get user to check for ROOT permission
-      const user = await new UserService(this.domainId).findOne(userId);
-      if (!user) throw new errors.NotFoundError(`User with id ${userId} not found`);
+      // Check if user has MANAGE_SERVER permission on this Discord guild
+      // No bypass for ROOT users - they must have Discord permission to enable/disable guilds
+      const serversWithPermission = await this.repo.getServersWithManagePermission(userId);
 
-      // ROOT permission bypasses all other permission checks
-      const hasRoot = checkPermissions([PERMISSIONS.ROOT], user);
-      if (!hasRoot) {
-        const serversWithPermission = await this.repo.getServersWithManagePermission(userId);
-
-        if (!serversWithPermission.find((server) => server.id === id)) {
-          this.log.warn(`User ${userId} tried to update guild ${id} without permission`);
-          throw new errors.ForbiddenError();
-        }
+      if (!serversWithPermission.find((server) => server.id === id)) {
+        this.log.warn(`User ${userId} tried to update guild ${id} without MANAGE_SERVER permission on Discord`);
+        throw new errors.ForbiddenError();
       }
     }
 
