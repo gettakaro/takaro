@@ -44,6 +44,8 @@ export const TakaroEvents = {
   SHOP_ORDER_CREATED: 'shop-order-created',
   SHOP_ORDER_STATUS_CHANGED: 'shop-order-status-changed',
   SHOP_ORDER_DELIVERY_FAILED: 'shop-order-delivery-failed',
+  SHOP_STOCK_EMPTY: 'shop-stock-empty',
+  SHOP_STOCK_UPDATED: 'shop-stock-updated',
   PLAYER_LINKED: 'player-linked',
   GAMESERVER_CREATED: 'gameserver-created',
   GAMESERVER_UPDATED: 'gameserver-updated',
@@ -382,6 +384,38 @@ export class TakaroEventShopOrderDeliveryFailed extends BaseEvent<TakaroEventSho
   items: TakaroEventShopItem[];
 }
 
+export class TakaroEventShopStockEmpty extends BaseEvent<TakaroEventShopStockEmpty> {
+  @IsString()
+  type = TakaroEvents.SHOP_STOCK_EMPTY;
+  
+  @IsUUID()
+  listingId: string;
+  
+  @IsString()
+  listingName: string;
+}
+
+export class TakaroEventShopStockUpdated extends BaseEvent<TakaroEventShopStockUpdated> {
+  @IsString()
+  type = TakaroEvents.SHOP_STOCK_UPDATED;
+  
+  @IsUUID()
+  listingId: string;
+  
+  @IsString()
+  listingName: string;
+  
+  @IsNumber()
+  @IsOptional()
+  oldStock?: number;
+  
+  @IsNumber()
+  newStock: number;
+  
+  @IsBoolean()
+  stockManagementEnabled: boolean;
+}
+
 export class TakaroEventPlayerLinked extends BaseEvent<TakaroEventPlayerLinked> {
   @IsString()
   type = TakaroEvents.PLAYER_LINKED;
@@ -459,6 +493,8 @@ export const TakaroEventsMapping = {
   [TakaroEvents.SHOP_ORDER_CREATED]: TakaroEventShopOrderCreated,
   [TakaroEvents.SHOP_ORDER_STATUS_CHANGED]: TakaroEventShopOrderStatusChanged,
   [TakaroEvents.SHOP_ORDER_DELIVERY_FAILED]: TakaroEventShopOrderDeliveryFailed,
+  [TakaroEvents.SHOP_STOCK_EMPTY]: TakaroEventShopStockEmpty,
+  [TakaroEvents.SHOP_STOCK_UPDATED]: TakaroEventShopStockUpdated,
   [TakaroEvents.PLAYER_LINKED]: TakaroEventPlayerLinked,
   [TakaroEvents.GAMESERVER_CREATED]: TakaroEventGameserverCreated,
   [TakaroEvents.GAMESERVER_UPDATED]: TakaroEventGameserverUpdated,

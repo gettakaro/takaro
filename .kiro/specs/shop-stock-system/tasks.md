@@ -28,31 +28,31 @@ Add stock management fields to the shop listing table.
 ## Phase 2: Stock Management Implementation
 Implement the core stock management functionality.
 
-- [ ] Task 4: Add stock repository methods
+- [x] Task 4: Add stock repository methods
   - **Prompt**: Implement decrementStock and incrementStock methods in ShopListingRepo. These should use atomic SQL operations (UPDATE with WHERE clause checking sufficient stock). Use the existing raw() method which automatically uses context transaction if available. Include proper error handling for insufficient stock.
   - **Requirements**: REQ-009, REQ-010
   - **Design ref**: Section "ShopListingRepo New Methods"
   - **Files**: packages/app-api/src/db/shopListing.ts
 
-- [ ] Task 5: Implement stock validation in createOrder
+- [x] Task 5: Implement stock validation in createOrder
   - **Prompt**: Modify the createOrder method in ShopListingService to wrap all operations in ctx.runInTransaction and include stock validation. Within the transaction: check if stockManagementEnabled is true, validate sufficient stock, and decrement stock atomically along with currency deduction and order creation. Ensure all repository operations use the context transaction automatically.
   - **Requirements**: REQ-007, REQ-008, REQ-009, REQ-010, REQ-011
   - **Design ref**: Section "ShopListingService Extensions"
   - **Files**: packages/app-api/src/service/Shop/index.ts
 
-- [ ] Task 6: Implement stock restoration in cancelOrder
+- [x] Task 6: Implement stock restoration in cancelOrder
   - **Prompt**: Update the cancelOrder method in ShopListingService to wrap all operations in ctx.runInTransaction, including stock restoration when an order is canceled. Within the transaction: update order status, refund currency, and restore stock if stockManagementEnabled is true for the listing. All repository operations will automatically use the context transaction.
   - **Requirements**: REQ-012
   - **Design ref**: Section "ShopListingService cancelOrder() Method Extension"
   - **Files**: packages/app-api/src/service/Shop/index.ts
 
-- [ ] Task 7: Update listing update method for stock management
+- [x] Task 7: Update listing update method for stock management
   - **Prompt**: Enhance the update method in ShopListingService to handle stock management changes. Validate that stock quantity is provided when enabling stock management. Emit SHOP_STOCK_UPDATED event when stock changes.
   - **Requirements**: REQ-005, REQ-006, REQ-022
   - **Design ref**: Section "ShopListingService update() Method Extension"
   - **Files**: packages/app-api/src/service/Shop/index.ts
 
-- [ ] Task 8: Handle stock in listing deletion
+- [x] Task 8: Handle stock in listing deletion
   - **Prompt**: Update the delete method in ShopListingService to handle orders properly when a listing with stock management is deleted. The existing code already cancels pending orders, which will trigger stock restoration through the cancelOrder method.
   - **Requirements**: REQ-014
   - **Design ref**: Section "Implementation Details"
@@ -61,13 +61,13 @@ Implement the core stock management functionality.
 ## Phase 3: Event System Integration
 Add stock-related events to the system.
 
-- [ ] Task 9: Define stock event types and data classes
+- [x] Task 9: Define stock event types and data classes
   - **Prompt**: Add SHOP_STOCK_EMPTY and SHOP_STOCK_UPDATED to TakaroEvents constant. Create TakaroEventShopStockEmpty and TakaroEventShopStockUpdated classes extending BaseEvent with proper validation decorators. Include fields: listingId (UUID), listingName (string), and for stock updated: oldStock (optional number), newStock (number), stockManagementEnabled (boolean).
   - **Requirements**: REQ-021, REQ-022
   - **Design ref**: Section "Event System Extensions"
   - **Files**: packages/lib-modules/src/dto/takaroEvents.ts
 
-- [ ] Task 10: Emit stock events in service methods
+- [x] Task 10: Emit stock events in service methods
   - **Prompt**: Add event emission for SHOP_STOCK_EMPTY when stock reaches zero after a purchase in createOrder. Emit SHOP_STOCK_UPDATED in the update method when stock values change. Ensure events are emitted after transaction commit.
   - **Requirements**: REQ-021, REQ-022
   - **Design ref**: Section "ShopListingService Extensions"
@@ -118,29 +118,29 @@ Add comprehensive tests for stock management functionality.
 ## Phase 6: Frontend Integration
 Update the frontend to display stock information and handle stock events.
 
-- [ ] Task 17: Add stock event handling in EventItem
+- [x] Task 17: Add stock event handling in EventItem
   - **Prompt**: Add case statements for ShopStockEmpty and ShopStockUpdated events in EventItem.tsx switch statement. Display appropriate event properties including gameserver, listing name, and stock values. Follow the existing pattern for shop events around line 200.
   - **Requirements**: Design ref Frontend section
   - **Design ref**: Section "Event Display in EventItem.tsx"
   - **Files**: packages/web-main/src/components/events/EventFeed/EventItem.tsx
 
-- [ ] Task 18: Update event categorization for stock events
+- [x] Task 18: Update event categorization for stock events
   - **Prompt**: Add ShopStockEmpty and ShopStockUpdated to the Economy category in eventNames.tsx. Import the enum values and add them to the events array.
   - **Requirements**: Design ref Frontend section
   - **Design ref**: Section "Event Categorization Update"
   - **Files**: packages/web-main/src/components/selects/EventNameSelectField/eventNames.tsx
 
-- [ ] Task 19: Update ShopListingCard to display stock
+- [x] Task 19: Update ShopListingCard to display stock
   - **Prompt**: Modify ShopListingCard component to display stock information when stockManagementEnabled is true. Show "Out of Stock" for zero stock, "Stock: X" for available items, or no stock display for unlimited items. Style out-of-stock items appropriately.
   - **Requirements**: REQ-010, REQ-016, REQ-017
   - **Design ref**: Section "Frontend Event Integration"
   - **Files**: packages/web-main/src/components/cards/ShopListingCard/index.tsx
 
-- [ ] Task 20: Add stock management UI in shop admin
+- [x] Task 20: Add stock management UI in shop admin
   - **Prompt**: Update the shop listing form to include stock management controls: a toggle for stockManagementEnabled and a number input for stock quantity (shown only when enabled). Add validation to require stock value when enabling stock management.
   - **Requirements**: REQ-001, REQ-005, REQ-006
   - **Design ref**: Section "Components and Interfaces"
-  - **Files**: packages/web-main/src/routes/_auth/gameserver.$gameServerId/shop/listing.create.tsx, packages/web-main/src/routes/_auth/gameserver.$gameServerId/shop/listing.$listingId.update.tsx
+  - **Files**: packages/web-main/src/routes/_auth/gameserver.$gameServerId/-components/-ShopListingCreateUpdateForm.tsx
 
 ## Phase 7: Documentation
 Update user-facing documentation for the stock management feature.

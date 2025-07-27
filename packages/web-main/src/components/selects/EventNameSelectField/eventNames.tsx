@@ -53,6 +53,8 @@ export const categorizedEventNames = [
       e.ShopListingCreated,
       e.ShopListingUpdated,
       e.ShopListingDeleted,
+      e.ShopStockEmpty,
+      e.ShopStockUpdated,
     ],
   },
   {

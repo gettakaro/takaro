@@ -54,6 +54,8 @@ const validationSchema = z.object({
   price: z.number().min(0, 'Price is required.'),
   draft: z.boolean().optional(),
   categoryIds: z.array(z.string()).optional(),
+  stockManagementEnabled: z.boolean().optional(),
+  stock: z.number().min(0, 'Stock must be 0 or greater').optional(),
   items: z
     .array(
       z.object({
@@ -63,7 +65,19 @@ const validationSchema = z.object({
       }),
     )
     .min(1, 'At least one item is required'),
-});
+}).refine(
+  (data) => {
+    // If stock management is enabled, stock must be provided
+    if (data.stockManagementEnabled === true && data.stock === undefined) {
+      return false;
+    }
+    return true;
+  },
+  {
+    message: 'Stock quantity is required when stock management is enabled',
+    path: ['stock'],
+  }
+);
 
 export type FormValues = z.infer<typeof validationSchema>;
 
@@ -88,6 +102,8 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
       price: 0,
       draft: undefined,
       categoryIds: [],
+      stockManagementEnabled: false,
+      stock: undefined,
       items: [{ itemId: '', amount: 1, quality: '' }],
     },
   });
@@ -115,6 +131,8 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
         price: initialData.price,
         draft: initialData.draft !== undefined ? initialData.draft : undefined,
         categoryIds: initialData.categories ? initialData.categories.map((cat) => cat.id) : [],
+        stockManagementEnabled: initialData.stockManagementEnabled || false,
+        stock: initialData.stock,
         items: initialData.items.map((shopListingItemMeta) => {
           return {
             amount: shopListingItemMeta.amount,
@@ -158,6 +176,26 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
               loading={isLoading}
               description="The shop listing cannot be bought and will not be shown to users who don't have MANAGE_SHOP_LISTINGS permissions."
             />
+            <Switch
+              readOnly={readOnly}
+              control={control}
+              name="stockManagementEnabled"
+              label="Enable Stock Management"
+              loading={isLoading}
+              description="Enable inventory tracking for this listing. When enabled, stock will be checked before purchases."
+            />
+            {watch('stockManagementEnabled') && (
+              <TextField
+                control={control}
+                type="number"
+                name="stock"
+                label="Stock Quantity"
+                readOnly={readOnly}
+                loading={isLoading}
+                required
+                description="Current available stock. Set to 0 to prevent purchases."
+              />
+            )}
             <CategorySelector
               selectedCategoryIds={watch('categoryIds') || []}
               onChange={(categoryIds) => setValue('categoryIds', categoryIds)}

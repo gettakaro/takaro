@@ -239,6 +239,26 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
+    case EventOutputDTOEventNameEnum.ShopStockEmpty:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty name="listing" value={meta?.listingName} />
+          <EventProperty name="listing id" value={meta?.listingId} />
+        </>
+      );
+      break;
+    case EventOutputDTOEventNameEnum.ShopStockUpdated:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty name="listing" value={meta?.listingName} />
+          <EventProperty name="old stock" value={meta?.oldStock ?? 'N/A'} />
+          <EventProperty name="new stock" value={meta?.newStock} />
+          <EventProperty name="stock enabled" value={meta?.stockManagementEnabled ? 'Yes' : 'No'} />
+        </>
+      );
+      break;
     case EventOutputDTOEventNameEnum.PlayerLinked:
       properties = (
         <>

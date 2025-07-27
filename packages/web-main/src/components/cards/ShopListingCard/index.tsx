@@ -59,6 +59,15 @@ export const ShopListingCard: FC<ShopListingCard> = ({
                 <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
               </Avatar>
               <h2>{shopListingName}</h2>
+              {shopListing.stockManagementEnabled && (
+                <div style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}>
+                  {shopListing.stock === 0 ? (
+                    <Chip color="error" label="Out of Stock" />
+                  ) : (
+                    <Chip color="primary" label={`Stock: ${shopListing.stock}`} />
+                  )}
+                </div>
+              )}
               {shopListing.categories && shopListing.categories.length > 0 && (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
                   {shopListing.categories.map((category) => (
@@ -100,6 +109,7 @@ export const ShopListingCard: FC<ShopListingCard> = ({
               shopListingId={shopListing.id}
               playerCurrencyAmount={playerCurrencyAmount}
               price={shopListing.price}
+              isOutOfStock={shopListing.stockManagementEnabled && shopListing.stock === 0}
             />
           </CardBody>{' '}
         </Card.Body>

@@ -373,4 +373,50 @@ export class ShopListingRepo extends ITakaroRepo<
     const { query } = await this.getModel();
     await query.where('gameServerId', gameServerId).update({ deletedAt: new Date() });
   }
+
+  async decrementStock(listingId: string, amount: number): Promise<ShopListingOutputDTO> {
+    const result = await this.raw(
+      `
+      UPDATE "shopListing" 
+      SET stock = stock - ? 
+      WHERE id = ? 
+        AND "stockManagementEnabled" = true 
+        AND stock >= ?
+      RETURNING *;
+      `,
+      [amount, listingId, amount]
+    );
+
+    if (result.rowCount === 0) {
+      // Check if it's because of insufficient stock or listing not found
+      const listing = await this.findOne(listingId);
+      if (listing.stockManagementEnabled && listing.stock !== null && listing.stock !== undefined && listing.stock < amount) {
+        throw new errors.BadRequestError(
+          `Insufficient stock. Available: ${listing.stock}, Requested: ${amount}`
+        );
+      }
+      throw new errors.BadRequestError('Unable to decrement stock');
+    }
+
+    return this.findOne(listingId);
+  }
+
+  async incrementStock(listingId: string, amount: number): Promise<ShopListingOutputDTO> {
+    const result = await this.raw(
+      `
+      UPDATE "shopListing"
+      SET stock = stock + ?
+      WHERE id = ?
+        AND "stockManagementEnabled" = true
+      RETURNING *;
+      `,
+      [amount, listingId]
+    );
+
+    if (result.rowCount === 0) {
+      throw new errors.NotFoundError('Listing not found or stock management not enabled');
+    }
+
+    return this.findOne(listingId);
+  }
 }

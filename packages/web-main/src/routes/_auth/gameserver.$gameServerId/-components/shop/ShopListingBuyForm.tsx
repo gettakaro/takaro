@@ -13,6 +13,7 @@ interface ShopListingBuyFormProps {
   price: number;
   currencyName: string;
   isDraft: boolean;
+  isOutOfStock?: boolean;
 }
 
 const validationSchema = z.object({
@@ -25,6 +26,7 @@ export const ShopListingBuyForm: FC<ShopListingBuyFormProps> = ({
   price,
   isDraft,
   currencyName,
+  isOutOfStock = false,
 }) => {
   const { enqueueSnackbar } = useSnackbar();
   const { mutateAsync: createShopOrderMutate, isPending: isPendingShopOrderCreate } = useShopOrderCreate();
@@ -67,9 +69,9 @@ export const ShopListingBuyForm: FC<ShopListingBuyFormProps> = ({
         isLoading={isPendingShopOrderCreate}
         fullWidth
         type="submit"
-        disabled={playerCurrencyAmount < price || isDraft}
+        disabled={playerCurrencyAmount < price || isDraft || isOutOfStock}
       >
-        Buy for {price * watch('amount')} {currencyName}
+        {isOutOfStock ? 'Out of Stock' : `Buy for ${price * watch('amount')} ${currencyName}`}
       </Button>
     </form>
   );
