@@ -570,7 +570,6 @@ export class GameDataHandler {
         name: 'Stone',
         description: 'Stone can get you stoned',
         amount: 1,
-        // No quality for stone to test null quality
       }),
     ];
   }
@@ -589,7 +588,6 @@ export class GameDataHandler {
         name: 'Stone',
         description: 'Stone can get you stoned',
         quantity: 1,
-        // No quality for stone to test null quality
       },
     ];
   }
