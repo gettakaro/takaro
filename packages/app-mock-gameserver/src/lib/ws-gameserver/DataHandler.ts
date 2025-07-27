@@ -18,6 +18,7 @@ export interface IInventoryItem {
   name: string;
   description: string;
   quantity: number;
+  quality?: string;
 }
 
 export class GameDataHandler {
@@ -440,6 +441,8 @@ export class GameDataHandler {
             code: item.code,
             name: item.name,
             description: item.description,
+            amount: item.quantity,
+            quality: item.quality,
           }),
       );
     } catch (error) {
@@ -529,7 +532,8 @@ export class GameDataHandler {
         code: item.code,
         name: item.name,
         description: item.description,
-        quantity: 1,
+        quantity: item.amount || 1,
+        quality: item.quality,
       }));
 
       await this.setPlayerInventory(gameId, inventoryItems);
@@ -558,11 +562,15 @@ export class GameDataHandler {
         code: 'wood',
         name: 'Wood',
         description: 'Wood is good',
+        amount: 1,
+        quality: 'high',
       }),
       new IItemDTO({
         code: 'stone',
         name: 'Stone',
         description: 'Stone can get you stoned',
+        amount: 1,
+        // No quality for stone to test null quality
       }),
     ];
   }
@@ -574,12 +582,14 @@ export class GameDataHandler {
         name: 'Wood',
         description: 'Wood is good',
         quantity: 1,
+        quality: 'high',
       },
       {
         code: 'stone',
         name: 'Stone',
         description: 'Stone can get you stoned',
         quantity: 1,
+        // No quality for stone to test null quality
       },
     ];
   }

@@ -8219,6 +8219,12 @@ export interface PlayerInventoryOutputDTO {
   quantity: number;
   /**
    *
+   * @type {string}
+   * @memberof PlayerInventoryOutputDTO
+   */
+  quality?: string;
+  /**
+   *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof PlayerInventoryOutputDTO
    */

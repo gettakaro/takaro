@@ -47,6 +47,7 @@ export class PlayerInventoryTrackingModel extends TakaroModel {
   playerId!: string;
   itemId!: string;
   quantity: number;
+  quality?: string;
 
   static get relationMappings() {
     return {
@@ -150,6 +151,7 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
           playerId,
           itemId: itemDef.id,
           quantity: item.amount,
+          quality: item.quality,
           domain: this.domainId,
           createdAt: observationTime,
         };
@@ -175,6 +177,7 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
           name: itemDef?.name || item.name,
           description: itemDef?.description || item.description,
           amount: item.amount,
+          quality: item.quality,
         });
       });
 
@@ -334,6 +337,7 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
         'items.name as itemName',
         'items.code as itemCode',
         'playerInventoryHistory.quantity',
+        'playerInventoryHistory.quality',
         'playerInventoryHistory.createdAt',
         `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as actualPlayerId`,
       )
