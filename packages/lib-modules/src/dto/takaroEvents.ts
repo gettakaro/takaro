@@ -387,10 +387,10 @@ export class TakaroEventShopOrderDeliveryFailed extends BaseEvent<TakaroEventSho
 export class TakaroEventShopStockEmpty extends BaseEvent<TakaroEventShopStockEmpty> {
   @IsString()
   type = TakaroEvents.SHOP_STOCK_EMPTY;
-  
+
   @IsUUID()
   listingId: string;
-  
+
   @IsString()
   listingName: string;
 }
@@ -398,20 +398,20 @@ export class TakaroEventShopStockEmpty extends BaseEvent<TakaroEventShopStockEmp
 export class TakaroEventShopStockUpdated extends BaseEvent<TakaroEventShopStockUpdated> {
   @IsString()
   type = TakaroEvents.SHOP_STOCK_UPDATED;
-  
+
   @IsUUID()
   listingId: string;
-  
+
   @IsString()
   listingName: string;
-  
+
   @IsNumber()
   @IsOptional()
   oldStock?: number;
-  
+
   @IsNumber()
   newStock: number;
-  
+
   @IsBoolean()
   stockManagementEnabled: boolean;
 }

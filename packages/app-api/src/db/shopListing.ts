@@ -384,16 +384,19 @@ export class ShopListingRepo extends ITakaroRepo<
         AND stock >= ?
       RETURNING *;
       `,
-      [amount, listingId, amount]
+      [amount, listingId, amount],
     );
 
     if (result.rowCount === 0) {
       // Check if it's because of insufficient stock or listing not found
       const listing = await this.findOne(listingId);
-      if (listing.stockManagementEnabled && listing.stock !== null && listing.stock !== undefined && listing.stock < amount) {
-        throw new errors.BadRequestError(
-          `Insufficient stock. Available: ${listing.stock}, Requested: ${amount}`
-        );
+      if (
+        listing.stockManagementEnabled &&
+        listing.stock !== null &&
+        listing.stock !== undefined &&
+        listing.stock < amount
+      ) {
+        throw new errors.BadRequestError(`Insufficient stock. Available: ${listing.stock}, Requested: ${amount}`);
       }
       throw new errors.BadRequestError('Unable to decrement stock');
     }
@@ -410,7 +413,7 @@ export class ShopListingRepo extends ITakaroRepo<
         AND "stockManagementEnabled" = true
       RETURNING *;
       `,
-      [amount, listingId]
+      [amount, listingId],
     );
 
     if (result.rowCount === 0) {

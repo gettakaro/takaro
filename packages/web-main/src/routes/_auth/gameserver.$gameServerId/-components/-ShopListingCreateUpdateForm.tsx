@@ -49,35 +49,37 @@ interface ShopListingCreateUpdateFormProps {
   gameServerId: string;
 }
 
-const validationSchema = z.object({
-  name: z.string().optional().nullable(),
-  price: z.number().min(0, 'Price is required.'),
-  draft: z.boolean().optional(),
-  categoryIds: z.array(z.string()).optional(),
-  stockManagementEnabled: z.boolean().optional(),
-  stock: z.number().min(0, 'Stock must be 0 or greater').optional(),
-  items: z
-    .array(
-      z.object({
-        amount: z.number().min(1, 'Amount must atleast be 1.'),
-        quality: z.string().optional(),
-        itemId: z.string().min(1, 'Item cannot be empty'),
-      }),
-    )
-    .min(1, 'At least one item is required'),
-}).refine(
-  (data) => {
-    // If stock management is enabled, stock must be provided
-    if (data.stockManagementEnabled === true && data.stock === undefined) {
-      return false;
-    }
-    return true;
-  },
-  {
-    message: 'Stock quantity is required when stock management is enabled',
-    path: ['stock'],
-  }
-);
+const validationSchema = z
+  .object({
+    name: z.string().optional().nullable(),
+    price: z.number().min(0, 'Price is required.'),
+    draft: z.boolean().optional(),
+    categoryIds: z.array(z.string()).optional(),
+    stockManagementEnabled: z.boolean().optional(),
+    stock: z.number().min(0, 'Stock must be 0 or greater').optional(),
+    items: z
+      .array(
+        z.object({
+          amount: z.number().min(1, 'Amount must atleast be 1.'),
+          quality: z.string().optional(),
+          itemId: z.string().min(1, 'Item cannot be empty'),
+        }),
+      )
+      .min(1, 'At least one item is required'),
+  })
+  .refine(
+    (data) => {
+      // If stock management is enabled, stock must be provided
+      if (data.stockManagementEnabled === true && data.stock === undefined) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: 'Stock quantity is required when stock management is enabled',
+      path: ['stock'],
+    },
+  );
 
 export type FormValues = z.infer<typeof validationSchema>;
 
