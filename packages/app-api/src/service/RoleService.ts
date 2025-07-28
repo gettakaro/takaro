@@ -76,7 +76,7 @@ export class RoleUpdateInputDTO extends TakaroDTO<RoleUpdateInputDTO> {
 
   @IsString()
   @IsOptional()
-  @Length(18, 18)
+  @Length(17, 20)
   linkedDiscordRoleId?: string;
 }
 
