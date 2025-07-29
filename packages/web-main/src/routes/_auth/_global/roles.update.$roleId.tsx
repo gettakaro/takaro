@@ -47,7 +47,7 @@ function Component() {
     };
 
     // Only include linkedDiscordRoleId if it has a value
-    if (linkedDiscordRoleId && linkedDiscordRoleId.length === 18) {
+    if (linkedDiscordRoleId) {
       roleDetails.linkedDiscordRoleId = linkedDiscordRoleId;
     }
 
