@@ -49,6 +49,11 @@ export class RoleCreateInputDTO extends TakaroDTO<RoleCreateInputDTO> {
   @ValidateNested({ each: true })
   @Type(() => PermissionInputDTO)
   permissions: PermissionInputDTO[];
+
+  @IsString()
+  @IsOptional()
+  @Length(17, 20)
+  linkedDiscordRoleId?: string;
 }
 
 export class ServiceRoleCreateInputDTO extends TakaroDTO<ServiceRoleCreateInputDTO> {
@@ -62,6 +67,11 @@ export class ServiceRoleCreateInputDTO extends TakaroDTO<ServiceRoleCreateInputD
   @IsBoolean()
   @IsOptional()
   system?: boolean;
+
+  @IsString()
+  @IsOptional()
+  @Length(17, 20)
+  linkedDiscordRoleId?: string;
 }
 
 export class RoleUpdateInputDTO extends TakaroDTO<RoleUpdateInputDTO> {
