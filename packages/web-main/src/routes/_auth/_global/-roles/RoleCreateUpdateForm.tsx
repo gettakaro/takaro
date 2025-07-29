@@ -40,7 +40,8 @@ const validationSchema = z.object({
   name: z.string().min(3).max(50),
   linkedDiscordRoleId: z
     .string()
-    .length(18)
+    .min(17)
+    .max(20)
     .nullable()
     .optional()
     .or(z.literal(''))
