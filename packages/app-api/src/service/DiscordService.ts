@@ -39,6 +39,7 @@ import { checkPermissions } from './AuthService.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { RoleService, RoleOutputDTO } from './RoleService.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
+import { PlayerService } from './Player/index.js';
 
 @ValidatorConstraint({ name: 'messageOrEmbed', async: false })
 class MessageOrEmbedConstraint implements ValidatorConstraintInterface {
@@ -874,6 +875,48 @@ export class DiscordService extends TakaroService<
     const userWithRoles = (await userService.findOne(userId)) as any;
     const userTakaroRoles = userWithRoles?.roles || [];
 
+    // Also get player roles if user has a linked player
+    let playerTakaroRoles: any[] = [];
+    if (user.playerId) {
+      try {
+        const playerService = new PlayerService(this.domainId);
+        const player = await playerService.findOne(user.playerId);
+        playerTakaroRoles = player.roleAssignments || [];
+        this.log.debug('Fetched player roles for Discord sync', {
+          userId,
+          playerId: user.playerId,
+          playerRoleCount: playerTakaroRoles.length,
+          playerRoles: playerTakaroRoles.map((r: any) => ({
+            roleId: r.roleId,
+            roleName: r.role?.name,
+            linkedDiscordRoleId: r.role?.linkedDiscordRoleId,
+          })),
+        });
+      } catch (error) {
+        this.log.error('Failed to fetch player roles for Discord sync', {
+          userId,
+          playerId: user.playerId,
+          error,
+        });
+      }
+    }
+
+    // Combine user and player roles for a complete picture
+    const allTakaroRoles = [...userTakaroRoles, ...playerTakaroRoles];
+
+    this.log.debug('Combined user and player roles for Discord sync', {
+      userId,
+      userRoleCount: userTakaroRoles.length,
+      playerRoleCount: playerTakaroRoles.length,
+      totalRoleCount: allTakaroRoles.length,
+      allRoles: allTakaroRoles.map((r: any) => ({
+        roleId: r.roleId || r.role?.id,
+        roleName: r.role?.name,
+        linkedDiscordRoleId: r.role?.linkedDiscordRoleId,
+        source: userTakaroRoles.includes(r) ? 'user' : 'player',
+      })),
+    });
+
     // Get ALL Discord guilds for this domain
     // Use findEnabledGuilds when in worker context (no user in ctx)
     const guilds = ctx.data.user
@@ -895,7 +938,7 @@ export class DiscordService extends TakaroService<
           user.discordId,
           guild.discordId,
           takaroRoles,
-          userTakaroRoles,
+          allTakaroRoles,
           settings.preferDiscord,
         );
         totalRolesAdded += result.rolesAdded;
