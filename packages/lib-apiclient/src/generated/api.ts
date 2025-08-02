@@ -8273,6 +8273,12 @@ export interface PlayerInventoryOutputDTO {
    * @type {string}
    * @memberof PlayerInventoryOutputDTO
    */
+  pogId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerInventoryOutputDTO
+   */
   itemId: string;
   /**
    *
@@ -8350,6 +8356,12 @@ export interface PlayerItemHistoryOutputDTO {
   playerId: string;
   /**
    *
+   * @type {string}
+   * @memberof PlayerItemHistoryOutputDTO
+   */
+  pogId: string;
+  /**
+   *
    * @type {number}
    * @memberof PlayerItemHistoryOutputDTO
    */
@@ -8410,6 +8422,12 @@ export interface PlayerLocationOutputDTO {
    * @memberof PlayerLocationOutputDTO
    */
   playerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerLocationOutputDTO
+   */
+  pogId: string;
   /**
    *
    * @type {number}
