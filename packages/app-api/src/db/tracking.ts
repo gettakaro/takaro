@@ -47,6 +47,7 @@ export class PlayerInventoryTrackingModel extends TakaroModel {
   playerId!: string;
   itemId!: string;
   quantity: number;
+  quality?: string;
 
   static get relationMappings() {
     return {
@@ -150,6 +151,7 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
           playerId,
           itemId: itemDef.id,
           quantity: item.amount,
+          quality: item.quality,
           domain: this.domainId,
           createdAt: observationTime,
         };
@@ -175,6 +177,7 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
           name: itemDef?.name || item.name,
           description: itemDef?.description || item.description,
           amount: item.amount,
+          quality: item.quality,
         });
       });
 
@@ -231,7 +234,11 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
 
     const qb = query
       .distinct()
-      .select('playerLocation.*', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as actualPlayerId`)
+      .select(
+        'playerLocation.*',
+        'playerLocation.playerId as pogId',
+        `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as playerId`,
+      )
       .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerLocation.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
       .where('playerLocation.createdAt', '>=', startDate);
 
@@ -255,7 +262,8 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     return result.map((item: any) => {
       return new PlayerLocationOutputDTO({
         ...item,
-        playerId: item.actualPlayerId,
+        pogId: item.pogId,
+        playerId: item.playerId,
       });
     });
   }
@@ -266,7 +274,11 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
 
     const qb = query
       .distinct()
-      .select('playerLocation.*', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as actualPlayerId`)
+      .select(
+        'playerLocation.*',
+        'playerLocation.playerId as pogId',
+        `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as playerId`,
+      )
       .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerLocation.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
       .where(`${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`, gameserverId)
       .andWhere('playerLocation.x', '>=', minX)
@@ -287,7 +299,8 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     return result.map((item: any) => {
       return new PlayerLocationOutputDTO({
         ...item,
-        playerId: item.actualPlayerId,
+        pogId: item.pogId,
+        playerId: item.playerId,
       });
     });
   }
@@ -298,7 +311,11 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
 
     const qb = query
       .distinct()
-      .select('playerLocation.*', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as actualPlayerId`)
+      .select(
+        'playerLocation.*',
+        'playerLocation.playerId as pogId',
+        `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as playerId`,
+      )
       .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerLocation.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
       .where(`${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`, gameserverId)
       .andWhereRaw(
@@ -317,7 +334,8 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     return result.map((item: any) => {
       return new PlayerLocationOutputDTO({
         ...item,
-        playerId: item.actualPlayerId,
+        pogId: item.pogId,
+        playerId: item.playerId,
       });
     });
   }
@@ -329,13 +347,14 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     const qb = query
       .distinct()
       .select(
-        'playerInventoryHistory.playerId',
+        'playerInventoryHistory.playerId as pogId',
         'playerInventoryHistory.itemId',
         'items.name as itemName',
         'items.code as itemCode',
         'playerInventoryHistory.quantity',
+        'playerInventoryHistory.quality',
         'playerInventoryHistory.createdAt',
-        `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as actualPlayerId`,
+        `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as playerId`,
       )
       .join('items', 'items.id', '=', 'playerInventoryHistory.itemId')
       .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerInventoryHistory.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
@@ -348,7 +367,8 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     return result.map((item: any) => {
       return new PlayerInventoryOutputDTO({
         ...item,
-        playerId: item.actualPlayerId,
+        pogId: item.pogId,
+        playerId: item.playerId,
       });
     });
   }
@@ -360,10 +380,10 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     const qb = query
       .distinct()
       .select(
-        'playerInventoryHistory.playerId',
+        'playerInventoryHistory.playerId as pogId',
         'playerInventoryHistory.quantity',
         'playerInventoryHistory.createdAt',
-        `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as actualPlayerId`,
+        `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId as playerId`,
       )
       .join(PLAYER_ON_GAMESERVER_TABLE_NAME, 'playerInventoryHistory.playerId', `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`)
       .where('playerInventoryHistory.itemId', itemId);
@@ -382,7 +402,8 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     return result.map((item: any) => {
       return new PlayerItemHistoryOutputDTO({
         ...item,
-        playerId: item.actualPlayerId,
+        pogId: item.pogId,
+        playerId: item.playerId,
       });
     });
   }

@@ -28,6 +28,8 @@ import { GameServerService } from '../GameServerService.js';
 import { IMessageOptsDTO } from '@takaro/gameserver';
 import { PlayerSearchInputDTO } from '../../controllers/PlayerController.js';
 import { PlayerOutputDTO, PlayerCreateDTO, PlayerUpdateDTO, PlayerOutputWithRolesDTO } from './dto.js';
+import { UserService } from '../User/index.js';
+import { DiscordService } from '../DiscordService.js';
 
 const ipLookup = await open(GeoIpDbName.City, (path) => maxmind.open<CityResponse>(path));
 
@@ -252,6 +254,28 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         meta: new TakaroEventRoleAssigned({ role }),
       }),
     );
+
+    // Sync Discord roles if the player has a linked user account
+    try {
+      const userService = new UserService(this.domainId);
+      const users = await userService.find({ filters: { playerId: [targetId] } });
+
+      if (users.results.length > 0) {
+        const user = users.results[0];
+        if (user.discordId) {
+          this.log.info('Syncing Discord roles for player-linked user', { playerId: targetId, userId: user.id });
+          const discordService = new DiscordService(this.domainId);
+          await discordService.syncUserRoles(user.id);
+        }
+      }
+    } catch (error) {
+      // Log error but don't throw - we don't want to break role assignment
+      this.log.error('Failed to sync Discord roles after player role assignment', {
+        playerId: targetId,
+        roleId,
+        error,
+      });
+    }
   }
 
   async removeRole(roleId: string, targetId: string, gameserverId?: string) {
@@ -270,6 +294,31 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         meta: new TakaroEventRoleRemoved({ role: { id: role.id, name: role.name } }),
       }),
     );
+
+    // Sync Discord roles if the player has a linked user account
+    try {
+      const userService = new UserService(this.domainId);
+      const users = await userService.find({ filters: { playerId: [targetId] } });
+
+      if (users.results.length > 0) {
+        const user = users.results[0];
+        if (user.discordId) {
+          this.log.info('Syncing Discord roles for player-linked user after role removal', {
+            playerId: targetId,
+            userId: user.id,
+          });
+          const discordService = new DiscordService(this.domainId);
+          await discordService.syncUserRoles(user.id);
+        }
+      }
+    } catch (error) {
+      // Log error but don't throw - we don't want to break role removal
+      this.log.error('Failed to sync Discord roles after player role removal', {
+        playerId: targetId,
+        roleId,
+        error,
+      });
+    }
   }
 
   private async batchRemoveRoles(
@@ -305,6 +354,33 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
 
     // Batch create all events
     await Promise.all(events.map((event) => eventService.create(event)));
+
+    // Sync Discord roles for all affected players with linked user accounts
+    try {
+      const userService = new UserService(this.domainId);
+      const uniquePlayerIds = [...new Set(expiredRoles.map((r) => r.playerId))];
+
+      for (const playerId of uniquePlayerIds) {
+        const users = await userService.find({ filters: { playerId: [playerId] } });
+
+        if (users.results.length > 0) {
+          const user = users.results[0];
+          if (user.discordId) {
+            this.log.info('Syncing Discord roles for player-linked user after batch role removal', {
+              playerId,
+              userId: user.id,
+            });
+            const discordService = new DiscordService(this.domainId);
+            await discordService.syncUserRoles(user.id);
+          }
+        }
+      }
+    } catch (error) {
+      // Log error but don't throw - we don't want to break the batch role removal
+      this.log.error('Failed to sync Discord roles after batch player role removal', {
+        error,
+      });
+    }
   }
 
   /**
