@@ -6,6 +6,8 @@ export class PlayerLocationOutputDTO extends TakaroModelDTO<PlayerLocationOutput
   id: string;
   @IsUUID('4')
   playerId: string;
+  @IsUUID('4')
+  pogId: string;
   @IsNumber({ allowNaN: false, allowInfinity: false })
   x: number;
   @IsNumber({ allowNaN: false, allowInfinity: false })
@@ -77,6 +79,8 @@ export class PlayerInventoryOutputDTO extends TakaroModelDTO<PlayerInventoryOutp
   @IsUUID('4')
   playerId: string;
   @IsUUID('4')
+  pogId: string;
+  @IsUUID('4')
   itemId: string;
   @IsString()
   itemName: string;
@@ -111,6 +115,8 @@ export class PlayersByItemInputDTO extends TakaroDTO<PlayersByItemInputDTO> {
 export class PlayerItemHistoryOutputDTO extends TakaroModelDTO<PlayerItemHistoryOutputDTO> {
   @IsUUID('4')
   playerId: string;
+  @IsUUID('4')
+  pogId: string;
   @IsNumber({ allowNaN: false, allowInfinity: false })
   quantity: number;
   @IsISO8601()
