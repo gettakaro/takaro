@@ -17,6 +17,7 @@ interface InventoryDataPoint {
   playerId: string;
   itemId: string;
   quantity: number;
+  quality?: string;
   timestamp: Date;
 }
 
@@ -203,6 +204,7 @@ async function setupInventoryData(
               playerId: pog.id,
               itemId: items[0].id,
               quantity: 5,
+              quality: 'high',
               timestamp: new Date(baseTime.getTime() + hour * 3600000),
             });
           }
@@ -211,6 +213,7 @@ async function setupInventoryData(
               playerId: pog.id,
               itemId: items[1].id,
               quantity: 3,
+              // No quality for this item to test null quality
               timestamp: new Date(baseTime.getTime() + hour * 3600000),
             });
           }
@@ -269,6 +272,7 @@ async function setupInventoryData(
       playerId: pogs[0].id,
       itemId: items[0].id,
       quantity: 99,
+      quality: 'legendary',
       timestamp: new Date('2024-01-15T12:00:00Z'),
     });
   }
@@ -285,6 +289,7 @@ async function setupInventoryData(
       playerId: point.playerId,
       itemId: point.itemId,
       quantity: point.quantity,
+      quality: point.quality,
       createdAt: point.timestamp.toISOString(),
       domain: domainId,
     }));
@@ -984,7 +989,24 @@ const tests = [
       // Verify all returned data belongs to the requested player
       data.forEach((item) => {
         expect(item.playerId).to.equal(testPoint.playerId);
+        // Verify quality field exists (even if null)
+        expect(item).to.have.property('quality');
       });
+
+      // Verify the quality field exists on all items
+      expect(data.every((item) => 'quality' in item)).to.be.true;
+
+      // Find the legendary quality item we added - this MUST exist
+      const legendaryItem = data.find((item) => item.quantity === 99);
+      expect(legendaryItem).to.exist;
+      expect(legendaryItem!.quality).to.equal('legendary');
+
+      // For this specific test with the limited date range, we're primarily
+      // verifying that the legendary item has quality. The test setup adds
+      // many items over time, but this query is for a specific 2-day window
+      // where we know the legendary item exists.
+      const itemsWithQuality = data.filter((item) => item.quality !== null && item.quality !== undefined);
+      expect(itemsWithQuality.length).to.be.greaterThan(0, 'Expected to find at least one item with quality');
     },
   }),
 
@@ -1019,6 +1041,8 @@ const tests = [
         const itemDate = new Date(item.createdAt);
         expect(itemDate.getTime()).to.be.greaterThanOrEqual(new Date(startDate).getTime());
         expect(itemDate.getTime()).to.be.lessThanOrEqual(new Date(endDate).getTime());
+        // Verify quality field exists
+        expect(item).to.have.property('quality');
       });
     },
   }),

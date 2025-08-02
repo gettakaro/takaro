@@ -88,6 +88,9 @@ export class PlayerInventoryOutputDTO extends TakaroModelDTO<PlayerInventoryOutp
   itemCode: string;
   @IsNumber({ allowNaN: false, allowInfinity: false })
   quantity: number;
+  @IsString()
+  @IsOptional()
+  quality?: string;
   @IsISO8601()
   createdAt: string;
 }
