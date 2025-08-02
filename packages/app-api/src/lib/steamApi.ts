@@ -1,6 +1,6 @@
-import axios, { AxiosError, AxiosInstance } from 'axios';
+import { AxiosError, AxiosInstance } from 'axios';
 import { config } from '../config.js';
-import { addCounterToAxios, errors, logger } from '@takaro/util';
+import { addCounterToAxios, errors, logger, createAxios } from '@takaro/util';
 import { Redis } from '@takaro/db';
 import ms from 'ms';
 
@@ -45,10 +45,13 @@ class SteamApi {
 
   get client() {
     if (!this._client) {
-      this._client = axios.create({
-        baseURL: 'https://api.steampowered.com',
-        timeout: 10000,
-      });
+      this._client = createAxios(
+        {
+          baseURL: 'https://api.steampowered.com',
+          timeout: 10000,
+        },
+        { logger: this.log },
+      );
 
       addCounterToAxios(this._client, {
         name: 'steam_api_requests_total',
@@ -78,51 +81,14 @@ class SteamApi {
         return config;
       });
 
-      this._client.interceptors.request.use((request) => {
-        this.log.debug(`➡️ ${request.method?.toUpperCase()} ${request.url}`, {
-          method: request.method,
-          url: request.url,
-        });
-        return request;
-      });
-
       this._client.interceptors.response.use(
         (response) => {
-          this.log.debug(
-            `⬅️ ${response.request.method?.toUpperCase()} ${response.request.path} ${response.status} ${
-              response.statusText
-            }`,
-            {
-              status: response.status,
-              statusText: response.statusText,
-              method: response.request.method,
-              url: response.request.url,
-            },
-          );
-
           return response;
         },
         async (error: AxiosError) => {
-          let details = {};
-
-          if (error.response?.data) {
-            const data = error.response.data as Record<string, unknown>;
-            details = JSON.stringify(data.meta);
-          }
-
           if (error.response?.status === 429) {
             await this.setRateLimited();
           }
-
-          this.log.error('☠️ Request errored', {
-            traceId: error.response?.headers['x-trace-id'],
-            details,
-            status: error.response?.status,
-            statusText: error.response?.statusText,
-            method: error.config?.method,
-            url: error.config?.url,
-            response: error.response?.data,
-          });
           return Promise.reject(error);
         },
       );

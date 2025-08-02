@@ -1,9 +1,9 @@
 import { TakaroService } from './Base.js';
 
-import { TakaroDTO, errors, traceableClass } from '@takaro/util';
+import { TakaroDTO, errors, traceableClass, createAxios } from '@takaro/util';
 import { TakaroModel } from '@takaro/db';
 import { ITakaroRepo, PaginatedOutput } from '../db/base.js';
-import { Axios } from 'axios';
+import { AxiosInstance } from 'axios';
 import { IsObject } from 'class-validator';
 import { config } from '../config.js';
 import { CountryStatsInputDTO, EventsCountInputDTO } from '../controllers/StatsController.js';
@@ -16,9 +16,14 @@ export class StatsOutputDTO extends TakaroDTO<StatsOutputDTO> {
 
 @traceableClass('service:stats')
 export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, TakaroDTO<void>, TakaroDTO<void>> {
-  private promClient = new Axios({
-    baseURL: config.get('metrics.prometheusUrl'),
-  });
+  private promClient: AxiosInstance = createAxios(
+    {
+      baseURL: config.get('metrics.prometheusUrl'),
+    },
+    {
+      logger: this.log,
+    },
+  );
   get repo(): ITakaroRepo<TakaroModel, TakaroDTO<void>, TakaroDTO<void>, TakaroDTO<void>> {
     // Dummy since we're not talking to our DB here
     return {} as ITakaroRepo<TakaroModel, TakaroDTO<void>, TakaroDTO<void>, TakaroDTO<void>>;
@@ -60,7 +65,7 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
       },
     });
 
-    const parsed = JSON.parse(response.data);
+    const parsed = response.data;
 
     if (parsed.status !== 'success') throw new errors.InternalServerError();
     if (parsed.data.result.length === 0) return [];

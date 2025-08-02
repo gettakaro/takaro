@@ -21,7 +21,7 @@ describe('Ory', () => {
 
     // Make sure they're gone
     await expect(ory.getIdentity(identities[0].id)).to.eventually.be.rejectedWith(
-      'Request failed with status code 404',
+      'Request failed with status 404 Not Found',
     );
   });
 });

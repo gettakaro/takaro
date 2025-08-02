@@ -18,3 +18,5 @@ export { retry } from './retry.js';
 export { DomainScoped } from './DomainScoped.js';
 
 export { PostHog } from './posthog.js';
+
+export { createAxios, CleanAxiosError } from './http.js';
