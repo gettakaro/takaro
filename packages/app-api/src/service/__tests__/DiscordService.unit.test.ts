@@ -206,6 +206,20 @@ describe('DiscordService', () => {
     sandbox.stub(PlayerService.prototype, 'findOne').callsFake(function (this: PlayerService, id: string) {
       return mockPlayerService.findOne(id);
     });
+    sandbox.stub(PlayerService.prototype, 'assignRole').callsFake(function (
+      this: PlayerService,
+      roleId: string,
+      targetId: string,
+    ) {
+      return mockPlayerService.assignRole(roleId, targetId);
+    });
+    sandbox.stub(PlayerService.prototype, 'removeRole').callsFake(function (
+      this: PlayerService,
+      roleId: string,
+      targetId: string,
+    ) {
+      return mockPlayerService.removeRole(roleId, targetId);
+    });
   });
 
   afterEach(() => {
@@ -1527,6 +1541,215 @@ describe('DiscordService', () => {
         await service.handleDiscordMemberUpdate(oldMember, newMember);
 
         expect(mockUserService.find).not.to.have.been.called;
+      });
+    });
+
+    describe('Player role sync with Discord as source', () => {
+      it('should remove player role when Discord is source and Discord role is removed', async () => {
+        // Setup user with linked player
+        const userWithPlayer = Object.assign(new UserOutputWithRolesDTO(), mockUser.toJSON(), {
+          playerId: 'player-123',
+          roles: [
+            new UserAssignmentOutputDTO({
+              userId: mockUser.id,
+              roleId: 'user-role-1',
+              role: new RoleOutputDTO({ id: 'user-role-1', name: 'UserRole' }),
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            }),
+          ],
+        });
+
+        // Setup player with roles
+        const mockPlayer = {
+          id: 'player-123',
+          roleAssignments: [
+            {
+              roleId: mockTakaroRole.id,
+              playerId: 'player-123',
+              role: mockTakaroRole,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+          ],
+        };
+
+        mockUserService.findOne.resolves(userWithPlayer);
+        mockPlayerService.findOne.resolves(mockPlayer as any);
+
+        // Discord member has no roles
+        sandbox.stub(discordBot, 'getMemberRoles').resolves([]);
+
+        // Mock Discord-linked roles
+        mockRoleService.getDiscordLinkedRoles.resolves([mockTakaroRole]);
+
+        // Mock guild find
+        stubGuildFind([mockGuild]);
+
+        // Enable sync with Discord as source
+        mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncEnabled).resolves(
+          new SettingsOutputDTO({
+            key: SETTINGS_KEYS.discordRoleSyncEnabled,
+            value: 'true',
+            type: SettingsMode.Override,
+            description: 'Enable or disable automatic role synchronization between Discord and Takaro',
+            canHaveGameServerOverride: false,
+          }),
+        );
+        mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncPreferDiscord).resolves(
+          new SettingsOutputDTO({
+            key: SETTINGS_KEYS.discordRoleSyncPreferDiscord,
+            value: 'true',
+            type: SettingsMode.Override,
+            description: 'When enabled, Discord roles will override Takaro roles during synchronization',
+            canHaveGameServerOverride: false,
+          }),
+        );
+
+        await service.syncUserRoles(mockUser.id);
+
+        // Should remove role from player, not user
+        expect(PlayerService.prototype.removeRole).to.have.been.calledWith(mockTakaroRole.id, 'player-123');
+        expect(mockUserService.removeRole).not.to.have.been.called;
+      });
+
+      it('should add player role when Discord is source and Discord role is added', async () => {
+        // Setup user with linked player but no Takaro roles
+        const userWithPlayer = Object.assign(new UserOutputWithRolesDTO(), mockUser.toJSON(), {
+          playerId: 'player-123',
+          roles: [],
+        });
+
+        // Setup player with no roles
+        const mockPlayer = {
+          id: 'player-123',
+          roleAssignments: [],
+        };
+
+        mockUserService.findOne.resolves(userWithPlayer);
+        mockPlayerService.findOne.resolves(mockPlayer as any);
+
+        // Discord member has the linked role
+        sandbox.stub(discordBot, 'getMemberRoles').resolves(['111111111111111111']);
+
+        // Mock Discord-linked roles
+        mockRoleService.getDiscordLinkedRoles.resolves([mockTakaroRole]);
+
+        // Mock guild find
+        stubGuildFind([mockGuild]);
+
+        // Enable sync with Discord as source
+        mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncEnabled).resolves(
+          new SettingsOutputDTO({
+            key: SETTINGS_KEYS.discordRoleSyncEnabled,
+            value: 'true',
+            type: SettingsMode.Override,
+            description: 'Enable or disable automatic role synchronization between Discord and Takaro',
+            canHaveGameServerOverride: false,
+          }),
+        );
+        mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncPreferDiscord).resolves(
+          new SettingsOutputDTO({
+            key: SETTINGS_KEYS.discordRoleSyncPreferDiscord,
+            value: 'true',
+            type: SettingsMode.Override,
+            description: 'When enabled, Discord roles will override Takaro roles during synchronization',
+            canHaveGameServerOverride: false,
+          }),
+        );
+
+        await service.syncUserRoles(mockUser.id);
+
+        // Should add role to user (default behavior when adding from Discord)
+        expect(mockUserService.assignRole).to.have.been.calledWith(mockTakaroRole.id, mockUser.id);
+      });
+
+      it('should handle mixed user and player roles correctly', async () => {
+        // Setup user with both user and player roles
+        const userWithMixedRoles = Object.assign(new UserOutputWithRolesDTO(), mockUser.toJSON(), {
+          playerId: 'player-123',
+          roles: [
+            new UserAssignmentOutputDTO({
+              userId: mockUser.id,
+              roleId: 'user-role-1',
+              role: new RoleOutputDTO({
+                id: 'user-role-1',
+                name: 'UserRole',
+                linkedDiscordRoleId: '222222222222222222',
+              }),
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            }),
+          ],
+        });
+
+        // Setup player with roles
+        const mockPlayer = {
+          id: 'player-123',
+          roleAssignments: [
+            {
+              roleId: 'player-role-1',
+              playerId: 'player-123',
+              role: new RoleOutputDTO({
+                id: 'player-role-1',
+                name: 'PlayerRole',
+                linkedDiscordRoleId: '333333333333333333',
+              }),
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+          ],
+        };
+
+        mockUserService.findOne.resolves(userWithMixedRoles);
+        mockPlayerService.findOne.resolves(mockPlayer as any);
+
+        // Discord member only has the user role
+        sandbox.stub(discordBot, 'getMemberRoles').resolves(['222222222222222222']);
+
+        // Mock Discord-linked roles
+        mockRoleService.getDiscordLinkedRoles.resolves([
+          new RoleOutputDTO({
+            id: 'user-role-1',
+            name: 'UserRole',
+            linkedDiscordRoleId: '222222222222222222',
+          }),
+          new RoleOutputDTO({
+            id: 'player-role-1',
+            name: 'PlayerRole',
+            linkedDiscordRoleId: '333333333333333333',
+          }),
+        ]);
+
+        // Mock guild find
+        stubGuildFind([mockGuild]);
+
+        // Enable sync with Discord as source
+        mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncEnabled).resolves(
+          new SettingsOutputDTO({
+            key: SETTINGS_KEYS.discordRoleSyncEnabled,
+            value: 'true',
+            type: SettingsMode.Override,
+            description: 'Enable or disable automatic role synchronization between Discord and Takaro',
+            canHaveGameServerOverride: false,
+          }),
+        );
+        mockSettingsService.get.withArgs(SETTINGS_KEYS.discordRoleSyncPreferDiscord).resolves(
+          new SettingsOutputDTO({
+            key: SETTINGS_KEYS.discordRoleSyncPreferDiscord,
+            value: 'true',
+            type: SettingsMode.Override,
+            description: 'When enabled, Discord roles will override Takaro roles during synchronization',
+            canHaveGameServerOverride: false,
+          }),
+        );
+
+        await service.syncUserRoles(mockUser.id);
+
+        // Should remove player role, keep user role
+        expect(PlayerService.prototype.removeRole).to.have.been.calledWith('player-role-1', 'player-123');
+        expect(mockUserService.removeRole).not.to.have.been.called;
+        expect(mockUserService.assignRole).not.to.have.been.called;
       });
     });
   });

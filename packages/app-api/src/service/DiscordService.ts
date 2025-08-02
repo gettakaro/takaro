@@ -902,7 +902,10 @@ export class DiscordService extends TakaroService<
     }
 
     // Combine user and player roles for a complete picture
-    const allTakaroRoles = [...userTakaroRoles, ...playerTakaroRoles];
+    // Add source tracking to each role
+    const userRolesWithSource = userTakaroRoles.map((r: any) => ({ ...r, source: 'user' }));
+    const playerRolesWithSource = playerTakaroRoles.map((r: any) => ({ ...r, source: 'player' }));
+    const allTakaroRoles = [...userRolesWithSource, ...playerRolesWithSource];
 
     this.log.debug('Combined user and player roles for Discord sync', {
       userId,
@@ -913,7 +916,7 @@ export class DiscordService extends TakaroService<
         roleId: r.roleId || r.role?.id,
         roleName: r.role?.name,
         linkedDiscordRoleId: r.role?.linkedDiscordRoleId,
-        source: userTakaroRoles.includes(r) ? 'user' : 'player',
+        source: r.source,
       })),
     });
 
@@ -970,7 +973,7 @@ export class DiscordService extends TakaroService<
     discordId: string,
     guildId: string,
     takaroRoles: RoleOutputDTO[],
-    userTakaroRoles: any[],
+    allTakaroRoles: any[],
     preferDiscord: boolean,
   ): Promise<{ rolesAdded: number; rolesRemoved: number }> {
     // Get user's current roles in Discord for this specific guild
@@ -1014,7 +1017,7 @@ export class DiscordService extends TakaroService<
       discordId,
       guildId,
       preferDiscord,
-      userTakaroRoles: userTakaroRoles.map((r: any) => ({
+      userTakaroRoles: allTakaroRoles.map((r: any) => ({
         roleId: r.role?.id || r.roleId,
         roleName: r.role?.name,
         linkedDiscordRoleId: r.role?.linkedDiscordRoleId,
@@ -1027,12 +1030,13 @@ export class DiscordService extends TakaroService<
     });
 
     // Calculate changes
-    const changes = this.calculateRoleChanges(
-      userTakaroRoles.map((r: any) => r.role),
-      userDiscordRoles,
-      roleMap,
-      preferDiscord,
-    );
+    const rolesForCalculation = allTakaroRoles.map((r: any) => ({
+      id: r.roleId || r.role?.id, // Changed order: prefer roleId first
+      linkedDiscordRoleId: r.role?.linkedDiscordRoleId,
+      source: r.source, // source was added in syncUserRoles
+    }));
+
+    const changes = this.calculateRoleChanges(rolesForCalculation, userDiscordRoles, roleMap, preferDiscord);
 
     // Apply changes
     const result = await this.applyRoleChanges(userId, discordId, guildId, changes);
@@ -1049,18 +1053,24 @@ export class DiscordService extends TakaroService<
   }
 
   private calculateRoleChanges(
-    takaroRoles: Array<{ id: string; linkedDiscordRoleId?: string }>,
+    takaroRoles: Array<{ id: string; linkedDiscordRoleId?: string; source?: 'user' | 'player' }>,
     discordRoleIds: string[],
     roleMap: Map<string, RoleOutputDTO[]>,
     preferDiscord: boolean,
   ): {
-    addToTakaro: string[];
-    removeFromTakaro: string[];
+    addToTakaro: Array<{ roleId: string; source: 'user' | 'player' }>;
+    removeFromTakaro: Array<{ roleId: string; source: 'user' | 'player' }>;
     addToDiscord: string[];
     removeFromDiscord: string[];
   } {
     const takaroRoleIds = new Set(takaroRoles.map((r) => r.id));
     const discordRoleSet = new Set(discordRoleIds);
+
+    // Create a map to track the source of each role
+    const roleSourceMap = new Map<string, 'user' | 'player'>();
+    takaroRoles.forEach((role) => {
+      roleSourceMap.set(role.id, role.source || 'user');
+    });
 
     this.log.debug('calculateRoleChanges input', {
       preferDiscord,
@@ -1078,24 +1088,27 @@ export class DiscordService extends TakaroService<
     });
 
     const changes = {
-      addToTakaro: [] as string[],
-      removeFromTakaro: [] as string[],
+      addToTakaro: [] as Array<{ roleId: string; source: 'user' | 'player' }>,
+      removeFromTakaro: [] as Array<{ roleId: string; source: 'user' | 'player' }>,
       addToDiscord: [] as string[],
       removeFromDiscord: [] as string[],
     };
 
     // Check each mapped Discord role
-    for (const [discordRoleId, takaroRoles] of roleMap) {
+    for (const [discordRoleId, mappedTakaroRoles] of roleMap) {
       const hasInDiscord = discordRoleSet.has(discordRoleId);
 
       // Check if user has ANY of the linked Takaro roles
-      const userHasTakaroRoles = takaroRoles.filter((role) => takaroRoleIds.has(role.id));
+      // We need to check against the actual user's takaro roles, not the mapped ones
+      const userHasTakaroRoles = takaroRoles.filter((userRole) =>
+        mappedTakaroRoles.some((mappedRole) => mappedRole.id === userRole.id),
+      );
       const hasAnyTakaroRole = userHasTakaroRoles.length > 0;
 
       this.log.debug('Checking role mapping', {
         discordRoleId,
-        linkedTakaroRoles: takaroRoles.map((r) => ({ id: r.id, name: r.name })),
-        userHasTakaroRoles: userHasTakaroRoles.map((r) => ({ id: r.id, name: r.name })),
+        linkedTakaroRoles: mappedTakaroRoles.map((r) => ({ id: r.id, name: r.name })),
+        userHasTakaroRoles: userHasTakaroRoles.map((r) => ({ id: r.id })),
         hasAnyTakaroRole,
         hasInDiscord,
         preferDiscord,
@@ -1106,18 +1119,22 @@ export class DiscordService extends TakaroService<
           // Takaro is source of truth - user has at least one linked Takaro role but not Discord role
           this.log.debug('User has Takaro role(s) but not Discord role, adding to Discord', {
             discordRoleId,
-            takaroRoles: userHasTakaroRoles.map((r) => ({ id: r.id, name: r.name })),
+            takaroRoles: userHasTakaroRoles.map((r) => ({ id: r.id })),
           });
           changes.addToDiscord.push(discordRoleId);
         } else {
           // Discord is source of truth - remove all linked Takaro roles user has
           this.log.debug('User has Takaro role(s) but not Discord role, removing from Takaro (Discord is source)', {
             discordRoleId,
-            takaroRolesToRemove: userHasTakaroRoles.map((r) => ({ id: r.id, name: r.name })),
+            takaroRolesToRemove: userHasTakaroRoles.map((r) => ({ id: r.id })),
           });
           userHasTakaroRoles.forEach((role) => {
-            if (!changes.removeFromTakaro.includes(role.id)) {
-              changes.removeFromTakaro.push(role.id);
+            const exists = changes.removeFromTakaro.some((r) => r.roleId === role.id);
+            if (!exists) {
+              changes.removeFromTakaro.push({
+                roleId: role.id,
+                source: roleSourceMap.get(role.id) || 'user',
+              });
             }
           });
         }
@@ -1126,11 +1143,15 @@ export class DiscordService extends TakaroService<
           // Discord is source of truth - add ALL linked Takaro roles
           this.log.debug('User has Discord role but no linked Takaro roles, adding all to Takaro', {
             discordRoleId,
-            takaroRolesToAdd: takaroRoles.map((r) => ({ id: r.id, name: r.name })),
+            takaroRolesToAdd: mappedTakaroRoles.map((r) => ({ id: r.id, name: r.name })),
           });
-          takaroRoles.forEach((role) => {
-            if (!changes.addToTakaro.includes(role.id)) {
-              changes.addToTakaro.push(role.id);
+          mappedTakaroRoles.forEach((role) => {
+            const exists = changes.addToTakaro.some((r) => r.roleId === role.id);
+            if (!exists) {
+              changes.addToTakaro.push({
+                roleId: role.id,
+                source: 'user', // When adding from Discord, default to user
+              });
             }
           });
         } else {
@@ -1143,11 +1164,33 @@ export class DiscordService extends TakaroService<
       } else {
         this.log.debug('Role is in sync', {
           discordRoleId,
-          linkedTakaroRoles: takaroRoles.map((r) => ({ id: r.id, name: r.name })),
-          userHasTakaroRoles: userHasTakaroRoles.map((r) => ({ id: r.id, name: r.name })),
+          linkedTakaroRoles: mappedTakaroRoles.map((r) => ({ id: r.id, name: r.name })),
+          userHasTakaroRoles: userHasTakaroRoles.map((r) => ({ id: r.id })),
           hasInBoth: hasAnyTakaroRole && hasInDiscord,
           hasInNeither: !hasAnyTakaroRole && !hasInDiscord,
         });
+      }
+    }
+
+    // Additionally, if Discord is the source of truth, check for Takaro roles that should be removed
+    // because they're not in Discord
+    if (preferDiscord) {
+      // Check all user's Takaro roles to see if they should be removed
+      for (const userRole of takaroRoles) {
+        // Skip if role doesn't have a Discord link
+        if (!userRole.linkedDiscordRoleId) continue;
+
+        // Skip if we already processed this role
+        const alreadyProcessed = changes.removeFromTakaro.some((r) => r.roleId === userRole.id);
+        if (alreadyProcessed) continue;
+
+        // If the user has a Discord-linked Takaro role but doesn't have it in Discord, remove it
+        if (!discordRoleSet.has(userRole.linkedDiscordRoleId)) {
+          changes.removeFromTakaro.push({
+            roleId: userRole.id,
+            source: roleSourceMap.get(userRole.id) || 'user',
+          });
+        }
       }
     }
 
@@ -1161,8 +1204,8 @@ export class DiscordService extends TakaroService<
     discordId: string,
     guildId: string,
     changes: {
-      addToTakaro: string[];
-      removeFromTakaro: string[];
+      addToTakaro: Array<{ roleId: string; source: 'user' | 'player' }>;
+      removeFromTakaro: Array<{ roleId: string; source: 'user' | 'player' }>;
       addToDiscord: string[];
       removeFromDiscord: string[];
     },
@@ -1175,27 +1218,56 @@ export class DiscordService extends TakaroService<
     });
 
     const userService = new UserService(this.domainId);
+    const playerService = new PlayerService(this.domainId);
     let rolesAdded = 0;
     let rolesRemoved = 0;
 
+    // Get user to check if they have a linked player
+    const user = await userService.findOne(userId);
+    const playerId = user.playerId;
+
     // Apply Takaro changes
-    for (const roleId of changes.addToTakaro) {
+    for (const roleChange of changes.addToTakaro) {
       try {
-        await userService.assignRole(roleId, userId);
-        rolesAdded++;
-        this.log.debug('Successfully added role to Takaro user', { userId, roleId });
+        if (roleChange.source === 'player' && playerId) {
+          await playerService.assignRole(roleChange.roleId, playerId);
+          rolesAdded++;
+          this.log.debug('Successfully added role to Takaro player', { playerId, roleId: roleChange.roleId });
+        } else {
+          await userService.assignRole(roleChange.roleId, userId);
+          rolesAdded++;
+          this.log.debug('Successfully added role to Takaro user', { userId, roleId: roleChange.roleId });
+        }
       } catch (error) {
-        this.log.error('Failed to add role to Takaro user', { userId, roleId, error });
+        this.log.error('Failed to add role to Takaro', {
+          userId,
+          playerId,
+          roleId: roleChange.roleId,
+          source: roleChange.source,
+          error,
+        });
       }
     }
 
-    for (const roleId of changes.removeFromTakaro) {
+    for (const roleChange of changes.removeFromTakaro) {
       try {
-        await userService.removeRole(roleId, userId);
-        rolesRemoved++;
-        this.log.debug('Successfully removed role from Takaro user', { userId, roleId });
+        if (roleChange.source === 'player' && playerId) {
+          await playerService.removeRole(roleChange.roleId, playerId);
+          rolesRemoved++;
+          this.log.debug('Successfully removed role from Takaro player', { playerId, roleId: roleChange.roleId });
+        } else {
+          await userService.removeRole(roleChange.roleId, userId);
+          rolesRemoved++;
+          this.log.debug('Successfully removed role from Takaro user', { userId, roleId: roleChange.roleId });
+        }
       } catch (error) {
-        this.log.error('Failed to remove role from Takaro user', { userId, roleId, error });
+        this.log.error('Failed to remove role from Takaro', {
+          userId,
+          playerId,
+          roleId: roleChange.roleId,
+          source: roleChange.source,
+          error,
+        });
       }
     }
 
