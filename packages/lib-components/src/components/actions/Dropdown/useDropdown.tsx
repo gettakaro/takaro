@@ -11,6 +11,7 @@ import {
   useTypeahead,
   useClick,
   shift,
+  flip,
 } from '@floating-ui/react';
 
 export interface UseDropdownOptions {
@@ -42,7 +43,13 @@ export function useDropdown({
     open,
     onOpenChange: setOpen,
     whileElementsMounted: autoUpdate,
-    middleware: [offset({ mainAxis: 10 }), shift()],
+    middleware: [
+      offset({ mainAxis: 10 }),
+      flip({
+        fallbackPlacements: ['top', 'bottom'],
+      }),
+      shift(),
+    ],
   });
 
   const interactions = useInteractions([
