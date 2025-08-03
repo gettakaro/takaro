@@ -7,32 +7,8 @@ import { IsString } from 'class-validator';
 import ms from 'ms';
 import { ory, PERMISSIONS } from '@takaro/auth';
 import { config } from '../config.js';
-import passport from 'passport';
-import { REST } from '@discordjs/rest';
-import { Routes, RESTGetAPICurrentUserGuildsResult } from 'discord-api-types/v10';
-import oauth from 'passport-oauth2';
-import { DiscordService } from './DiscordService.js';
 import { domainStateMiddleware } from '../middlewares/domainStateMiddleware.js';
 import { DOMAIN_STATES, DomainService } from './DomainService.js';
-
-interface DiscordUserInfo {
-  id: string;
-  username: string;
-  global_name: string;
-  avatar: string;
-  discriminator: string;
-  public_flags: number;
-  flags: number;
-  banner: string | null;
-  banner_color: string | null;
-  accent_color: string | null;
-  locale: string;
-  mfa_enabled: boolean;
-  premium_type: number;
-  avatar_decoration: string | null;
-  email: string;
-  verified: boolean;
-}
 interface IJWTPayload {
   sub: string;
   domainId: string;
@@ -178,7 +154,32 @@ export class AuthService extends DomainScoped {
       const users = await service.find({ filters: { id: [payload.sub] } });
       if (!users.results.length) return null;
       user = users.results[0];
-      await service.update(user.id, new UserUpdateAuthDTO({ lastSeen: new Date().toISOString() }));
+
+      // For JWT auth, we sync Discord ID from Ory to Takaro
+      // Ory is the source of truth when it has a Discord ID
+      const identity = await ory.getIdentity(user.idpId);
+
+      // Only update if Discord ID changed or lastSeen is older than 1 minute
+      const needsUpdate =
+        identity.discordId !== user.discordId ||
+        !user.lastSeen ||
+        new Date().getTime() - new Date(user.lastSeen).getTime() > 60000;
+
+      if (needsUpdate) {
+        const updateData: any = { lastSeen: new Date().toISOString() };
+
+        // Only sync Discord ID if it's different
+        if (identity.discordId && identity.discordId !== user.discordId) {
+          updateData.discordId = identity.discordId;
+          log.info('Syncing Discord ID from Ory to Takaro (JWT auth)', {
+            userId: user.id,
+            oldDiscordId: user.discordId,
+            newDiscordId: identity.discordId,
+          });
+        }
+
+        await service.update(user.id, new UserUpdateAuthDTO(updateData));
+      }
     }
 
     // If we don't have a user yet, try to get it from the IDP
@@ -223,7 +224,31 @@ export class AuthService extends DomainScoped {
           if (!users.results.length) return null;
 
           user = users.results[0];
-          await service.update(user.id, new UserUpdateAuthDTO({ lastSeen: new Date().toISOString() }));
+
+          // Sync Discord ID from Ory to Takaro
+          // Ory is the source of truth when it has a Discord ID
+
+          // Only update if Discord ID changed or lastSeen is older than 1 minute
+          const needsUpdate =
+            identity.discordId !== user.discordId ||
+            !user.lastSeen ||
+            new Date().getTime() - new Date(user.lastSeen).getTime() > 60000;
+
+          if (needsUpdate) {
+            const updateData: any = { lastSeen: new Date().toISOString() };
+
+            // Only sync Discord ID if it's different
+            if (identity.discordId && identity.discordId !== user.discordId) {
+              updateData.discordId = identity.discordId;
+              log.info('Syncing Discord ID from Ory to Takaro', {
+                userId: user.id,
+                oldDiscordId: user.discordId,
+                newDiscordId: identity.discordId,
+              });
+            }
+
+            await service.update(user.id, new UserUpdateAuthDTO(updateData));
+          }
         }
       } catch (error) {
         // Not an ory session, throw a sanitized error
@@ -298,88 +323,5 @@ export class AuthService extends DomainScoped {
     });
 
     return fn;
-  }
-
-  static initPassport(): string[] {
-    const initializedStrategies: string[] = [];
-    const discordClientId = config.get('auth.discord.clientId');
-    const discordClientSecret = config.get('auth.discord.clientSecret');
-    if (discordClientId && discordClientSecret) {
-      passport.use(
-        'discord',
-        new oauth.Strategy(
-          {
-            clientID: discordClientId,
-            clientSecret: discordClientSecret,
-            callbackURL: `${config.get('http.baseUrl')}/auth/discord/return`,
-            scope: ['identify', 'email', 'guilds'],
-            authorizationURL: 'https://discordapp.com/api/oauth2/authorize',
-            tokenURL: 'https://discordapp.com/api/oauth2/token',
-            passReqToCallback: true,
-          },
-          async function (
-            origReq: Request,
-            accessToken: string,
-            _refreshToken: string,
-            profile: unknown,
-            cb: CallableFunction,
-          ) {
-            const req = origReq as AuthenticatedRequest;
-            try {
-              const rest = new REST({
-                version: '10',
-                authPrefix: 'Bearer',
-              }).setToken(accessToken);
-
-              const userInfo = (await rest.get(Routes.user('@me'))) as DiscordUserInfo;
-
-              if (!userInfo.verified) {
-                return cb(
-                  new errors.BadRequestError('You must verify your Discord account before you can use it to log in.'),
-                );
-              }
-
-              const service = new UserService(req.domainId);
-              const user = await service.findOne(req.user.id);
-
-              if (!user) {
-                return cb(new errors.NotFoundError('User not found'));
-              }
-
-              await service.update(
-                user.id,
-                new UserUpdateAuthDTO({
-                  discordId: userInfo.id,
-                }),
-              );
-
-              if (
-                user.roles.find((r) => r.role.permissions.find((p) => p.permission.permission === PERMISSIONS.ROOT))
-              ) {
-                const guilds = (await rest.get(Routes.userGuilds())) as RESTGetAPICurrentUserGuildsResult;
-                const discordService = new DiscordService(req.domainId);
-                await discordService.syncGuilds(guilds);
-              }
-
-              return cb(null, user);
-            } catch (error) {
-              log.error('Error in discord auth', error);
-              return cb(error);
-            }
-          },
-        ),
-      );
-
-      initializedStrategies.push('discord');
-    }
-
-    passport.serializeUser(function (user, done) {
-      done(null, user);
-    });
-    passport.deserializeUser(function (obj, done) {
-      done(null, null);
-    });
-
-    return initializedStrategies;
   }
 }

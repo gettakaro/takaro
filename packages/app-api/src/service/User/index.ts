@@ -34,6 +34,8 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     const withOry = new UserOutputWithRolesDTO({
       ...user,
       email: oryIdentity.email,
+      // Check Ory identity first for discordId, fall back to Takaro DB if not found
+      discordId: oryIdentity.discordId || user.discordId,
     });
 
     const roleService = new RoleService(this.domainId);

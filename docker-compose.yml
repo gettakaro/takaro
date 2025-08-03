@@ -148,6 +148,8 @@ services:
     image: takaro-kratos:latest
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
     command: migrate sql -c /etc/config/kratos/kratos.yml -e --yes
     restart: on-failure
   kratos:
@@ -161,6 +163,8 @@ services:
     restart: on-failure
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier 
   postgresql_kratos:
     image: postgres:15

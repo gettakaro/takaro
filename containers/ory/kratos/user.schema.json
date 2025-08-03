@@ -35,11 +35,6 @@
           "type": "string",
           "title": "Steam ID",
           "pattern": "^[0-9]{17}$"
-        },
-        "discordId": {
-          "type": "string",
-          "title": "Discord ID",
-          "pattern": "^[0-9]{17,19}$"
         }
       },
       "required": [

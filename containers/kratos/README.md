@@ -22,7 +22,54 @@ The identity schema includes the following traits:
 - `email` (required) - User's email address
 - `stripeId` (optional) - Stripe customer ID
 - `steamId` (optional) - Steam ID (17 digits)
-- `discordId` (optional) - Discord user ID (17-19 digits)
+
+## Configuration
+
+The Kratos container supports both development and production configurations:
+
+- **Development**: Uses the static `kratos.yml` configuration with hardcoded localhost URLs
+- **Production**: Uses `kratos.yml.template` with environment variable substitution when `KRATOS_PUBLIC_URL` is set
+
+### Environment Variables for Production
+
+#### Required Core Variables
+- `KRATOS_PUBLIC_URL`: Public-facing URL for Kratos (e.g., `https://auth.example.com`)
+- `KRATOS_ADMIN_URL`: Admin API URL (e.g., `http://kratos:4434/`)
+- `KRATOS_BROWSER_RETURN_URL`: Default return URL after auth flows (e.g., `https://app.example.com/login`)
+- `KRATOS_UI_LOGIN_URL`: Login page URL (e.g., `https://app.example.com/login`)
+
+#### Optional Variables (with development defaults)
+- `KRATOS_CORS_ALLOWED_ORIGINS`: JSON array of allowed CORS origins (default: `["http://127.0.0.1:13001","http://127.0.0.1:13002"]`)
+- `KRATOS_ALLOWED_RETURN_URLS`: JSON array of allowed return URLs (default: development URLs)
+- `KRATOS_UI_ERROR_URL`: Error page URL
+- `KRATOS_UI_SETTINGS_URL`: Settings page URL
+- `KRATOS_UI_RECOVERY_URL`: Account recovery page URL
+- `KRATOS_UI_VERIFICATION_URL`: Email verification page URL
+- `KRATOS_UI_DASHBOARD_URL`: Post-verification dashboard URL
+- `KRATOS_UI_LOGOUT_RETURN_URL`: Post-logout return URL
+- `KRATOS_UI_REGISTRATION_URL`: Registration page URL (if enabled)
+
+#### Email Configuration
+- `KRATOS_COURIER_SMTP_CONNECTION_URI`: SMTP connection string (default: `smtp://mailhog:1025/?disable_starttls=true`)
+- `KRATOS_COURIER_FROM_ADDRESS`: Sender email address (default: `noreply@takaro.io`)
+- `KRATOS_COURIER_FROM_NAME`: Sender name (default: `Takaro`)
+
+## Discord OAuth Integration
+
+The container includes Discord as a social sign-in provider. Discord IDs are stored in OIDC credentials within Kratos and synced to Takaro's database for application use.
+
+### Discord Configuration
+
+Set the following environment variables:
+- `DISCORD_CLIENT_ID` - Your Discord OAuth application's client ID
+- `DISCORD_CLIENT_SECRET` - Your Discord OAuth application's client secret
+
+### How Discord OAuth Works
+
+1. User connects Discord through Ory OAuth flow
+2. Discord ID is stored in OIDC credentials (format: `discord:123456789`)
+3. Takaro extracts the ID from OIDC credentials and syncs to its database
+4. Discord role synchronization uses the ID from Takaro's database
 
 ## Building
 

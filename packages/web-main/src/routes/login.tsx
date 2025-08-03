@@ -116,15 +116,21 @@ function Component() {
 
   useEffect(() => {
     if (loginFlow) {
-      const csrfAttr = loginFlow.ui.nodes[0].attributes;
-      // @ts-expect-error Bad ory client types :(
-      setCsrfToken(csrfAttr.value);
+      const csrfNode = loginFlow.ui.nodes.find(
+        (node) => node.attributes && 'name' in node.attributes && node.attributes.name === 'csrf_token',
+      );
+      if (csrfNode && 'value' in csrfNode.attributes) {
+        setCsrfToken(csrfNode.attributes.value as string);
+      }
     } else {
       createLoginFlow().then((flow) => {
         setLoginFlow(flow);
-        const csrfAttr = flow.ui.nodes[0].attributes;
-        // @ts-expect-error Bad ory client types :(
-        setCsrfToken(csrfAttr.value);
+        const csrfNode = flow.ui.nodes.find(
+          (node) => node.attributes && 'name' in node.attributes && node.attributes.name === 'csrf_token',
+        );
+        if (csrfNode && 'value' in csrfNode.attributes) {
+          setCsrfToken(csrfNode.attributes.value as string);
+        }
       });
     }
   }, [loginFlow]);

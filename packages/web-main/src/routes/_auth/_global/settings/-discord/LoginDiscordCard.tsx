@@ -1,9 +1,11 @@
-import { FC, useContext } from 'react';
+import { FC, useContext, useState, useEffect } from 'react';
 import { Card, Button, styled, useTheme, Chip } from '@takaro/lib-components';
 import { FaDiscord as DiscordIcon } from 'react-icons/fa';
-import { getConfigVar } from '../../../../../util/getConfigVar';
 import { SessionContext } from '../../../../../hooks/useSession';
 import { MeOutputDTO } from '@takaro/apiclient';
+import { useOry } from '../../../../../hooks/useOry';
+import { initiateOryOAuth, canUnlinkProvider, unlinkOAuthProvider } from '../../../../../util/oryOAuth';
+import { SettingsFlow } from '@ory/client';
 
 const InnerBody = styled.div`
   display: flex;
@@ -43,6 +45,10 @@ interface LoginDiscordCardProps {
 
 export const LoginDiscordCard: FC<LoginDiscordCardProps> = ({ session: sessionProp }) => {
   const { colors } = useTheme();
+  const { oryClient } = useOry();
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [settingsFlow, setSettingsFlow] = useState<SettingsFlow | null>(null);
+  const [canUnlink, setCanUnlink] = useState(false);
 
   // Try to use context if available, otherwise use prop
   const context = useContext(SessionContext);
@@ -53,6 +59,47 @@ export const LoginDiscordCard: FC<LoginDiscordCardProps> = ({ session: sessionPr
   }
 
   const hasLinkedDiscord = !!session.user.discordId;
+
+  // Fetch settings flow to check if unlink is available
+  useEffect(() => {
+    if (hasLinkedDiscord && oryClient) {
+      oryClient
+        .createBrowserSettingsFlow()
+        .then(({ data }) => {
+          setSettingsFlow(data);
+          setCanUnlink(canUnlinkProvider(data, 'discord'));
+        })
+        .catch(() => {
+          // Settings flow fetch failed, but we can still show the update button
+        });
+    }
+  }, [hasLinkedDiscord, oryClient]);
+
+  const handleDiscordConnect = async () => {
+    setIsConnecting(true);
+    try {
+      await initiateOryOAuth(oryClient, {
+        provider: 'discord',
+        returnTo: window.location.href,
+        flowType: 'settings', // Use settings flow for linking social accounts
+      });
+    } catch {
+      setIsConnecting(false);
+    }
+  };
+
+  const handleDiscordUnlink = async () => {
+    if (!settingsFlow || !canUnlink) {
+      return;
+    }
+
+    setIsConnecting(true);
+    try {
+      await unlinkOAuthProvider(oryClient, settingsFlow, 'discord');
+    } catch {
+      setIsConnecting(false);
+    }
+  };
 
   return (
     <Card>
@@ -72,9 +119,14 @@ export const LoginDiscordCard: FC<LoginDiscordCardProps> = ({ session: sessionPr
               )}
             </StatusText>
           </ConnectionInfo>
-          <a href={`${getConfigVar('apiUrl')}/auth/discord?redirect=${window.location.href}`}>
-            <Button>{hasLinkedDiscord ? 'Update connection' : 'Connect Discord'}</Button>
-          </a>
+          <Button
+            onClick={hasLinkedDiscord && canUnlink ? handleDiscordUnlink : handleDiscordConnect}
+            isLoading={isConnecting}
+            disabled={isConnecting}
+            color={hasLinkedDiscord && canUnlink ? 'error' : 'primary'}
+          >
+            {hasLinkedDiscord ? (canUnlink ? 'Unlink Discord' : 'Update connection') : 'Connect Discord'}
+          </Button>
         </InnerBody>
       </Card.Body>
     </Card>
