@@ -25,16 +25,6 @@
               "via": "email"
             }
           }
-        },
-        "stripeId": {
-          "type": "string",
-          "title": "Stripe ID",
-          "minLength": 1
-        },
-        "steamId": {
-          "type": "string",
-          "title": "Steam ID",
-          "pattern": "^[0-9]{17}$"
         }
       },
       "required": [
