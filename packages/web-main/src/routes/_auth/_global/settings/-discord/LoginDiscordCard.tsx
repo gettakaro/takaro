@@ -4,8 +4,9 @@ import { FaDiscord as DiscordIcon } from 'react-icons/fa';
 import { SessionContext } from '../../../../../hooks/useSession';
 import { MeOutputDTO } from '@takaro/apiclient';
 import { useOry } from '../../../../../hooks/useOry';
-import { initiateOryOAuth, canUnlinkProvider, unlinkOAuthProvider } from '../../../../../util/oryOAuth';
-import { SettingsFlow } from '@ory/client';
+import { initiateOryOAuth, canUnlinkProvider } from '../../../../../util/oryOAuth';
+import { useApiClient } from '../../../../../hooks/useApiClient';
+import { useSnackbar } from 'notistack';
 
 const InnerBody = styled.div`
   display: flex;
@@ -47,8 +48,9 @@ export const LoginDiscordCard: FC<LoginDiscordCardProps> = ({ session: sessionPr
   const { colors } = useTheme();
   const { oryClient } = useOry();
   const [isConnecting, setIsConnecting] = useState(false);
-  const [settingsFlow, setSettingsFlow] = useState<SettingsFlow | null>(null);
   const [canUnlink, setCanUnlink] = useState(false);
+  const apiClient = useApiClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   // Try to use context if available, otherwise use prop
   const context = useContext(SessionContext);
@@ -66,7 +68,6 @@ export const LoginDiscordCard: FC<LoginDiscordCardProps> = ({ session: sessionPr
       oryClient
         .createBrowserSettingsFlow()
         .then(({ data }) => {
-          setSettingsFlow(data);
           setCanUnlink(canUnlinkProvider(data, 'discord'));
         })
         .catch(() => {
@@ -89,15 +90,23 @@ export const LoginDiscordCard: FC<LoginDiscordCardProps> = ({ session: sessionPr
   };
 
   const handleDiscordUnlink = async () => {
-    if (!settingsFlow || !canUnlink) {
+    if (!canUnlink) {
       return;
     }
 
     setIsConnecting(true);
     try {
-      await unlinkOAuthProvider(oryClient, settingsFlow, 'discord');
-    } catch {
+      // Call our API to unlink Discord from both Ory and Takaro
+      await apiClient.user.userControllerUnlinkDiscord();
+
+      // Refresh the page to get updated user data
+      window.location.reload();
+    } catch (error: any) {
       setIsConnecting(false);
+
+      // Show error message
+      const errorMessage = error?.response?.data?.meta?.error?.message || 'Failed to unlink Discord account';
+      enqueueSnackbar(errorMessage, { variant: 'default', type: 'error' });
     }
   };
 

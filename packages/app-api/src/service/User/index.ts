@@ -6,7 +6,7 @@ import { UserModel, UserRepo } from '../../db/user.js';
 import { errors, traceableClass } from '@takaro/util';
 import { RoleService, UserAssignmentOutputDTO } from '../RoleService.js';
 import { ory } from '@takaro/auth';
-import { EVENT_TYPES, EventCreateDTO, EventService } from '../EventService.js';
+import { EventCreateDTO, EventService } from '../EventService.js';
 import { HookEvents, TakaroEventPlayerLinked, TakaroEventRoleAssigned, TakaroEventRoleRemoved } from '@takaro/modules';
 import { AuthenticatedRequest } from '../AuthService.js';
 import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO, UserUpdateAuthDTO } from './dto.js';
@@ -121,6 +121,29 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     return id;
   }
 
+  async unlinkDiscord(userId: string): Promise<void> {
+    const user = await this.findOne(userId);
+
+    // Check if user has other auth methods (password)
+    try {
+      const identity = await ory.getIdentity(user.idpId);
+      const hasPassword = identity.email && true; // If they have email, they can use password recovery
+      const hasOtherOAuth = false; // We only support Discord OAuth currently
+
+      if (!hasPassword && !hasOtherOAuth) {
+        throw new errors.BadRequestError('Cannot unlink Discord - it is your only authentication method');
+      }
+    } catch (error) {
+      this.log.error('Failed to check auth methods', { error, userId });
+      throw new errors.InternalServerError();
+    }
+
+    // Clear discordId in Takaro database
+    await this.repo.update(userId, { discordId: null } as any);
+
+    this.log.info('Discord unlinked from user', { userId, discordId: user.discordId });
+  }
+
   async assignRole(roleId: string, userId: string, expiresAt?: string): Promise<void> {
     const eventService = new EventService(this.domainId);
     const roleService = new RoleService(this.domainId);
@@ -135,7 +158,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     await this.repo.assignRole(userId, roleId, expiresAt);
     await eventService.create(
       new EventCreateDTO({
-        eventName: EVENT_TYPES.ROLE_ASSIGNED,
+        eventName: HookEvents.ROLE_ASSIGNED,
         userId,
         meta: new TakaroEventRoleAssigned({ role: { id: role.id, name: role.name } }),
       }),
@@ -165,7 +188,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
 
     await eventService.create(
       new EventCreateDTO({
-        eventName: EVENT_TYPES.ROLE_REMOVED,
+        eventName: HookEvents.ROLE_REMOVED,
         userId,
         meta: new TakaroEventRoleRemoved({ role: { id: role.id, name: role.name } }),
       }),
