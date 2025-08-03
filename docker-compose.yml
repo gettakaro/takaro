@@ -142,24 +142,26 @@ services:
       - DISPLAY=:0
 
   kratos-migrate:
-    image: oryd/kratos:v1.2.0
+    build:
+      context: ./containers/kratos
+      dockerfile: Dockerfile
+    image: takaro-kratos:latest
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
-    volumes:
-      - ./containers/ory/kratos:/etc/config/kratos
-    command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
+    command: migrate sql -c /etc/config/kratos/kratos.yml -e --yes
     restart: on-failure
   kratos:
-    image: oryd/kratos:v1.2.0
+    build:
+      context: ./containers/kratos
+      dockerfile: Dockerfile
+    image: takaro-kratos:latest
     ports:
       - '4433:4433' # public
       - '4434:4434' # admin
     restart: on-failure
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
-    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
-    volumes:
-      - ./containers/ory/kratos:/etc/config/kratos 
+    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier 
   postgresql_kratos:
     image: postgres:15
     ports:
