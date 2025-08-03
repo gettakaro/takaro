@@ -33,6 +33,7 @@ selfservice:
     - http://127.0.0.1:13001/login
     - http://127.0.0.1:13001/settings
     - http://127.0.0.1:13001/settings/discord
+    - http://127.0.0.1:13001/profile
     - http://127.0.0.1:13001/
 
   methods:
@@ -66,7 +67,7 @@ selfservice:
       ui_url: http://127.0.0.1:13001/error
 
     settings:
-      ui_url: http://127.0.0.1:13001/account/profile
+      ui_url: http://127.0.0.1:13001/profile
       privileged_session_max_age: 15m
       required_aal: highest_available
 
