@@ -3,7 +3,13 @@ import { Model } from 'objection';
 import { PermissionOnRoleModel, ROLE_TABLE_NAME, RoleModel } from './role.js';
 import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
-import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO } from '../service/User/dto.js';
+import {
+  UserOutputDTO,
+  UserCreateInputDTO,
+  UserUpdateDTO,
+  UserOutputWithRolesDTO,
+  UserUpdateAuthDTO,
+} from '../service/User/dto.js';
 import { UserSearchInputDTO } from '../controllers/UserController.js';
 
 export const USER_TABLE_NAME = 'users';
@@ -138,9 +144,18 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
     return !!data;
   }
 
-  async update(id: string, data: UserUpdateDTO): Promise<UserOutputWithRolesDTO> {
+  async update(id: string, data: UserUpdateDTO | UserUpdateAuthDTO): Promise<UserOutputWithRolesDTO> {
     const { query } = await this.getModel();
-    const item = await query.updateAndFetchById(id, data.toJSON()).returning('*');
+
+    // Handle both regular updates and auth updates
+    const updateData = data.toJSON();
+
+    // Convert undefined to null for database fields
+    if ('discordId' in updateData && updateData.discordId === undefined) {
+      updateData.discordId = null;
+    }
+
+    const item = await query.updateAndFetchById(id, updateData).returning('*');
     return this.findOne(item.id);
   }
 

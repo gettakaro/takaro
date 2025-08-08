@@ -121,29 +121,6 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     return id;
   }
 
-  async unlinkDiscord(userId: string): Promise<void> {
-    const user = await this.findOne(userId);
-
-    // Check if user has other auth methods (password)
-    try {
-      const identity = await ory.getIdentity(user.idpId);
-      const hasPassword = identity.email && true; // If they have email, they can use password recovery
-      const hasOtherOAuth = false; // We only support Discord OAuth currently
-
-      if (!hasPassword && !hasOtherOAuth) {
-        throw new errors.BadRequestError('Cannot unlink Discord - it is your only authentication method');
-      }
-    } catch (error) {
-      this.log.error('Failed to check auth methods', { error, userId });
-      throw new errors.InternalServerError();
-    }
-
-    // Clear discordId in Takaro database
-    await this.repo.update(userId, { discordId: null } as any);
-
-    this.log.info('Discord unlinked from user', { userId, discordId: user.discordId });
-  }
-
   async assignRole(roleId: string, userId: string, expiresAt?: string): Promise<void> {
     const eventService = new EventService(this.domainId);
     const roleService = new RoleService(this.domainId);

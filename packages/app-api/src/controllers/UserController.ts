@@ -328,20 +328,6 @@ export class UserController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([], false))
-  @Delete('/user/discord')
-  @ResponseSchema(APIOutput)
-  @OpenAPI({
-    summary: 'Unlink Discord account',
-    description:
-      'Unlinks Discord account from both Ory and Takaro. Requires user to have alternative authentication methods.',
-  })
-  async unlinkDiscord(@Req() req: AuthenticatedRequest) {
-    const service = new UserService(req.domainId);
-    await service.unlinkDiscord(req.user.id);
-    return apiResponse();
-  }
-
-  @UseBefore(AuthService.getAuthMiddleware([], false))
   @Post('/selected-domain/:domainId')
   @OpenAPI({
     summary: 'Set the selected domain for the user',

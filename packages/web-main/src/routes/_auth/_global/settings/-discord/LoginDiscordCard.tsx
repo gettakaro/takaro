@@ -4,8 +4,7 @@ import { FaDiscord as DiscordIcon } from 'react-icons/fa';
 import { SessionContext } from '../../../../../hooks/useSession';
 import { MeOutputDTO } from '@takaro/apiclient';
 import { useOry } from '../../../../../hooks/useOry';
-import { initiateOryOAuth, canUnlinkProvider } from '../../../../../util/oryOAuth';
-import { useApiClient } from '../../../../../hooks/useApiClient';
+import { initiateOryOAuth, canUnlinkProvider, unlinkOAuthProvider } from '../../../../../util/oryOAuth';
 import { useSnackbar } from 'notistack';
 
 const InnerBody = styled.div`
@@ -49,7 +48,6 @@ export const LoginDiscordCard: FC<LoginDiscordCardProps> = ({ session: sessionPr
   const { oryClient } = useOry();
   const [isConnecting, setIsConnecting] = useState(false);
   const [canUnlink, setCanUnlink] = useState(false);
-  const apiClient = useApiClient();
   const { enqueueSnackbar } = useSnackbar();
 
   // Try to use context if available, otherwise use prop
@@ -90,22 +88,24 @@ export const LoginDiscordCard: FC<LoginDiscordCardProps> = ({ session: sessionPr
   };
 
   const handleDiscordUnlink = async () => {
-    if (!canUnlink) {
+    if (!canUnlink || !oryClient) {
       return;
     }
 
     setIsConnecting(true);
     try {
-      // Call our API to unlink Discord from both Ory and Takaro
-      await apiClient.user.userControllerUnlinkDiscord();
+      // Get current settings flow
+      const { data: settingsFlow } = await oryClient.createBrowserSettingsFlow();
 
-      // Refresh the page to get updated user data
-      window.location.reload();
+      // Unlink Discord through Ory
+      await unlinkOAuthProvider(oryClient, settingsFlow, 'discord');
+
+      // The form submission will redirect, so this won't be reached
     } catch (error: any) {
       setIsConnecting(false);
 
       // Show error message
-      const errorMessage = error?.response?.data?.meta?.error?.message || 'Failed to unlink Discord account';
+      const errorMessage = error?.message || 'Failed to unlink Discord account';
       enqueueSnackbar(errorMessage, { variant: 'default', type: 'error' });
     }
   };

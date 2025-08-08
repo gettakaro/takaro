@@ -168,9 +168,9 @@ export class AuthService extends DomainScoped {
       if (needsUpdate) {
         const updateData: any = { lastSeen: new Date().toISOString() };
 
-        // Only sync Discord ID if it's different
-        if (identity.discordId && identity.discordId !== user.discordId) {
-          updateData.discordId = identity.discordId;
+        // Sync Discord ID if it's different (including removal)
+        if (identity.discordId !== user.discordId) {
+          updateData.discordId = identity.discordId || undefined;
           log.info('Syncing Discord ID from Ory to Takaro (JWT auth)', {
             userId: user.id,
             oldDiscordId: user.discordId,
@@ -237,9 +237,9 @@ export class AuthService extends DomainScoped {
           if (needsUpdate) {
             const updateData: any = { lastSeen: new Date().toISOString() };
 
-            // Only sync Discord ID if it's different
-            if (identity.discordId && identity.discordId !== user.discordId) {
-              updateData.discordId = identity.discordId;
+            // Sync Discord ID if it's different (including removal)
+            if (identity.discordId !== user.discordId) {
+              updateData.discordId = identity.discordId || undefined;
               log.info('Syncing Discord ID from Ory to Takaro', {
                 userId: user.id,
                 oldDiscordId: user.discordId,
