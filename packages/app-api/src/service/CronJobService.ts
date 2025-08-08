@@ -1,5 +1,5 @@
 import { TakaroService } from './Base.js';
-import { queueService } from '@takaro/queues';
+import { queueService } from '../workers/QueueService.js';
 
 import { CronJobModel, CronJobRepo } from '../db/cronjob.js';
 import { IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';

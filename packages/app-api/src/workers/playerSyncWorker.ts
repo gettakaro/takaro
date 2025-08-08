@@ -1,4 +1,6 @@
-import { IGameServerQueueData, TakaroWorker, queueService } from '@takaro/queues';
+import { TakaroWorker } from '@takaro/queues';
+import { IGameServerQueueData } from './dataDefinitions.js';
+import { queueService } from './QueueService.js';
 import { config } from '../config.js';
 import { Job } from 'bullmq';
 import { logger, ctx } from '@takaro/util';

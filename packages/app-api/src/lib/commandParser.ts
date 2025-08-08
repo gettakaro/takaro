@@ -1,6 +1,6 @@
 import { errors, logger } from '@takaro/util';
 import { CommandOutputDTO } from '../service/CommandService.js';
-import { IParsedCommand } from '@takaro/queues';
+import { IParsedCommand } from '../workers/dataDefinitions.js';
 import { tryResolvePlayer } from './tryResolvePlayer.js';
 
 const log = logger('lib:commandParser');
