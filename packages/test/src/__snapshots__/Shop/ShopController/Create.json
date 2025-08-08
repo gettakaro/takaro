@@ -31,7 +31,11 @@
           }
         }
       ],
-      "categories": []
+      "categories": [],
+      "stockManagementEnabled": false,
+      "stock": null,
+      "icon": null,
+      "description": null
     }
   },
   "status": 200,

@@ -17,7 +17,7 @@ import {
   useTableActions,
 } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
-import { FC, useState } from 'react';
+import { FC, useState, useCallback } from 'react';
 import { createColumnHelper, Row } from '@tanstack/react-table';
 import { shopListingsQueryOptions } from '../../../../../queries/shopListing';
 import { useHasPermission } from '../../../../../hooks/useHasPermission';
@@ -134,7 +134,9 @@ export const ShopTableView: FC<ShopViewProps> = ({
     columnHelper.accessor('name', {
       header: 'Name',
       id: 'name',
-      cell: (info) => info.getValue() ?? 'None',
+      cell: (info) => (
+        <ShopListingNameCell listing={info.row.original} name={info.getValue()} gameServerType={gameServerType} />
+      ),
     }),
     columnHelper.accessor('draft', {
       header: 'Status',
@@ -161,6 +163,30 @@ export const ShopTableView: FC<ShopViewProps> = ({
       meta: {
         dataType: 'number',
       },
+    }),
+    columnHelper.accessor('description', {
+      header: 'Description',
+      id: 'description',
+      cell: (info) => {
+        const description = info.getValue();
+        if (!description) return <span style={{ color: 'var(--color-text-secondary)' }}>No description</span>;
+        const truncated = description.length > 100 ? `${description.substring(0, 100)}...` : description;
+
+        return (
+          <Popover>
+            <Popover.Trigger asChild>
+              <span style={{ cursor: description.length > 100 ? 'help' : 'default' }}>{truncated}</span>
+            </Popover.Trigger>
+            {description.length > 100 && (
+              <Popover.Content>
+                <div style={{ padding: '0.5rem', maxWidth: '400px', wordBreak: 'break-word' }}>{description}</div>
+              </Popover.Content>
+            )}
+          </Popover>
+        );
+      },
+      enableSorting: false,
+      enableColumnFilter: false,
     }),
     columnHelper.accessor('categories', {
       header: 'Categories',
@@ -342,5 +368,36 @@ const ShopListingMetaItem: FC<ShopListingMetaItemProps> = ({ gameServerType, met
       <td>{metaItem.quality ? metaItem.quality : 'Not assigned'}</td>
       <td></td>
     </tr>
+  );
+};
+
+interface ShopListingNameCellProps {
+  listing: ShopListingOutputDTO;
+  name: string | null;
+  gameServerType: GameServerOutputDTOTypeEnum;
+}
+
+const ShopListingNameCell: FC<ShopListingNameCellProps> = ({ listing, name, gameServerType }) => {
+  const [iconError, setIconError] = useState(false);
+  const handleIconError = useCallback(() => setIconError(true), []);
+  const firstItem = listing.items[0]?.item;
+  const defaultIcon = firstItem
+    ? `/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${firstItem.code}.png`
+    : null;
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      {(listing.icon || defaultIcon) && (
+        <Avatar size="tiny">
+          <Avatar.Image
+            src={listing.icon && !iconError ? listing.icon : defaultIcon || ''}
+            alt={`Icon of ${name || 'listing'}`}
+            onError={handleIconError}
+          />
+          <Avatar.FallBack>{getInitials(name || 'None')}</Avatar.FallBack>
+        </Avatar>
+      )}
+      <span>{name ?? 'None'}</span>
+    </div>
   );
 };

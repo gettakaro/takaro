@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Unsupported image format: gif. Supported formats: PNG, JPG, JPEG, WEBP"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "Shop/ShopListingIconDescription",
+    "snapshot": true,
+    "name": "Test invalid image format rejection",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

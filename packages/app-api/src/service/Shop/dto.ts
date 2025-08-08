@@ -8,6 +8,7 @@ import {
   Min,
   IsISO8601,
   IsBoolean,
+  MaxLength,
 } from 'class-validator';
 import { TakaroModelDTO, TakaroDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
@@ -50,6 +51,12 @@ export class ShopListingOutputDTO extends TakaroModelDTO<ShopListingOutputDTO> {
   price!: number;
   @IsString()
   name: string;
+  @IsString()
+  @IsOptional()
+  icon?: string;
+  @IsString()
+  @IsOptional()
+  description?: string;
   @IsISO8601()
   @IsOptional()
   deletedAt?: Date;
@@ -71,6 +78,13 @@ export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
   price!: number;
   @IsString()
   name: string;
+  @IsString()
+  @IsOptional()
+  icon?: string;
+  @IsString()
+  @IsOptional()
+  @MaxLength(500)
+  description?: string;
   @IsBoolean()
   @IsOptional()
   draft?: boolean;
@@ -93,6 +107,13 @@ export class ShopListingUpdateDTO extends TakaroDTO<ShopListingUpdateDTO> {
   @IsString()
   @IsOptional()
   name?: string;
+  @IsString()
+  @IsOptional()
+  icon?: string;
+  @IsString()
+  @IsOptional()
+  @MaxLength(500)
+  description?: string;
   @IsBoolean()
   @IsOptional()
   draft?: boolean;

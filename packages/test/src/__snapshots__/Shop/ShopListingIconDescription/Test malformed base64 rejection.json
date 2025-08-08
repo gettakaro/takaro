@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Failed to process image: Input buffer contains unsupported image format"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "Shop/ShopListingIconDescription",
+    "snapshot": true,
+    "name": "Test malformed base64 rejection",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}
