@@ -90,9 +90,11 @@ selfservice:
     login:
       ui_url: http://127.0.0.1:13001/login
       lifespan: 10m
-    #      after:
-    #        hooks:
-    #          - hook: require_verified_address
+      after:
+        default_browser_return_url: http://127.0.0.1:13001/
+        oidc:
+          hooks:
+            - hook: session
 
     registration:
       enabled: false
