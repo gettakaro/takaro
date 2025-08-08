@@ -1,7 +1,8 @@
 import { Job } from 'bullmq';
 import { ctx, logger } from '@takaro/util';
 import { config } from '../config.js';
-import { TakaroWorker, IEventQueueData } from '@takaro/queues';
+import { TakaroWorker } from '@takaro/queues';
+import { IEventQueueData } from './dataDefinitions.js';
 import { EventChatMessage, EventEntityKilled, EventPlayerDeath, HookEvents } from '@takaro/modules';
 import { getSocketServer } from '../lib/socketServer.js';
 import { HookService } from '../service/HookService.js';

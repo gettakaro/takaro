@@ -88,7 +88,7 @@ class PlayerOnGameServerSearchInputDTO extends ITakaroQuery<PlayerOnGameserverOu
 
 class PlayerOnGameServerSetCurrencyInputDTO {
   @IsNumber()
-  @Min(0.01)
+  @Min(0)
   currency!: number;
 }
 

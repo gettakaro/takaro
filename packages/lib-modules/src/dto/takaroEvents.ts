@@ -282,6 +282,28 @@ export class TakaroEventModuleCreated extends BaseEvent<TakaroEventModuleCreated
 export class TakaroEventModuleUpdated extends BaseEvent<TakaroEventModuleUpdated> {
   @IsString()
   type = TakaroEvents.MODULE_UPDATED;
+
+  @IsString()
+  @IsOptional()
+  changeType?: 'created' | 'updated' | 'deleted';
+
+  @IsString()
+  @IsOptional()
+  componentType?: 'command' | 'hook' | 'cronjob' | 'permission' | 'function' | 'module';
+
+  @IsString()
+  @IsOptional()
+  componentName?: string;
+
+  @IsString()
+  @IsOptional()
+  componentId?: string;
+
+  @IsOptional()
+  previousValue?: Record<string, unknown>;
+
+  @IsOptional()
+  newValue?: Record<string, unknown>;
 }
 
 export class TakaroEventModuleDeleted extends BaseEvent<TakaroEventModuleDeleted> {

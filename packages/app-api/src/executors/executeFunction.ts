@@ -3,7 +3,14 @@ import { Sentry, errors, logger } from '@takaro/util';
 import { Redis } from '@takaro/db';
 import { AdminClient, Client } from '@takaro/apiclient';
 import { executeFunctionLocal } from './executeLocal.js';
-import { IHookJobData, ICommandJobData, ICronJobData, isCommandData, isHookData, isCronData } from '@takaro/queues';
+import {
+  IHookJobData,
+  ICommandJobData,
+  ICronJobData,
+  isCommandData,
+  isHookData,
+  isCronData,
+} from '../workers/dataDefinitions.js';
 import { executeLambda } from '@takaro/aws';
 import { config } from '../config.js';
 import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible';

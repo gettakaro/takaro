@@ -1,10 +1,8 @@
 import { GameEvents, GameEventsMapping, EventPayload, EventChatMessage } from '@takaro/modules';
-import {
-  ModuleInstallationOutputDTO,
-  PlayerOnGameserverOutputWithRolesDTO,
-  PlayerOutputWithRolesDTO,
-} from '@takaro/apiclient';
 import { ValueOf } from 'type-fest';
+import { ModuleInstallationOutputDTO } from '../service/Module/dto.js';
+import { PlayerOutputWithRolesDTO } from '../service/Player/dto.js';
+import { PlayerOnGameserverOutputWithRolesDTO } from '../service/PlayerOnGameserverService.js';
 
 export interface IParsedCommand {
   command: string;

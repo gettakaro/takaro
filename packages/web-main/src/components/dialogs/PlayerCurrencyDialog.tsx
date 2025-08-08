@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { RequiredDialogOptions } from '.';
 
 const currencySchema = z.object({
-  currency: z.number().positive({ message: 'Currency must be greater than 0' }),
+  currency: z.number().min(0, { message: 'Currency must be 0 or greater' }),
   variant: z.enum(['add', 'deduct']).default('add'),
 });
 

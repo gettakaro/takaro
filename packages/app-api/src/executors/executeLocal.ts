@@ -4,7 +4,7 @@ import vm from 'node:vm';
 import { FunctionExecutor } from './executeFunction.js';
 import { config } from '../config.js';
 import { TakaroEventFunctionLog } from '@takaro/modules';
-import { IHookJobData, ICommandJobData, ICronJobData } from '@takaro/queues';
+import { IHookJobData, ICommandJobData, ICronJobData } from '../workers/dataDefinitions.js';
 
 /**
  * !!!!!!!!!!!!!!!!!!!!! node:vm is not secure, don't use this in production !!!!!!!!!!!!!!!!!

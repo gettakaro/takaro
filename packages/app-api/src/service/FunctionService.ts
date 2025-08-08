@@ -1,54 +1,16 @@
 import { TakaroService } from './Base.js';
 
-import { IsOptional, IsString, IsUUID, Length } from 'class-validator';
 import { FunctionModel, FunctionRepo } from '../db/function.js';
-import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
+import { traceableClass, errors } from '@takaro/util';
+import { TakaroEventModuleUpdated } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
+import { EventCreateDTO, EventService, EVENT_TYPES } from './EventService.js';
+import { ModuleService } from './Module/index.js';
+import { FunctionOutputDTO, FunctionCreateDTO, FunctionUpdateDTO } from './Function/dto.js';
 
-export class FunctionOutputDTO extends TakaroModelDTO<FunctionOutputDTO> {
-  @IsString()
-  code: string;
-  @IsString()
-  @IsOptional()
-  name: string;
-  @IsString()
-  @IsOptional()
-  @Length(1, 131072)
-  description?: string;
-  @IsUUID()
-  @IsOptional()
-  versionId?: string;
-}
-
-export class FunctionCreateDTO extends TakaroDTO<FunctionCreateDTO> {
-  @IsString()
-  @IsOptional()
-  code?: string;
-  @IsString()
-  @IsOptional()
-  name: string;
-  @IsString()
-  @IsOptional()
-  @Length(1, 131072)
-  description?: string;
-  @IsUUID()
-  @IsOptional()
-  versionId?: string;
-}
-
-export class FunctionUpdateDTO extends TakaroDTO<FunctionUpdateDTO> {
-  @IsString()
-  @IsOptional()
-  name: string;
-  @IsString()
-  @IsOptional()
-  @Length(1, 131072)
-  description?: string;
-  @IsString()
-  @IsOptional()
-  code: string;
-}
+// Re-export DTOs for backward compatibility
+export { FunctionOutputDTO, FunctionCreateDTO, FunctionUpdateDTO } from './Function/dto.js';
 
 const defaultFunctionCode = `import { data, takaro } from '@takaro/helpers';
 async function main() {
@@ -75,17 +37,112 @@ export class FunctionService extends TakaroService<
     return this.repo.findOne(id);
   }
 
-  create(data: FunctionCreateDTO): Promise<FunctionOutputDTO> {
+  async create(data: FunctionCreateDTO): Promise<FunctionOutputDTO> {
     if (!data.code) data.code = defaultFunctionCode;
-    return this.repo.create(data);
+    const created = await this.repo.create(data);
+
+    // Trigger module-updated event if versionId is provided
+    if (data.versionId) {
+      const moduleService = new ModuleService(this.domainId);
+      const moduleVersion = await moduleService.findOneBy('versionId', data.versionId);
+      if (moduleVersion) {
+        await new EventService(this.domainId).create(
+          new EventCreateDTO({
+            eventName: EVENT_TYPES.MODULE_UPDATED,
+            moduleId: moduleVersion.moduleId,
+            meta: new TakaroEventModuleUpdated({
+              changeType: 'created',
+              componentType: 'function',
+              componentName: created.name,
+              componentId: created.id,
+              newValue: {
+                name: created.name,
+                code: created.code,
+              },
+            }),
+          }),
+        );
+      }
+    }
+
+    return created;
   }
 
-  update(id: string, item: FunctionUpdateDTO): Promise<FunctionOutputDTO> {
-    return this.repo.update(id, item);
+  async update(id: string, item: FunctionUpdateDTO): Promise<FunctionOutputDTO> {
+    const existing = await this.repo.findOne(id);
+    if (!existing) {
+      throw new errors.NotFoundError('Function not found');
+    }
+
+    // Capture previous state for event
+    const previousValue = {
+      name: existing.name,
+      code: existing.code,
+    };
+
+    const updated = await this.repo.update(id, item);
+
+    // Trigger module-updated event if versionId is present
+    if (existing.versionId) {
+      const moduleService = new ModuleService(this.domainId);
+      const moduleVersion = await moduleService.findOneBy('versionId', existing.versionId);
+      if (moduleVersion) {
+        await new EventService(this.domainId).create(
+          new EventCreateDTO({
+            eventName: EVENT_TYPES.MODULE_UPDATED,
+            moduleId: moduleVersion.moduleId,
+            meta: new TakaroEventModuleUpdated({
+              changeType: 'updated',
+              componentType: 'function',
+              componentName: updated.name,
+              componentId: updated.id,
+              previousValue,
+              newValue: {
+                name: updated.name,
+                code: updated.code,
+              },
+            }),
+          }),
+        );
+      }
+    }
+
+    return updated;
   }
 
   async delete(id: string) {
+    // Get function details before deletion for event
+    const existing = await this.repo.findOne(id);
+    if (!existing) {
+      throw new errors.NotFoundError('Function not found');
+    }
+
     await this.repo.delete(id);
+
+    // Trigger module-updated event if versionId is present
+    if (existing.versionId) {
+      const moduleService = new ModuleService(this.domainId);
+      const moduleVersion = await moduleService.findOneBy('versionId', existing.versionId);
+      if (moduleVersion) {
+        await new EventService(this.domainId).create(
+          new EventCreateDTO({
+            eventName: EVENT_TYPES.MODULE_UPDATED,
+            moduleId: moduleVersion.moduleId,
+            meta: new TakaroEventModuleUpdated({
+              changeType: 'deleted',
+              componentType: 'function',
+              componentName: existing.name,
+              componentId: existing.id,
+              previousValue: {
+                name: existing.name,
+                code: existing.code,
+              },
+            }),
+          }),
+        );
+      }
+    }
+
     return id;
   }
 }

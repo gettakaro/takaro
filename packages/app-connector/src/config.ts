@@ -1,10 +1,10 @@
 import { Config, IBaseConfig } from '@takaro/config';
-import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
+import { redisConfigSchema, IRedisConfig } from '@takaro/queues';
 import { IAuthConfig, authConfigSchema } from '@takaro/auth';
 import { errors } from '@takaro/util';
 import ms from 'ms';
 
-interface IConnectorConfig extends IBaseConfig {
+interface IConnectorConfig extends IBaseConfig, IRedisConfig {
   http: {
     port: number;
     allowedOrigins: string[];
@@ -89,8 +89,4 @@ const configSchema = {
   },
 };
 
-export const config = new Config<IConnectorConfig & IQueuesConfig & IAuthConfig>([
-  configSchema,
-  queuesConfigSchema,
-  authConfigSchema,
-]);
+export const config = new Config<IConnectorConfig & IAuthConfig>([configSchema, redisConfigSchema, authConfigSchema]);

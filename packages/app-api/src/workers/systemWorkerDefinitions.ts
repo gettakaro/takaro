@@ -1,4 +1,4 @@
-import { IBaseJobData } from '@takaro/queues';
+import { IBaseJobData } from './dataDefinitions.js';
 
 export enum SystemTaskType {
   SEED_MODULES = 'seedModules',

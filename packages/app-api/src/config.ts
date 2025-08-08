@@ -1,11 +1,12 @@
 import { Config, IBaseConfig } from '@takaro/config';
-import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
+import { queuesConfigSchema, IQueuesConfig } from './workers/queuesConfig.js';
 import { IDbConfig, configSchema as dbConfigSchema } from '@takaro/db';
 import { IAuthConfig, authConfigSchema } from '@takaro/auth';
+import { IRedisConfig, redisConfigSchema } from '@takaro/queues';
 import { errors } from '@takaro/util';
 import ms from 'ms';
 
-interface IHttpConfig extends IBaseConfig {
+interface IApiConfig extends IBaseConfig, IQueuesConfig, IRedisConfig {
   http: {
     port: number;
     allowedOrigins: string[];
@@ -226,11 +227,10 @@ const configSchema = {
   },
 };
 
-export const config = new Config<
-  IHttpConfig & IQueuesConfig & IDbConfig & Pick<IAuthConfig, 'kratos' | 'adminClientSecret'>
->([
+export const config = new Config<IApiConfig & IDbConfig & Pick<IAuthConfig, 'kratos' | 'adminClientSecret'>>([
   configSchema,
   queuesConfigSchema,
+  redisConfigSchema,
   dbConfigSchema,
   { kratos: authConfigSchema.kratos, adminClientSecret: authConfigSchema.adminClientSecret },
 ]);

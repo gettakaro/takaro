@@ -1,5 +1,6 @@
 import { TakaroService } from './Base.js';
-import { IHookJobData, queueService } from '@takaro/queues';
+import { IHookJobData } from '../workers/dataDefinitions.js';
+import { queueService } from '../workers/QueueService.js';
 import { Redis } from '@takaro/db';
 
 import { HookModel, HookRepo } from '../db/hook.js';
@@ -21,11 +22,19 @@ import safeRegex from 'safe-regex';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
-import { HookEvents, isDiscordMessageEvent, EventPayload, EventTypes, EventMapping } from '@takaro/modules';
+import {
+  HookEvents,
+  isDiscordMessageEvent,
+  EventPayload,
+  EventTypes,
+  EventMapping,
+  TakaroEventModuleUpdated,
+} from '@takaro/modules';
 import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { PlayerService } from './Player/index.js';
 import { ModuleService } from './Module/index.js';
 import { InstallModuleDTO } from './Module/dto.js';
+import { EventCreateDTO, EventService, EVENT_TYPES } from './EventService.js';
 
 interface IHandleHookOptions {
   eventType: EventTypes;
@@ -147,12 +156,35 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
       );
       fnIdToAdd = newFn.id;
     } else {
-      const newFn = await functionsService.create(await new FunctionCreateDTO());
+      const newFn = await functionsService.create(new FunctionCreateDTO());
       fnIdToAdd = newFn.id;
     }
 
     const created = await this.repo.create(new HookCreateDTO({ ...item, function: fnIdToAdd }));
     await this.moduleService.refreshInstallations(created.versionId);
+
+    // Trigger module-updated event
+    const moduleVersion = await this.moduleService.findOneBy('versionId', created.versionId);
+    if (moduleVersion) {
+      await new EventService(this.domainId).create(
+        new EventCreateDTO({
+          eventName: EVENT_TYPES.MODULE_UPDATED,
+          moduleId: moduleVersion.moduleId,
+          meta: new TakaroEventModuleUpdated({
+            changeType: 'created',
+            componentType: 'hook',
+            componentName: created.name,
+            componentId: created.id,
+            newValue: {
+              name: created.name,
+              eventType: created.eventType,
+              regex: created.regex,
+            },
+          }),
+        }),
+      );
+    }
+
     return created;
   }
   async update(id: string, item: HookUpdateDTO) {
@@ -161,6 +193,13 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
     if (!existing) {
       throw new errors.NotFoundError('Hook not found');
     }
+
+    // Capture previous state for event
+    const previousValue = {
+      name: existing.name,
+      eventType: existing.eventType,
+      regex: existing.regex,
+    };
 
     if (item.function) {
       const functionsService = new FunctionService(this.domainId);
@@ -197,11 +236,63 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
       }),
     );
 
+    // Trigger module-updated event
+    const moduleVersion = await this.moduleService.findOneBy('versionId', updated.versionId);
+    if (moduleVersion) {
+      await new EventService(this.domainId).create(
+        new EventCreateDTO({
+          eventName: EVENT_TYPES.MODULE_UPDATED,
+          moduleId: moduleVersion.moduleId,
+          meta: new TakaroEventModuleUpdated({
+            changeType: 'updated',
+            componentType: 'hook',
+            componentName: updated.name,
+            componentId: updated.id,
+            previousValue,
+            newValue: {
+              name: updated.name,
+              eventType: updated.eventType,
+              regex: updated.regex,
+            },
+          }),
+        }),
+      );
+    }
+
     return updated;
   }
 
   async delete(id: string) {
+    // Get hook details before deletion for event
+    const existing = await this.repo.findOne(id);
+    if (!existing) {
+      throw new errors.NotFoundError('Hook not found');
+    }
+
     await this.repo.delete(id);
+
+    // Trigger module-updated event
+    const moduleVersion = await this.moduleService.findOneBy('versionId', existing.versionId);
+    if (moduleVersion) {
+      await new EventService(this.domainId).create(
+        new EventCreateDTO({
+          eventName: EVENT_TYPES.MODULE_UPDATED,
+          moduleId: moduleVersion.moduleId,
+          meta: new TakaroEventModuleUpdated({
+            changeType: 'deleted',
+            componentType: 'hook',
+            componentName: existing.name,
+            componentId: existing.id,
+            previousValue: {
+              name: existing.name,
+              eventType: existing.eventType,
+              regex: existing.regex,
+            },
+          }),
+        }),
+      );
+    }
+
     return id;
   }
 

@@ -15,7 +15,7 @@ import {
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO, traceableClass, TakaroDTO } from '@takaro/util';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
-import { queueService } from '@takaro/queues';
+import { queueService } from '../workers/QueueService.js';
 import {
   HookEvents,
   IPosition,

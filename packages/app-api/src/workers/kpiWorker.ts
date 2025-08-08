@@ -1,4 +1,5 @@
-import { TakaroWorker, queueService } from '@takaro/queues';
+import { TakaroWorker } from '@takaro/queues';
+import { queueService } from './QueueService.js';
 import { config } from '../config.js';
 import { Job } from 'bullmq';
 import { logger } from '@takaro/util';
