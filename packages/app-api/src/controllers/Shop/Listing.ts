@@ -18,6 +18,7 @@ import {
   ShopListingItemMetaOutputDTO,
   ShopListingItemMetaInputDTO,
 } from '../../service/Shop/dto.js';
+import { ImageProcessingService } from '../../service/ImageProcessingService.js';
 import multer from 'multer';
 
 const storage = multer.memoryStorage();
@@ -139,8 +140,15 @@ export class ShopListingController {
   @ResponseSchema(ShopListingOutputDTOAPI)
   @Post('/')
   async create(@Req() req: AuthenticatedRequest, @Body() item: ShopListingCreateDTO) {
+    // Process icon if provided
+    const processedItem = new ShopListingCreateDTO(item);
+    if (item.icon) {
+      const imageProcessor = new ImageProcessingService();
+      processedItem.icon = await imageProcessor.processShopIcon(item.icon);
+    }
+
     const service = new ShopListingService(req.domainId);
-    const created = await service.create(new ShopListingCreateDTO(item));
+    const created = await service.create(processedItem);
     return apiResponse(created);
   }
 
@@ -148,8 +156,15 @@ export class ShopListingController {
   @ResponseSchema(ShopListingOutputDTOAPI)
   @Put('/:id')
   async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() item: ShopListingUpdateDTO) {
+    // Process icon if provided (allow null to clear icon)
+    const processedItem = new ShopListingUpdateDTO(item);
+    if (item.icon !== undefined && item.icon !== null) {
+      const imageProcessor = new ImageProcessingService();
+      processedItem.icon = await imageProcessor.processShopIcon(item.icon);
+    }
+
     const service = new ShopListingService(req.domainId);
-    const updated = await service.update(params.id, item);
+    const updated = await service.update(params.id, processedItem);
     return apiResponse(updated);
   }
 

@@ -55,6 +55,8 @@ export class ShopListingModel extends TakaroModel {
   gameServerId!: string;
   price!: number;
   name?: string;
+  icon?: string;
+  description?: string;
 
   deletedAt?: Date;
   draft: boolean;
@@ -171,15 +173,23 @@ export class ShopListingRepo extends ITakaroRepo<
   async create(item: ShopListingCreateDTO): Promise<ShopListingOutputDTO> {
     const knex = await this.getKnex();
     const { query } = await this.getModel();
-    const listing = await query
-      .insert({
-        gameServerId: item.gameServerId,
-        draft: item.draft,
-        name: item.name,
-        price: item.price,
-        domain: this.domainId,
-      })
-      .returning('*');
+    const insertData: any = {
+      gameServerId: item.gameServerId,
+      draft: item.draft,
+      name: item.name,
+      price: item.price,
+      domain: this.domainId,
+    };
+
+    // Add optional fields if provided
+    if (item.icon !== undefined) {
+      insertData.icon = item.icon;
+    }
+    if (item.description !== undefined) {
+      insertData.description = item.description;
+    }
+
+    const listing = await query.insert(insertData).returning('*');
 
     if (!item.items || !item.items.length) throw new errors.BadRequestError('At least one item is required');
 

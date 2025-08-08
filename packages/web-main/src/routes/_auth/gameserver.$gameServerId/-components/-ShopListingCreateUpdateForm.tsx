@@ -9,13 +9,14 @@ import {
   IconButton,
   Switch,
   TextField,
+  TextAreaField,
   Tooltip,
   styled,
 } from '@takaro/lib-components';
 import { useRouter } from '@tanstack/react-router';
 import { ItemSelectQueryField } from '../../../../components/selects/ItemSelectQueryField';
 import { CategorySelector } from '../../../../components/shop/CategorySelector';
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState, useCallback } from 'react';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -54,6 +55,8 @@ const validationSchema = z.object({
   price: z.number().min(0, 'Price is required.'),
   draft: z.boolean().optional(),
   categoryIds: z.array(z.string()).optional(),
+  icon: z.string().optional().nullable(),
+  description: z.string().max(500, 'Description must be 500 characters or less').optional().nullable(),
   items: z
     .array(
       z.object({
@@ -77,6 +80,8 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
 }) => {
   const formId = 'shopitem-form';
   const [open, setOpen] = useState(true);
+  const [iconPreview, setIconPreview] = useState<string | null>(null);
+  const [iconSize, setIconSize] = useState<number>(0);
   const readOnly = onSubmit === undefined;
   const { history } = useRouter();
 
@@ -88,6 +93,8 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
       price: 0,
       draft: undefined,
       categoryIds: [],
+      icon: undefined,
+      description: undefined,
       items: [{ itemId: '', amount: 1, quality: '' }],
     },
   });
@@ -115,6 +122,8 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
         price: initialData.price,
         draft: initialData.draft !== undefined ? initialData.draft : undefined,
         categoryIds: initialData.categories ? initialData.categories.map((cat) => cat.id) : [],
+        icon: initialData.icon,
+        description: initialData.description,
         items: initialData.items.map((shopListingItemMeta) => {
           return {
             amount: shopListingItemMeta.amount,
@@ -123,8 +132,47 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
           };
         }),
       });
+      if (initialData.icon) {
+        setIconPreview(initialData.icon);
+      }
     }
   }, [initialData, reset]);
+
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) {
+        setIconPreview(null);
+        setIconSize(0);
+        setValue('icon', undefined);
+        return;
+      }
+
+      // Check file type
+      const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        alert('Please upload a PNG, JPG, JPEG, or WEBP image.');
+        e.target.value = '';
+        return;
+      }
+
+      // Store file size for warning
+      setIconSize(file.size);
+
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setIconPreview(base64String);
+        setValue('icon', base64String);
+      };
+      reader.readAsDataURL(file);
+    },
+    [setValue],
+  );
+
+  const descriptionValue = watch('description');
+  const charactersRemaining = 500 - (descriptionValue?.length || 0);
 
   return (
     <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={readOnly === false && formState.isDirty}>
@@ -164,13 +212,54 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
               label="Categories"
               placeholder="Search categories..."
             />
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Shop Listing Icon</label>
+              {!readOnly && (
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/jpg,image/webp"
+                  onChange={handleFileChange}
+                  disabled={isLoading}
+                  style={{ marginBottom: '0.5rem' }}
+                />
+              )}
+              <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', margin: '0.5rem 0' }}>
+                Upload a custom icon for this shop listing. Supported formats: PNG, JPG, WEBP. The image will be resized
+                to 256x256 pixels.
+              </p>
+            </div>
+            {iconSize > 5 * 1024 * 1024 && (
+              <Alert
+                variant="warning"
+                text="Warning: The selected image is larger than 5MB. It will be compressed, but upload may take longer."
+                elevation={2}
+              />
+            )}
+            {iconPreview && (
+              <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                <img
+                  src={iconPreview}
+                  alt="Icon preview"
+                  style={{
+                    maxWidth: '128px',
+                    maxHeight: '128px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--color-backgroundAccent)',
+                  }}
+                />
+              </div>
+            )}
+            <TextAreaField
+              control={control}
+              name="description"
+              label="Description"
+              readOnly={readOnly}
+              loading={isLoading}
+              description={`A brief description of this shop listing. ${charactersRemaining} characters remaining.`}
+              placeholder="Enter a description for this shop listing..."
+            />
             <CollapseList>
               <CollapseList.Item title="Items">
-                <Alert
-                  variant="info"
-                  text="Uploading a custom image is not supported yet. For now, the icon of the first item will be used."
-                  elevation={3}
-                />
                 {fields.length > 0 &&
                   fields.map((field, index) => (
                     <Field key={field.id}>
