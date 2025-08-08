@@ -1,4 +1,5 @@
-import { config } from './config.js';
+import { TakaroQueue } from '@takaro/queues';
+import { config } from '../config.js';
 import {
   ICommandJobData,
   IConnectorQueueData,
@@ -8,7 +9,6 @@ import {
   IGameServerQueueData,
   ICSMMImportData,
 } from './dataDefinitions.js';
-import { TakaroQueue } from './TakaroQueue.js';
 
 class QueuesService {
   private static instance: QueuesService;
