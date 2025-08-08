@@ -4,7 +4,8 @@ import { CommandModel, CommandRepo } from '../db/command.js';
 import { IsNumber, IsOptional, IsString, IsUUID, Length, ValidateNested, IsArray } from 'class-validator';
 import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDTO } from './FunctionService.js';
 import { IMessageOptsDTO } from '@takaro/gameserver';
-import { ICommandJobData, IParsedCommand, queueService } from '@takaro/queues';
+import { ICommandJobData, IParsedCommand } from '../workers/dataDefinitions.js';
+import { queueService } from '../workers/QueueService.js';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import {

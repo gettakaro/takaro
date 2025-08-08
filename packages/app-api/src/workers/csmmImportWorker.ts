@@ -1,5 +1,7 @@
 import { Job } from 'bullmq';
-import { TakaroWorker, ICSMMImportData, queueService } from '@takaro/queues';
+import { TakaroWorker } from '@takaro/queues';
+import { ICSMMImportData } from './dataDefinitions.js';
+import { queueService } from './QueueService.js';
 import { ctx, errors, logger } from '@takaro/util';
 import { config } from '../config.js';
 import {

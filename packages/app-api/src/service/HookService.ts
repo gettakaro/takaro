@@ -1,5 +1,6 @@
 import { TakaroService } from './Base.js';
-import { IHookJobData, queueService } from '@takaro/queues';
+import { IHookJobData } from '../workers/dataDefinitions.js';
+import { queueService } from '../workers/QueueService.js';
 import { Redis } from '@takaro/db';
 
 import { HookModel, HookRepo } from '../db/hook.js';

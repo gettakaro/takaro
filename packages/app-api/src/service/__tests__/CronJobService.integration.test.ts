@@ -1,6 +1,6 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { GameServerOutputDTO, ModuleOutputDTO, CronJobOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
-import { queueService } from '@takaro/queues';
+import { queueService } from '../../workers/QueueService.js';
 import { describe } from 'node:test';
 import { randomUUID } from 'crypto';
 import { getMockServer } from '@takaro/mock-gameserver';
