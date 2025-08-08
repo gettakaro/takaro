@@ -1,57 +1,16 @@
 import { TakaroService } from './Base.js';
 
-import { IsOptional, IsString, IsUUID, Length } from 'class-validator';
 import { FunctionModel, FunctionRepo } from '../db/function.js';
-import { TakaroDTO, TakaroModelDTO, traceableClass, errors } from '@takaro/util';
+import { traceableClass, errors } from '@takaro/util';
 import { TakaroEventModuleUpdated } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { EventCreateDTO, EventService, EVENT_TYPES } from './EventService.js';
 import { ModuleService } from './Module/index.js';
+import { FunctionOutputDTO, FunctionCreateDTO, FunctionUpdateDTO } from './Function/dto.js';
 
-export class FunctionOutputDTO extends TakaroModelDTO<FunctionOutputDTO> {
-  @IsString()
-  code: string;
-  @IsString()
-  @IsOptional()
-  name: string;
-  @IsString()
-  @IsOptional()
-  @Length(1, 131072)
-  description?: string;
-  @IsUUID()
-  @IsOptional()
-  versionId?: string;
-}
-
-export class FunctionCreateDTO extends TakaroDTO<FunctionCreateDTO> {
-  @IsString()
-  @IsOptional()
-  code?: string;
-  @IsString()
-  @IsOptional()
-  name: string;
-  @IsString()
-  @IsOptional()
-  @Length(1, 131072)
-  description?: string;
-  @IsUUID()
-  @IsOptional()
-  versionId?: string;
-}
-
-export class FunctionUpdateDTO extends TakaroDTO<FunctionUpdateDTO> {
-  @IsString()
-  @IsOptional()
-  name: string;
-  @IsString()
-  @IsOptional()
-  @Length(1, 131072)
-  description?: string;
-  @IsString()
-  @IsOptional()
-  code: string;
-}
+// Re-export DTOs for backward compatibility
+export { FunctionOutputDTO, FunctionCreateDTO, FunctionUpdateDTO } from './Function/dto.js';
 
 const defaultFunctionCode = `import { data, takaro } from '@takaro/helpers';
 async function main() {

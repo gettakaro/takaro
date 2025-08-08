@@ -5,7 +5,7 @@ import { IsNumber, IsOptional, IsString, IsUUID, Length, ValidateNested, IsArray
 import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDTO } from './FunctionService.js';
 import { IMessageOptsDTO } from '@takaro/gameserver';
 import { ICommandJobData, IParsedCommand } from '../workers/dataDefinitions.js';
-import { queueService } from '../workers/QueueService.js';
+// Lazy load queueService to avoid circular dependency
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import {
@@ -611,6 +611,8 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
             delay,
             playerId: player.id,
           });
+          // Lazy load queueService to avoid circular dependency
+          const { queueService } = await import('../workers/QueueService.js');
           await queueService.queues.commands.queue.add(jobData, { delay });
           this.log.debug('handleChatMessage: Command job added to queue successfully');
         }
