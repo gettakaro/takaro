@@ -196,8 +196,20 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
   async update(id: string, mod: ModuleUpdateDTO) {
     const updated = await this.repo.update(id, new ModuleUpdateDTO({ ...mod, latestVersion: undefined }));
+
+    // Track permission changes if latestVersion is being updated
+    let previousPermissions: unknown = undefined;
+    let newPermissions: unknown = undefined;
+
     if (mod.latestVersion) {
       const latestVersion = await this.getLatestVersion(id);
+
+      // Capture previous permissions before update
+      if (mod.latestVersion.permissions) {
+        previousPermissions = latestVersion.permissions;
+        newPermissions = mod.latestVersion.permissions;
+      }
+
       if (mod.latestVersion.configSchema) {
         try {
           ajv.compile(JSON.parse(mod.latestVersion.configSchema));
@@ -221,11 +233,29 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     }
 
     if (!updated.builtin) {
+      // Create event with detailed metadata if permissions changed
+      const eventMeta = new TakaroEventModuleUpdated();
+
+      if (previousPermissions !== undefined && newPermissions !== undefined) {
+        eventMeta.changeType = 'updated';
+        eventMeta.componentType = 'permission';
+        eventMeta.componentName = 'permissions';
+        eventMeta.componentId = id;
+        eventMeta.previousValue = { permissions: previousPermissions };
+        eventMeta.newValue = { permissions: newPermissions };
+      } else if (mod.latestVersion) {
+        // Other module version changes
+        eventMeta.changeType = 'updated';
+        eventMeta.componentType = 'module';
+        eventMeta.componentName = updated.name;
+        eventMeta.componentId = id;
+      }
+
       await this.eventsService().create(
         new EventCreateDTO({
           eventName: EVENT_TYPES.MODULE_UPDATED,
           moduleId: id,
-          meta: new TakaroEventModuleUpdated(),
+          meta: eventMeta,
         }),
       );
     }

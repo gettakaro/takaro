@@ -6,12 +6,14 @@ import { IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-vali
 import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDTO } from './FunctionService.js';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
+import { TakaroEventModuleUpdated } from '@takaro/modules';
 import { PaginatedOutput } from '../db/base.js';
 import { randomUUID } from 'crypto';
 import { InstallModuleDTO, ModuleInstallationOutputDTO } from './Module/dto.js';
 import { ModuleService } from './Module/index.js';
 import { PartialDeep } from 'type-fest/index.js';
 import { CronJobSearchInputDTO } from '../controllers/CronJobController.js';
+import { EventCreateDTO, EventService, EVENT_TYPES } from './EventService.js';
 
 export class CronJobOutputDTO extends TakaroModelDTO<CronJobOutputDTO> {
   @IsString()
@@ -107,6 +109,28 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
     await this.moduleService.refreshInstallations(created.versionId);
     const installedModules = await this.moduleService.getInstalledModules({ versionId: item.versionId });
     await Promise.all(installedModules.map((mod) => this.addCronjobToQueue(created, mod)));
+
+    // Trigger module-updated event
+    const moduleVersion = await this.moduleService.findOneBy('versionId', created.versionId);
+    if (moduleVersion) {
+      await new EventService(this.domainId).create(
+        new EventCreateDTO({
+          eventName: EVENT_TYPES.MODULE_UPDATED,
+          moduleId: moduleVersion.moduleId,
+          meta: new TakaroEventModuleUpdated({
+            changeType: 'created',
+            componentType: 'cronjob',
+            componentName: created.name,
+            componentId: created.id,
+            newValue: {
+              name: created.name,
+              temporalValue: created.temporalValue,
+            },
+          }),
+        }),
+      );
+    }
+
     return created;
   }
   async update(id: string, item: CronJobUpdateDTO) {
@@ -115,6 +139,12 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
     if (!existing) {
       throw new errors.NotFoundError('Cronjob not found');
     }
+
+    // Capture previous state for event
+    const previousValue = {
+      name: existing.name,
+      temporalValue: existing.temporalValue,
+    };
 
     if (item.function) {
       const functionsService = new FunctionService(this.domainId);
@@ -153,6 +183,29 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
     );
 
     await Promise.all(installedModules.map((mod) => this.syncModuleCronjobs(mod)));
+
+    // Trigger module-updated event
+    const moduleVersion = await this.moduleService.findOneBy('versionId', updated.versionId);
+    if (moduleVersion) {
+      await new EventService(this.domainId).create(
+        new EventCreateDTO({
+          eventName: EVENT_TYPES.MODULE_UPDATED,
+          moduleId: moduleVersion.moduleId,
+          meta: new TakaroEventModuleUpdated({
+            changeType: 'updated',
+            componentType: 'cronjob',
+            componentName: updated.name,
+            componentId: updated.id,
+            previousValue,
+            newValue: {
+              name: updated.name,
+              temporalValue: updated.temporalValue,
+            },
+          }),
+        }),
+      );
+    }
+
     return updated;
   }
 
@@ -162,6 +215,27 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
     await Promise.all(installedModules.map((mod) => this.removeCronjobFromQueue(existing, mod)));
 
     await this.repo.delete(id);
+
+    // Trigger module-updated event
+    const moduleVersion = await this.moduleService.findOneBy('versionId', existing.versionId);
+    if (moduleVersion) {
+      await new EventService(this.domainId).create(
+        new EventCreateDTO({
+          eventName: EVENT_TYPES.MODULE_UPDATED,
+          moduleId: moduleVersion.moduleId,
+          meta: new TakaroEventModuleUpdated({
+            changeType: 'deleted',
+            componentType: 'cronjob',
+            componentName: existing.name,
+            componentId: existing.id,
+            previousValue: {
+              name: existing.name,
+              temporalValue: existing.temporalValue,
+            },
+          }),
+        }),
+      );
+    }
 
     return id;
   }

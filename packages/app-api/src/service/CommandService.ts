@@ -5,7 +5,7 @@ import { IsNumber, IsOptional, IsString, IsUUID, Length, ValidateNested, IsArray
 import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDTO } from './FunctionService.js';
 import { IMessageOptsDTO } from '@takaro/gameserver';
 import { ICommandJobData, IParsedCommand } from '../workers/dataDefinitions.js';
-import { queueService } from '../workers/QueueService.js';
+// Lazy load queueService to avoid circular dependency
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import {
@@ -16,6 +16,7 @@ import {
   TakaroEventCommandExecuted,
   TakaroEventCommandExecutionDenied,
   TakaroEventCommandDetails,
+  TakaroEventModuleUpdated,
 } from '@takaro/modules';
 import { Redis } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
@@ -240,6 +241,30 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
     }
 
     await this.moduleService.refreshInstallations(created.versionId);
+
+    // Trigger module-updated event
+    const moduleVersion = await this.moduleService.findOneBy('versionId', created.versionId);
+    if (moduleVersion) {
+      await new EventService(this.domainId).create(
+        new EventCreateDTO({
+          eventName: EVENT_TYPES.MODULE_UPDATED,
+          moduleId: moduleVersion.moduleId,
+          meta: new TakaroEventModuleUpdated({
+            changeType: 'created',
+            componentType: 'command',
+            componentName: created.name,
+            componentId: created.id,
+            newValue: {
+              name: created.name,
+              trigger: created.trigger,
+              helpText: created.helpText,
+              requiredPermissions: created.requiredPermissions,
+            },
+          }),
+        }),
+      );
+    }
+
     return created;
   }
 
@@ -249,6 +274,14 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
     if (!existing) {
       throw new errors.NotFoundError('Command not found');
     }
+
+    // Capture previous state for event
+    const previousValue = {
+      name: existing.name,
+      trigger: existing.trigger,
+      helpText: existing.helpText,
+      requiredPermissions: existing.requiredPermissions,
+    };
 
     if (item.function) {
       const functionsService = new FunctionService(this.domainId);
@@ -302,11 +335,68 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       }),
     );
 
+    // Trigger module-updated event
+    const moduleVersion = await this.moduleService.findOneBy('versionId', updated.versionId);
+    if (moduleVersion) {
+      const updatedCommand = await this.findOne(id);
+      if (updatedCommand) {
+        await new EventService(this.domainId).create(
+          new EventCreateDTO({
+            eventName: EVENT_TYPES.MODULE_UPDATED,
+            moduleId: moduleVersion.moduleId,
+            meta: new TakaroEventModuleUpdated({
+              changeType: 'updated',
+              componentType: 'command',
+              componentName: updatedCommand.name,
+              componentId: updatedCommand.id,
+              previousValue,
+              newValue: {
+                name: updatedCommand.name,
+                trigger: updatedCommand.trigger,
+                helpText: updatedCommand.helpText,
+                requiredPermissions: updatedCommand.requiredPermissions,
+              },
+            }),
+          }),
+        );
+      }
+    }
+
     return this.findOne(id);
   }
 
   async delete(id: string) {
+    // Get command details before deletion for event
+    const existing = await this.repo.findOne(id);
+    if (!existing) {
+      throw new errors.NotFoundError('Command not found');
+    }
+
     await this.repo.delete(id);
+
+    // Trigger module-updated event
+    const moduleVersion = await this.moduleService.findOneBy('versionId', existing.versionId);
+    if (moduleVersion) {
+      await new EventService(this.domainId).create(
+        new EventCreateDTO({
+          eventName: EVENT_TYPES.MODULE_UPDATED,
+          moduleId: moduleVersion.moduleId,
+          meta: new TakaroEventModuleUpdated({
+            changeType: 'deleted',
+            componentType: 'command',
+            componentName: existing.name,
+            componentId: existing.id,
+            previousValue: {
+              name: existing.name,
+              trigger: existing.trigger,
+              helpText: existing.helpText,
+              requiredPermissions: existing.requiredPermissions,
+            },
+          }),
+        }),
+      );
+    }
+
     return id;
   }
 
@@ -521,6 +611,8 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
             delay,
             playerId: player.id,
           });
+          // Lazy load queueService to avoid circular dependency
+          const { queueService } = await import('../workers/QueueService.js');
           await queueService.queues.commands.queue.add(jobData, { delay });
           this.log.debug('handleChatMessage: Command job added to queue successfully');
         }
