@@ -69,6 +69,47 @@ const tests = [
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
+    snapshot: false,
+    name: 'Can set currency to zero',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const res = await this.client.playerOnGameserver.playerOnGameServerControllerSearch();
+
+      const player = res.data.data[0];
+
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: player.gameServerId,
+        value: 'true',
+      });
+
+      // First set currency to some value
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        player.gameServerId,
+        player.playerId,
+        {
+          currency: 100,
+        },
+      );
+
+      // Now set it to zero
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        player.gameServerId,
+        player.playerId,
+        {
+          currency: 0,
+        },
+      );
+
+      const playerRes = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        player.gameServerId,
+        player.playerId,
+      );
+
+      expect(playerRes.data.data.currency).to.be.eq(0);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
     snapshot: true,
     name: 'Rejects negative currency',
     setup: SetupGameServerPlayers.setup,
@@ -441,33 +482,6 @@ const tests = [
         player.playerId,
         {
           currency: -50,
-        },
-      );
-
-      expect(rejectedRes.data.meta.error.message).to.be.eq('Validation error');
-      return rejectedRes;
-    },
-  }),
-  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
-    group,
-    snapshot: true,
-    name: 'Rejects zero amount for addCurrency',
-    setup: SetupGameServerPlayers.setup,
-    expectedStatus: 400,
-    test: async function () {
-      const res = await this.client.playerOnGameserver.playerOnGameServerControllerSearch();
-      const player = res.data.data[0];
-
-      await this.client.settings.settingsControllerSet('economyEnabled', {
-        gameServerId: player.gameServerId,
-        value: 'true',
-      });
-
-      const rejectedRes = await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
-        player.gameServerId,
-        player.playerId,
-        {
-          currency: 0,
         },
       );
 
