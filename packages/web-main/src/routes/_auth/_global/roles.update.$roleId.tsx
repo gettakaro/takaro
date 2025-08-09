@@ -33,19 +33,27 @@ function Component() {
     navigate({ to: '/roles' });
   }
 
-  const onSubmit: SubmitHandler<IFormInputs> = ({ permissions: formPermissions, name }) => {
+  const onSubmit: SubmitHandler<IFormInputs> = ({ permissions: formPermissions, name, linkedDiscordRoleId }) => {
     const activePermissions = Object.entries(formPermissions)
       .filter(([_key, value]) => value.enabled === true)
       .map(([key, value]) => ({
         permissionId: key,
         count: value.count,
       }));
+
+    const roleDetails: any = {
+      name,
+      permissions: activePermissions,
+    };
+
+    // Only include linkedDiscordRoleId if it has a value
+    if (linkedDiscordRoleId) {
+      roleDetails.linkedDiscordRoleId = linkedDiscordRoleId;
+    }
+
     mutate({
       roleId,
-      roleDetails: {
-        name,
-        permissions: activePermissions,
-      },
+      roleDetails,
     });
   };
 

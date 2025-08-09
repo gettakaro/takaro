@@ -17,6 +17,7 @@ interface InventoryDataPoint {
   playerId: string;
   itemId: string;
   quantity: number;
+  quality?: string;
   timestamp: Date;
 }
 
@@ -148,14 +149,14 @@ async function setupHistoricalData(domainId: string, pogs: PlayerOnGameserverOut
         box: { minX: 0, maxX: 200, minY: 0, maxY: 100, minZ: 0, maxZ: 200 },
         startDate: '2024-01-15T11:30:00Z',
         endDate: '2024-01-15T12:30:00Z',
-        expectedPlayers: pogs.length > 0 ? [pogs[0].id] : [],
+        expectedPlayers: pogs.length > 0 ? [pogs[0].playerId] : [],
       },
       radiusTest: {
         center: { x: 500, y: 100, z: 500 },
         radius: 50,
         startDate: '2024-01-15T11:30:00Z',
         endDate: '2024-01-15T12:30:00Z',
-        expectedPlayers: pogs.length > 1 ? [pogs[1].id] : [],
+        expectedPlayers: pogs.length > 1 ? [pogs[1].playerId] : [],
       },
     },
   };
@@ -203,6 +204,7 @@ async function setupInventoryData(
               playerId: pog.id,
               itemId: items[0].id,
               quantity: 5,
+              quality: 'high',
               timestamp: new Date(baseTime.getTime() + hour * 3600000),
             });
           }
@@ -211,6 +213,7 @@ async function setupInventoryData(
               playerId: pog.id,
               itemId: items[1].id,
               quantity: 3,
+              // No quality for this item to test null quality
               timestamp: new Date(baseTime.getTime() + hour * 3600000),
             });
           }
@@ -269,6 +272,7 @@ async function setupInventoryData(
       playerId: pogs[0].id,
       itemId: items[0].id,
       quantity: 99,
+      quality: 'legendary',
       timestamp: new Date('2024-01-15T12:00:00Z'),
     });
   }
@@ -285,6 +289,7 @@ async function setupInventoryData(
       playerId: point.playerId,
       itemId: point.itemId,
       quantity: point.quantity,
+      quality: point.quality,
       createdAt: point.timestamp.toISOString(),
       domain: domainId,
     }));
@@ -302,7 +307,7 @@ async function setupInventoryData(
     },
     testPoints: {
       inventoryTest: {
-        playerId: pogs.length > 0 ? pogs[0].id : '',
+        playerId: pogs.length > 0 ? pogs[0].playerId : '',
         itemCode: items.length > 0 ? items[0].code : '',
         startDate: '2024-01-14T00:00:00Z',
         endDate: '2024-01-16T00:00:00Z',
@@ -310,7 +315,8 @@ async function setupInventoryData(
       },
       itemSearchTest: {
         itemId: items.length > 3 ? items[3].id : items.length > 0 ? items[0].id : '',
-        expectedPlayers: items.length > 3 && pogs.length > 3 ? [pogs[3].id] : pogs.length > 0 ? [pogs[0].id] : [],
+        expectedPlayers:
+          items.length > 3 && pogs.length > 3 ? [pogs[3].playerId] : pogs.length > 0 ? [pogs[0].playerId] : [],
         dateRange: {
           start: '2024-01-10T00:00:00Z',
           end: '2024-01-25T00:00:00Z',
@@ -418,7 +424,7 @@ const tests = [
       await setupHistoricalData(this.standardDomainId, this.setupData.pogs1);
 
       // Select first two players only
-      const selectedPlayerIds = this.setupData.pogs1.slice(0, 2).map((pog) => pog.id);
+      const selectedPlayerIds = this.setupData.pogs1.slice(0, 2).map((pog) => pog.playerId);
 
       const res = await this.client.tracking.trackingControllerGetPlayerMovementHistory({
         playerId: selectedPlayerIds,
@@ -506,7 +512,7 @@ const tests = [
 
       // Should find at least player 0
       const playerIds = data.map((location) => location.playerId);
-      expect(playerIds).to.include(this.setupData.pogs1[0].id);
+      expect(playerIds).to.include(this.setupData.pogs1[0].playerId);
     },
   }),
 
@@ -573,7 +579,7 @@ const tests = [
 
       // Should find at least player 2
       const playerIds = data.map((location) => location.playerId);
-      expect(playerIds).to.include(this.setupData.pogs1[2].id);
+      expect(playerIds).to.include(this.setupData.pogs1[2].playerId);
     },
   }),
 
@@ -857,7 +863,7 @@ const tests = [
       // Should only find records from hour 10
       data.forEach((location) => {
         const date = new Date(location.createdAt);
-        expect(date.getHours()).to.equal(10);
+        expect(date.getUTCHours()).to.equal(10);
         expect(date.toISOString().startsWith('2024-01-01')).to.be.true;
       });
     },
@@ -983,7 +989,24 @@ const tests = [
       // Verify all returned data belongs to the requested player
       data.forEach((item) => {
         expect(item.playerId).to.equal(testPoint.playerId);
+        // Verify quality field exists (even if null)
+        expect(item).to.have.property('quality');
       });
+
+      // Verify the quality field exists on all items
+      expect(data.every((item) => 'quality' in item)).to.be.true;
+
+      // Find the legendary quality item we added - this MUST exist
+      const legendaryItem = data.find((item) => item.quantity === 99);
+      expect(legendaryItem).to.exist;
+      expect(legendaryItem!.quality).to.equal('legendary');
+
+      // For this specific test with the limited date range, we're primarily
+      // verifying that the legendary item has quality. The test setup adds
+      // many items over time, but this query is for a specific 2-day window
+      // where we know the legendary item exists.
+      const itemsWithQuality = data.filter((item) => item.quality !== null && item.quality !== undefined);
+      expect(itemsWithQuality.length).to.be.greaterThan(0, 'Expected to find at least one item with quality');
     },
   }),
 
@@ -1001,7 +1024,7 @@ const tests = [
         throw new Error('Test setup failed: No players found in setupData.pogs1');
       }
 
-      const playerId = this.setupData.pogs1[0].id;
+      const playerId = this.setupData.pogs1[0].playerId;
       const startDate = '2024-01-05T00:00:00Z';
       const endDate = '2024-01-10T23:59:59Z';
 
@@ -1018,6 +1041,8 @@ const tests = [
         const itemDate = new Date(item.createdAt);
         expect(itemDate.getTime()).to.be.greaterThanOrEqual(new Date(startDate).getTime());
         expect(itemDate.getTime()).to.be.lessThanOrEqual(new Date(endDate).getTime());
+        // Verify quality field exists
+        expect(item).to.have.property('quality');
       });
     },
   }),
@@ -1039,7 +1064,7 @@ const tests = [
       }
 
       // Use a player that has no inventory data
-      const playerWithoutInventory = this.setupData.pogs1[2].id;
+      const playerWithoutInventory = this.setupData.pogs1[2].playerId;
 
       const res = await this.client.tracking.trackingControllerGetPlayerInventoryHistory({
         playerId: playerWithoutInventory,
@@ -1206,12 +1231,12 @@ const tests = [
       // Test that both location and inventory endpoints work
       const [locationRes, inventoryRes] = await Promise.all([
         this.client.tracking.trackingControllerGetPlayerMovementHistory({
-          playerId: [this.setupData.pogs1[0].id],
+          playerId: [this.setupData.pogs1[0].playerId],
           startDate: '2024-01-01T00:00:00Z',
           endDate: '2024-01-10T00:00:00Z',
         }),
         this.client.tracking.trackingControllerGetPlayerInventoryHistory({
-          playerId: this.setupData.pogs1[0].id,
+          playerId: this.setupData.pogs1[0].playerId,
           startDate: '2024-01-01T00:00:00Z',
           endDate: '2024-01-10T00:00:00Z',
         }),
@@ -1226,28 +1251,28 @@ const tests = [
 
       // Verify all data belongs to the same player
       locationData.forEach((item) => {
-        expect(item.playerId).to.equal(this.setupData.pogs1[0].id);
+        expect(item.playerId).to.equal(this.setupData.pogs1[0].playerId);
       });
       inventoryData.forEach((item) => {
-        expect(item.playerId).to.equal(this.setupData.pogs1[0].id);
+        expect(item.playerId).to.equal(this.setupData.pogs1[0].playerId);
       });
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: false,
-    name: 'Returns helpful error when Player ID is used instead of PoG ID for movement history',
+    name: 'Returns helpful error when PoG ID is used instead of Player ID for movement history',
     setup: SetupGameServerPlayers.setup,
     expectedStatus: 400,
     test: async function () {
       if (!this.standardDomainId) throw new Error('standardDomainId is not set');
 
-      // Get the actual player ID (not PoG ID)
-      const playerId = this.setupData.players[0].id;
+      // Get the POG ID (not Player ID)
+      const pogId = this.setupData.pogs1[0].id;
 
       try {
         await this.client.tracking.trackingControllerGetPlayerMovementHistory({
-          playerId: [playerId], // Using player ID instead of PoG ID
+          playerId: [pogId], // Using POG ID instead of Player ID
           startDate: '2024-01-01T00:00:00Z',
           endDate: '2024-01-10T00:00:00Z',
         });
@@ -1255,9 +1280,8 @@ const tests = [
       } catch (error) {
         if (isAxiosError(error)) {
           expect(error.response?.status).to.equal(400);
-          expect(error.response?.data.meta.error.message).to.include('This appears to be a Player ID');
-          expect(error.response?.data.meta.error.message).to.include('PlayerOnGameserver ID');
-          expect(error.response?.data.meta.error.message).to.include('/gameservers/{gameServerId}/players/{playerId}');
+          expect(error.response?.data.meta.error.message).to.include('This appears to be a PlayerOnGameserver ID');
+          expect(error.response?.data.meta.error.message).to.include('this endpoint now requires a Player ID');
         } else {
           throw error;
         }
@@ -1267,18 +1291,18 @@ const tests = [
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: false,
-    name: 'Returns helpful error when Player ID is used instead of PoG ID for inventory history',
+    name: 'Returns helpful error when PoG ID is used instead of Player ID for inventory history',
     setup: SetupGameServerPlayers.setup,
     expectedStatus: 400,
     test: async function () {
       if (!this.standardDomainId) throw new Error('standardDomainId is not set');
 
-      // Get the actual player ID (not PoG ID)
-      const playerId = this.setupData.players[0].id;
+      // Get the POG ID (not Player ID)
+      const pogId = this.setupData.pogs1[0].id;
 
       try {
         await this.client.tracking.trackingControllerGetPlayerInventoryHistory({
-          playerId: playerId, // Using player ID instead of PoG ID
+          playerId: pogId, // Using POG ID instead of Player ID
           startDate: '2024-01-01T00:00:00Z',
           endDate: '2024-01-10T00:00:00Z',
         });
@@ -1286,9 +1310,8 @@ const tests = [
       } catch (error) {
         if (isAxiosError(error)) {
           expect(error.response?.status).to.equal(400);
-          expect(error.response?.data.meta.error.message).to.include('This appears to be a Player ID');
-          expect(error.response?.data.meta.error.message).to.include('PlayerOnGameserver ID');
-          expect(error.response?.data.meta.error.message).to.include('/gameservers/{gameServerId}/players/{playerId}');
+          expect(error.response?.data.meta.error.message).to.include('This appears to be a PlayerOnGameserver ID');
+          expect(error.response?.data.meta.error.message).to.include('this endpoint now requires a Player ID');
         } else {
           throw error;
         }

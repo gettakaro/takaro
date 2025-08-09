@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from 'react';
-import { GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
+import { GameServerOutputDTOTypeEnum, ShopListingSearchInputDTOExtendEnum } from '@takaro/apiclient';
 import { Alert, Button, Chip, Dropdown, styled, useLocalStorage } from '@takaro/lib-components';
 import {
   AiOutlineMenu as MenuIcon,
@@ -128,7 +128,11 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
   };
 
   const { refetch } = useQuery({
-    ...shopListingsQueryOptions({ filters: { gameServerId: [gameServerId] }, limit: 200 }),
+    ...shopListingsQueryOptions({
+      filters: { gameServerId: [gameServerId] },
+      limit: 200,
+      extend: [ShopListingSearchInputDTOExtendEnum.Categories],
+    }),
     enabled: false,
   });
   const { setValue: setView, storedValue: view } = useLocalStorage<ViewType>('shop-view-selector', 'list');
@@ -250,6 +254,7 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
           onCategoryChange={setSelectedCategories}
           showUncategorized={showUncategorized}
           onUncategorizedChange={setShowUncategorized}
+          gameServerId={gameServerId}
         />
 
         <ShopContent>

@@ -1,7 +1,8 @@
 import 'reflect-metadata';
 
 import { randomUUID } from 'crypto';
-import { getBullBoard, queueService } from '@takaro/queues';
+import { getBullBoard, TakaroQueue } from '@takaro/queues';
+import { queueService } from './workers/QueueService.js';
 import { getAdminBasicAuth, HTTP } from '@takaro/http';
 import { errors, logger } from '@takaro/util';
 import { DomainController } from './controllers/DomainController.js';
@@ -128,7 +129,15 @@ async function main() {
   }
 
   await getSocketServer(server.server as HttpServer);
-  server.expressInstance.use('/queues', getAdminBasicAuth(config.get('adminClientSecret')), getBullBoard());
+
+  // Pass all queues to getBullBoard
+  const allQueues = Object.values(queueService.queues).map((q) => q.queue);
+  const reconcilerQueue = new TakaroQueue<Record<string, unknown>>('domainReconciler');
+  server.expressInstance.use(
+    '/queues',
+    getAdminBasicAuth(config.get('adminClientSecret')),
+    getBullBoard([...allQueues, reconcilerQueue]),
+  );
 
   await server.start();
 

@@ -12,7 +12,8 @@
         "updatedAt": "2023-11-14T15:37:48.789Z",
         "name": "User",
         "permissions": [],
-        "system": true
+        "system": true,
+        "linkedDiscordRoleId": null
       },
       {
         "id": "65c30eee-bbeb-4f00-ac73-bd5111d12e34",
@@ -39,7 +40,8 @@
             "roleId": "65c30eee-bbeb-4f00-ac73-bd5111d12e34"
           }
         ],
-        "system": false
+        "system": false,
+        "linkedDiscordRoleId": null
       },
       {
         "id": "01f71346-099d-456f-aaf5-c3de62879b35",
@@ -66,7 +68,8 @@
             "roleId": "01f71346-099d-456f-aaf5-c3de62879b35"
           }
         ],
-        "system": true
+        "system": true,
+        "linkedDiscordRoleId": null
       },
       {
         "id": "3515aa36-6445-40cd-a0d7-acadb9bac85d",
@@ -74,7 +77,8 @@
         "updatedAt": "2023-11-14T15:37:48.789Z",
         "name": "Player",
         "permissions": [],
-        "system": true
+        "system": true,
+        "linkedDiscordRoleId": null
       },
       {
         "id": "9f1faab3-eae9-466e-a193-96b274746d7f",
@@ -119,7 +123,8 @@
             "roleId": "9f1faab3-eae9-466e-a193-96b274746d7f"
           }
         ],
-        "system": false
+        "system": false,
+        "linkedDiscordRoleId": null
       },
       {
         "id": "3db8f3d6-4511-4570-8b73-9515e6a47285",
@@ -146,7 +151,8 @@
             "roleId": "3db8f3d6-4511-4570-8b73-9515e6a47285"
           }
         ],
-        "system": false
+        "system": false,
+        "linkedDiscordRoleId": null
       }
     ]
   },

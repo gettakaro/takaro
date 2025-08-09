@@ -308,6 +308,90 @@ const tests = [
       expect(shop2Listings.every((l) => l.draft)).to.be.true;
     },
   }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'import-export: can export and import listings with categories',
+    setup: shopSetup,
+    test: async function () {
+      // First, create shop categories with unique names
+      const timestamp = Date.now();
+      const category1 = await this.client.shopCategory.shopCategoryControllerCreate({
+        name: `Test Weapons ${timestamp}`,
+        emoji: '🗡️',
+      });
+      const category2 = await this.client.shopCategory.shopCategoryControllerCreate({
+        name: `Test Resources ${timestamp}`,
+        emoji: '⛏️',
+      });
+
+      // Create listings with categories
+      const items = (await this.client.item.itemControllerSearch()).data.data;
+      const listingsToMake = 5;
+      const createdListings = await Promise.all(
+        Array.from({ length: listingsToMake }).map(async (_, i) => {
+          return this.client.shopListing.shopListingControllerCreate({
+            gameServerId: this.setupData.gameserver.id,
+            items: [{ code: items[0].code, amount: 1 }],
+            price: 100 + i,
+            name: `Test item ${i}`,
+            // Assign categories alternating between the two
+            categoryIds: i % 2 === 0 ? [category1.data.data.id] : [category2.data.data.id],
+          });
+        }),
+      );
+
+      // Export only the listings we just created with categories
+      const createdIds = createdListings.map((r) => r.data.data.id);
+      const exportRes = await this.client.shopListing.shopListingControllerSearch({
+        filters: {
+          gameServerId: [this.setupData.gameserver.id],
+          id: createdIds,
+        },
+        extend: ['categories'],
+      });
+
+      // Verify exported data includes categories
+      const hasCategories = exportRes.data.data.every((l) => l.categories && l.categories.length > 0);
+      if (!hasCategories) {
+        console.log('Export data sample:', JSON.stringify(exportRes.data.data[0], null, 2));
+      }
+      expect(hasCategories).to.be.true;
+
+      // Import the listings to gameserver2
+      // Note: Categories are domain-wide, not gameserver-specific, so they already exist
+      const formData = new FormData();
+      formData.append('import', JSON.stringify(exportRes.data.data));
+      formData.append(
+        'options',
+        JSON.stringify({
+          replace: true,
+          gameServerId: this.setupData.gameserver2.id,
+        }),
+      );
+
+      await this.client.axiosInstance.post('/shop/listing/import', formData);
+
+      // Fetch imported listings with categories
+      const importedListings = (
+        await this.client.shopListing.shopListingControllerSearch({
+          filters: { gameServerId: [this.setupData.gameserver2.id] },
+          extend: ['categories'],
+        })
+      ).data.data;
+
+      // Verify imported listings have the same number of items
+      expect(importedListings).to.have.length(exportRes.data.data.length);
+
+      // Verify each imported listing has categories preserved
+      expect(importedListings.every((l) => l.categories && l.categories.length > 0)).to.be.true;
+
+      // Verify category names are preserved
+      const exportedCategoryNames = exportRes.data.data.flatMap((l) => l.categories?.map((c) => c.name) || []).sort();
+      const importedCategoryNames = importedListings.flatMap((l) => l.categories?.map((c) => c.name) || []).sort();
+      expect(exportedCategoryNames).to.deep.equal(importedCategoryNames);
+    },
+  }),
 ];
 
 describe(group, function () {

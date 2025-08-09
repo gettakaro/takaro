@@ -1,12 +1,17 @@
 import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
 import { Model } from 'objection';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { GameServerModel } from './gameserver.js';
 import { ItemRepo, ItemsModel } from './items.js';
 import { RoleModel } from './role.js';
 import { ITakaroRepo } from './base.js';
 import { ShopListingOutputDTO, ShopListingUpdateDTO, ShopListingCreateDTO } from '../service/Shop/dto.js';
-import { ShopCategoryModel, SHOP_CATEGORY_TABLE_NAME, SHOP_LISTING_CATEGORY_TABLE_NAME } from './shopCategory.js';
+import {
+  ShopCategoryModel,
+  ShopCategoryRepo,
+  SHOP_CATEGORY_TABLE_NAME,
+  SHOP_LISTING_CATEGORY_TABLE_NAME,
+} from './shopCategory.js';
 
 export const SHOP_LISTING_TABLE_NAME = 'shopListing';
 export const SHOP_LISTING_ITEMS_TABLE_NAME = 'itemOnShopListing';
@@ -141,18 +146,25 @@ export class ShopListingRepo extends ITakaroRepo<
   async getModel() {
     const knex = await this.getKnex();
     const model = ShopListingModel.bindKnex(knex);
+
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 
   async getListingRoleModel() {
     const knex = await this.getKnex();
     const model = ShopListingRoleModel.bindKnex(knex);
+
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
     };
   }
 
@@ -189,7 +201,10 @@ export class ShopListingRepo extends ITakaroRepo<
 
     await Promise.all(
       itemMetas.map(async (i) => {
-        await ItemOnShopListingModel.bindKnex(knex).query().insert(i);
+        const query = ctx.transaction
+          ? ItemOnShopListingModel.bindKnex(knex).query(ctx.transaction)
+          : ItemOnShopListingModel.bindKnex(knex).query();
+        await query.insert(i);
       }),
     );
 
@@ -201,7 +216,10 @@ export class ShopListingRepo extends ITakaroRepo<
         domain: this.domainId,
       }));
 
-      await knex(SHOP_LISTING_CATEGORY_TABLE_NAME).insert(categoryAssignments);
+      const query = ctx.transaction
+        ? knex(SHOP_LISTING_CATEGORY_TABLE_NAME).transacting(ctx.transaction)
+        : knex(SHOP_LISTING_CATEGORY_TABLE_NAME);
+      await query.insert(categoryAssignments);
     }
 
     return this.findOne(listing.id);
@@ -218,10 +236,15 @@ export class ShopListingRepo extends ITakaroRepo<
       filters.filters.categoryIds.length > 0
     ) {
       const domainId = this.domainId;
+
+      // Get all descendant category IDs (includes the provided IDs and all their children)
+      const shopCategoryRepo = new ShopCategoryRepo(this.domainId);
+      const allCategoryIds = await shopCategoryRepo.getDescendantCategoryIds(filters.filters.categoryIds as string[]);
+
       query.whereIn('id', function () {
         this.select('shopListingId')
           .from(SHOP_LISTING_CATEGORY_TABLE_NAME)
-          .whereIn('shopCategoryId', filters.filters!.categoryIds as string[])
+          .whereIn('shopCategoryId', allCategoryIds)
           .andWhere('domain', '=', domainId);
       });
     }

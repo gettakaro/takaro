@@ -1,7 +1,7 @@
 import { IntegrationTest, sandbox, expect, EventsAwaiter } from '@takaro/test';
 import { CommandOutputDTO, GameServerOutputDTO, ModuleOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import { CommandService } from '../CommandService.js';
-import { queueService } from '@takaro/queues';
+import { queueService } from '../../workers/QueueService.js';
 import { Generic } from '@takaro/gameserver';
 import { IGamePlayer, EventChatMessage, HookEvents, ChatChannel, IPosition } from '@takaro/modules';
 import Sinon from 'sinon';

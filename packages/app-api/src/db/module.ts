@@ -1,6 +1,6 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import Objection, { Model } from 'objection';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { CronJobModel, CRONJOB_TABLE_NAME } from './cronjob.js';
 import { HookModel, HOOKS_TABLE_NAME } from './hook.js';
@@ -21,7 +21,6 @@ import { FunctionModel } from './function.js';
 import { ModuleCreateDTO, ModuleOutputDTO, ModuleVersionOutputDTO } from '../service/Module/dto.js';
 import { GameServerModel } from './gameserver.js';
 import { getSystemConfigSchema } from '../lib/systemConfig.js';
-import { PaginationParams } from '../controllers/shared.js';
 
 export const MODULE_TABLE_NAME = 'modules';
 export class ModuleModel extends TakaroModel {
@@ -190,17 +189,26 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     const versionModel = ModuleVersion.bindKnex(knex);
     const installationsModel = ModuleInstallationModel.bindKnex(knex);
 
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
+    const queryVersion = ctx.transaction ? versionModel.query(ctx.transaction) : versionModel.query();
+
+    const queryInstallations = ctx.transaction ? installationsModel.query(ctx.transaction) : installationsModel.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
-      queryVersion: versionModel.query().modify('domainScoped', this.domainId),
-      queryInstallations: installationsModel.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
+      queryVersion: queryVersion.modify('domainScoped', this.domainId),
+      queryInstallations: queryInstallations.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 
   async find(filters: ITakaroQuery<ModuleOutputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<ModuleModel, ModuleOutputDTO>(filters).build(query);
+    // Filter out extend property to avoid trying to eager load non-existent relations
+    const { extend: _extend, ...cleanFilters } = filters;
+    const result = await new QueryBuilder<ModuleModel, ModuleOutputDTO>(cleanFilters).build(query);
 
     return {
       total: result.total,
@@ -276,44 +284,50 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     });
   }
 
-  async getTags(moduleId: string, pagination: PaginationParams) {
+  async getVersionsForModules(moduleIds: string[]): Promise<Map<string, SmallModuleVersionOutputDTO[]>> {
+    if (moduleIds.length === 0) {
+      return new Map();
+    }
+
     const { queryVersion } = await this.getModel();
 
-    queryVersion.orderByRaw(`
-      CASE WHEN tag = 'latest' THEN 0 ELSE 1 END,
-      CASE 
-        WHEN tag = 'latest' THEN '999999999.999999999.999999999'
-        ELSE regexp_replace(tag, '^v', '')
-      END::varchar ~ '^[0-9]+\.[0-9]+\.[0-9]+$' DESC,
-      string_to_array(
+    // Fetch all versions for the given module IDs, ordered properly
+    const versions = await queryVersion.whereIn('moduleId', moduleIds).orderByRaw(`
+        "moduleId",
+        CASE WHEN tag = 'latest' THEN 0 ELSE 1 END,
         CASE 
           WHEN tag = 'latest' THEN '999999999.999999999.999999999'
           ELSE regexp_replace(tag, '^v', '')
-        END, 
-        '.'
-      )::int[] DESC NULLS LAST
-    `);
+        END::varchar ~ '^[0-9]+\.[0-9]+\.[0-9]+$' DESC,
+        string_to_array(
+          CASE 
+            WHEN tag = 'latest' THEN '999999999.999999999.999999999'
+            ELSE regexp_replace(tag, '^v', '')
+          END, 
+          '.'
+        )::int[] DESC NULLS LAST
+      `);
 
-    const qry = new QueryBuilder<ModuleVersion, ModuleVersionOutputDTO>({
-      filters: { moduleId: [moduleId] },
-      limit: pagination.limit,
-      page: pagination.page,
-    }).build(queryVersion);
+    // Group versions by moduleId
+    const versionsMap = new Map<string, SmallModuleVersionOutputDTO[]>();
 
-    const result = await qry;
+    versions.forEach((version) => {
+      const moduleId = version.moduleId;
+      if (!versionsMap.has(moduleId)) {
+        versionsMap.set(moduleId, []);
+      }
 
-    return {
-      total: result.total,
-      results: result.results.map(
-        (_) =>
-          new SmallModuleVersionOutputDTO({
-            createdAt: _.createdAt,
-            updatedAt: _.updatedAt,
-            id: _.id,
-            tag: _.tag,
-          }),
-      ),
-    };
+      versionsMap.get(moduleId)!.push(
+        new SmallModuleVersionOutputDTO({
+          createdAt: version.createdAt,
+          updatedAt: version.updatedAt,
+          id: version.id,
+          tag: version.tag,
+        }),
+      );
+    });
+
+    return versionsMap;
   }
 
   async create(item: ModuleCreateDTO): Promise<ModuleOutputDTO> {

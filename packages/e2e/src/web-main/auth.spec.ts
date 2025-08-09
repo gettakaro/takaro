@@ -5,6 +5,7 @@ import { randomUUID } from 'crypto';
 import he from 'he';
 import { sleep } from '@takaro/util';
 import { login } from './helpers.js';
+import { Client } from '@takaro/apiclient';
 
 test('can logout', async ({ page, takaro }) => {
   const user = (await takaro.rootClient.user.userControllerMe()).data.data;
@@ -134,4 +135,169 @@ test('Recover account and reset password', async ({ page, takaro }) => {
 
   // check if we are on the dashboard
   await expect(page.getByTestId('takaro-icon-nav')).toBeVisible();
+});
+
+test('Login with inactive domain shows error message', async ({ page, takaro }) => {
+  test.slow();
+
+  // Create a new user for this test
+  const testUserEmail = `inactive_domain_test_${randomUUID()}+e2e@takaro.dev`;
+  const testUserPassword = randomUUID();
+
+  await takaro.rootClient.user.userControllerCreate({
+    name: 'Inactive Domain Test User',
+    email: testUserEmail,
+    password: testUserPassword,
+  });
+
+  // Log out the root user
+  await page.getByRole('button').filter({ hasText: takaro.rootUser.email }).click();
+  await page.getByText('Logout').click();
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+
+  // Set the domain to DISABLED state using admin client
+  await takaro.adminClient.domain.domainControllerUpdate(takaro.domain.createdDomain.id, {
+    state: 'DISABLED',
+  });
+
+  // Try to login with the test user (don't use the helper as it expects successful login)
+  await page.goto('/login');
+  const emailInput = page.getByPlaceholder('hi cutie');
+  await emailInput.click();
+  await emailInput.fill(testUserEmail);
+  await page.getByLabel('PasswordRequired').fill(testUserPassword);
+  await page.getByRole('button', { name: 'Log in' }).click();
+
+  // Verify the error message is displayed
+  await expect(page.getByText('Domain is disabled. Please contact support.')).toBeVisible();
+
+  // Restore domain to ACTIVE state for cleanup
+  await takaro.adminClient.domain.domainControllerUpdate(takaro.domain.createdDomain.id, {
+    state: 'ACTIVE',
+  });
+});
+
+test('Login with maintenance domain shows error message', async ({ page, takaro }) => {
+  test.slow();
+
+  // Create a new user for this test
+  const testUserEmail = `maintenance_domain_test_${randomUUID()}+e2e@takaro.dev`;
+  const testUserPassword = randomUUID();
+
+  await takaro.rootClient.user.userControllerCreate({
+    name: 'Maintenance Domain Test User',
+    email: testUserEmail,
+    password: testUserPassword,
+  });
+
+  // Log out the root user
+  await page.getByRole('button').filter({ hasText: takaro.rootUser.email }).click();
+  await page.getByText('Logout').click();
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+
+  // Set the domain to MAINTENANCE state using admin client
+  await takaro.adminClient.domain.domainControllerUpdate(takaro.domain.createdDomain.id, {
+    state: 'MAINTENANCE',
+  });
+
+  // Try to login with the test user (don't use the helper as it expects successful login)
+  await page.goto('/login');
+  const emailInput = page.getByPlaceholder('hi cutie');
+  await emailInput.click();
+  await emailInput.fill(testUserEmail);
+  await page.getByLabel('PasswordRequired').fill(testUserPassword);
+  await page.getByRole('button', { name: 'Log in' }).click();
+
+  // Verify the error message is displayed
+  await expect(
+    page.getByText('Domain is in maintenance mode. Please try again later or contact support if the issue persists.'),
+  ).toBeVisible();
+
+  // Restore domain to ACTIVE state for cleanup
+  await takaro.adminClient.domain.domainControllerUpdate(takaro.domain.createdDomain.id, {
+    state: 'ACTIVE',
+  });
+});
+
+test('Auto-switches to active domain when current domain is disabled', async ({ page, takaro }) => {
+  test.slow();
+
+  // Create a second domain
+  const secondDomain = (
+    await takaro.adminClient.domain.domainControllerCreate({
+      name: `e2e-auto-switch-${randomUUID()}`.slice(0, 49),
+      maxGameservers: 5,
+      maxUsers: 5,
+      maxModules: 100,
+      maxVariables: 100,
+    })
+  ).data.data;
+
+  // Create user in first domain
+  const testUserEmail = `auto_switch_test_${randomUUID()}+e2e@takaro.dev`;
+  const testUserPassword = randomUUID();
+
+  await takaro.rootClient.user.userControllerCreate({
+    name: 'Auto Switch Test User',
+    email: testUserEmail,
+    password: testUserPassword,
+  });
+
+  // Login to second domain as root and invite the test user
+  const secondDomainClient = new Client({
+    url: integrationConfig.get('host'),
+    auth: {
+      username: secondDomain.rootUser.email,
+      password: secondDomain.password,
+    },
+  });
+  await secondDomainClient.login();
+
+  const invitedUser = await secondDomainClient.user.userControllerInvite({
+    email: testUserEmail,
+  });
+  await secondDomainClient.user.userControllerAssignRole(invitedUser.data.data.id, secondDomain.rootRole.id);
+
+  // Logout the root user first
+  await page.getByRole('button').filter({ hasText: takaro.rootUser.email }).click();
+  await page.getByText('Logout').click();
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+
+  // Login as test user - should default to first domain
+  await login(page, testUserEmail, testUserPassword);
+
+  // Should be logged in successfully
+  await expect(page).not.toHaveURL(/\/login/);
+
+  // Get the current domain from cookie
+  const cookiesBeforeDisable = await page.context().cookies();
+  const domainCookieBeforeDisable = cookiesBeforeDisable.find((c) => c.name === 'takaro-domain');
+  expect(domainCookieBeforeDisable?.value).toBe(takaro.domain.createdDomain.id);
+
+  // Logout
+  await page.getByRole('button').filter({ hasText: testUserEmail }).click();
+  await page.getByText('Logout').click();
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+
+  // Disable the first domain
+  await takaro.adminClient.domain.domainControllerUpdate(takaro.domain.createdDomain.id, {
+    state: 'DISABLED',
+  });
+
+  // Login again - should auto-switch to second domain
+  await login(page, testUserEmail, testUserPassword);
+
+  // Should successfully login (not on login page)
+  await expect(page).not.toHaveURL(/\/login/);
+
+  // Verify we're on the second domain by checking the domain cookie
+  const cookiesAfterSwitch = await page.context().cookies();
+  const domainCookieAfterSwitch = cookiesAfterSwitch.find((c) => c.name === 'takaro-domain');
+  expect(domainCookieAfterSwitch?.value).toBe(secondDomain.createdDomain.id);
+
+  // Cleanup
+  await takaro.adminClient.domain.domainControllerUpdate(takaro.domain.createdDomain.id, {
+    state: 'ACTIVE',
+  });
+  await takaro.adminClient.domain.domainControllerRemove(secondDomain.createdDomain.id);
 });

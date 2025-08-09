@@ -49,6 +49,11 @@ export class RoleCreateInputDTO extends TakaroDTO<RoleCreateInputDTO> {
   @ValidateNested({ each: true })
   @Type(() => PermissionInputDTO)
   permissions: PermissionInputDTO[];
+
+  @IsString()
+  @IsOptional()
+  @Length(17, 20)
+  linkedDiscordRoleId?: string;
 }
 
 export class ServiceRoleCreateInputDTO extends TakaroDTO<ServiceRoleCreateInputDTO> {
@@ -62,6 +67,11 @@ export class ServiceRoleCreateInputDTO extends TakaroDTO<ServiceRoleCreateInputD
   @IsBoolean()
   @IsOptional()
   system?: boolean;
+
+  @IsString()
+  @IsOptional()
+  @Length(17, 20)
+  linkedDiscordRoleId?: string;
 }
 
 export class RoleUpdateInputDTO extends TakaroDTO<RoleUpdateInputDTO> {
@@ -73,6 +83,11 @@ export class RoleUpdateInputDTO extends TakaroDTO<RoleUpdateInputDTO> {
   @Type(() => PermissionInputDTO)
   @IsOptional()
   permissions: PermissionInputDTO[];
+
+  @IsString()
+  @IsOptional()
+  @Length(17, 20)
+  linkedDiscordRoleId?: string;
 }
 
 export class SearchRoleInputDTO {
@@ -165,6 +180,10 @@ export class RoleOutputDTO extends TakaroModelDTO<RoleOutputDTO> {
 
   @IsBoolean()
   system: boolean;
+
+  @IsString()
+  @IsOptional()
+  linkedDiscordRoleId?: string;
 }
 
 export class PlayerRoleAssignmentOutputDTO extends TakaroModelDTO<PlayerRoleAssignmentOutputDTO> {
@@ -390,5 +409,9 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
   async permissionCodeToRecord(permissionCode: string): Promise<PermissionOutputDTO> {
     const record = await this.repo.permissionCodeToRecord(permissionCode);
     return new PermissionOutputDTO(record);
+  }
+
+  async getDiscordLinkedRoles(): Promise<RoleOutputDTO[]> {
+    return this.repo.findDiscordLinkedRoles();
   }
 }

@@ -1,6 +1,6 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { ShopCategoryOutputDTO, ShopCategoryCreateDTO, ShopCategoryUpdateDTO } from '../service/Shop/dto.js';
 import { ShopListingModel, SHOP_LISTING_TABLE_NAME } from './shopListing.js';
@@ -96,15 +96,25 @@ export class ShopCategoryRepo extends ITakaroRepo<
   async getModel() {
     const knex = await this.getKnex();
     const model = ShopCategoryModel.bindKnex(knex);
+
+    const query = ctx.transaction ? model.query(ctx.transaction) : model.query();
+
     return {
       model,
-      query: model.query().modify('domainScoped', this.domainId),
+      query: query.modify('domainScoped', this.domainId),
+      knex,
     };
   }
 
   async find(filters: ITakaroQuery<ShopCategoryOutputDTO>) {
     const { query } = await this.getModel();
     const knex = await this.getKnex();
+
+    // Extract gameServerId from filters
+    const gameServerId =
+      filters.filters?.gameServerId && Array.isArray(filters.filters.gameServerId)
+        ? filters.filters.gameServerId[0]
+        : undefined;
 
     // First, get the basic results using QueryBuilder for pagination, filtering, etc.
     const basicResult = await new QueryBuilder<ShopCategoryModel, ShopCategoryOutputDTO>({
@@ -122,23 +132,47 @@ export class ShopCategoryRepo extends ITakaroRepo<
           const childIds = category.children.map((child) => child.id);
           const allCategoryIds = [category.id, ...childIds];
 
-          const countResult = await knex
+          let countQuery = knex
             .select(knex.raw(`COUNT(DISTINCT "${SHOP_LISTING_CATEGORY_TABLE_NAME}"."shopListingId") as count`))
             .from(SHOP_LISTING_CATEGORY_TABLE_NAME)
             .whereIn(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`, allCategoryIds)
-            .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, category.domain)
-            .first();
+            .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, category.domain);
 
+          // If gameServerId is provided, join with shopListing table and filter
+          if (gameServerId) {
+            countQuery = countQuery
+              .join(
+                SHOP_LISTING_TABLE_NAME,
+                `${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopListingId`,
+                `${SHOP_LISTING_TABLE_NAME}.id`,
+              )
+              .where(`${SHOP_LISTING_TABLE_NAME}.gameServerId`, gameServerId)
+              .whereNull(`${SHOP_LISTING_TABLE_NAME}.deletedAt`);
+          }
+
+          const countResult = await countQuery.first();
           listingCount = parseInt((countResult as any)?.count || '0', 10);
         } else {
           // For child/leaf categories: count only listings assigned directly to this category
-          const countResult = await knex
+          let countQuery = knex
             .select(knex.raw(`COUNT(DISTINCT "${SHOP_LISTING_CATEGORY_TABLE_NAME}"."shopListingId") as count`))
             .from(SHOP_LISTING_CATEGORY_TABLE_NAME)
             .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`, category.id)
-            .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, category.domain)
-            .first();
+            .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, category.domain);
 
+          // If gameServerId is provided, join with shopListing table and filter
+          if (gameServerId) {
+            countQuery = countQuery
+              .join(
+                SHOP_LISTING_TABLE_NAME,
+                `${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopListingId`,
+                `${SHOP_LISTING_TABLE_NAME}.id`,
+              )
+              .where(`${SHOP_LISTING_TABLE_NAME}.gameServerId`, gameServerId)
+              .whereNull(`${SHOP_LISTING_TABLE_NAME}.deletedAt`);
+          }
+
+          const countResult = await countQuery.first();
           listingCount = parseInt((countResult as any)?.count || '0', 10);
         }
 
@@ -165,9 +199,15 @@ export class ShopCategoryRepo extends ITakaroRepo<
     };
   }
 
-  async findOne(id: string): Promise<ShopCategoryOutputDTO> {
+  async findOne(id: string, filters?: ITakaroQuery<ShopCategoryOutputDTO>): Promise<ShopCategoryOutputDTO> {
     const { query } = await this.getModel();
     const knex = await this.getKnex();
+
+    // Extract gameServerId from filters
+    const gameServerId =
+      filters?.filters?.gameServerId && Array.isArray(filters.filters.gameServerId)
+        ? filters.filters.gameServerId[0]
+        : undefined;
 
     // Get the basic category with parent/children relationships
     const res = await query.findById(id).withGraphFetched('[parent, children]');
@@ -182,23 +222,47 @@ export class ShopCategoryRepo extends ITakaroRepo<
       const childIds = res.children.map((child) => child.id);
       const allCategoryIds = [res.id, ...childIds];
 
-      const countResult = await knex
+      let countQuery = knex
         .select(knex.raw(`COUNT(DISTINCT "${SHOP_LISTING_CATEGORY_TABLE_NAME}"."shopListingId") as count`))
         .from(SHOP_LISTING_CATEGORY_TABLE_NAME)
         .whereIn(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`, allCategoryIds)
-        .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, res.domain)
-        .first();
+        .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, res.domain);
 
+      // If gameServerId is provided, join with shopListing table and filter
+      if (gameServerId) {
+        countQuery = countQuery
+          .join(
+            SHOP_LISTING_TABLE_NAME,
+            `${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopListingId`,
+            `${SHOP_LISTING_TABLE_NAME}.id`,
+          )
+          .where(`${SHOP_LISTING_TABLE_NAME}.gameServerId`, gameServerId)
+          .whereNull(`${SHOP_LISTING_TABLE_NAME}.deletedAt`);
+      }
+
+      const countResult = await countQuery.first();
       listingCount = parseInt((countResult as any)?.count || '0', 10);
     } else {
       // For child/leaf categories: count only listings assigned directly to this category
-      const countResult = await knex
+      let countQuery = knex
         .select(knex.raw(`COUNT(DISTINCT "${SHOP_LISTING_CATEGORY_TABLE_NAME}"."shopListingId") as count`))
         .from(SHOP_LISTING_CATEGORY_TABLE_NAME)
         .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopCategoryId`, res.id)
-        .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, res.domain)
-        .first();
+        .where(`${SHOP_LISTING_CATEGORY_TABLE_NAME}.domain`, res.domain);
 
+      // If gameServerId is provided, join with shopListing table and filter
+      if (gameServerId) {
+        countQuery = countQuery
+          .join(
+            SHOP_LISTING_TABLE_NAME,
+            `${SHOP_LISTING_CATEGORY_TABLE_NAME}.shopListingId`,
+            `${SHOP_LISTING_TABLE_NAME}.id`,
+          )
+          .where(`${SHOP_LISTING_TABLE_NAME}.gameServerId`, gameServerId)
+          .whereNull(`${SHOP_LISTING_TABLE_NAME}.deletedAt`);
+      }
+
+      const countResult = await countQuery.first();
       listingCount = parseInt((countResult as any)?.count || '0', 10);
     }
 
@@ -345,38 +409,72 @@ export class ShopCategoryRepo extends ITakaroRepo<
     addCategoryIds?: string[],
     removeCategoryIds?: string[],
   ): Promise<void> {
+    // Remove categories if specified
+    if (removeCategoryIds && removeCategoryIds.length > 0) {
+      const knex = await this.getKnex();
+      const query = ctx.transaction
+        ? knex(SHOP_LISTING_CATEGORY_TABLE_NAME).transacting(ctx.transaction)
+        : knex(SHOP_LISTING_CATEGORY_TABLE_NAME);
+      await query.whereIn('shopListingId', listingIds).whereIn('shopCategoryId', removeCategoryIds).delete();
+    }
+
+    // Add categories if specified
+    if (addCategoryIds && addCategoryIds.length > 0) {
+      const assignments = [];
+
+      for (const listingId of listingIds) {
+        for (const categoryId of addCategoryIds) {
+          assignments.push({
+            shopListingId: listingId,
+            shopCategoryId: categoryId,
+            domain: this.domainId,
+          });
+        }
+      }
+
+      // Insert only if not already assigned (ignore duplicates)
+      const knex = await this.getKnex();
+      const query = ctx.transaction
+        ? knex(SHOP_LISTING_CATEGORY_TABLE_NAME).transacting(ctx.transaction)
+        : knex(SHOP_LISTING_CATEGORY_TABLE_NAME);
+      await query.insert(assignments).onConflict(['shopListingId', 'shopCategoryId']).ignore();
+    }
+  }
+
+  async getDescendantCategoryIds(categoryIds: string[]): Promise<string[]> {
+    if (categoryIds.length === 0) return [];
+
     const knex = await this.getKnex();
 
-    // Start a transaction to ensure atomicity
-    await knex.transaction(async (trx) => {
-      // Remove categories if specified
-      if (removeCategoryIds && removeCategoryIds.length > 0) {
-        await trx(SHOP_LISTING_CATEGORY_TABLE_NAME)
-          .whereIn('shopListingId', listingIds)
-          .whereIn('shopCategoryId', removeCategoryIds)
-          .delete();
-      }
+    try {
+      // Use a recursive CTE to get all descendants
+      const result = await knex.raw(
+        `
+        WITH RECURSIVE recursive_categories AS (
+          -- Base case: start with the provided category IDs
+          SELECT id, "parentId"
+          FROM "${SHOP_CATEGORY_TABLE_NAME}"
+          WHERE id = ANY(?)
+            AND domain = ?
+          
+          UNION ALL
+          
+          -- Recursive case: find children of current level
+          SELECT c.id, c."parentId"
+          FROM "${SHOP_CATEGORY_TABLE_NAME}" c
+          JOIN recursive_categories rc ON c."parentId" = rc.id
+          WHERE c.domain = ?
+        )
+        SELECT DISTINCT id FROM recursive_categories;
+      `,
+        [categoryIds, this.domainId, this.domainId],
+      );
 
-      // Add categories if specified
-      if (addCategoryIds && addCategoryIds.length > 0) {
-        const assignments = [];
-
-        for (const listingId of listingIds) {
-          for (const categoryId of addCategoryIds) {
-            assignments.push({
-              shopListingId: listingId,
-              shopCategoryId: categoryId,
-              domain: this.domainId,
-            });
-          }
-        }
-
-        // Insert only if not already assigned (ignore duplicates)
-        await trx(SHOP_LISTING_CATEGORY_TABLE_NAME)
-          .insert(assignments)
-          .onConflict(['shopListingId', 'shopCategoryId'])
-          .ignore();
-      }
-    });
+      return result.rows.map((row: any) => row.id);
+    } catch (error) {
+      // If recursive CTE fails, fall back to simple implementation
+      console.error('Recursive CTE failed, falling back to simple implementation:', error);
+      return categoryIds;
+    }
   }
 }

@@ -20,6 +20,7 @@ export function setExtraLibs(monaco: typeof mon, dataType: FunctionType) {
     '    declare const takaro: Client;',
     '    declare const checkPermission: (pog: PlayerOnGameserverOutputWithRolesDTO, permission: string) => boolean;',
     '    declare const TakaroUserError: { new (message: string) => Error };',
+    '    export const nextCronJobRun: (cron: string) => Date | null;',
     '    export const axios: Axios',
     '}',
   ].join('\n');

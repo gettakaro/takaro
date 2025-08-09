@@ -1,5 +1,6 @@
 import { Job } from 'bullmq';
-import { TakaroWorker, IHookJobData } from '@takaro/queues';
+import { TakaroWorker } from '@takaro/queues';
+import { IHookJobData } from './dataDefinitions.js';
 import { ctx } from '@takaro/util';
 import { config } from '../config.js';
 import { executeFunction } from '../executors/executeFunction.js';

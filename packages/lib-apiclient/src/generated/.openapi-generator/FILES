@@ -53,8 +53,18 @@ docs/CronJobSearchInputDTO.md
 docs/CronJobTriggerDTO.md
 docs/CronJobUpdateDTO.md
 docs/DiscordApi.md
+docs/DiscordChannelOutputArrayDTOAPI.md
+docs/DiscordChannelOutputDTO.md
+docs/DiscordEmbedAuthor.md
+docs/DiscordEmbedField.md
+docs/DiscordEmbedFooter.md
+docs/DiscordEmbedImage.md
+docs/DiscordEmbedInputDTO.md
 docs/DiscordInviteOutputDTO.md
+docs/DiscordMessageParams.md
 docs/DiscordParamId.md
+docs/DiscordRoleOutputArrayDTOAPI.md
+docs/DiscordRoleOutputDTO.md
 docs/DomainApi.md
 docs/DomainCreateInputDTO.md
 docs/DomainCreateOutputDTO.md
@@ -104,6 +114,7 @@ docs/FunctionSearchInputDTO.md
 docs/FunctionUpdateDTO.md
 docs/GameServerApi.md
 docs/GameServerCreateDTO.md
+docs/GameServerIdQueryParam.md
 docs/GameServerOutputArrayDTOAPI.md
 docs/GameServerOutputDTO.md
 docs/GameServerOutputDTOAPI.md
@@ -185,6 +196,8 @@ docs/MapInfoOutputDTOAPI.md
 docs/MapTileInputDTO.md
 docs/MeOutoutDTOAPI.md
 docs/MeOutputDTO.md
+docs/MessageOutputDTO.md
+docs/MessageOutputDTOAPI.md
 docs/MessageSendInputDTO.md
 docs/MetaApi.md
 docs/MetadataOutput.md

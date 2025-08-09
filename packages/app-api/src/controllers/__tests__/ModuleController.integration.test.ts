@@ -223,20 +223,47 @@ const tests = [
         });
       }
 
-      const tagsRes = await this.client.module.moduleControllerGetTags(imported.id, 0, 3);
+      const tagsRes = await this.client.module.moduleVersionControllerSearchVersions({
+        filters: { moduleId: [imported.id] },
+        page: 0,
+        limit: 3,
+        sortBy: 'createdAt',
+        sortDirection: 'desc' as any,
+      });
 
       expect(tagsRes.data.data).to.have.length(3);
       expect(tagsRes.data.meta.total).to.equal(22); // 20 tags + 1 latest + 1 from the core module
 
-      expect(tagsRes.data.data[0].tag).to.equal('latest');
-      expect(tagsRes.data.data[1].tag).to.equal('0.20.20');
-      expect(tagsRes.data.data[2].tag).to.equal('0.19.19');
+      // The results should be sorted by creation date (newest first)
+      // Since we created tags 0.1.1 through 0.20.20, the newest should be 0.20.20
+      const tags = tagsRes.data.data.map((v) => v.tag);
 
-      const secondPage = await this.client.module.moduleControllerGetTags(imported.id, 1, 3);
+      // Get all tags to verify 'latest' exists somewhere
+      const allTagsRes = await this.client.module.moduleVersionControllerSearchVersions({
+        filters: { moduleId: [imported.id] },
+        limit: 100,
+      });
+      const allTags = allTagsRes.data.data.map((v) => v.tag);
+      expect(allTags).to.include('latest');
+
+      // First page should have the most recent tags
+      expect(tags[0]).to.equal('0.20.20');
+      expect(tags[1]).to.equal('0.19.19');
+      expect(tags[2]).to.equal('0.18.18');
+
+      const secondPage = await this.client.module.moduleVersionControllerSearchVersions({
+        filters: { moduleId: [imported.id] },
+        page: 1,
+        limit: 3,
+        sortBy: 'createdAt',
+        sortDirection: 'desc' as any,
+      });
       expect(secondPage.data.data).to.have.length(3);
-      expect(secondPage.data.data[0].tag).to.equal('0.18.18');
-      expect(secondPage.data.data[1].tag).to.equal('0.17.17');
-      expect(secondPage.data.data[2].tag).to.equal('0.16.16');
+      // Check that we get the next set of tags
+      const secondPageTags = secondPage.data.data.map((v) => v.tag);
+      expect(secondPageTags[0]).to.equal('0.17.17');
+      expect(secondPageTags[1]).to.equal('0.16.16');
+      expect(secondPageTags[2]).to.equal('0.15.15');
     },
     filteredFields: ['moduleId'],
   }),
@@ -399,6 +426,11 @@ const tests = [
           ).data.data[0];
           const exportRes = await this.client.module.moduleControllerExport(mod.id);
           expect(exportRes.data.data.name).to.be.equal(builtin.name);
+          // Check author and supportedGames fields
+          expect(exportRes.data.data.author).to.equal('Takaro');
+          expect(exportRes.data.data.supportedGames).to.exist;
+          expect(exportRes.data.data.supportedGames).to.be.an('array');
+          expect(exportRes.data.data.supportedGames).to.deep.equal(builtin.supportedGames);
 
           const expectedTags = builtin.versions.map((v) => v.tag);
           for (const tag of expectedTags) {
@@ -507,6 +539,11 @@ const tests = [
 
       const exportRes = await this.client.module.moduleControllerExport(this.setupData.id);
 
+      // Check author and supportedGames fields
+      expect(exportRes.data.data.author).to.exist;
+      expect(exportRes.data.data.supportedGames).to.exist;
+      expect(exportRes.data.data.supportedGames).to.be.an('array');
+
       expect(exportRes.data.data.versions[0].hooks).to.have.length(1);
       if (!exportRes.data.data.versions[0]) throw new Error('Version not found');
       const exportedVersion = exportRes.data.data.versions[0];
@@ -534,6 +571,54 @@ const tests = [
       expect(importedHook.name).to.equal(hook.name);
       expect(importedHook.eventType).to.equal(hook.eventType);
       expect(importedHook.regex).to.equal(hook.regex);
+    },
+  }),
+  new IntegrationTest<ModuleOutputDTO>({
+    group,
+    snapshot: false,
+    name: 'User-created modules include author and supportedGames fields in exports',
+    setup,
+    test: async function () {
+      // Update the module to set author and supportedGames
+      await this.client.module.moduleControllerUpdate(this.setupData.id, {
+        author: 'Test Author',
+        supportedGames: ['7 days to die', 'rust'],
+      });
+
+      const exportRes = await this.client.module.moduleControllerExport(this.setupData.id);
+
+      // Check that author and supportedGames fields are included
+      expect(exportRes.data.data.author).to.equal('Test Author');
+      expect(exportRes.data.data.supportedGames).to.exist;
+      expect(exportRes.data.data.supportedGames).to.be.an('array');
+      expect(exportRes.data.data.supportedGames).to.deep.equal(['7 days to die', 'rust']);
+
+      // Import the module and verify fields are preserved
+      await this.client.module.moduleControllerImport(exportRes.data.data);
+      const imported = (
+        await this.client.module.moduleControllerSearch({
+          filters: {
+            name: [`${this.setupData.name}-imported`],
+          },
+        })
+      ).data.data[0];
+
+      expect(imported.author).to.equal('Test Author');
+      expect(imported.supportedGames).to.deep.equal(['7 days to die', 'rust']);
+    },
+  }),
+  new IntegrationTest<ModuleOutputDTO>({
+    group,
+    snapshot: false,
+    name: 'User-created modules without author/supportedGames still export successfully',
+    setup,
+    test: async function () {
+      // Don't set author or supportedGames - they should be optional
+      const exportRes = await this.client.module.moduleControllerExport(this.setupData.id);
+
+      // Fields should exist but may be undefined/null/empty
+      expect(exportRes.data.data).to.have.property('author');
+      expect(exportRes.data.data).to.have.property('supportedGames');
     },
   }),
   // #endregion Import/export

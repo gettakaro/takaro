@@ -128,7 +128,11 @@ const tests = [
         })
       ).data.data;
 
-      const tags = (await this.client.module.moduleControllerGetTags(importedModule[0].id)).data.data;
+      const tags = (
+        await this.client.module.moduleVersionControllerSearchVersions({
+          filters: { moduleId: [importedModule[0].id] },
+        })
+      ).data.data;
 
       expect(importedModule.length).to.be.eq(1);
       expect(tags.length).to.be.eq(1);
@@ -155,7 +159,11 @@ const tests = [
           filters: { name: ['hvb_serverMessages_v2'] },
         })
       ).data.data;
-      const tags = (await this.client.module.moduleControllerGetTags(importedModule[0].id)).data.data;
+      const tags = (
+        await this.client.module.moduleVersionControllerSearchVersions({
+          filters: { moduleId: [importedModule[0].id] },
+        })
+      ).data.data;
 
       expect(importedModule.length).to.be.eq(1);
       expect(tags.length).to.be.eq(1);

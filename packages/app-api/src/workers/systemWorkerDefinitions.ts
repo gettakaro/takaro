@@ -1,4 +1,4 @@
-import { IBaseJobData } from '@takaro/queues';
+import { IBaseJobData } from './dataDefinitions.js';
 
 export enum SystemTaskType {
   SEED_MODULES = 'seedModules',
@@ -10,6 +10,7 @@ export enum SystemTaskType {
   SYNC_ENTITIES = 'syncEntities',
   SYNC_BANS = 'syncBans',
   SYNC_STEAM = 'syncSteam',
+  SYNC_DISCORD_ROLES = 'syncDiscordRoles',
 }
 
 export const systemTaskDefinitions: Record<SystemTaskType, TaskDefinition> = {
@@ -22,6 +23,7 @@ export const systemTaskDefinitions: Record<SystemTaskType, TaskDefinition> = {
   [SystemTaskType.SYNC_ENTITIES]: { perGameserver: true },
   [SystemTaskType.SYNC_BANS]: { perGameserver: true },
   [SystemTaskType.SYNC_STEAM]: { perGameserver: false },
+  [SystemTaskType.SYNC_DISCORD_ROLES]: { perGameserver: false },
 };
 
 export interface ISystemJobData extends IBaseJobData {

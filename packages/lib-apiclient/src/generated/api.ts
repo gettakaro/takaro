@@ -1546,6 +1546,205 @@ export interface CronJobUpdateDTO {
 /**
  *
  * @export
+ * @interface DiscordChannelOutputArrayDTOAPI
+ */
+export interface DiscordChannelOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<DiscordChannelOutputDTO>}
+   * @memberof DiscordChannelOutputArrayDTOAPI
+   */
+  data: Array<DiscordChannelOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof DiscordChannelOutputArrayDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface DiscordChannelOutputDTO
+ */
+export interface DiscordChannelOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordChannelOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordChannelOutputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {number}
+   * @memberof DiscordChannelOutputDTO
+   */
+  type: number;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordChannelOutputDTO
+   */
+  parentId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordChannelOutputDTO
+   */
+  topic?: string;
+}
+/**
+ *
+ * @export
+ * @interface DiscordEmbedAuthor
+ */
+export interface DiscordEmbedAuthor {
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedAuthor
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedAuthor
+   */
+  iconUrl?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedAuthor
+   */
+  url?: string;
+}
+/**
+ *
+ * @export
+ * @interface DiscordEmbedField
+ */
+export interface DiscordEmbedField {
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedField
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedField
+   */
+  value: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof DiscordEmbedField
+   */
+  inline?: boolean;
+}
+/**
+ *
+ * @export
+ * @interface DiscordEmbedFooter
+ */
+export interface DiscordEmbedFooter {
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedFooter
+   */
+  text: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedFooter
+   */
+  iconUrl?: string;
+}
+/**
+ *
+ * @export
+ * @interface DiscordEmbedImage
+ */
+export interface DiscordEmbedImage {
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedImage
+   */
+  url: string;
+}
+/**
+ *
+ * @export
+ * @interface DiscordEmbedInputDTO
+ */
+export interface DiscordEmbedInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedInputDTO
+   */
+  title?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordEmbedInputDTO
+   */
+  description?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof DiscordEmbedInputDTO
+   */
+  color?: number;
+  /**
+   *
+   * @type {Array<DiscordEmbedField>}
+   * @memberof DiscordEmbedInputDTO
+   */
+  fields?: Array<DiscordEmbedField>;
+  /**
+   *
+   * @type {DiscordEmbedFooter}
+   * @memberof DiscordEmbedInputDTO
+   */
+  footer?: DiscordEmbedFooter;
+  /**
+   *
+   * @type {DiscordEmbedImage}
+   * @memberof DiscordEmbedInputDTO
+   */
+  thumbnail?: DiscordEmbedImage;
+  /**
+   *
+   * @type {DiscordEmbedImage}
+   * @memberof DiscordEmbedInputDTO
+   */
+  image?: DiscordEmbedImage;
+  /**
+   *
+   * @type {DiscordEmbedAuthor}
+   * @memberof DiscordEmbedInputDTO
+   */
+  author?: DiscordEmbedAuthor;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof DiscordEmbedInputDTO
+   */
+  timestamp?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
  * @interface DiscordInviteOutputDTO
  */
 export interface DiscordInviteOutputDTO {
@@ -1565,6 +1764,25 @@ export interface DiscordInviteOutputDTO {
 /**
  *
  * @export
+ * @interface DiscordMessageParams
+ */
+export interface DiscordMessageParams {
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordMessageParams
+   */
+  channelId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordMessageParams
+   */
+  messageId: string;
+}
+/**
+ *
+ * @export
  * @interface DiscordParamId
  */
 export interface DiscordParamId {
@@ -1574,6 +1792,50 @@ export interface DiscordParamId {
    * @memberof DiscordParamId
    */
   id: string;
+}
+/**
+ *
+ * @export
+ * @interface DiscordRoleOutputArrayDTOAPI
+ */
+export interface DiscordRoleOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<DiscordRoleOutputDTO>}
+   * @memberof DiscordRoleOutputArrayDTOAPI
+   */
+  data: Array<DiscordRoleOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof DiscordRoleOutputArrayDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface DiscordRoleOutputDTO
+ */
+export interface DiscordRoleOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordRoleOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordRoleOutputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {number}
+   * @memberof DiscordRoleOutputDTO
+   */
+  color: number;
 }
 /**
  *
@@ -3567,6 +3829,19 @@ export type GameServerCreateDTOTypeEnum =
 /**
  *
  * @export
+ * @interface GameServerIdQueryParam
+ */
+export interface GameServerIdQueryParam {
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerIdQueryParam
+   */
+  gameServerId?: string;
+}
+/**
+ *
+ * @export
  * @interface GameServerOutputArrayDTOAPI
  */
 export interface GameServerOutputArrayDTOAPI {
@@ -4008,6 +4283,7 @@ export const GetJobInputDTOTypeEnum = {
   SyncEntities: 'syncEntities',
   SyncBans: 'syncBans',
   SyncSteam: 'syncSteam',
+  SyncDiscordRoles: 'syncDiscordRoles',
 } as const;
 
 export type GetJobInputDTOTypeEnum = (typeof GetJobInputDTOTypeEnum)[keyof typeof GetJobInputDTOTypeEnum];
@@ -4040,6 +4316,8 @@ export const GetSettingsInputKeysEnum = {
   DeveloperMode: 'developerMode',
   MessagePrefix: 'messagePrefix',
   DomainName: 'domainName',
+  DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
+  DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
 } as const;
 
 export type GetSettingsInputKeysEnum = (typeof GetSettingsInputKeysEnum)[keyof typeof GetSettingsInputKeysEnum];
@@ -6311,6 +6589,62 @@ export interface MeOutputDTO {
 /**
  *
  * @export
+ * @interface MessageOutputDTO
+ */
+export interface MessageOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof MessageOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof MessageOutputDTO
+   */
+  channelId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof MessageOutputDTO
+   */
+  guildId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof MessageOutputDTO
+   */
+  content?: string;
+  /**
+   *
+   * @type {DiscordEmbedInputDTO}
+   * @memberof MessageOutputDTO
+   */
+  embed?: DiscordEmbedInputDTO;
+}
+/**
+ *
+ * @export
+ * @interface MessageOutputDTOAPI
+ */
+export interface MessageOutputDTOAPI {
+  /**
+   *
+   * @type {MessageOutputDTO}
+   * @memberof MessageOutputDTOAPI
+   */
+  data: MessageOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof MessageOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
  * @interface MessageSendInputDTO
  */
 export interface MessageSendInputDTO {
@@ -6808,6 +7142,12 @@ export interface ModuleOutputDTO {
   latestVersion: ModuleVersionOutputDTO;
   /**
    *
+   * @type {Array<SmallModuleVersionOutputDTO>}
+   * @memberof ModuleOutputDTO
+   */
+  versions?: Array<SmallModuleVersionOutputDTO>;
+  /**
+   *
    * @type {string}
    * @memberof ModuleOutputDTO
    */
@@ -6926,12 +7266,6 @@ export interface ModuleSearchInputDTO {
   lessThan?: RangeFilterCreatedAndUpdatedAt;
   /**
    *
-   * @type {Array<string>}
-   * @memberof ModuleSearchInputDTO
-   */
-  extend?: Array<ModuleSearchInputDTOExtendEnum>;
-  /**
-   *
    * @type {number}
    * @memberof ModuleSearchInputDTO
    */
@@ -6954,14 +7288,14 @@ export interface ModuleSearchInputDTO {
    * @memberof ModuleSearchInputDTO
    */
   sortDirection?: ModuleSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleSearchInputDTO
+   */
+  extend?: Array<string>;
 }
 
-export const ModuleSearchInputDTOExtendEnum = {
-  Versions: 'versions',
-} as const;
-
-export type ModuleSearchInputDTOExtendEnum =
-  (typeof ModuleSearchInputDTOExtendEnum)[keyof typeof ModuleSearchInputDTOExtendEnum];
 export const ModuleSearchInputDTOSortDirectionEnum = {
   Asc: 'asc',
   Desc: 'desc',
@@ -7489,6 +7823,8 @@ export const PERMISSIONS = {
   ManageEntities: 'MANAGE_ENTITIES',
   ManageShopListings: 'MANAGE_SHOP_LISTINGS',
   ManageShopOrders: 'MANAGE_SHOP_ORDERS',
+  ViewDiscordInfo: 'VIEW_DISCORD_INFO',
+  SendDiscordMessage: 'SEND_DISCORD_MESSAGE',
 } as const;
 
 export type PERMISSIONS = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -7591,6 +7927,8 @@ export const ParamKeyKeyEnum = {
   DeveloperMode: 'developerMode',
   MessagePrefix: 'messagePrefix',
   DomainName: 'domainName',
+  DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
+  DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
 } as const;
 
 export type ParamKeyKeyEnum = (typeof ParamKeyKeyEnum)[keyof typeof ParamKeyKeyEnum];
@@ -7935,6 +8273,12 @@ export interface PlayerInventoryOutputDTO {
    * @type {string}
    * @memberof PlayerInventoryOutputDTO
    */
+  pogId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerInventoryOutputDTO
+   */
   itemId: string;
   /**
    *
@@ -7954,6 +8298,12 @@ export interface PlayerInventoryOutputDTO {
    * @memberof PlayerInventoryOutputDTO
    */
   quantity: number;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerInventoryOutputDTO
+   */
+  quality?: string;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
@@ -8004,6 +8354,12 @@ export interface PlayerItemHistoryOutputDTO {
    * @memberof PlayerItemHistoryOutputDTO
    */
   playerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerItemHistoryOutputDTO
+   */
+  pogId: string;
   /**
    *
    * @type {number}
@@ -8066,6 +8422,12 @@ export interface PlayerLocationOutputDTO {
    * @memberof PlayerLocationOutputDTO
    */
   playerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerLocationOutputDTO
+   */
+  pogId: string;
   /**
    *
    * @type {number}
@@ -9501,6 +9863,12 @@ export interface RoleCreateInputDTO {
    * @memberof RoleCreateInputDTO
    */
   permissions: Array<PermissionInputDTO>;
+  /**
+   *
+   * @type {string}
+   * @memberof RoleCreateInputDTO
+   */
+  linkedDiscordRoleId?: string;
 }
 /**
  *
@@ -9621,6 +9989,12 @@ export interface RoleOutputDTO {
    * @memberof RoleOutputDTO
    */
   system: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof RoleOutputDTO
+   */
+  linkedDiscordRoleId?: string;
   /**
    *
    * @type {string}
@@ -9785,6 +10159,12 @@ export interface RoleUpdateInputDTO {
    * @memberof RoleUpdateInputDTO
    */
   permissions?: Array<PermissionInputDTO>;
+  /**
+   *
+   * @type {string}
+   * @memberof RoleUpdateInputDTO
+   */
+  linkedDiscordRoleId?: string;
 }
 /**
  *
@@ -9884,7 +10264,13 @@ export interface SendMessageInputDTO {
    * @type {string}
    * @memberof SendMessageInputDTO
    */
-  message: string;
+  message?: string;
+  /**
+   *
+   * @type {DiscordEmbedInputDTO}
+   * @memberof SendMessageInputDTO
+   */
+  embed?: DiscordEmbedInputDTO;
 }
 /**
  *
@@ -9910,6 +10296,12 @@ export interface ServiceRoleCreateInputDTO {
    * @memberof ServiceRoleCreateInputDTO
    */
   system?: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof ServiceRoleCreateInputDTO
+   */
+  linkedDiscordRoleId?: string;
 }
 /**
  *
@@ -9959,6 +10351,18 @@ export interface Settings {
    * @memberof Settings
    */
   domainName: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
+  discordRoleSyncEnabled: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
+  discordRoleSyncPreferDiscord: string;
   /**
    *
    * @type {string}
@@ -10043,6 +10447,8 @@ export const SettingsOutputDTOKeyEnum = {
   DeveloperMode: 'developerMode',
   MessagePrefix: 'messagePrefix',
   DomainName: 'domainName',
+  DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
+  DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
 } as const;
 
 export type SettingsOutputDTOKeyEnum = (typeof SettingsOutputDTOKeyEnum)[keyof typeof SettingsOutputDTOKeyEnum];
@@ -10279,6 +10685,12 @@ export interface ShopCategorySearchInputAllowedFilters {
    * @memberof ShopCategorySearchInputAllowedFilters
    */
   parentId?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopCategorySearchInputAllowedFilters
+   */
+  gameServerId?: Array<string>;
 }
 /**
  *
@@ -14758,8 +15170,79 @@ export class CronJobApi extends BaseAPI {
 export const DiscordApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * <br> OperationId: `DiscordControllerGetInvite`
-     * @summary Get invite
+     * Delete a Discord message. The bot must have sent the original message or have appropriate permissions. Returns an empty response on success.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerDeleteMessage`
+     * @summary Delete Discord message
+     * @param {string} channelId
+     * @param {string} messageId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerDeleteMessage: async (
+      channelId: string,
+      messageId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'channelId' is not null or undefined
+      assertParamExists('discordControllerDeleteMessage', 'channelId', channelId);
+      // verify required parameter 'messageId' is not null or undefined
+      assertParamExists('discordControllerDeleteMessage', 'messageId', messageId);
+      const localVarPath = `/discord/channels/{channelId}/messages/{messageId}`
+        .replace(`{${'channelId'}}`, encodeURIComponent(String(channelId)))
+        .replace(`{${'messageId'}}`, encodeURIComponent(String(messageId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Retrieve all channels (text, voice, etc.) in a specific Discord guild. Useful for selecting channels for notifications or commands.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetChannels`
+     * @summary Get guild channels
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerGetChannels: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('discordControllerGetChannels', 'id', id);
+      const localVarPath = `/discord/guilds/{id}/channels`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Get the invite link to add the Takaro bot to a Discord server, along with the developer Discord server link.<br> OperationId: `DiscordControllerGetInvite`
+     * @summary Get bot invite links
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -14786,8 +15269,39 @@ export const DiscordApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     * <br> OperationId: `DiscordControllerSearch`
-     * @summary Search
+     * Retrieve all roles available in a specific Discord guild. Useful for role-based integrations and permissions mapping.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetRoles`
+     * @summary Get guild roles
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerGetRoles: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('discordControllerGetRoles', 'id', id);
+      const localVarPath = `/discord/guilds/{id}/roles`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Search for Discord guilds (servers) that the bot has access to. Supports filtering by name, Discord ID, and whether Takaro is enabled.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerSearch`
+     * @summary Search Discord guilds
      * @param {GuildSearchInputDTO} [guildSearchInputDTO] GuildSearchInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -14821,8 +15335,8 @@ export const DiscordApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     * <br> OperationId: `DiscordControllerSendMessage`
-     * @summary Send message
+     * Send a text message or rich embed to a specific Discord channel. Requires the bot to have appropriate permissions in the channel.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerSendMessage`
+     * @summary Send message to Discord channel
      * @param {string} id
      * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
      * @param {*} [options] Override http request option.
@@ -14860,8 +15374,8 @@ export const DiscordApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     * <br> OperationId: `DiscordControllerUpdateGuild`
-     * @summary Update guild
+     * Update Takaro-specific settings for a Discord guild, such as enabling or disabling Takaro features.   Required permissions: `MANAGE_SETTINGS`<br> OperationId: `DiscordControllerUpdateGuild`
+     * @summary Update guild settings
      * @param {string} id
      * @param {GuildApiUpdateDTO} [guildApiUpdateDTO] GuildApiUpdateDTO
      * @param {*} [options] Override http request option.
@@ -14898,6 +15412,51 @@ export const DiscordApiAxiosParamCreator = function (configuration?: Configurati
         options: localVarRequestOptions,
       };
     },
+    /**
+     * Update an existing Discord message with new content or embed. Requires the bot to have sent the original message.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerUpdateMessage`
+     * @summary Update Discord message
+     * @param {string} channelId
+     * @param {string} messageId
+     * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerUpdateMessage: async (
+      channelId: string,
+      messageId: string,
+      sendMessageInputDTO?: SendMessageInputDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'channelId' is not null or undefined
+      assertParamExists('discordControllerUpdateMessage', 'channelId', channelId);
+      // verify required parameter 'messageId' is not null or undefined
+      assertParamExists('discordControllerUpdateMessage', 'messageId', messageId);
+      const localVarPath = `/discord/channels/{channelId}/messages/{messageId}`
+        .replace(`{${'channelId'}}`, encodeURIComponent(String(channelId)))
+        .replace(`{${'messageId'}}`, encodeURIComponent(String(messageId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(sendMessageInputDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
   };
 };
 
@@ -14909,8 +15468,60 @@ export const DiscordApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = DiscordApiAxiosParamCreator(configuration);
   return {
     /**
-     * <br> OperationId: `DiscordControllerGetInvite`
-     * @summary Get invite
+     * Delete a Discord message. The bot must have sent the original message or have appropriate permissions. Returns an empty response on success.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerDeleteMessage`
+     * @summary Delete Discord message
+     * @param {string} channelId
+     * @param {string} messageId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async discordControllerDeleteMessage(
+      channelId: string,
+      messageId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.discordControllerDeleteMessage(
+        channelId,
+        messageId,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['DiscordApi.discordControllerDeleteMessage']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Retrieve all channels (text, voice, etc.) in a specific Discord guild. Useful for selecting channels for notifications or commands.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetChannels`
+     * @summary Get guild channels
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async discordControllerGetChannels(
+      id: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DiscordChannelOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.discordControllerGetChannels(id, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['DiscordApi.discordControllerGetChannels']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Get the invite link to add the Takaro bot to a Discord server, along with the developer Discord server link.<br> OperationId: `DiscordControllerGetInvite`
+     * @summary Get bot invite links
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -14930,8 +15541,31 @@ export const DiscordApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * <br> OperationId: `DiscordControllerSearch`
-     * @summary Search
+     * Retrieve all roles available in a specific Discord guild. Useful for role-based integrations and permissions mapping.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetRoles`
+     * @summary Get guild roles
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async discordControllerGetRoles(
+      id: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DiscordRoleOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.discordControllerGetRoles(id, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['DiscordApi.discordControllerGetRoles']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Search for Discord guilds (servers) that the bot has access to. Supports filtering by name, Discord ID, and whether Takaro is enabled.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerSearch`
+     * @summary Search Discord guilds
      * @param {GuildSearchInputDTO} [guildSearchInputDTO] GuildSearchInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -14953,8 +15587,8 @@ export const DiscordApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * <br> OperationId: `DiscordControllerSendMessage`
-     * @summary Send message
+     * Send a text message or rich embed to a specific Discord channel. Requires the bot to have appropriate permissions in the channel.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerSendMessage`
+     * @summary Send message to Discord channel
      * @param {string} id
      * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
      * @param {*} [options] Override http request option.
@@ -14964,7 +15598,7 @@ export const DiscordApiFp = function (configuration?: Configuration) {
       id: string,
       sendMessageInputDTO?: SendMessageInputDTO,
       options?: RawAxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MessageOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.discordControllerSendMessage(
         id,
         sendMessageInputDTO,
@@ -14982,8 +15616,8 @@ export const DiscordApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * <br> OperationId: `DiscordControllerUpdateGuild`
-     * @summary Update guild
+     * Update Takaro-specific settings for a Discord guild, such as enabling or disabling Takaro features.   Required permissions: `MANAGE_SETTINGS`<br> OperationId: `DiscordControllerUpdateGuild`
+     * @summary Update guild settings
      * @param {string} id
      * @param {GuildApiUpdateDTO} [guildApiUpdateDTO] GuildApiUpdateDTO
      * @param {*} [options] Override http request option.
@@ -15010,6 +15644,38 @@ export const DiscordApiFp = function (configuration?: Configuration) {
           configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
+    /**
+     * Update an existing Discord message with new content or embed. Requires the bot to have sent the original message.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerUpdateMessage`
+     * @summary Update Discord message
+     * @param {string} channelId
+     * @param {string} messageId
+     * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async discordControllerUpdateMessage(
+      channelId: string,
+      messageId: string,
+      sendMessageInputDTO?: SendMessageInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MessageOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.discordControllerUpdateMessage(
+        channelId,
+        messageId,
+        sendMessageInputDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['DiscordApi.discordControllerUpdateMessage']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
   };
 };
 
@@ -15021,8 +15687,38 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
   const localVarFp = DiscordApiFp(configuration);
   return {
     /**
-     * <br> OperationId: `DiscordControllerGetInvite`
-     * @summary Get invite
+     * Delete a Discord message. The bot must have sent the original message or have appropriate permissions. Returns an empty response on success.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerDeleteMessage`
+     * @summary Delete Discord message
+     * @param {string} channelId
+     * @param {string} messageId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerDeleteMessage(
+      channelId: string,
+      messageId: string,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .discordControllerDeleteMessage(channelId, messageId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Retrieve all channels (text, voice, etc.) in a specific Discord guild. Useful for selecting channels for notifications or commands.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetChannels`
+     * @summary Get guild channels
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerGetChannels(
+      id: string,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<DiscordChannelOutputArrayDTOAPI> {
+      return localVarFp.discordControllerGetChannels(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     * Get the invite link to add the Takaro bot to a Discord server, along with the developer Discord server link.<br> OperationId: `DiscordControllerGetInvite`
+     * @summary Get bot invite links
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -15030,8 +15726,18 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
       return localVarFp.discordControllerGetInvite(options).then((request) => request(axios, basePath));
     },
     /**
-     * <br> OperationId: `DiscordControllerSearch`
-     * @summary Search
+     * Retrieve all roles available in a specific Discord guild. Useful for role-based integrations and permissions mapping.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetRoles`
+     * @summary Get guild roles
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerGetRoles(id: string, options?: RawAxiosRequestConfig): AxiosPromise<DiscordRoleOutputArrayDTOAPI> {
+      return localVarFp.discordControllerGetRoles(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     * Search for Discord guilds (servers) that the bot has access to. Supports filtering by name, Discord ID, and whether Takaro is enabled.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerSearch`
+     * @summary Search Discord guilds
      * @param {GuildSearchInputDTO} [guildSearchInputDTO] GuildSearchInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -15045,8 +15751,8 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
         .then((request) => request(axios, basePath));
     },
     /**
-     * <br> OperationId: `DiscordControllerSendMessage`
-     * @summary Send message
+     * Send a text message or rich embed to a specific Discord channel. Requires the bot to have appropriate permissions in the channel.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerSendMessage`
+     * @summary Send message to Discord channel
      * @param {string} id
      * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
      * @param {*} [options] Override http request option.
@@ -15056,14 +15762,14 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
       id: string,
       sendMessageInputDTO?: SendMessageInputDTO,
       options?: RawAxiosRequestConfig,
-    ): AxiosPromise<APIOutput> {
+    ): AxiosPromise<MessageOutputDTOAPI> {
       return localVarFp
         .discordControllerSendMessage(id, sendMessageInputDTO, options)
         .then((request) => request(axios, basePath));
     },
     /**
-     * <br> OperationId: `DiscordControllerUpdateGuild`
-     * @summary Update guild
+     * Update Takaro-specific settings for a Discord guild, such as enabling or disabling Takaro features.   Required permissions: `MANAGE_SETTINGS`<br> OperationId: `DiscordControllerUpdateGuild`
+     * @summary Update guild settings
      * @param {string} id
      * @param {GuildApiUpdateDTO} [guildApiUpdateDTO] GuildApiUpdateDTO
      * @param {*} [options] Override http request option.
@@ -15078,6 +15784,25 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
         .discordControllerUpdateGuild(id, guildApiUpdateDTO, options)
         .then((request) => request(axios, basePath));
     },
+    /**
+     * Update an existing Discord message with new content or embed. Requires the bot to have sent the original message.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerUpdateMessage`
+     * @summary Update Discord message
+     * @param {string} channelId
+     * @param {string} messageId
+     * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerUpdateMessage(
+      channelId: string,
+      messageId: string,
+      sendMessageInputDTO?: SendMessageInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<MessageOutputDTOAPI> {
+      return localVarFp
+        .discordControllerUpdateMessage(channelId, messageId, sendMessageInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
   };
 };
 
@@ -15089,8 +15814,37 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
  */
 export class DiscordApi extends BaseAPI {
   /**
-   * <br> OperationId: `DiscordControllerGetInvite`
-   * @summary Get invite
+   * Delete a Discord message. The bot must have sent the original message or have appropriate permissions. Returns an empty response on success.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerDeleteMessage`
+   * @summary Delete Discord message
+   * @param {string} channelId
+   * @param {string} messageId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DiscordApi
+   */
+  public discordControllerDeleteMessage(channelId: string, messageId: string, options?: RawAxiosRequestConfig) {
+    return DiscordApiFp(this.configuration)
+      .discordControllerDeleteMessage(channelId, messageId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Retrieve all channels (text, voice, etc.) in a specific Discord guild. Useful for selecting channels for notifications or commands.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetChannels`
+   * @summary Get guild channels
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DiscordApi
+   */
+  public discordControllerGetChannels(id: string, options?: RawAxiosRequestConfig) {
+    return DiscordApiFp(this.configuration)
+      .discordControllerGetChannels(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Get the invite link to add the Takaro bot to a Discord server, along with the developer Discord server link.<br> OperationId: `DiscordControllerGetInvite`
+   * @summary Get bot invite links
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof DiscordApi
@@ -15102,8 +15856,22 @@ export class DiscordApi extends BaseAPI {
   }
 
   /**
-   * <br> OperationId: `DiscordControllerSearch`
-   * @summary Search
+   * Retrieve all roles available in a specific Discord guild. Useful for role-based integrations and permissions mapping.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerGetRoles`
+   * @summary Get guild roles
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DiscordApi
+   */
+  public discordControllerGetRoles(id: string, options?: RawAxiosRequestConfig) {
+    return DiscordApiFp(this.configuration)
+      .discordControllerGetRoles(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Search for Discord guilds (servers) that the bot has access to. Supports filtering by name, Discord ID, and whether Takaro is enabled.   Required permissions: `VIEW_DISCORD_INFO`<br> OperationId: `DiscordControllerSearch`
+   * @summary Search Discord guilds
    * @param {GuildSearchInputDTO} [guildSearchInputDTO] GuildSearchInputDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
@@ -15116,8 +15884,8 @@ export class DiscordApi extends BaseAPI {
   }
 
   /**
-   * <br> OperationId: `DiscordControllerSendMessage`
-   * @summary Send message
+   * Send a text message or rich embed to a specific Discord channel. Requires the bot to have appropriate permissions in the channel.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerSendMessage`
+   * @summary Send message to Discord channel
    * @param {string} id
    * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
    * @param {*} [options] Override http request option.
@@ -15135,8 +15903,8 @@ export class DiscordApi extends BaseAPI {
   }
 
   /**
-   * <br> OperationId: `DiscordControllerUpdateGuild`
-   * @summary Update guild
+   * Update Takaro-specific settings for a Discord guild, such as enabling or disabling Takaro features.   Required permissions: `MANAGE_SETTINGS`<br> OperationId: `DiscordControllerUpdateGuild`
+   * @summary Update guild settings
    * @param {string} id
    * @param {GuildApiUpdateDTO} [guildApiUpdateDTO] GuildApiUpdateDTO
    * @param {*} [options] Override http request option.
@@ -15150,6 +15918,27 @@ export class DiscordApi extends BaseAPI {
   ) {
     return DiscordApiFp(this.configuration)
       .discordControllerUpdateGuild(id, guildApiUpdateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Update an existing Discord message with new content or embed. Requires the bot to have sent the original message.   Required permissions: `SEND_DISCORD_MESSAGE`<br> OperationId: `DiscordControllerUpdateMessage`
+   * @summary Update Discord message
+   * @param {string} channelId
+   * @param {string} messageId
+   * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DiscordApi
+   */
+  public discordControllerUpdateMessage(
+    channelId: string,
+    messageId: string,
+    sendMessageInputDTO?: SendMessageInputDTO,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return DiscordApiFp(this.configuration)
+      .discordControllerUpdateMessage(channelId, messageId, sendMessageInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -21092,54 +21881,6 @@ export const ModuleApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
-     * Get a list of all tags for a module, without including all the underlying data   Required permissions: `READ_MODULES`<br> OperationId: `ModuleControllerGetTags`
-     * @summary Get tags
-     * @param {string} id
-     * @param {number} [page]
-     * @param {number} [limit]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    moduleControllerGetTags: async (
-      id: string,
-      page?: number,
-      limit?: number,
-      options: RawAxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('moduleControllerGetTags', 'id', id);
-      const localVarPath = `/module/{id}/tags`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication domainAuth required
-
-      if (page !== undefined) {
-        localVarQueryParameter['page'] = page;
-      }
-
-      if (limit !== undefined) {
-        localVarQueryParameter['limit'] = limit;
-      }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
      * Imports a module from a format that was exported from another Takaro instance   Required permissions: `MANAGE_MODULES`<br> OperationId: `ModuleControllerImport`
      * @summary Import a module
      * @param {any} [body]
@@ -21650,33 +22391,6 @@ export const ModuleApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * Get a list of all tags for a module, without including all the underlying data   Required permissions: `READ_MODULES`<br> OperationId: `ModuleControllerGetTags`
-     * @summary Get tags
-     * @param {string} id
-     * @param {number} [page]
-     * @param {number} [limit]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async moduleControllerGetTags(
-      id: string,
-      page?: number,
-      limit?: number,
-      options?: RawAxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SmallModuleOutputArrayDTOAPI>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.moduleControllerGetTags(id, page, limit, options);
-      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-      const localVarOperationServerBasePath =
-        operationServerMap['ModuleApi.moduleControllerGetTags']?.[localVarOperationServerIndex]?.url;
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration,
-        )(axios, localVarOperationServerBasePath || basePath);
-    },
-    /**
      * Imports a module from a format that was exported from another Takaro instance   Required permissions: `MANAGE_MODULES`<br> OperationId: `ModuleControllerImport`
      * @summary Import a module
      * @param {any} [body]
@@ -22010,23 +22724,6 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
       return localVarFp.moduleControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     * Get a list of all tags for a module, without including all the underlying data   Required permissions: `READ_MODULES`<br> OperationId: `ModuleControllerGetTags`
-     * @summary Get tags
-     * @param {string} id
-     * @param {number} [page]
-     * @param {number} [limit]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    moduleControllerGetTags(
-      id: string,
-      page?: number,
-      limit?: number,
-      options?: RawAxiosRequestConfig,
-    ): AxiosPromise<SmallModuleOutputArrayDTOAPI> {
-      return localVarFp.moduleControllerGetTags(id, page, limit, options).then((request) => request(axios, basePath));
-    },
-    /**
      * Imports a module from a format that was exported from another Takaro instance   Required permissions: `MANAGE_MODULES`<br> OperationId: `ModuleControllerImport`
      * @summary Import a module
      * @param {any} [body]
@@ -22241,22 +22938,6 @@ export class ModuleApi extends BaseAPI {
   public moduleControllerGetOne(id: string, options?: RawAxiosRequestConfig) {
     return ModuleApiFp(this.configuration)
       .moduleControllerGetOne(id, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   * Get a list of all tags for a module, without including all the underlying data   Required permissions: `READ_MODULES`<br> OperationId: `ModuleControllerGetTags`
-   * @summary Get tags
-   * @param {string} id
-   * @param {number} [page]
-   * @param {number} [limit]
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ModuleApi
-   */
-  public moduleControllerGetTags(id: string, page?: number, limit?: number, options?: RawAxiosRequestConfig) {
-    return ModuleApiFp(this.configuration)
-      .moduleControllerGetTags(id, page, limit, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -25156,6 +25837,8 @@ export const SettingsControllerGetKeysEnum = {
   DeveloperMode: 'developerMode',
   MessagePrefix: 'messagePrefix',
   DomainName: 'domainName',
+  DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
+  DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
 } as const;
 export type SettingsControllerGetKeysEnum =
   (typeof SettingsControllerGetKeysEnum)[keyof typeof SettingsControllerGetKeysEnum];
@@ -25247,10 +25930,14 @@ export const ShopCategoryApiAxiosParamCreator = function (configuration?: Config
     /**
      * Get all shop categories<br> OperationId: `ShopCategoryControllerGetAll`
      * @summary Get all
+     * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopCategoryControllerGetAll: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+    shopCategoryControllerGetAll: async (
+      gameServerId?: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
       const localVarPath = `/shop/category/`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -25265,6 +25952,10 @@ export const ShopCategoryApiAxiosParamCreator = function (configuration?: Config
 
       // authentication domainAuth required
 
+      if (gameServerId !== undefined) {
+        localVarQueryParameter['gameServerId'] = gameServerId;
+      }
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
@@ -25278,10 +25969,15 @@ export const ShopCategoryApiAxiosParamCreator = function (configuration?: Config
      * Get a shop category by id<br> OperationId: `ShopCategoryControllerGetOne`
      * @summary Get one
      * @param {string} id
+     * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopCategoryControllerGetOne: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+    shopCategoryControllerGetOne: async (
+      id: string,
+      gameServerId?: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
       assertParamExists('shopCategoryControllerGetOne', 'id', id);
       const localVarPath = `/shop/category/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
@@ -25297,6 +25993,10 @@ export const ShopCategoryApiAxiosParamCreator = function (configuration?: Config
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
+
+      if (gameServerId !== undefined) {
+        localVarQueryParameter['gameServerId'] = gameServerId;
+      }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -25528,13 +26228,15 @@ export const ShopCategoryApiFp = function (configuration?: Configuration) {
     /**
      * Get all shop categories<br> OperationId: `ShopCategoryControllerGetAll`
      * @summary Get all
+     * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async shopCategoryControllerGetAll(
+      gameServerId?: string,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopCategoryOutputArrayDTOAPI>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerGetAll(options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerGetAll(gameServerId, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['ShopCategoryApi.shopCategoryControllerGetAll']?.[localVarOperationServerIndex]?.url;
@@ -25550,14 +26252,16 @@ export const ShopCategoryApiFp = function (configuration?: Configuration) {
      * Get a shop category by id<br> OperationId: `ShopCategoryControllerGetOne`
      * @summary Get one
      * @param {string} id
+     * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async shopCategoryControllerGetOne(
       id: string,
+      gameServerId?: string,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopCategoryOutputDTOAPI>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerGetOne(id, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopCategoryControllerGetOne(id, gameServerId, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['ShopCategoryApi.shopCategoryControllerGetOne']?.[localVarOperationServerIndex]?.url;
@@ -25723,21 +26427,32 @@ export const ShopCategoryApiFactory = function (
     /**
      * Get all shop categories<br> OperationId: `ShopCategoryControllerGetAll`
      * @summary Get all
+     * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopCategoryControllerGetAll(options?: RawAxiosRequestConfig): AxiosPromise<ShopCategoryOutputArrayDTOAPI> {
-      return localVarFp.shopCategoryControllerGetAll(options).then((request) => request(axios, basePath));
+    shopCategoryControllerGetAll(
+      gameServerId?: string,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ShopCategoryOutputArrayDTOAPI> {
+      return localVarFp.shopCategoryControllerGetAll(gameServerId, options).then((request) => request(axios, basePath));
     },
     /**
      * Get a shop category by id<br> OperationId: `ShopCategoryControllerGetOne`
      * @summary Get one
      * @param {string} id
+     * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopCategoryControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<ShopCategoryOutputDTOAPI> {
-      return localVarFp.shopCategoryControllerGetOne(id, options).then((request) => request(axios, basePath));
+    shopCategoryControllerGetOne(
+      id: string,
+      gameServerId?: string,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<ShopCategoryOutputDTOAPI> {
+      return localVarFp
+        .shopCategoryControllerGetOne(id, gameServerId, options)
+        .then((request) => request(axios, basePath));
     },
     /**
      * Move a shop category to a different parent   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `ShopCategoryControllerMove`
@@ -25842,13 +26557,14 @@ export class ShopCategoryApi extends BaseAPI {
   /**
    * Get all shop categories<br> OperationId: `ShopCategoryControllerGetAll`
    * @summary Get all
+   * @param {string} [gameServerId]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof ShopCategoryApi
    */
-  public shopCategoryControllerGetAll(options?: RawAxiosRequestConfig) {
+  public shopCategoryControllerGetAll(gameServerId?: string, options?: RawAxiosRequestConfig) {
     return ShopCategoryApiFp(this.configuration)
-      .shopCategoryControllerGetAll(options)
+      .shopCategoryControllerGetAll(gameServerId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -25856,13 +26572,14 @@ export class ShopCategoryApi extends BaseAPI {
    * Get a shop category by id<br> OperationId: `ShopCategoryControllerGetOne`
    * @summary Get one
    * @param {string} id
+   * @param {string} [gameServerId]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof ShopCategoryApi
    */
-  public shopCategoryControllerGetOne(id: string, options?: RawAxiosRequestConfig) {
+  public shopCategoryControllerGetOne(id: string, gameServerId?: string, options?: RawAxiosRequestConfig) {
     return ShopCategoryApiFp(this.configuration)
-      .shopCategoryControllerGetOne(id, options)
+      .shopCategoryControllerGetOne(id, gameServerId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
