@@ -68,6 +68,18 @@ export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @ValidateNested({ each: true })
   @Type(() => IpHistoryOutputDTO)
   ipHistory: IpHistoryOutputDTO[];
+
+  @ValidateNested({ each: true })
+  @Type(() => NameHistoryOutputDTO)
+  nameHistory: NameHistoryOutputDTO[];
+}
+
+export class NameHistoryOutputDTO extends TakaroDTO<NameHistoryOutputDTO> {
+  @IsISO8601()
+  createdAt: string;
+
+  @IsString()
+  name: string;
 }
 
 export class IpHistoryOutputDTO extends TakaroDTO<IpHistoryOutputDTO> {

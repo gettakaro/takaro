@@ -1,10 +1,11 @@
-import { QueryBuilder, TakaroModel } from '@takaro/db';
+import { QueryBuilder, TakaroModel, Redis, RedisClient } from '@takaro/db';
 import { Model } from 'objection';
-import { errors, traceableClass, ctx } from '@takaro/util';
+import { errors, traceableClass, ctx, logger } from '@takaro/util';
 import { GameServerModel, GAMESERVER_TABLE_NAME } from './gameserver.js';
 import { ITakaroRepo } from './base.js';
 import {
   IpHistoryOutputDTO,
+  NameHistoryOutputDTO,
   PlayerCreateDTO,
   PlayerOutputDTO,
   PlayerOutputWithRolesDTO,
@@ -14,6 +15,8 @@ import { ROLE_TABLE_NAME, RoleModel } from './role.js';
 import { PLAYER_ON_GAMESERVER_TABLE_NAME, PlayerOnGameServerModel } from './playerOnGameserver.js';
 import { config } from '../config.js';
 import { PlayerSearchInputDTO } from '../controllers/PlayerController.js';
+import { EventService, EventCreateDTO, EVENT_TYPES } from '../service/EventService.js';
+import { TakaroEventPlayerNewNameDetected } from '@takaro/modules';
 
 export interface ISteamData {
   steamId: string;
@@ -149,8 +152,87 @@ export class PlayerIPHistoryModel extends TakaroModel {
   }
 }
 
+export class PlayerNameHistoryModel extends TakaroModel {
+  static tableName = 'playerNameHistory';
+
+  playerId!: string;
+  gameServerId?: string | null;
+  name!: string;
+
+  static get relationMappings() {
+    return {
+      player: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: PlayerModel,
+        join: {
+          from: `${PlayerNameHistoryModel.tableName}.playerId`,
+          to: `${PlayerModel.tableName}.id`,
+        },
+      },
+      gameServer: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: GameServerModel,
+        join: {
+          from: `${PlayerNameHistoryModel.tableName}.gameServerId`,
+          to: `${GameServerModel.tableName}.id`,
+        },
+      },
+    };
+  }
+}
+
 @traceableClass('repo:player')
 export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, PlayerCreateDTO, PlayerUpdateDTO> {
+  private nameCache: RedisClient | null = null;
+  private nameCacheLog = logger('repo:player:nameCache');
+
+  private async initNameCache() {
+    if (!this.nameCache) {
+      try {
+        this.nameCache = await Redis.getClient('playerNames');
+      } catch (error) {
+        this.nameCacheLog.warn('Failed to initialize Redis client for name cache', { error });
+      }
+    }
+  }
+
+  async getCachedName(playerId: string): Promise<string | null> {
+    try {
+      await this.initNameCache();
+      if (!this.nameCache) return null;
+
+      const cacheKey = `player:name:${this.domainId}:${playerId}`;
+      return await this.nameCache.get(cacheKey);
+    } catch (error) {
+      this.nameCacheLog.warn('Redis cache get failed, falling back to DB', { error });
+      return null;
+    }
+  }
+
+  async setCachedName(playerId: string, name: string): Promise<void> {
+    try {
+      await this.initNameCache();
+      if (!this.nameCache) return;
+
+      const cacheKey = `player:name:${this.domainId}:${playerId}`;
+      await this.nameCache.setEx(cacheKey, 3600, name); // 1 hour TTL
+    } catch (error) {
+      this.nameCacheLog.warn('Redis cache set failed', { error });
+    }
+  }
+
+  async invalidateNameCache(playerId: string): Promise<void> {
+    try {
+      await this.initNameCache();
+      if (!this.nameCache) return;
+
+      const cacheKey = `player:name:${this.domainId}:${playerId}`;
+      await this.nameCache.del(cacheKey);
+    } catch (error) {
+      this.nameCacheLog.warn('Redis cache invalidation failed', { error });
+    }
+  }
+
   async getModel() {
     const knex = await this.getKnex();
     const model = PlayerModel.bindKnex(knex);
@@ -167,6 +249,15 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
   async getIPHistoryModel() {
     const knex = await this.getKnex();
     const model = PlayerIPHistoryModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
+  }
+
+  async getNameHistoryModel() {
+    const knex = await this.getKnex();
+    const model = PlayerNameHistoryModel.bindKnex(knex);
     return {
       model,
       query: model.query().modify('domainScoped', this.domainId),
@@ -208,6 +299,10 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
 
     const ipHistory = await ipQuery.where({ playerId: data.id }).orderBy('createdAt', 'desc').limit(10);
     data.ipHistory = await Promise.all(ipHistory.map((ip) => new IpHistoryOutputDTO(ip)));
+
+    const { query: nameQuery } = await this.getNameHistoryModel();
+    const nameHistory = await nameQuery.where({ playerId: data.id }).orderBy('createdAt', 'desc').limit(10);
+    data.nameHistory = await Promise.all(nameHistory.map((name) => new NameHistoryOutputDTO(name)));
 
     return data;
   }
@@ -375,6 +470,47 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     }
 
     return await query2.findById(res.id);
+  }
+
+  async observeName(playerId: string, gameServerId: string | null, name: string) {
+    const { query } = await this.getNameHistoryModel();
+
+    // Check last recorded name
+    const lastName = await query.select('name').where({ playerId }).orderBy('createdAt', 'desc').limit(1).first();
+
+    // Only insert if name changed
+    if (lastName && lastName.name === name) {
+      return null;
+    }
+
+    // Insert new name record
+    const newRecord = await query.insert({
+      playerId,
+      gameServerId,
+      name,
+      domain: this.domainId,
+    });
+
+    // Invalidate cache
+    await this.invalidateNameCache(playerId);
+
+    // Fire event
+    if (newRecord) {
+      const eventsService = new EventService(this.domainId);
+      await eventsService.create(
+        new EventCreateDTO({
+          gameserverId: gameServerId,
+          playerId: playerId,
+          eventName: EVENT_TYPES.PLAYER_NEW_NAME_DETECTED,
+          meta: new TakaroEventPlayerNewNameDetected({
+            oldName: lastName?.name || null,
+            newName: name,
+          }),
+        }),
+      );
+    }
+
+    return newRecord;
   }
 
   async getCountryStats(gameServerIds?: string[]) {

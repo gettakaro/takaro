@@ -1,8 +1,8 @@
-import { IpHistoryOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
-import { Card, CopyId, Tooltip, styled } from '@takaro/lib-components';
+import { IpHistoryOutputDTO, NameHistoryOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
+import { Card, CopyId, Tooltip, styled, Modal, Button } from '@takaro/lib-components';
 import { createFileRoute } from '@tanstack/react-router';
 import { PlayerRolesTable } from './-PlayerRolesTable';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { Section, Container, Scrollable } from './-style';
 import { CountryCodeToEmoji } from '../../../../components/CountryCodeToEmoji';
 import { DateTime } from 'luxon';
@@ -40,12 +40,74 @@ function Component() {
         </Section>
 
         <Section>
+          <h2>Known Aliases</h2>
+          <NameHistory nameHistory={player.nameHistory} />
+        </Section>
+
+        <Section>
           <PlayerRolesTable roles={player?.roleAssignments} playerId={playerId} playerName={player?.name} />
         </Section>
       </Container>
     </Scrollable>
   );
 }
+
+const NameHistory: FC<{ nameHistory: NameHistoryOutputDTO[] }> = ({ nameHistory }) => {
+  const [showModal, setShowModal] = useState(false);
+
+  if (!nameHistory || nameHistory.length === 0) {
+    return <p>No aliases recorded</p>;
+  }
+
+  // Get first 5 unique names
+  const uniqueNames = Array.from(new Set(nameHistory.map((n) => n.name)));
+  const displayNames = uniqueNames.slice(0, 5);
+
+  return (
+    <>
+      <Card
+        variant="outline"
+        style={{ cursor: displayNames.length > 5 ? 'pointer' : 'default' }}
+        onClick={() => nameHistory.length > 5 && setShowModal(true)}
+      >
+        <Card.Body>
+          <NameAliasesContainer>
+            {displayNames.map((name, index) => (
+              <NameAlias key={`${name}-${index}`}>
+                {name}
+                {index < displayNames.length - 1 && <span style={{ margin: '0 8px', opacity: 0.5 }}>•</span>}
+              </NameAlias>
+            ))}
+            {uniqueNames.length > 5 && (
+              <span style={{ marginLeft: '8px', opacity: 0.7 }}>(+{uniqueNames.length - 5} more)</span>
+            )}
+          </NameAliasesContainer>
+        </Card.Body>
+      </Card>
+
+      <Modal open={showModal} onOpenChange={setShowModal}>
+        <Modal.Content>
+          <Modal.Heading>Player Name History</Modal.Heading>
+          <Modal.Body>
+            <NameHistoryList>
+              {nameHistory.map((entry, index) => (
+                <NameHistoryEntry key={`${entry.name}-${entry.createdAt}-${index}`}>
+                  <span style={{ fontWeight: 500 }}>{entry.name}</span>
+                  <span style={{ opacity: 0.7, fontSize: '0.9em' }}>
+                    {DateTime.fromISO(entry.createdAt).toLocaleString(DateTime.DATETIME_MED)}
+                  </span>
+                </NameHistoryEntry>
+              ))}
+            </NameHistoryList>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={() => setShowModal(false)}>Close</Button>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
+    </>
+  );
+};
 
 const IpInfo: FC<{ ipInfo: IpHistoryOutputDTO[] }> = ({ ipInfo }) => {
   if (ipInfo.length === 0) {
@@ -176,6 +238,39 @@ export const ChipContainer = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   gap: ${({ theme }) => theme.spacing['1']};
+`;
+
+const NameAliasesContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing['0_5']};
+`;
+
+const NameAlias = styled.span`
+  display: inline-flex;
+  align-items: center;
+`;
+
+const NameHistoryList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing['1']};
+  max-height: 400px;
+  overflow-y: auto;
+`;
+
+const NameHistoryEntry = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: ${({ theme }) => theme.spacing['1']} ${({ theme }) => theme.spacing['2']};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.backgroundAccent};
+  }
 `;
 
 const IpInfoContainer = styled.div`
