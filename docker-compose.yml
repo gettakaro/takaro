@@ -40,22 +40,6 @@ services:
     volumes:
       - ./_data/redis-insight:/data
 
-  steam-auth-proxy:
-    image: ghcr.io/niekcandaele/steam-auth-proxy:0.0.2
-    container_name: steam-auth-proxy
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:19000/health']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    environment:
-      - BASE_URL=${STEAM_AUTH_PROXY_URL}
-      - STEAM_API_KEY=${STEAM_API_KEY}
-      - OIDC_CLIENT_ID=${STEAM_CLIENT_ID}
-      - OIDC_CLIENT_SECRET=${STEAM_CLIENT_SECRET}
-    ports:
-      - '19000:19000'
-
   takaro:
     build:
       context: .
