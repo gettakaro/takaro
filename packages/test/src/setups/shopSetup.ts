@@ -49,7 +49,7 @@ async function createUserForPlayer(client: Client, playerId: string, gameServerI
   const chatEvents = await chatEventWaiter;
   expect(chatEvents).to.have.length(1);
   const code = await getSecretCodeForPlayer(playerId);
-  await userClient.user.userControllerLinkPlayerProfile({ email: user.email, code });
+  await userClient.user.userControllerLinkPlayerProfile({ email: user.email!, code });
 
   return {
     user,

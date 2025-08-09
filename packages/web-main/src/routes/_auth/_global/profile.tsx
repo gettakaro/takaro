@@ -9,6 +9,7 @@ import { useSnackbar } from 'notistack';
 import { zodValidator } from '@tanstack/zod-adapter';
 import { useSession } from '../../../hooks/useSession';
 import { LoginDiscordCard } from './settings/-discord/LoginDiscordCard';
+import { LoginSteamCard } from './settings/-steam/LoginSteamCard';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -290,7 +291,10 @@ function Component() {
         <Card>
           <Card.Title label="Connected Accounts" />
           <Card.Body>
-            <LoginDiscordCard session={session} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing[2] }}>
+              <LoginDiscordCard session={session} />
+              <LoginSteamCard session={session} />
+            </div>
           </Card.Body>
         </Card>
 

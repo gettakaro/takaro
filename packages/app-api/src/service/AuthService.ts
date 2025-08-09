@@ -1,6 +1,6 @@
 import { ctx, errors, logger, traceableClass, DomainScoped, TakaroDTO } from '@takaro/util';
 import { UserService } from '../service/User/index.js';
-import { UserOutputWithRolesDTO, UserUpdateAuthDTO } from '../service/User/dto.js';
+import { UserOutputWithRolesDTO, UserUpdateAuthDTO, UserCreateInternalDTO } from '../service/User/dto.js';
 import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { IsString } from 'class-validator';
@@ -159,9 +159,10 @@ export class AuthService extends DomainScoped {
       // Ory is the source of truth when it has a Discord ID
       const identity = await ory.getIdentity(user.idpId);
 
-      // Only update if Discord ID changed or lastSeen is older than 1 minute
+      // Only update if Discord ID changed, Steam ID changed, or lastSeen is older than 1 minute
       const needsUpdate =
         identity.discordId !== user.discordId ||
+        identity.steamId !== user.steamId ||
         !user.lastSeen ||
         new Date().getTime() - new Date(user.lastSeen).getTime() > 60000;
 
@@ -175,6 +176,16 @@ export class AuthService extends DomainScoped {
             userId: user.id,
             oldDiscordId: user.discordId,
             newDiscordId: identity.discordId,
+          });
+        }
+
+        // Sync Steam ID if it's different (including removal)
+        if (identity.steamId !== user.steamId) {
+          updateData.steamId = identity.steamId || undefined;
+          log.info('Syncing Steam ID from Ory to Takaro (JWT auth)', {
+            userId: user.id,
+            oldSteamId: user.steamId,
+            newSteamId: identity.steamId,
           });
         }
 
@@ -221,33 +232,66 @@ export class AuthService extends DomainScoped {
         if (identity) {
           const service = new UserService(domainId);
           const users = await service.find({ filters: { idpId: [identity.id] } });
-          if (!users.results.length) return null;
 
-          user = users.results[0];
+          if (!users.results.length) {
+            // Create a new user for this identity
+            log.info('Creating new Takaro user for identity', {
+              identityId: identity.id,
+              email: identity.email,
+              name: identity.name,
+              steamId: identity.steamId,
+              domainId,
+            });
+
+            const userData = new UserCreateInternalDTO();
+            userData.idpId = identity.id;
+            userData.name = identity.name || identity.email || `user_${identity.id.substring(0, 8)}`;
+            userData.email = identity.email;
+            userData.discordId = identity.discordId;
+            userData.steamId = identity.steamId;
+            userData.isDashboardUser = true;
+
+            user = await service.createInternal(userData);
+          } else {
+            user = users.results[0];
+          }
 
           // Sync Discord ID from Ory to Takaro
           // Ory is the source of truth when it has a Discord ID
 
-          // Only update if Discord ID changed or lastSeen is older than 1 minute
-          const needsUpdate =
-            identity.discordId !== user.discordId ||
-            !user.lastSeen ||
-            new Date().getTime() - new Date(user.lastSeen).getTime() > 60000;
+          // Only update if Discord ID changed, Steam ID changed, or lastSeen is older than 1 minute
+          if (user) {
+            const needsUpdate =
+              identity.discordId !== user.discordId ||
+              identity.steamId !== user.steamId ||
+              !user.lastSeen ||
+              new Date().getTime() - new Date(user.lastSeen).getTime() > 60000;
 
-          if (needsUpdate) {
-            const updateData: any = { lastSeen: new Date().toISOString() };
+            if (needsUpdate) {
+              const updateData: any = { lastSeen: new Date().toISOString() };
 
-            // Sync Discord ID if it's different (including removal)
-            if (identity.discordId !== user.discordId) {
-              updateData.discordId = identity.discordId || undefined;
-              log.info('Syncing Discord ID from Ory to Takaro', {
-                userId: user.id,
-                oldDiscordId: user.discordId,
-                newDiscordId: identity.discordId,
-              });
+              // Sync Discord ID if it's different (including removal)
+              if (identity.discordId !== user.discordId) {
+                updateData.discordId = identity.discordId || undefined;
+                log.info('Syncing Discord ID from Ory to Takaro', {
+                  userId: user.id,
+                  oldDiscordId: user.discordId,
+                  newDiscordId: identity.discordId,
+                });
+              }
+
+              // Sync Steam ID if it's different (including removal)
+              if (identity.steamId !== user.steamId) {
+                updateData.steamId = identity.steamId || undefined;
+                log.info('Syncing Steam ID from Ory to Takaro', {
+                  userId: user.id,
+                  oldSteamId: user.steamId,
+                  newSteamId: identity.steamId,
+                });
+              }
+
+              await service.update(user.id, new UserUpdateAuthDTO(updateData));
             }
-
-            await service.update(user.id, new UserUpdateAuthDTO(updateData));
           }
         }
       } catch (error) {

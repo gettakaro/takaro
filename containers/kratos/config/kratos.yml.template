@@ -27,7 +27,7 @@ serve:
 
 selfservice:
   default_browser_return_url: ${KRATOS_BROWSER_RETURN_URL:-http://127.0.0.1:13001/login}
-  allowed_return_urls: ${KRATOS_ALLOWED_RETURN_URLS:-["http://127.0.0.1:13001/login","http://127.0.0.1:13001/settings","http://127.0.0.1:13001/settings/discord","http://127.0.0.1:13001/"]}
+  allowed_return_urls: ${KRATOS_ALLOWED_RETURN_URLS:-["http://127.0.0.1:13001/login","http://127.0.0.1:13001/settings","http://127.0.0.1:13001/settings/discord","http://127.0.0.1:13001/settings/steam","http://127.0.0.1:13001/"]}
 
   methods:
     password:
@@ -54,6 +54,16 @@ selfservice:
             scope:
               - identify
               - email
+          - id: steam
+            provider: generic
+            client_id: ${STEAM_CLIENT_ID:-"placeholder"}
+            client_secret: ${STEAM_CLIENT_SECRET:-"placeholder"}
+            mapper_url: file:///etc/config/kratos/steam.jsonnet
+            issuer_url: ${STEAM_AUTH_PROXY_URL:-"placeholder"}
+            auth_url: ${STEAM_AUTH_PROXY_URL:-"placeholder"}/authorize
+            token_url: ${STEAM_AUTH_PROXY_URL:-"placeholder"}/token
+            scope:
+              - openid
 
   flows:
     error:
@@ -83,9 +93,11 @@ selfservice:
     login:
       ui_url: ${KRATOS_UI_LOGIN_URL:-http://127.0.0.1:13001/login}
       lifespan: 10m
-    #      after:
-    #        hooks:
-    #          - hook: require_verified_address
+      after:
+        default_browser_return_url: ${KRATOS_UI_DEFAULT_RETURN_URL:-http://127.0.0.1:13001/}
+        oidc:
+          hooks:
+            - hook: session
 
     registration:
       enabled: false

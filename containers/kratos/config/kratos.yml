@@ -33,6 +33,7 @@ selfservice:
     - http://127.0.0.1:13001/login
     - http://127.0.0.1:13001/settings
     - http://127.0.0.1:13001/settings/discord
+    - http://127.0.0.1:13001/settings/steam
     - http://127.0.0.1:13001/profile
     - http://127.0.0.1:13001/
 
@@ -61,6 +62,16 @@ selfservice:
             scope:
               - identify
               - email
+          - id: steam
+            provider: generic
+            client_id: "placeholder"
+            client_secret: "placeholder"
+            mapper_url: file:///etc/config/kratos/steam.jsonnet
+            issuer_url: "http://steam-auth-proxy:19000"
+            auth_url: "http://localhost:19000/authorize"
+            token_url: "http://steam-auth-proxy:19000/token"
+            scope:
+              - openid
 
   flows:
     error:
@@ -92,16 +103,16 @@ selfservice:
       lifespan: 10m
       after:
         default_browser_return_url: http://127.0.0.1:13001/
-        oidc:
-          hooks:
-            - hook: session
 
     registration:
-      enabled: false
+      enabled: true
       lifespan: 10m
       ui_url: http://127.0.0.1:13001/registration
       after:
         password:
+          hooks:
+            - hook: session
+        oidc:
           hooks:
             - hook: session
 

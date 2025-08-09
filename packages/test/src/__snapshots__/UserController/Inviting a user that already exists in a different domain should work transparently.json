@@ -26,7 +26,8 @@
         }
       ],
       "email": "Lyda_Heaney@gmail.com",
-      "isDashboardUser": true
+      "isDashboardUser": true,
+      "steamId": null
     }
   },
   "status": 200,

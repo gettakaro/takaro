@@ -1,7 +1,7 @@
 import { FrontendApi, LoginFlow, SettingsFlow } from '@ory/client';
 
 export interface OryOAuthOptions {
-  provider: 'discord' | 'google' | 'github' | 'microsoft' | 'facebook';
+  provider: 'discord' | 'google' | 'github' | 'microsoft' | 'facebook' | 'steam';
   returnTo?: string;
   loginFlow?: LoginFlow;
   settingsFlow?: SettingsFlow;

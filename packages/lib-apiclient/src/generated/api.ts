@@ -12724,7 +12724,7 @@ export interface UserCreateInputDTO {
    * @type {string}
    * @memberof UserCreateInputDTO
    */
-  email: string;
+  email?: string;
   /**
    *
    * @type {string}
@@ -12780,7 +12780,7 @@ export interface UserOutputDTO {
    * @type {string}
    * @memberof UserOutputDTO
    */
-  email: string;
+  email?: string;
   /**
    *
    * @type {string}
@@ -12793,6 +12793,12 @@ export interface UserOutputDTO {
    * @memberof UserOutputDTO
    */
   discordId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserOutputDTO
+   */
+  steamId?: string;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
@@ -12896,7 +12902,7 @@ export interface UserOutputWithRolesDTO {
    * @type {string}
    * @memberof UserOutputWithRolesDTO
    */
-  email: string;
+  email?: string;
   /**
    *
    * @type {string}
@@ -12909,6 +12915,12 @@ export interface UserOutputWithRolesDTO {
    * @memberof UserOutputWithRolesDTO
    */
   discordId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserOutputWithRolesDTO
+   */
+  steamId?: string;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
@@ -12971,6 +12983,12 @@ export interface UserSearchInputAllowedFilters {
    * @memberof UserSearchInputAllowedFilters
    */
   discordId?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof UserSearchInputAllowedFilters
+   */
+  steamId?: Array<string>;
   /**
    *
    * @type {Array<string>}
@@ -13039,6 +13057,12 @@ export interface UserSearchInputAllowedSearch {
    * @memberof UserSearchInputAllowedSearch
    */
   discordId?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof UserSearchInputAllowedSearch
+   */
+  steamId?: Array<string>;
 }
 /**
  *
@@ -13128,6 +13152,12 @@ export interface UserUpdateAuthDTO {
    * @memberof UserUpdateAuthDTO
    */
   discordId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserUpdateAuthDTO
+   */
+  steamId?: string;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
