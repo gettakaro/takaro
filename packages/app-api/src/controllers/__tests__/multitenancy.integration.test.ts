@@ -23,7 +23,7 @@ const tests = [
       const newDomain = await this.adminClient.domain.domainControllerCreate({
         name: 'new domain',
       });
-      this.client.username = newDomain.data.data.rootUser.email;
+      this.client.username = newDomain.data.data.rootUser.email!;
       this.client.password = newDomain.data.data.password;
       await this.client.login();
 

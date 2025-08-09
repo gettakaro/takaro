@@ -90,9 +90,9 @@ function Component() {
         updateRecoveryFlowBody: body,
       });
 
-      // bandage fix, I expected this to automatically navigate to the settings flow (/account/profile).
+      // bandage fix, I expected this to automatically navigate to the settings flow (/profile).
       if (data.continue_with && data.continue_with.length > 0) {
-        navigate({ to: '/account/profile', search: { flowId: data.continue_with[0]['flow']['id'] } });
+        navigate({ to: '/profile', search: { flowId: data.continue_with[0]['flow']['id'] } });
       }
       setFlow(data);
     } catch (e) {

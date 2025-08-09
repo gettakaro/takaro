@@ -78,11 +78,7 @@ export const UserDropdown = () => {
         </User>
       </Dropdown.Trigger>
       <Dropdown.Menu>
-        <Dropdown.Menu.Item
-          onClick={() => navigate({ to: '/account/profile' })}
-          label="Profile"
-          icon={<ProfileIcon />}
-        />
+        <Dropdown.Menu.Item onClick={() => navigate({ to: '/profile' })} label="Profile" icon={<ProfileIcon />} />
         <Dropdown.Menu.Item
           onClick={() => {
             // Save current domain as last used before switching
