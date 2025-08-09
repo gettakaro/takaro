@@ -8,15 +8,15 @@ USER root
 RUN apk add --no-cache gettext
 
 # Copy configuration files into the container (as root)
-COPY config/kratos.yml /etc/config/kratos/kratos.yml
-COPY config/kratos.yml.template /etc/config/kratos/kratos.yml.template
-COPY config/user.schema.json /etc/config/kratos/user.schema.json
+COPY containers/kratos/config/kratos.yml /etc/config/kratos/kratos.yml
+COPY containers/kratos/config/kratos.yml.template /etc/config/kratos/kratos.yml.template
+COPY containers/kratos/config/user.schema.json /etc/config/kratos/user.schema.json
 
 # Copy email templates and mappers
-COPY config/*.jsonnet /etc/config/kratos/
+COPY containers/kratos/config/*.jsonnet /etc/config/kratos/
 
 # Create an entrypoint script for environment variable substitution
-COPY entrypoint.sh /entrypoint.sh
+COPY containers/kratos/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Switch back to the ory user

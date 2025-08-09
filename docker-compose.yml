@@ -40,6 +40,22 @@ services:
     volumes:
       - ./_data/redis-insight:/data
 
+  steam-auth-proxy:
+    image: ghcr.io/niekcandaele/steam-auth-proxy:0.0.2
+    container_name: steam-auth-proxy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:19000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    environment:
+      - BASE_URL=${STEAM_AUTH_PROXY_URL}
+      - STEAM_API_KEY=${STEAM_API_KEY}
+      - OIDC_CLIENT_ID=${STEAM_CLIENT_ID}
+      - OIDC_CLIENT_SECRET=${STEAM_CLIENT_SECRET}
+    ports:
+      - '19000:19000'
+
   takaro:
     build:
       context: .
@@ -143,19 +159,22 @@ services:
 
   kratos-migrate:
     build:
-      context: ./containers/kratos
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./containers/kratos/Dockerfile
     image: takaro-kratos:latest
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
       - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
       - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
+      - STEAM_CLIENT_ID=${STEAM_CLIENT_ID}
+      - STEAM_CLIENT_SECRET=${STEAM_CLIENT_SECRET}
+      - STEAM_AUTH_PROXY_URL=${STEAM_AUTH_PROXY_URL}
     command: migrate sql -c /etc/config/kratos/kratos.yml -e --yes
     restart: on-failure
   kratos:
     build:
-      context: ./containers/kratos
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./containers/kratos/Dockerfile
     image: takaro-kratos:latest
     ports:
       - '4433:4433' # public
@@ -165,6 +184,9 @@ services:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
       - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
       - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
+      - STEAM_CLIENT_ID=${STEAM_CLIENT_ID}
+      - STEAM_CLIENT_SECRET=${STEAM_CLIENT_SECRET}
+      - STEAM_AUTH_PROXY_URL=${STEAM_AUTH_PROXY_URL}
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier 
   postgresql_kratos:
     image: postgres:15

@@ -127,6 +127,7 @@ const tests = [
     setup: SetupGameServerPlayers.setup,
     test: async function () {
       const existingUser = await createUser(this.client);
+      if (!existingUser.user.email) throw new Error('User email is required');
       const userClient = await getClient(existingUser.user.email, existingUser.password);
       await triggerLink(this.client, userClient, this.setupData, existingUser.user.email);
       await checkRoleAndPermissions(this.client, userClient, existingUser.user.id);
@@ -139,6 +140,7 @@ const tests = [
     setup: SetupGameServerPlayers.setup,
     test: async function () {
       const existingUser = await createUser(this.client);
+      if (!existingUser.user.email) throw new Error('User email is required');
       const userClient = await getClient(existingUser.user.email, existingUser.password);
       await triggerLink(this.client, userClient, this.setupData, existingUser.user.email);
       await checkRoleAndPermissions(this.client, userClient, existingUser.user.id);
@@ -152,6 +154,8 @@ const tests = [
 
       const newDomainRootUser = newDomain.rootUser.email;
       const newDomainRootUserPassword = newDomain.password;
+      if (!newDomainRootUser) throw new Error('Domain root user email is required');
+      if (!newDomainRootUserPassword) throw new Error('Domain password is required');
       const newDomainClient = await getClient(newDomainRootUser, newDomainRootUserPassword);
       const newDomainRegistrationToken = newDomain.createdDomain.serverRegistrationToken;
 
@@ -198,6 +202,7 @@ const tests = [
       expect(chatEvents).to.have.length(1);
 
       const code = await getSecretCodeForPlayer(newPogs[0].playerId);
+      if (!existingUser.user.email) throw new Error('User email is required');
       await userClient.user.userControllerLinkPlayerProfile({
         email: existingUser.user.email,
         code,
@@ -256,6 +261,7 @@ const tests = [
     test: async function () {
       const userA = await createUser(this.client);
       const userB = await createUser(this.client);
+      if (!userB.user.email) throw new Error('User B email is required');
       const userBClient = await getClient(userB.user.email, userB.password);
 
       const eventsAwaiter = new EventsAwaiter();
@@ -270,6 +276,7 @@ const tests = [
       expect(chatEvents).to.have.length(1);
 
       try {
+        if (!userA.user.email) throw new Error('User A email is required');
         await userBClient.user.userControllerLinkPlayerProfile({
           email: userA.user.email,
           code: await getSecretCodeForPlayer(this.setupData.pogs1[0].playerId),
@@ -306,6 +313,7 @@ const tests = [
       const unAuthedClient = new Client({ url: integrationConfig.get('host'), auth: {} });
 
       try {
+        if (!userA.user.email) throw new Error('User A email is required');
         await unAuthedClient.user.userControllerLinkPlayerProfile({
           email: userA.user.email,
           code: await getSecretCodeForPlayer(this.setupData.pogs1[0].playerId),

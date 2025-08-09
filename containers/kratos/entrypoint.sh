@@ -11,8 +11,8 @@ cp /etc/config/kratos/kratos.yml "$WORK_DIR/kratos.yml"
 # Check if template exists and we have environment variables set
 if [ -f "/etc/config/kratos/kratos.yml.template" ] && [ -n "$KRATOS_PUBLIC_URL" ]; then
     echo "Using templated configuration..."
-    # Export all KRATOS_ and DISCORD_ variables for envsubst
-    export $(env | grep -E '^(KRATOS_|DISCORD_)' | cut -d= -f1)
+    # Export all KRATOS_, DISCORD_, and STEAM_ variables for envsubst
+    export $(env | grep -E '^(KRATOS_|DISCORD_|STEAM_)' | cut -d= -f1)
     # Use envsubst to replace all environment variables
     envsubst < /etc/config/kratos/kratos.yml.template > "$WORK_DIR/kratos.yml"
 else
@@ -24,6 +24,19 @@ else
         # Ensure values are quoted as strings in YAML
         sed -i "s/client_id: .*/client_id: \"$DISCORD_CLIENT_ID\"/" "$WORK_DIR/kratos.yml"
         sed -i "s/client_secret: .*/client_secret: \"$DISCORD_CLIENT_SECRET\"/" "$WORK_DIR/kratos.yml"
+    fi
+    # For development, also support Steam OAuth configuration via environment
+    if [ -n "$STEAM_CLIENT_ID" ] && [ -n "$STEAM_CLIENT_SECRET" ] && [ -n "$STEAM_AUTH_PROXY_URL" ]; then
+        echo "Configuring Steam OAuth provider for development..."
+        # Update Steam provider configuration
+        # Note: auth_url uses localhost for browser access, while token_url and issuer_url use internal Docker URL
+        sed -i '/- id: steam/,/- openid/ {
+            s|client_id: .*|client_id: "'"$STEAM_CLIENT_ID"'"|
+            s|client_secret: .*|client_secret: "'"$STEAM_CLIENT_SECRET"'"|
+            s|issuer_url: .*|issuer_url: "'"$STEAM_AUTH_PROXY_URL"'"|
+            s|auth_url: .*|auth_url: "'"$STEAM_AUTH_PROXY_URL"'/authorize"|
+            s|token_url: .*|token_url: "'"$STEAM_AUTH_PROXY_URL"'/token"|
+        }' "$WORK_DIR/kratos.yml"
     fi
 fi
 

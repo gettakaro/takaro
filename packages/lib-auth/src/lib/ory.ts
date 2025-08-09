@@ -14,6 +14,7 @@ export interface ITakaroIdentity {
   stripeId?: string;
   steamId?: string;
   discordId?: string;
+  name?: string;
 }
 
 class Ory {
@@ -57,12 +58,24 @@ class Ory {
       }
     }
 
+    // Extract Steam ID from OIDC credentials (not traits)
+    let steamId: string | undefined;
+    if (res.data.credentials?.oidc?.identifiers) {
+      const steamIdentifier = res.data.credentials.oidc.identifiers.find((identifier: string) =>
+        identifier.startsWith('steam:'),
+      );
+      if (steamIdentifier) {
+        steamId = steamIdentifier.replace('steam:', '');
+      }
+    }
+
     return {
       id: res.data.id,
       email: res.data.traits.email,
       stripeId: res.data.traits.stripeId,
-      steamId: res.data.traits.steamId,
+      steamId: steamId || res.data.traits.steamId, // Use OIDC steamId first, fall back to traits
       discordId,
+      name: res.data.traits.name,
     };
   }
 
@@ -73,6 +86,18 @@ class Ory {
 
     // We need to fetch the full identity to get credentials
     return this.getIdentity(identity.data[0].id);
+  }
+
+  async getIdentityBySteamId(steamId: string): Promise<ITakaroIdentity | null> {
+    // Search using credentialsIdentifier which is indexed and efficient
+    const identities = await this.identityClient.listIdentities({
+      credentialsIdentifier: steamId,
+    });
+
+    if (!identities.data.length) return null;
+
+    // Get the full identity with credentials
+    return this.getIdentity(identities.data[0].id);
   }
 
   async createIdentity(email: string, password?: string): Promise<ITakaroIdentity> {
@@ -112,6 +137,7 @@ class Ory {
       stripeId: res.data.traits.stripeId,
       steamId: res.data.traits.steamId,
       discordId: undefined,
+      name: res.data.traits.name,
     };
   }
 

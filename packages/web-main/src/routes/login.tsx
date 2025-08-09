@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Alert, Button, TextField, styled, Company, FormError, Divider } from '@takaro/lib-components';
 import { AiFillMail as Mail } from 'react-icons/ai';
-import { FaDiscord as DiscordIcon } from 'react-icons/fa';
+import { FaDiscord as DiscordIcon, FaSteam as SteamIcon } from 'react-icons/fa';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { createFileRoute, Link, useNavigate, useRouter, useSearch } from '@tanstack/react-router';
 import { LoginFlow } from '@ory/client';
@@ -79,6 +79,7 @@ function Component() {
   const [csrfToken, setCsrfToken] = useState<string>();
   const [error, setError] = useState<string>();
   const [discordLoading, setDiscordLoading] = useState(false);
+  const [steamLoading, setSteamLoading] = useState(false);
   const { oryClient } = useOry();
   const apiClient = getApiClient();
   const search = useSearch({ from: '/login' });
@@ -277,6 +278,28 @@ function Component() {
     }
   };
 
+  const handleSteamLogin = async () => {
+    if (!loginFlow || !oryClient) {
+      return;
+    }
+
+    setSteamLoading(true);
+    setError(undefined);
+
+    try {
+      await initiateOryOAuth(oryClient, {
+        provider: 'steam',
+        returnTo: search.redirect ?? '/',
+        loginFlow,
+        flowType: 'login',
+      });
+    } catch (error) {
+      setSteamLoading(false);
+      console.error('Steam login failed:', error);
+      setError('Failed to initiate Steam login. Please try again.');
+    }
+  };
+
   return (
     <>
       <Container>
@@ -293,10 +316,21 @@ function Component() {
             variant="default"
             onClick={handleDiscordLogin}
             isLoading={discordLoading}
-            disabled={loading || discordLoading || !loginFlow}
+            disabled={loading || discordLoading || steamLoading || !loginFlow}
             fullWidth
           >
             Log in with Discord
+          </Button>
+          <Button
+            color="primary"
+            icon={<SteamIcon />}
+            variant="default"
+            onClick={handleSteamLogin}
+            isLoading={steamLoading}
+            disabled={loading || discordLoading || steamLoading || !loginFlow}
+            fullWidth
+          >
+            Log in with Steam
           </Button>
           <Divider label={{ labelPosition: 'center', text: 'or' }} />
           <form onSubmit={handleSubmit(onSubmit)}>
