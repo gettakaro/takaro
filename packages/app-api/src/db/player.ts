@@ -491,6 +491,12 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
       domain: this.domainId,
     });
 
+    // Update the player's name in the players table
+    if (newRecord) {
+      const { query: playerQuery } = await this.getModel();
+      await playerQuery.where({ id: playerId }).update({ name });
+    }
+
     // Invalidate cache
     await this.invalidateNameCache(playerId);
 

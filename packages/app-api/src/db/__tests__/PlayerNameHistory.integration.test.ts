@@ -55,6 +55,28 @@ const tests = [
   new IntegrationTest<SetupData>({
     group,
     snapshot: false,
+    name: 'observeName updates player.name column when name changes',
+    setup,
+    test: async function (): Promise<void> {
+      const { playerRepo, playerId, gameServerId } = this.setupData;
+
+      // Get initial player
+      const playerBefore = await playerRepo.findOne(playerId);
+      const initialName = playerBefore.name;
+
+      // Observe a new name
+      await playerRepo.observeName(playerId, gameServerId, 'UpdatedPlayerName');
+
+      // Check that player.name was updated
+      const playerAfter = await playerRepo.findOne(playerId);
+      expect(playerAfter.name).to.equal('UpdatedPlayerName');
+      expect(playerAfter.name).to.not.equal(initialName);
+    },
+  }),
+
+  new IntegrationTest<SetupData>({
+    group,
+    snapshot: false,
     name: 'observeName does not create duplicate entries for same name',
     setup,
     test: async function (): Promise<void> {

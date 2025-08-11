@@ -1,8 +1,8 @@
 import { IpHistoryOutputDTO, NameHistoryOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
-import { Card, CopyId, Tooltip, styled, Modal, Button } from '@takaro/lib-components';
+import { Card, CopyId, Tooltip, styled } from '@takaro/lib-components';
 import { createFileRoute } from '@tanstack/react-router';
 import { PlayerRolesTable } from './-PlayerRolesTable';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { Section, Container, Scrollable } from './-style';
 import { CountryCodeToEmoji } from '../../../../components/CountryCodeToEmoji';
 import { DateTime } from 'luxon';
@@ -34,14 +34,19 @@ function Component() {
             <SteamInfoCard player={player} />
           </CardContainer>
         </Section>
-        <Section>
-          <h2>IP History</h2>
-          <IpInfo ipInfo={player.ipHistory} />
-        </Section>
 
         <Section>
-          <h2>Known Aliases</h2>
-          <NameHistory nameHistory={player.nameHistory} />
+          <h2>Player History</h2>
+          <HistoryContainer>
+            <div>
+              <h3>IP History</h3>
+              <IpHistory ipInfo={player.ipHistory} />
+            </div>
+            <div>
+              <h3>Known Aliases</h3>
+              <NameHistory nameHistory={player.nameHistory} />
+            </div>
+          </HistoryContainer>
         </Section>
 
         <Section>
@@ -53,59 +58,50 @@ function Component() {
 }
 
 const NameHistory: FC<{ nameHistory: NameHistoryOutputDTO[] }> = ({ nameHistory }) => {
-  const [showModal, setShowModal] = useState(false);
-
   if (!nameHistory || nameHistory.length === 0) {
     return <p>No aliases recorded</p>;
   }
 
-  // Get first 5 unique names
-  const uniqueNames = Array.from(new Set(nameHistory.map((n) => n.name)));
-  const displayNames = uniqueNames.slice(0, 5);
+  return (
+    <Card variant="outline">
+      <Card.Body>
+        <TimelineWrapper>
+          <HistoryList>
+            {nameHistory.map((entry, index) => {
+              const isFirst = index === 0;
+              const dateTime = DateTime.fromISO(entry.createdAt);
+              const relativeTime = dateTime.toRelative();
+              const absoluteTime = dateTime.toLocaleString(DateTime.DATETIME_MED);
+
+              return (
+                <HistoryItem key={`${entry.name}-${entry.createdAt}-${index}`}>
+                  <HistoryEntry>
+                    <MainText isFirst={isFirst}>{entry.name}</MainText>
+                    <DateText>
+                      {relativeTime} • {absoluteTime}
+                    </DateText>
+                  </HistoryEntry>
+                </HistoryItem>
+              );
+            })}
+          </HistoryList>
+        </TimelineWrapper>
+      </Card.Body>
+    </Card>
+  );
+};
+
+const IpHistory: FC<{ ipInfo: IpHistoryOutputDTO[] }> = ({ ipInfo }) => {
+  if (!ipInfo || ipInfo.length === 0) {
+    return <p>No IP records</p>;
+  }
 
   return (
-    <>
-      <Card
-        variant="outline"
-        style={{ cursor: displayNames.length > 5 ? 'pointer' : 'default' }}
-        onClick={() => nameHistory.length > 5 && setShowModal(true)}
-      >
-        <Card.Body>
-          <NameAliasesContainer>
-            {displayNames.map((name, index) => (
-              <NameAlias key={`${name}-${index}`}>
-                {name}
-                {index < displayNames.length - 1 && <span style={{ margin: '0 8px', opacity: 0.5 }}>•</span>}
-              </NameAlias>
-            ))}
-            {uniqueNames.length > 5 && (
-              <span style={{ marginLeft: '8px', opacity: 0.7 }}>(+{uniqueNames.length - 5} more)</span>
-            )}
-          </NameAliasesContainer>
-        </Card.Body>
-      </Card>
-
-      <Modal open={showModal} onOpenChange={setShowModal}>
-        <Modal.Content>
-          <Modal.Heading>Player Name History</Modal.Heading>
-          <Modal.Body>
-            <NameHistoryList>
-              {nameHistory.map((entry, index) => (
-                <NameHistoryEntry key={`${entry.name}-${entry.createdAt}-${index}`}>
-                  <span style={{ fontWeight: 500 }}>{entry.name}</span>
-                  <span style={{ opacity: 0.7, fontSize: '0.9em' }}>
-                    {DateTime.fromISO(entry.createdAt).toLocaleString(DateTime.DATETIME_MED)}
-                  </span>
-                </NameHistoryEntry>
-              ))}
-            </NameHistoryList>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={() => setShowModal(false)}>Close</Button>
-          </Modal.Footer>
-        </Modal.Content>
-      </Modal>
-    </>
+    <Card variant="outline">
+      <Card.Body>
+        <IpInfo ipInfo={ipInfo} />
+      </Card.Body>
+    </Card>
   );
 };
 
@@ -115,27 +111,42 @@ const IpInfo: FC<{ ipInfo: IpHistoryOutputDTO[] }> = ({ ipInfo }) => {
   }
 
   return (
-    <IpInfoContainer>
-      {ipInfo.map((ip) => {
-        return (
-          <IpInfoLine key={ip + '-info-line'}>
-            <Tooltip>
-              <Tooltip.Trigger asChild>
-                <CountryCodeToEmoji countryCode={ip.country} />
-              </Tooltip.Trigger>
-              <Tooltip.Content>{ip.country}</Tooltip.Content>
-            </Tooltip>
-            <span>{DateTime.fromISO(ip.createdAt).toLocaleString(DateTime.DATETIME_MED)}</span>
-            <span>
-              <IpWhoisLink href={`https://scamalytics.com/ip/${ip.ip}`} target="_blank">
-                {ip.ip}
-              </IpWhoisLink>
-            </span>
-            <span>{ip.city}</span>
-          </IpInfoLine>
-        );
-      })}
-    </IpInfoContainer>
+    <TimelineWrapper>
+      <HistoryList>
+        {ipInfo.map((ip, index) => {
+          const isFirst = index === 0;
+          const dateTime = DateTime.fromISO(ip.createdAt);
+          const relativeTime = dateTime.toRelative();
+          const absoluteTime = dateTime.toLocaleString(DateTime.DATETIME_MED);
+
+          return (
+            <HistoryItem key={`${ip.ip}-${ip.createdAt}-${index}`}>
+              <HistoryEntry>
+                <MainText isFirst={isFirst} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <IpWhoisLink href={`https://scamalytics.com/ip/${ip.ip}`} target="_blank">
+                    {ip.ip}
+                  </IpWhoisLink>
+                  {ip.country && (
+                    <Tooltip>
+                      <Tooltip.Trigger asChild>
+                        <span style={{ display: 'inline-flex' }}>
+                          <CountryCodeToEmoji countryCode={ip.country} />
+                        </span>
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>{ip.country}</Tooltip.Content>
+                    </Tooltip>
+                  )}
+                </MainText>
+                <DateText>
+                  {ip.city && `${ip.city} • `}
+                  {relativeTime} • {absoluteTime}
+                </DateText>
+              </HistoryEntry>
+            </HistoryItem>
+          );
+        })}
+      </HistoryList>
+    </TimelineWrapper>
   );
 };
 
@@ -175,6 +186,18 @@ const CardContainer = styled.div`
   grid-template-columns: minmax(554px, max-content) max-content;
   gap: ${({ theme }) => theme.spacing['2']};
   width: 100%;
+`;
+
+const HistoryContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${({ theme }) => theme.spacing['2']};
+  width: 100%;
+
+  h3 {
+    margin-bottom: ${({ theme }) => theme.spacing['1']};
+    color: ${({ theme }) => theme.colors.textAlt};
+  }
 `;
 
 const InnerBody = styled.div`
@@ -240,53 +263,75 @@ export const ChipContainer = styled.div`
   gap: ${({ theme }) => theme.spacing['1']};
 `;
 
-const NameAliasesContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing['0_5']};
-`;
-
-const NameAlias = styled.span`
-  display: inline-flex;
-  align-items: center;
-`;
-
-const NameHistoryList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing['1']};
-  max-height: 400px;
+const TimelineWrapper = styled.div`
+  max-height: 300px;
   overflow-y: auto;
-`;
+  padding-right: ${({ theme }) => theme.spacing['0_5']};
 
-const NameHistoryEntry = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: ${({ theme }) => theme.spacing['1']} ${({ theme }) => theme.spacing['2']};
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
-  background: ${({ theme }) => theme.colors.backgroundAlt};
+  /* Custom scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
 
-  &:hover {
+  &::-webkit-scrollbar-track {
     background: ${({ theme }) => theme.colors.backgroundAccent};
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.colors.textAlt};
+    border-radius: 3px;
+
+    &:hover {
+      background: ${({ theme }) => theme.colors.text};
+    }
   }
 `;
 
-const IpInfoContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing['1']};
-  margin-bottom: ${({ theme }) => theme.spacing['2']};
+const HistoryList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
 `;
 
-const IpInfoLine = styled.div`
+const HistoryItem = styled.li`
+  padding: ${({ theme }) => theme.spacing['1']} 0;
+`;
+
+const HistoryEntry = styled.div`
   display: flex;
-  flex-direction: row;
-  gap: ${({ theme }) => theme.spacing['0_5']};
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing['0_25']};
+`;
+
+const MainText = styled.div<{ isFirst?: boolean }>`
+  color: ${({ theme }) => theme.colors.text};
+  font-weight: ${({ isFirst }) => (isFirst ? 500 : 400)};
+  ${({ isFirst, theme }) =>
+    isFirst &&
+    `
+    &::after {
+      content: ' (current)';
+      color: ${theme.colors.primary};
+      font-weight: 400;
+      font-size: 0.9em;
+    }
+  `}
+`;
+
+const DateText = styled.div`
+  color: ${({ theme }) => theme.colors.textAlt};
+  opacity: 0.8;
+  font-size: 0.9em;
 `;
 
 const IpWhoisLink = styled.a`
-  color: ${({ theme }) => theme.colors.primary};
+  color: inherit;
   text-decoration: underline;
+  text-decoration-color: ${({ theme }) => theme.colors.primary};
+  text-underline-offset: 2px;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary};
+  }
 `;

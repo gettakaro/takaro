@@ -217,10 +217,11 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         await this.repo.observeName(player.id, gameServerId, gamePlayer.name);
       }
 
-      // Update any missing IDs (but not name, as it's now tracked in history)
+      // Update any missing IDs and name if it changed
       await this.update(
         player.id,
         new PlayerUpdateDTO({
+          name: gamePlayer.name,
           steamId: gamePlayer.steamId,
           xboxLiveId: gamePlayer.xboxLiveId,
           epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
