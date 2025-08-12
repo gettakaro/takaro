@@ -41,17 +41,34 @@ export async function processJob(_job: Job<unknown>) {
   const domainCount = parseInt(domainCountResult.rows[0].count, 10);
   metrics.domains.set(domainCount);
 
-  // 2. Get all domains with base metrics in one query
+  // 2. Get all domains with base metrics using efficient GROUP BY
   const baseMetricsResult = await knex.raw(`
-    WITH domain_metrics AS (
+    WITH counts AS (
       SELECT 
-        d.id as domain_id,
-        (SELECT COUNT(*) FROM gameservers WHERE domain = d.id AND "deletedAt" IS NULL) as game_server_count,
-        (SELECT COUNT(*) FROM players WHERE domain = d.id) as player_count,
-        (SELECT COUNT(*) FROM users WHERE domain = d.id) as user_count
-      FROM domains d
+        domain,
+        'gameservers' as table_name,
+        COUNT(*) as count
+      FROM gameservers 
+      WHERE "deletedAt" IS NULL
+      GROUP BY domain
+      UNION ALL
+      SELECT domain, 'players', COUNT(*) 
+      FROM players 
+      GROUP BY domain
+      UNION ALL  
+      SELECT domain, 'users', COUNT(*)
+      FROM users 
+      GROUP BY domain
     )
-    SELECT * FROM domain_metrics
+    SELECT 
+      d.id as domain_id,
+      COALESCE(g.count, 0) as game_server_count,
+      COALESCE(p.count, 0) as player_count,
+      COALESCE(u.count, 0) as user_count
+    FROM domains d
+    LEFT JOIN counts g ON g.domain = d.id AND g.table_name = 'gameservers'
+    LEFT JOIN counts p ON p.domain = d.id AND p.table_name = 'players'
+    LEFT JOIN counts u ON u.domain = d.id AND u.table_name = 'users'
   `);
 
   // Set per-domain base metrics
@@ -181,7 +198,7 @@ export async function processJob(_job: Job<unknown>) {
   metrics.users.set(parseInt(totals.total_users, 10));
   metrics.installedModules.set(parseInt(totals.total_modules, 10));
 
-  // Push metrics to gateway (skip in test environment)
+  // Push metrics to gateway
   try {
     await kpiGateway.pushAdd({ jobName: 'kpi' });
   } catch (error) {
