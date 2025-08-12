@@ -12046,6 +12046,42 @@ export interface TakaroEventModuleUninstalled {
 export interface TakaroEventModuleUpdated {
   /**
    *
+   * @type {string}
+   * @memberof TakaroEventModuleUpdated
+   */
+  changeType?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventModuleUpdated
+   */
+  componentType?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventModuleUpdated
+   */
+  componentName?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventModuleUpdated
+   */
+  componentId?: string;
+  /**
+   *
+   * @type {any}
+   * @memberof TakaroEventModuleUpdated
+   */
+  previousValue?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof TakaroEventModuleUpdated
+   */
+  newValue?: any;
+  /**
+   *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof TakaroEventModuleUpdated
    */

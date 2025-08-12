@@ -11,8 +11,9 @@ import {
   isAxiosError,
 } from '@takaro/apiclient';
 import { config } from '../config.js';
-import { queueService } from '@takaro/queues';
+import { TakaroQueue } from '@takaro/queues';
 import { WebSocketMessage } from './websocket.js';
+import { IEventQueueData } from '../lib/worker.js';
 
 const RECONNECT_AFTER_MS = config.get('gameServerManager.reconnectAfterMs');
 const SYNC_INTERVAL_MS = config.get('gameServerManager.syncIntervalMs');
@@ -42,7 +43,7 @@ async function getDomainClient(domainId: string) {
 class GameServerManager {
   private log = logger('GameServerManager');
   private emitterMap = new Map<string, { domainId: string; emitter: TakaroEmitter | GenericEmitter }>();
-  private eventsQueue = queueService.queues.events.queue;
+  private eventsQueue = new TakaroQueue<IEventQueueData>('events');
   private lastMessageMap = new Map<string, number>();
   private gameServerDomainMap = new Map<string, string>();
   private syncInterval: NodeJS.Timeout;
