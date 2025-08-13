@@ -1,7 +1,7 @@
 import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested, Matches } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { PlayerOnGameserverOutputDTO } from '../PlayerOnGameserverService.js';
-import { Type } from 'class-transformer';
+import { Type, Exclude } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO } from '../RoleService.js';
 
 export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
@@ -74,9 +74,12 @@ export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   nameHistory: NameHistoryOutputDTO[];
 }
 
-export class NameHistoryOutputDTO extends TakaroDTO<NameHistoryOutputDTO> {
-  @IsISO8601()
-  createdAt: string;
+export class NameHistoryOutputDTO extends TakaroModelDTO<NameHistoryOutputDTO> {
+  @Exclude()
+  playerId?: string;
+
+  @Exclude()
+  gameServerId?: string;
 
   @IsString()
   name: string;
