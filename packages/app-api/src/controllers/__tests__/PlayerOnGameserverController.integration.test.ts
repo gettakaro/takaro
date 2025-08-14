@@ -545,6 +545,89 @@ const tests = [
       return rejectedRes;
     },
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Can delete a POG with proper permissions',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const res = await this.client.playerOnGameserver.playerOnGameServerControllerSearch();
+      const pog = res.data.data[0];
+
+      // Verify POG exists
+      const pogBefore = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        pog.gameServerId,
+        pog.playerId,
+      );
+      expect(pogBefore.data.data.id).to.be.eq(pog.id);
+
+      // Delete the POG
+      await this.client.playerOnGameserver.playerOnGameServerControllerDelete(pog.gameServerId, pog.playerId);
+
+      // Verify POG is deleted
+      try {
+        await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(pog.gameServerId, pog.playerId);
+        throw new Error('Should have thrown 404');
+      } catch (error) {
+        if (isAxiosError(error)) {
+          expect(error.response?.status).to.be.eq(404);
+        }
+      }
+
+      // Verify player still exists
+      const player = await this.client.player.playerControllerGetOne(pog.playerId);
+      expect(player.data.data.id).to.be.eq(pog.playerId);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Cannot delete a POG without MANAGE_PLAYERS permission',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const res = await this.client.playerOnGameserver.playerOnGameServerControllerSearch();
+      const pog = res.data.data[0];
+
+      // Create a client without MANAGE_PLAYERS permission
+      const { Client } = await import('@takaro/apiclient');
+      const { faker } = await import('@faker-js/faker');
+      const { PERMISSIONS } = await import('@takaro/auth');
+
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_PLAYERS]);
+      const role = await this.client.role.roleControllerCreate({
+        name: 'Read only role',
+        permissions,
+      });
+
+      const userPassword = faker.internet.password();
+      const user = await this.client.user.userControllerCreate({
+        email: faker.internet.email(),
+        password: userPassword,
+        name: faker.person.firstName(),
+      });
+
+      await this.client.user.userControllerAssignRole(user.data.data.id, role.data.data.id);
+
+      const limitedClient = new Client({
+        auth: {
+          username: user.data.data.email,
+          password: userPassword,
+        },
+        url: process.env.TAKARO_API_URL || 'http://localhost:13000',
+      });
+      await limitedClient.login();
+
+      // Try to delete with limited permissions
+      try {
+        await limitedClient.playerOnGameserver.playerOnGameServerControllerDelete(pog.gameServerId, pog.playerId);
+        throw new Error('Should have thrown 403');
+      } catch (error) {
+        if (isAxiosError(error)) {
+          expect(error.response?.status).to.be.eq(403);
+        }
+      }
+    },
+  }),
 ];
 
 describe(group, function () {

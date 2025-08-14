@@ -1,12 +1,24 @@
-import { useEffect } from 'react';
+import { useEffect, useState, FC } from 'react';
 import {
   PlayerOnGameserverOutputDTO,
   PlayerOnGameServerSearchInputDTOSortDirectionEnum,
   PlayerOutputDTO,
   EventOutputDTO,
   PlayerOnGameServerSearchInputDTOExtendEnum,
+  PERMISSIONS,
 } from '@takaro/apiclient';
-import { Card, styled, Table, useTableActions, Chip, CopyId, DateFormatter, Skeleton } from '@takaro/lib-components';
+import {
+  Card,
+  styled,
+  Table,
+  useTableActions,
+  Chip,
+  CopyId,
+  DateFormatter,
+  Skeleton,
+  IconButton,
+  Dropdown,
+} from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -16,10 +28,14 @@ import { useSocket } from '../../../hooks/useSocket';
 import { gameServerQueryOptions } from '../../../queries/gameserver';
 import { useGameServerDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { Duration } from 'luxon';
+import { useHasPermission } from '../../../hooks/useHasPermission';
+import { PogDeleteDialog } from '../../../components/dialogs/PogDeleteDialog';
 import {
   AiOutlineUser as UsersIcon,
   AiOutlineCheckCircle as OnlineIcon,
   AiOutlineUserAdd as NewPlayerIcon,
+  AiOutlineRight as ActionIcon,
+  AiOutlineDelete as DeleteIcon,
 } from 'react-icons/ai';
 
 const Container = styled.div`
@@ -324,6 +340,18 @@ function Component() {
       enableColumnFilter: false,
       enableSorting: false,
     }),
+    columnHelper.display({
+      header: 'Actions',
+      id: 'actions',
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableHiding: false,
+      enablePinning: false,
+      enableGlobalFilter: false,
+      enableResizing: false,
+      maxSize: 50,
+      cell: (info) => <PogActions pog={info.row.original} gameServerName={gameServer.name} />,
+    }),
   ];
 
   const p =
@@ -382,3 +410,40 @@ function Component() {
     </Container>
   );
 }
+
+interface PogActionsProps {
+  pog: PlayerOnGameserverOutputDTO & { player: PlayerOutputDTO };
+  gameServerName: string;
+}
+
+const PogActions: FC<PogActionsProps> = ({ pog, gameServerName }) => {
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const hasManagePlayers = useHasPermission([PERMISSIONS.ManagePlayers]);
+  const player = pog.player as PlayerOutputDTO;
+
+  return (
+    <>
+      <Dropdown placement="left">
+        <Dropdown.Trigger asChild>
+          <IconButton icon={<ActionIcon />} ariaLabel="pog-actions" />
+        </Dropdown.Trigger>
+        <Dropdown.Menu>
+          <Dropdown.Menu.Item
+            label="Remove from server"
+            icon={<DeleteIcon />}
+            onClick={() => setOpenDeleteDialog(true)}
+            disabled={!hasManagePlayers}
+          />
+        </Dropdown.Menu>
+      </Dropdown>
+      <PogDeleteDialog
+        open={openDeleteDialog}
+        onOpenChange={setOpenDeleteDialog}
+        playerId={pog.playerId}
+        gameServerId={pog.gameServerId}
+        playerName={player.name}
+        gameServerName={gameServerName}
+      />
+    </>
+  );
+};
