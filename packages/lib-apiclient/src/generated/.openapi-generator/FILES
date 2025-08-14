@@ -233,7 +233,6 @@ docs/ModuleVersionSearchInputDTO.md
 docs/ModuleVersionUpdateDTO.md
 docs/NOTDOMAINSCOPEDTakaroModelDTO.md
 docs/NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md
-docs/NameHistoryOutputDTO.md
 docs/OptionalPogStatsInputDTO.md
 docs/PERMISSIONS.md
 docs/PaginationParams.md
@@ -377,7 +376,6 @@ docs/TakaroEventPlayerBanned.md
 docs/TakaroEventPlayerCreated.md
 docs/TakaroEventPlayerLinked.md
 docs/TakaroEventPlayerNewIpDetected.md
-docs/TakaroEventPlayerNewNameDetected.md
 docs/TakaroEventPlayerUnbanned.md
 docs/TakaroEventRoleAssigned.md
 docs/TakaroEventRoleCreated.md
