@@ -71,7 +71,17 @@
           }
         }
       ],
-      "ipHistory": []
+      "ipHistory": [],
+      "nameHistory": [
+        {
+          "id": "91040bd2-191b-409d-8e17-842bc12d7750",
+          "createdAt": "2025-08-13T16:49:01.048Z",
+          "updatedAt": "2025-08-13T16:49:01.050Z",
+          "playerId": "0303d538-182e-4e0a-bfe2-ad2c32e294ca",
+          "gameServerId": "f5e9102f-88e9-48ce-a5ab-b97b60b07541",
+          "name": "Kendrick_Kling20"
+        }
+      ]
     }
   },
   "status": 200,
@@ -86,7 +96,8 @@
       "roleId",
       "epicOnlineServicesId",
       "xboxLiveId",
-      "platformId"
+      "platformId",
+      "gameServerId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true
