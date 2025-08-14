@@ -158,6 +158,8 @@ function Component() {
 
   useGameServerDocumentTitle('players', gameServer);
 
+  const hasManagePlayers = useHasPermission([PERMISSIONS.ManagePlayers]);
+
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOnGameserverOutputDTO>({
     pageSize: 25,
   });
@@ -340,18 +342,22 @@ function Component() {
       enableColumnFilter: false,
       enableSorting: false,
     }),
-    columnHelper.display({
-      header: 'Actions',
-      id: 'actions',
-      enableSorting: false,
-      enableColumnFilter: false,
-      enableHiding: false,
-      enablePinning: false,
-      enableGlobalFilter: false,
-      enableResizing: false,
-      maxSize: 50,
-      cell: (info) => <PogActions pog={info.row.original} gameServerName={gameServer.name} />,
-    }),
+    ...(hasManagePlayers
+      ? [
+          columnHelper.display({
+            header: 'Actions',
+            id: 'actions',
+            enableSorting: false,
+            enableColumnFilter: false,
+            enableHiding: false,
+            enablePinning: false,
+            enableGlobalFilter: false,
+            enableResizing: false,
+            maxSize: 50,
+            cell: (info) => <PogActions pog={info.row.original} gameServerName={gameServer.name} />,
+          }),
+        ]
+      : []),
   ];
 
   const p =
