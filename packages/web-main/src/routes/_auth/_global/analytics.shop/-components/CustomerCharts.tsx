@@ -4,7 +4,6 @@ import { CustomerMetricsDTO, OrderMetricsDTO } from '@takaro/apiclient';
 import { DateTime } from 'luxon';
 import { 
   AiOutlineUser as UserIcon,
-  AiOutlineStar as StarIcon,
   AiOutlineClockCircle as ClockIcon
 } from 'react-icons/ai';
 
