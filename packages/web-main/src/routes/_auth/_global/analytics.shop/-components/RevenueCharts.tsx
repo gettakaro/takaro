@@ -1,7 +1,8 @@
 import { FC, useState } from 'react';
-import { styled, Card, AreaChart, HeatMap, Skeleton, ToggleButtonGroup } from '@takaro/lib-components';
+import { styled, Card, AreaChart, HeatMap, Skeleton, ToggleButtonGroup, IconTooltip } from '@takaro/lib-components';
 import { RevenueMetricsDTO } from '@takaro/apiclient';
 import { DateTime } from 'luxon';
+import { AiOutlineInfoCircle as InfoIcon } from 'react-icons/ai';
 
 interface RevenueChartsProps {
   revenue?: RevenueMetricsDTO;
@@ -12,7 +13,7 @@ const ChartsContainer = styled.div`
   display: grid;
   gap: ${({ theme }) => theme.spacing[4]};
   grid-template-columns: 1fr;
-  
+
   @media (min-width: 1200px) {
     grid-template-columns: 70% 30%;
   }
@@ -35,6 +36,9 @@ const ChartHeader = styled.div`
 const ChartTitle = styled.h3`
   font-size: ${({ theme }) => theme.fontSize.large};
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[1]};
 `;
 
 const ChartContent = styled.div`
@@ -70,7 +74,7 @@ const MetricValue = styled.span`
 
 export const RevenueCharts: FC<RevenueChartsProps> = ({ revenue, isLoading }) => {
   const [timePeriod, setTimePeriod] = useState<'daily' | 'weekly' | 'monthly'>('daily');
-  
+
   if (isLoading) {
     return (
       <ChartsContainer>
@@ -79,48 +83,47 @@ export const RevenueCharts: FC<RevenueChartsProps> = ({ revenue, isLoading }) =>
       </ChartsContainer>
     );
   }
-  
+
   // Prepare data for AreaChart
-  const chartData = revenue?.timeSeries?.map(point => ({
-    date: DateTime.fromISO(point.date).toFormat('MMM dd'),
-    revenue: point.value,
-    comparison: point.comparison || 0,
-  })) || [];
-  
+  const chartData =
+    revenue?.timeSeries?.map((point) => ({
+      date: DateTime.fromISO(point.date).toFormat('MMM dd'),
+      revenue: point.value,
+      comparison: point.comparison || 0,
+    })) || [];
+
   // Prepare data for HeatMap (7 days x 24 hours)
-  const heatmapData = Array.from({ length: 7 }, (_, dayIndex) => 
+  const heatmapData = Array.from({ length: 7 }, (_, dayIndex) =>
     Array.from({ length: 24 }, (_, hourIndex) => {
-      const dataPoint = revenue?.heatmap?.find(
-        p => p.day === dayIndex && p.hour === hourIndex
-      );
+      const dataPoint = revenue?.heatmap?.find((p) => p.day === dayIndex && p.hour === hourIndex);
       return dataPoint?.value || 0;
-    })
+    }),
   );
-  
+
   const _days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const _hours = Array.from({ length: 24 }, (_, i) => 
-    i === 0 ? '12am' : i < 12 ? `${i}am` : i === 12 ? '12pm' : `${i - 12}pm`
+  const _hours = Array.from({ length: 24 }, (_, i) =>
+    i === 0 ? '12am' : i < 12 ? `${i}am` : i === 12 ? '12pm' : `${i - 12}pm`,
   );
-  
+
   return (
     <ChartsContainer>
       <ChartCard>
         <ChartHeader>
-          <ChartTitle>Revenue Over Time</ChartTitle>
-          <ToggleButtonGroup 
+          <ChartTitle>
+            Revenue Over Time
+            <IconTooltip icon={<InfoIcon />} size="small">
+              Shows revenue trends over the selected period. Toggle between daily, weekly, or monthly aggregation to see
+              different patterns. The area under the line represents total revenue volume.
+            </IconTooltip>
+          </ChartTitle>
+          <ToggleButtonGroup
             exclusive
             defaultValue={timePeriod}
             onChange={(value) => setTimePeriod(value as 'daily' | 'weekly' | 'monthly')}
           >
-            <ToggleButtonGroup.Button value="daily">
-              Daily
-            </ToggleButtonGroup.Button>
-            <ToggleButtonGroup.Button value="weekly">
-              Weekly
-            </ToggleButtonGroup.Button>
-            <ToggleButtonGroup.Button value="monthly">
-              Monthly
-            </ToggleButtonGroup.Button>
+            <ToggleButtonGroup.Button value="daily">Daily</ToggleButtonGroup.Button>
+            <ToggleButtonGroup.Button value="weekly">Weekly</ToggleButtonGroup.Button>
+            <ToggleButtonGroup.Button value="monthly">Monthly</ToggleButtonGroup.Button>
           </ToggleButtonGroup>
         </ChartHeader>
         <ChartContent>
@@ -148,19 +151,25 @@ export const RevenueCharts: FC<RevenueChartsProps> = ({ revenue, isLoading }) =>
           </MetricRow>
         </MetricInfo>
       </ChartCard>
-      
+
       <ChartCard>
         <ChartHeader>
-          <ChartTitle>Revenue Heatmap</ChartTitle>
+          <ChartTitle>
+            Peak Sales Heatmap
+            <IconTooltip icon={<InfoIcon />} size="small">
+              Heat map showing sales activity by hour (horizontal) and day of week (vertical). Darker colors indicate
+              higher sales volume. Helps identify peak shopping times and patterns in customer behavior.
+            </IconTooltip>
+          </ChartTitle>
         </ChartHeader>
         <ChartContent>
-          {heatmapData.some(row => row.some(val => val > 0)) ? (
+          {heatmapData.some((row) => row.some((val) => val > 0)) ? (
             <HeatMap
               name="Revenue Heatmap"
               data={heatmapData.flat().map((value, index) => ({
                 x: index % 24,
                 y: Math.floor(index / 24),
-                z: value
+                z: value,
               }))}
               xAccessor={(d: any) => d.x}
               yAccessor={(d: any) => d.y}

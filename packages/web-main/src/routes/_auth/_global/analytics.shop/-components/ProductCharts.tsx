@@ -1,11 +1,12 @@
 import { FC } from 'react';
-import { styled, Card, BarChart, RadialBarChart, Skeleton, Chip } from '@takaro/lib-components';
+import { styled, Card, BarChart, RadialBarChart, Skeleton, Chip, IconTooltip } from '@takaro/lib-components';
 import { ProductMetricsDTO, OrderMetricsDTO } from '@takaro/apiclient';
-import { 
+import {
   AiOutlineShoppingCart as CartIcon,
   AiOutlineCheckCircle as CheckIcon,
   AiOutlineCloseCircle as CancelIcon,
-  AiOutlineClockCircle as PendingIcon
+  AiOutlineClockCircle as PendingIcon,
+  AiOutlineInfoCircle as InfoIcon,
 } from 'react-icons/ai';
 
 interface ProductChartsProps {
@@ -18,7 +19,7 @@ const ChartsContainer = styled.div`
   display: grid;
   gap: ${({ theme }) => theme.spacing[4]};
   grid-template-columns: 1fr;
-  
+
   @media (min-width: 1200px) {
     grid-template-columns: 40% 30% 30%;
   }
@@ -41,6 +42,9 @@ const ChartHeader = styled.div`
 const ChartTitle = styled.h3`
   font-size: ${({ theme }) => theme.fontSize.large};
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[1]};
 `;
 
 const ChartContent = styled.div`
@@ -122,25 +126,27 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
       </ChartsContainer>
     );
   }
-  
+
   // Prepare data for top items bar chart
-  const topItemsData = products?.topItems?.map(item => ({
-    name: item.name.length > 15 ? item.name.substring(0, 15) + '...' : item.name,
-    revenue: item.revenue,
-    quantity: item.quantity,
-    percentage: item.percentage
-  })) || [];
-  
+  const topItemsData =
+    products?.topItems?.map((item) => ({
+      name: item.name.length > 15 ? item.name.substring(0, 15) + '...' : item.name,
+      revenue: item.revenue,
+      quantity: item.quantity,
+      percentage: item.percentage,
+    })) || [];
+
   // Prepare data for category radial chart
-  const categoryData = products?.categories?.map(cat => ({
-    name: cat.name,
-    value: cat.revenue,
-    percentage: cat.percentage
-  })) || [];
-  
+  const categoryData =
+    products?.categories?.map((cat) => ({
+      name: cat.name,
+      value: cat.revenue,
+      percentage: cat.percentage,
+    })) || [];
+
   // Order status data
   const statusData = orders?.statusBreakdown || [];
-  
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'COMPLETED':
@@ -153,17 +159,19 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
         return { icon: <CartIcon />, color: '#6b7280' };
     }
   };
-  
+
   return (
     <ChartsContainer>
       <ChartCard>
         <ChartHeader>
-          <ChartTitle>Top Selling Items</ChartTitle>
-          <Chip 
-            label={`${products?.totalProducts || 0} products`}
-            color="primary"
-            variant="outline"
-          />
+          <ChartTitle>
+            Top Selling Items
+            <IconTooltip icon={<InfoIcon />} size="small">
+              Products ranked by total revenue generated. Shows both quantity sold and revenue contribution. Helps
+              identify your best-performing products and inventory needs.
+            </IconTooltip>
+          </ChartTitle>
+          <Chip label={`${products?.totalProducts || 0} products`} color="primary" variant="outline" />
         </ChartHeader>
         <ChartContent>
           {topItemsData.length > 0 ? (
@@ -187,10 +195,16 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
           </DeadStockWarning>
         )}
       </ChartCard>
-      
+
       <ChartCard>
         <ChartHeader>
-          <ChartTitle>Categories</ChartTitle>
+          <ChartTitle>
+            Category Performance
+            <IconTooltip icon={<InfoIcon />} size="small">
+              Revenue distribution across product categories. Shows which categories drive the most sales and helps
+              identify opportunities for category expansion or optimization.
+            </IconTooltip>
+          </ChartTitle>
         </ChartHeader>
         <ChartContent>
           {categoryData.length > 0 ? (
@@ -208,15 +222,17 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
           )}
         </ChartContent>
       </ChartCard>
-      
+
       <ChartCard>
         <ChartHeader>
-          <ChartTitle>Order Status</ChartTitle>
-          <Chip 
-            label={`${orders?.totalOrders || 0} total`}
-            color="primary"
-            variant="outline"
-          />
+          <ChartTitle>
+            Order Status Distribution
+            <IconTooltip icon={<InfoIcon />} size="small">
+              Breakdown of orders by status (Paid, Completed, Canceled). Helps monitor order fulfillment rates and
+              identify potential issues with order completion.
+            </IconTooltip>
+          </ChartTitle>
+          <Chip label={`${orders?.totalOrders || 0} total`} color="primary" variant="outline" />
         </ChartHeader>
         <ChartContent>
           <StatusFlow>
@@ -246,7 +262,13 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
             <div style={{ marginTop: 'auto', padding: '12px', background: '#f3f4f6', borderRadius: '8px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '14px', color: '#6b7280' }}>Completion Rate</span>
-                <span style={{ fontSize: '18px', fontWeight: 'bold', color: orders.completionRate > 80 ? '#10b981' : '#f59e0b' }}>
+                <span
+                  style={{
+                    fontSize: '18px',
+                    fontWeight: 'bold',
+                    color: orders.completionRate > 80 ? '#10b981' : '#f59e0b',
+                  }}
+                >
                   {orders.completionRate.toFixed(1)}%
                 </span>
               </div>
