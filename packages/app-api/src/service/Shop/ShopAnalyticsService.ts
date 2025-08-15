@@ -82,11 +82,13 @@ export interface ProductMetrics {
     orderCount: number;
     percentOfTotal: number;
   }>;
-  noSales: Array<{
-    id: string;
-    name: string;
-    daysSinceCreated: number;
-  }> | number;
+  noSales:
+    | Array<{
+        id: string;
+        name: string;
+        daysSinceCreated: number;
+      }>
+    | number;
   totalCount: number;
 }
 
@@ -125,7 +127,6 @@ export interface CustomerMetrics {
   repeatPurchaseRate: number;
 }
 
-
 // Performance metrics
 export const shopAnalyticsMetricsRegistry = new Registry();
 const analyticsMetrics = {
@@ -158,7 +159,12 @@ const analyticsMetrics = {
 };
 
 @traceableClass('service:shopAnalytics')
-export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<void>, TakaroDTO<void>, TakaroDTO<void>> {
+export class ShopAnalyticsService extends TakaroService<
+  TakaroModel,
+  TakaroDTO<void>,
+  TakaroDTO<void>,
+  TakaroDTO<void>
+> {
   private orderRepo: ShopOrderRepo;
   private listingRepo: ShopListingRepo;
   private redisClient: Awaited<ReturnType<typeof Redis.getClient>> | null = null;
@@ -178,9 +184,9 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
     if (process.env.NODE_ENV === 'development') {
       try {
         const explainResult = await knex.raw(`EXPLAIN ANALYZE ${query.toString()}`);
-        this.log.debug(`EXPLAIN ANALYZE for ${queryName}`, { 
+        this.log.debug(`EXPLAIN ANALYZE for ${queryName}`, {
           query: query.toString(),
-          plan: explainResult.rows 
+          plan: explainResult.rows,
         });
       } catch (err) {
         this.log.warn(`Failed to run EXPLAIN ANALYZE for ${queryName}`, { error: err });
@@ -211,11 +217,7 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
   /**
    * Main entry point for getting shop analytics
    */
-  async getAnalytics(
-    gameServerIds?: string[],
-    startDate?: string,
-    endDate?: string
-  ): Promise<ShopAnalyticsOutputDTO> {
+  async getAnalytics(gameServerIds?: string[], startDate?: string, endDate?: string): Promise<ShopAnalyticsOutputDTO> {
     const overallTimer = analyticsMetrics.generationTime.startTimer({
       domain: this.domainId,
       operation: 'getAnalytics',
@@ -224,7 +226,7 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
     try {
       const start = startDate || DateTime.now().minus({ days: 30 }).toISO();
       const end = endDate || DateTime.now().toISO();
-      
+
       // Try to get from cache first
       const cacheKey = this.generateCacheKey(gameServerIds, start, end);
       const cached = await this.getCachedAnalytics(cacheKey);
@@ -236,19 +238,19 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
 
       analyticsMetrics.cacheMisses.inc({ domain: this.domainId });
       this.log.debug('Analytics cache miss, generating fresh data', { cacheKey });
-      
+
       // Generate fresh analytics with timing
       const generationTimer = analyticsMetrics.generationTime.startTimer({
         domain: this.domainId,
         operation: 'generateAnalytics',
       });
-      
+
       const analytics = await this.generateAnalytics(gameServerIds, start, end);
       generationTimer();
-      
+
       // Cache the results
       await this.cacheAnalytics(cacheKey, analytics);
-      
+
       return analytics;
     } finally {
       overallTimer();
@@ -261,7 +263,7 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
   private async generateAnalytics(
     gameServerIds: string[] | undefined,
     startDate: string,
-    endDate: string
+    endDate: string,
   ): Promise<ShopAnalyticsOutputDTO> {
     const [kpis, revenue, products, orders, customers] = await Promise.all([
       this.calculateKPIs(gameServerIds, startDate, endDate),
@@ -284,11 +286,13 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
     revenue.byHour.forEach((dayData, dayIndex) => {
       dayData.forEach((value, hourIndex) => {
         if (value > 0) {
-          heatmapData.push(new HeatmapDataPointDTO({
-            day: dayIndex,
-            hour: hourIndex,
-            value: value,
-          }));
+          heatmapData.push(
+            new HeatmapDataPointDTO({
+              day: dayIndex,
+              hour: hourIndex,
+              value: value,
+            }),
+          );
         }
       });
     });
@@ -309,9 +313,10 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     // Calculate AOV change
-    const aovChange = kpis.averageOrderValue.previous > 0
-      ? ((kpis.averageOrderValue.current - kpis.averageOrderValue.previous) / kpis.averageOrderValue.previous) * 100
-      : 0;
+    const aovChange =
+      kpis.averageOrderValue.previous > 0
+        ? ((kpis.averageOrderValue.current - kpis.averageOrderValue.previous) / kpis.averageOrderValue.previous) * 100
+        : 0;
 
     // Transform order status flow to breakdown with percentages
     const totalOrderStatuses = orders.statusFlow.paid + orders.statusFlow.completed + orders.statusFlow.canceled;
@@ -335,9 +340,7 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
 
     // Calculate total orders and completion rate
     const totalOrders = orders.statusFlow.paid + orders.statusFlow.completed + orders.statusFlow.canceled;
-    const completionRate = totalOrders > 0 
-      ? ((orders.statusFlow.completed / totalOrders) * 100)
-      : 0;
+    const completionRate = totalOrders > 0 ? (orders.statusFlow.completed / totalOrders) * 100 : 0;
 
     // Transform customer segments
     const totalSegments = customers.segments.new + customers.segments.returning + customers.segments.frequent;
@@ -368,19 +371,21 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
         revenueChange: kpis.revenue.changePercent,
         revenueSparkline: kpis.revenue.sparkline,
         ordersToday: kpis.ordersToday.count,
-        ordersChange: ((kpis.ordersToday.count - kpis.ordersToday.weeklyAverage) / kpis.ordersToday.weeklyAverage) * 100,
+        ordersChange:
+          ((kpis.ordersToday.count - kpis.ordersToday.weeklyAverage) / kpis.ordersToday.weeklyAverage) * 100,
         activeCustomers: kpis.activeCustomers.total,
         customersChange: kpis.activeCustomers.growth,
         averageOrderValue: kpis.averageOrderValue.current,
         aovChange: aovChange,
       }),
       revenue: new RevenueMetricsDTO({
-        timeSeries: revenue.timeSeries.map(point => 
-          new TimeSeriesDataPointDTO({
-            date: new Date(point.timestamp).toISOString(),
-            value: point.value,
-            comparison: point.orders,
-          })
+        timeSeries: revenue.timeSeries.map(
+          (point) =>
+            new TimeSeriesDataPointDTO({
+              date: new Date(point.timestamp).toISOString(),
+              value: point.value,
+              comparison: point.orders,
+            }),
         ),
         heatmap: heatmapData,
         growth: revenue.growth,
@@ -388,57 +393,61 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
         peakDay: dayNames[peakDay],
       }),
       products: new ProductMetricsDTO({
-        topItems: products.topSelling.map(item => 
-          new TopItemDTO({
-            id: item.id,
-            name: item.name,
-            quantity: item.quantity,
-            revenue: item.revenue,
-            percentage: item.percentOfTotal,
-          })
+        topItems: products.topSelling.map(
+          (item) =>
+            new TopItemDTO({
+              id: item.id,
+              name: item.name,
+              quantity: item.quantity,
+              revenue: item.revenue,
+              percentage: item.percentOfTotal,
+            }),
         ),
-        categories: products.categories.map(cat => 
-          new CategoryPerformanceDTO({
-            name: cat.name || 'Uncategorized',
-            revenue: cat.revenue,
-            orders: cat.orderCount,
-            percentage: cat.percentOfTotal,
-          })
+        categories: products.categories.map(
+          (cat) =>
+            new CategoryPerformanceDTO({
+              name: cat.name || 'Uncategorized',
+              revenue: cat.revenue,
+              orders: cat.orderCount,
+              percentage: cat.percentOfTotal,
+            }),
         ),
         deadStock: typeof products.noSales === 'number' ? products.noSales : products.noSales.length,
         totalProducts: products.totalCount,
       }),
       orders: new OrderMetricsDTO({
         statusBreakdown: statusBreakdown,
-        recentOrders: orders.recent.map(order => 
-          new RecentOrderDTO({
-            id: order.id || '',
-            playerName: order.playerName,
-            itemName: order.itemName,
-            value: order.price,
-            time: order.timestamp,
-            status: order.status || ShopOrderStatus.PAID,
-          })
+        recentOrders: orders.recent.map(
+          (order) =>
+            new RecentOrderDTO({
+              id: order.id || '',
+              playerName: order.playerName,
+              itemName: order.itemName,
+              value: order.price,
+              time: order.timestamp,
+              status: order.status || ShopOrderStatus.PAID,
+            }),
         ),
         totalOrders: totalOrders,
         completionRate: completionRate,
       }),
       customers: new CustomerMetricsDTO({
         segments: customerSegments,
-        topBuyers: customers.topBuyers.map(buyer => 
-          new TopBuyerDTO({
-            id: buyer.playerId,
-            name: buyer.name,
-            totalSpent: buyer.totalSpent,
-            orderCount: buyer.orderCount,
-            lastPurchase: buyer.lastPurchase,
-          })
+        topBuyers: customers.topBuyers.map(
+          (buyer) =>
+            new TopBuyerDTO({
+              id: buyer.playerId,
+              name: buyer.name,
+              totalSpent: buyer.totalSpent,
+              orderCount: buyer.orderCount,
+              lastPurchase: buyer.lastPurchase,
+            }),
         ),
         repeatRate: customers.repeatPurchaseRate,
         newCustomers: customers.segments.new,
         totalCustomers: customers.uniqueCount,
       }),
-      insights: insights.map(insight => new InsightDTO(insight)),
+      insights: insights.map((insight) => new InsightDTO(insight)),
       lastUpdated: DateTime.now().toISO()!,
       dateRange: `${startDate} to ${endDate}`,
       gameServerIds: gameServerIds,
@@ -451,7 +460,7 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
   private async calculateKPIs(
     gameServerIds: string[] | undefined,
     startDate: string,
-    endDate: string
+    endDate: string,
   ): Promise<KPIMetrics> {
     const queryTimer = analyticsMetrics.queryTime.startTimer({
       domain: this.domainId,
@@ -461,14 +470,14 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
 
     try {
       const { knex } = await this.orderRepo.getModel();
-      
+
       // Calculate date ranges
       const currentStart = DateTime.fromISO(startDate);
       const currentEnd = DateTime.fromISO(endDate);
       const periodLength = currentEnd.diff(currentStart, 'days').days;
       const previousStart = currentStart.minus({ days: periodLength });
       const previousEnd = currentStart;
-      
+
       // Revenue calculations
       // OPTIMIZATION: Uses idx_shoporder_analytics for domain+status filter
       // and idx_shoporder_listing_date for efficient joins
@@ -477,239 +486,227 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
         .where('o.domain', this.domainId)
         .whereIn('o.status', ['COMPLETED', 'PAID'])
         .select(knex.raw('SUM(o.amount * l.price) as total'));
-      
+
       if (gameServerIds?.length) {
         revenueQuery.whereIn('l.gameServerId', gameServerIds);
       }
-      
+
       const [currentRevenue, previousRevenue] = await Promise.all([
-        revenueQuery.clone()
-          .whereBetween('o.createdAt', [currentStart.toJSDate(), currentEnd.toJSDate()])
-          .first(),
-        revenueQuery.clone()
-          .whereBetween('o.createdAt', [previousStart.toJSDate(), previousEnd.toJSDate()])
-          .first(),
+        revenueQuery.clone().whereBetween('o.createdAt', [currentStart.toJSDate(), currentEnd.toJSDate()]).first(),
+        revenueQuery.clone().whereBetween('o.createdAt', [previousStart.toJSDate(), previousEnd.toJSDate()]).first(),
       ]);
-    
-    const revenueCurrent = Number(currentRevenue?.total || 0);
-    const revenuePrevious = Number(previousRevenue?.total || 0);
-    const revenueChange = revenueCurrent - revenuePrevious;
-    const revenueChangePercent = revenuePrevious > 0 ? (revenueChange / revenuePrevious) * 100 : 0;
-    
-    // Generate sparkline for last 7 days
-    const sparklineData = await knex('shopOrder as o')
-      .join('shopListing as l', 'o.listingId', 'l.id')
-      .where('o.domain', this.domainId)
-      .whereIn('o.status', ['COMPLETED', 'PAID'])
-      .whereBetween('o.createdAt', [DateTime.now().minus({ days: 7 }).toJSDate(), DateTime.now().toJSDate()])
-      .modify((qb) => {
-        if (gameServerIds?.length) {
-          qb.whereIn('l.gameServerId', gameServerIds);
+
+      const revenueCurrent = Number(currentRevenue?.total || 0);
+      const revenuePrevious = Number(previousRevenue?.total || 0);
+      const revenueChange = revenueCurrent - revenuePrevious;
+      const revenueChangePercent = revenuePrevious > 0 ? (revenueChange / revenuePrevious) * 100 : 0;
+
+      // Generate sparkline for last 7 days
+      const sparklineData = await knex('shopOrder as o')
+        .join('shopListing as l', 'o.listingId', 'l.id')
+        .where('o.domain', this.domainId)
+        .whereIn('o.status', ['COMPLETED', 'PAID'])
+        .whereBetween('o.createdAt', [DateTime.now().minus({ days: 7 }).toJSDate(), DateTime.now().toJSDate()])
+        .modify((qb) => {
+          if (gameServerIds?.length) {
+            qb.whereIn('l.gameServerId', gameServerIds);
+          }
+        })
+        .select(knex.raw('DATE(o."createdAt") as date'), knex.raw('SUM(o.amount * l.price) as total'))
+        .groupBy('date')
+        .orderBy('date');
+
+      const sparkline = Array(7).fill(0);
+      sparklineData.forEach((row: any) => {
+        const dayIndex = DateTime.fromJSDate(row.date).diff(DateTime.now().minus({ days: 7 }), 'days').days;
+        if (dayIndex >= 0 && dayIndex < 7) {
+          sparkline[Math.floor(dayIndex)] = Number(row.total);
         }
-      })
-      .select(
-        knex.raw('DATE(o."createdAt") as date'),
-        knex.raw('SUM(o.amount * l.price) as total')
-      )
-      .groupBy('date')
-      .orderBy('date');
-    
-    const sparkline = Array(7).fill(0);
-    sparklineData.forEach((row: any) => {
-      const dayIndex = DateTime.fromJSDate(row.date).diff(DateTime.now().minus({ days: 7 }), 'days').days;
-      if (dayIndex >= 0 && dayIndex < 7) {
-        sparkline[Math.floor(dayIndex)] = Number(row.total);
-      }
-    });
-    
-    // Orders today calculations
-    const todayStart = DateTime.now().startOf('day');
-    const todayEnd = DateTime.now().endOf('day');
-    
-    const ordersToday = await knex('shopOrder as o')
-      .join('shopListing as l', 'o.listingId', 'l.id')
-      .where('o.domain', this.domainId)
-      .whereIn('o.status', ['COMPLETED', 'PAID'])
-      .whereBetween('o.createdAt', [todayStart.toJSDate(), todayEnd.toJSDate()])
-      .modify((qb) => {
-        if (gameServerIds?.length) {
-          qb.whereIn('l.gameServerId', gameServerIds);
-        }
-      })
-      .count('o.id as count')
-      .first();
-    
-    const hourlyDistribution = await knex('shopOrder as o')
-      .join('shopListing as l', 'o.listingId', 'l.id')
-      .where('o.domain', this.domainId)
-      .whereIn('o.status', ['COMPLETED', 'PAID'])
-      .whereBetween('o.createdAt', [todayStart.toJSDate(), todayEnd.toJSDate()])
-      .modify((qb) => {
-        if (gameServerIds?.length) {
-          qb.whereIn('l.gameServerId', gameServerIds);
-        }
-      })
-      .select(
-        knex.raw('EXTRACT(HOUR FROM o."createdAt") as hour'),
-        knex.raw('COUNT(*) as count')
-      )
-      .groupBy('hour')
-      .orderBy('hour');
-    
-    const hourlyData = Array(24).fill(null).map((_, i) => ({ hour: i, count: 0 }));
-    hourlyDistribution.forEach((row: any) => {
-      hourlyData[row.hour] = { hour: row.hour, count: Number(row.count) };
-    });
-    
-    const busiestHour = hourlyData.reduce((max, curr) => 
-      curr.count > max.count ? curr : max, hourlyData[0]
-    ).hour;
-    
-    // Weekly average
-    const weeklyOrders = await knex('shopOrder as o')
-      .join('shopListing as l', 'o.listingId', 'l.id')
-      .where('o.domain', this.domainId)
-      .whereIn('o.status', ['COMPLETED', 'PAID'])
-      .whereBetween('o.createdAt', [DateTime.now().minus({ days: 7 }).toJSDate(), DateTime.now().toJSDate()])
-      .modify((qb) => {
-        if (gameServerIds?.length) {
-          qb.whereIn('l.gameServerId', gameServerIds);
-        }
-      })
-      .count('o.id as count')
-      .first();
-    
-    const weeklyAverage = Math.round(Number(weeklyOrders?.count || 0) / 7);
-    
-    // Customer calculations
-    const customerStats = await knex('shopOrder as o')
-      .join('shopListing as l', 'o.listingId', 'l.id')
-      .where('o.domain', this.domainId)
-      .whereIn('o.status', ['COMPLETED', 'PAID'])
-      .whereBetween('o.createdAt', [currentStart.toJSDate(), currentEnd.toJSDate()])
-      .modify((qb) => {
-        if (gameServerIds?.length) {
-          qb.whereIn('l.gameServerId', gameServerIds);
-        }
-      })
-      .select(
-        knex.raw('COUNT(DISTINCT o."playerId") as unique_customers'),
-        knex.raw('COUNT(DISTINCT CASE WHEN player_orders.order_count = 1 THEN o."playerId" END) as new_customers'),
-        knex.raw('COUNT(DISTINCT CASE WHEN player_orders.order_count > 1 THEN o."playerId" END) as returning_customers')
-      )
-      .leftJoin(
-        knex('shopOrder')
-          .select('playerId')
-          .count('id as order_count')
-          .where('domain', this.domainId)
-          .whereIn('status', ['COMPLETED', 'PAID'])
-          .groupBy('playerId')
-          .as('player_orders'),
-        'o.playerId',
-        'player_orders.playerId'
-      )
-      .first();
-    
-    const previousCustomers = await knex('shopOrder as o')
-      .join('shopListing as l', 'o.listingId', 'l.id')
-      .where('o.domain', this.domainId)
-      .whereIn('o.status', ['COMPLETED', 'PAID'])
-      .whereBetween('o.createdAt', [previousStart.toJSDate(), previousEnd.toJSDate()])
-      .modify((qb) => {
-        if (gameServerIds?.length) {
-          qb.whereIn('l.gameServerId', gameServerIds);
-        }
-      })
-      .countDistinct('o.playerId as count')
-      .first();
-    
-    const totalCustomers = Number(customerStats?.unique_customers || 0);
-    const previousCustomerCount = Number(previousCustomers?.count || 0);
-    const customerGrowth = previousCustomerCount > 0 
-      ? ((totalCustomers - previousCustomerCount) / previousCustomerCount) * 100 
-      : 0;
-    
-    // Average order value calculations
-    const orderValues = await knex('shopOrder as o')
-      .join('shopListing as l', 'o.listingId', 'l.id')
-      .where('o.domain', this.domainId)
-      .whereIn('o.status', ['COMPLETED', 'PAID'])
-      .whereBetween('o.createdAt', [currentStart.toJSDate(), currentEnd.toJSDate()])
-      .modify((qb) => {
-        if (gameServerIds?.length) {
-          qb.whereIn('l.gameServerId', gameServerIds);
-        }
-      })
-      .select(
-        knex.raw('AVG(o.amount * l.price) as avg_value'),
-        knex.raw('MIN(o.amount * l.price) as min_value'),
-        knex.raw('MAX(o.amount * l.price) as max_value')
-      )
-      .first();
-    
-    const previousAOV = await knex('shopOrder as o')
-      .join('shopListing as l', 'o.listingId', 'l.id')
-      .where('o.domain', this.domainId)
-      .whereIn('o.status', ['COMPLETED', 'PAID'])
-      .whereBetween('o.createdAt', [previousStart.toJSDate(), previousEnd.toJSDate()])
-      .modify((qb) => {
-        if (gameServerIds?.length) {
-          qb.whereIn('l.gameServerId', gameServerIds);
-        }
-      })
-      .avg({ avg: knex.raw('o.amount * l.price') })
-      .first();
-    
-    // Top contributing items to AOV
-    const topItems = await knex('shopOrder as o')
-      .join('shopListing as l', 'o.listingId', 'l.id')
-      .where('o.domain', this.domainId)
-      .whereIn('o.status', ['COMPLETED', 'PAID'])
-      .whereBetween('o.createdAt', [currentStart.toJSDate(), currentEnd.toJSDate()])
-      .modify((qb) => {
-        if (gameServerIds?.length) {
-          qb.whereIn('l.gameServerId', gameServerIds);
-        }
-      })
-      .select(
-        'l.name',
-        knex.raw('SUM(o.amount * l.price) as contribution')
-      )
-      .groupBy('l.id', 'l.name')
-      .orderBy('contribution', 'desc')
-      .limit(3);
-    
-    return {
-      revenue: {
-        current: revenueCurrent,
-        previous: revenuePrevious,
-        change: revenueChange,
-        changePercent: revenueChangePercent,
-        sparkline,
-      },
-      ordersToday: {
-        count: Number(ordersToday?.count || 0),
-        hourlyDistribution: hourlyData,
-        busiestHour,
-        weeklyAverage,
-      },
-      activeCustomers: {
-        total: totalCustomers,
-        new: Number(customerStats?.new_customers || 0),
-        returning: Number(customerStats?.returning_customers || 0),
-        growth: customerGrowth,
-      },
-      averageOrderValue: {
-        current: Number(orderValues?.avg_value || 0),
-        previous: Number(previousAOV?.avg || 0),
-        min: Number(orderValues?.min_value || 0),
-        max: Number(orderValues?.max_value || 0),
-        topItems: topItems.map((item: any) => ({
-          name: item.name,
-          contribution: Number(item.contribution),
-        })),
-      },
-    };
+      });
+
+      // Orders today calculations
+      const todayStart = DateTime.now().startOf('day');
+      const todayEnd = DateTime.now().endOf('day');
+
+      const ordersToday = await knex('shopOrder as o')
+        .join('shopListing as l', 'o.listingId', 'l.id')
+        .where('o.domain', this.domainId)
+        .whereIn('o.status', ['COMPLETED', 'PAID'])
+        .whereBetween('o.createdAt', [todayStart.toJSDate(), todayEnd.toJSDate()])
+        .modify((qb) => {
+          if (gameServerIds?.length) {
+            qb.whereIn('l.gameServerId', gameServerIds);
+          }
+        })
+        .count('o.id as count')
+        .first();
+
+      const hourlyDistribution = await knex('shopOrder as o')
+        .join('shopListing as l', 'o.listingId', 'l.id')
+        .where('o.domain', this.domainId)
+        .whereIn('o.status', ['COMPLETED', 'PAID'])
+        .whereBetween('o.createdAt', [todayStart.toJSDate(), todayEnd.toJSDate()])
+        .modify((qb) => {
+          if (gameServerIds?.length) {
+            qb.whereIn('l.gameServerId', gameServerIds);
+          }
+        })
+        .select(knex.raw('EXTRACT(HOUR FROM o."createdAt") as hour'), knex.raw('COUNT(*) as count'))
+        .groupBy('hour')
+        .orderBy('hour');
+
+      const hourlyData = Array(24)
+        .fill(null)
+        .map((_, i) => ({ hour: i, count: 0 }));
+      hourlyDistribution.forEach((row: any) => {
+        hourlyData[row.hour] = { hour: row.hour, count: Number(row.count) };
+      });
+
+      const busiestHour = hourlyData.reduce((max, curr) => (curr.count > max.count ? curr : max), hourlyData[0]).hour;
+
+      // Weekly average
+      const weeklyOrders = await knex('shopOrder as o')
+        .join('shopListing as l', 'o.listingId', 'l.id')
+        .where('o.domain', this.domainId)
+        .whereIn('o.status', ['COMPLETED', 'PAID'])
+        .whereBetween('o.createdAt', [DateTime.now().minus({ days: 7 }).toJSDate(), DateTime.now().toJSDate()])
+        .modify((qb) => {
+          if (gameServerIds?.length) {
+            qb.whereIn('l.gameServerId', gameServerIds);
+          }
+        })
+        .count('o.id as count')
+        .first();
+
+      const weeklyAverage = Math.round(Number(weeklyOrders?.count || 0) / 7);
+
+      // Customer calculations
+      const customerStats = await knex('shopOrder as o')
+        .join('shopListing as l', 'o.listingId', 'l.id')
+        .where('o.domain', this.domainId)
+        .whereIn('o.status', ['COMPLETED', 'PAID'])
+        .whereBetween('o.createdAt', [currentStart.toJSDate(), currentEnd.toJSDate()])
+        .modify((qb) => {
+          if (gameServerIds?.length) {
+            qb.whereIn('l.gameServerId', gameServerIds);
+          }
+        })
+        .select(
+          knex.raw('COUNT(DISTINCT o."playerId") as unique_customers'),
+          knex.raw('COUNT(DISTINCT CASE WHEN player_orders.order_count = 1 THEN o."playerId" END) as new_customers'),
+          knex.raw(
+            'COUNT(DISTINCT CASE WHEN player_orders.order_count > 1 THEN o."playerId" END) as returning_customers',
+          ),
+        )
+        .leftJoin(
+          knex('shopOrder')
+            .select('playerId')
+            .count('id as order_count')
+            .where('domain', this.domainId)
+            .whereIn('status', ['COMPLETED', 'PAID'])
+            .groupBy('playerId')
+            .as('player_orders'),
+          'o.playerId',
+          'player_orders.playerId',
+        )
+        .first();
+
+      const previousCustomers = await knex('shopOrder as o')
+        .join('shopListing as l', 'o.listingId', 'l.id')
+        .where('o.domain', this.domainId)
+        .whereIn('o.status', ['COMPLETED', 'PAID'])
+        .whereBetween('o.createdAt', [previousStart.toJSDate(), previousEnd.toJSDate()])
+        .modify((qb) => {
+          if (gameServerIds?.length) {
+            qb.whereIn('l.gameServerId', gameServerIds);
+          }
+        })
+        .countDistinct('o.playerId as count')
+        .first();
+
+      const totalCustomers = Number(customerStats?.unique_customers || 0);
+      const previousCustomerCount = Number(previousCustomers?.count || 0);
+      const customerGrowth =
+        previousCustomerCount > 0 ? ((totalCustomers - previousCustomerCount) / previousCustomerCount) * 100 : 0;
+
+      // Average order value calculations
+      const orderValues = await knex('shopOrder as o')
+        .join('shopListing as l', 'o.listingId', 'l.id')
+        .where('o.domain', this.domainId)
+        .whereIn('o.status', ['COMPLETED', 'PAID'])
+        .whereBetween('o.createdAt', [currentStart.toJSDate(), currentEnd.toJSDate()])
+        .modify((qb) => {
+          if (gameServerIds?.length) {
+            qb.whereIn('l.gameServerId', gameServerIds);
+          }
+        })
+        .select(
+          knex.raw('AVG(o.amount * l.price) as avg_value'),
+          knex.raw('MIN(o.amount * l.price) as min_value'),
+          knex.raw('MAX(o.amount * l.price) as max_value'),
+        )
+        .first();
+
+      const previousAOV = await knex('shopOrder as o')
+        .join('shopListing as l', 'o.listingId', 'l.id')
+        .where('o.domain', this.domainId)
+        .whereIn('o.status', ['COMPLETED', 'PAID'])
+        .whereBetween('o.createdAt', [previousStart.toJSDate(), previousEnd.toJSDate()])
+        .modify((qb) => {
+          if (gameServerIds?.length) {
+            qb.whereIn('l.gameServerId', gameServerIds);
+          }
+        })
+        .avg({ avg: knex.raw('o.amount * l.price') })
+        .first();
+
+      // Top contributing items to AOV
+      const topItems = await knex('shopOrder as o')
+        .join('shopListing as l', 'o.listingId', 'l.id')
+        .where('o.domain', this.domainId)
+        .whereIn('o.status', ['COMPLETED', 'PAID'])
+        .whereBetween('o.createdAt', [currentStart.toJSDate(), currentEnd.toJSDate()])
+        .modify((qb) => {
+          if (gameServerIds?.length) {
+            qb.whereIn('l.gameServerId', gameServerIds);
+          }
+        })
+        .select('l.name', knex.raw('SUM(o.amount * l.price) as contribution'))
+        .groupBy('l.id', 'l.name')
+        .orderBy('contribution', 'desc')
+        .limit(3);
+
+      return {
+        revenue: {
+          current: revenueCurrent,
+          previous: revenuePrevious,
+          change: revenueChange,
+          changePercent: revenueChangePercent,
+          sparkline,
+        },
+        ordersToday: {
+          count: Number(ordersToday?.count || 0),
+          hourlyDistribution: hourlyData,
+          busiestHour,
+          weeklyAverage,
+        },
+        activeCustomers: {
+          total: totalCustomers,
+          new: Number(customerStats?.new_customers || 0),
+          returning: Number(customerStats?.returning_customers || 0),
+          growth: customerGrowth,
+        },
+        averageOrderValue: {
+          current: Number(orderValues?.avg_value || 0),
+          previous: Number(previousAOV?.avg || 0),
+          min: Number(orderValues?.min_value || 0),
+          max: Number(orderValues?.max_value || 0),
+          topItems: topItems.map((item: any) => ({
+            name: item.name,
+            contribution: Number(item.contribution),
+          })),
+        },
+      };
     } finally {
       queryTimer();
       const queryDuration = Date.now() - queryStartTime;
@@ -729,7 +726,7 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
   private async calculateRevenue(
     gameServerIds: string[] | undefined,
     startDate: string,
-    endDate: string
+    endDate: string,
   ): Promise<RevenueMetrics> {
     const queryTimer = analyticsMetrics.queryTime.startTimer({
       domain: this.domainId,
@@ -739,119 +736,121 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
 
     try {
       const { knex } = await this.orderRepo.getModel();
-    
-    const currentStart = DateTime.fromISO(startDate);
-    const currentEnd = DateTime.fromISO(endDate);
-    const periodLength = currentEnd.diff(currentStart, 'days').days;
-    
-    // Determine grouping based on period length
-    let dateFormat: string;
-    if (periodLength <= 7) {
-      dateFormat = 'DATE(o."createdAt")';
-    } else if (periodLength <= 30) {
-      dateFormat = 'DATE(o."createdAt")';
-    } else if (periodLength <= 90) {
-      dateFormat = `DATE_TRUNC('week', o."createdAt")`;
-    } else {
-      dateFormat = `DATE_TRUNC('month', o."createdAt")`;
-    }
-    
-    // Get time series data
-    const timeSeriesQuery = knex('shopOrder as o')
-      .join('shopListing as l', 'o.listingId', 'l.id')
-      .where('o.domain', this.domainId)
-      .whereIn('o.status', ['COMPLETED', 'PAID'])
-      .whereBetween('o.createdAt', [currentStart.toJSDate(), currentEnd.toJSDate()])
-      .select(
-        knex.raw(`${dateFormat} as timestamp`),
-        knex.raw('SUM(o.amount * l.price) as value'),
-        knex.raw('COUNT(o.id) as orders')
-      )
-      .groupBy(knex.raw(dateFormat))
-      .orderBy('timestamp');
-    
-    if (gameServerIds?.length) {
-      timeSeriesQuery.whereIn('l.gameServerId', gameServerIds);
-    }
-    
-    const timeSeriesData = await timeSeriesQuery;
-    
-    // Calculate hourly heatmap (7 days x 24 hours)
-    const heatmapQuery = knex('shopOrder as o')
-      .join('shopListing as l', 'o.listingId', 'l.id')
-      .where('o.domain', this.domainId)
-      .whereIn('o.status', ['COMPLETED', 'PAID'])
-      .whereBetween('o.createdAt', [currentStart.toJSDate(), currentEnd.toJSDate()])
-      .select(
-        knex.raw('EXTRACT(DOW FROM o."createdAt") as day_of_week'),
-        knex.raw('EXTRACT(HOUR FROM o."createdAt") as hour'),
-        knex.raw('SUM(o.amount * l.price) as revenue')
-      )
-      .groupBy('day_of_week', 'hour');
-    
-    if (gameServerIds?.length) {
-      heatmapQuery.whereIn('l.gameServerId', gameServerIds);
-    }
-    
-    const heatmapData = await heatmapQuery;
-    
-    // Initialize 7x24 array
-    const byHour: number[][] = Array(7).fill(null).map(() => Array(24).fill(0));
-    heatmapData.forEach((row: any) => {
-      const dayIndex = Number(row.day_of_week);
-      const hourIndex = Number(row.hour);
-      if (dayIndex >= 0 && dayIndex < 7 && hourIndex >= 0 && hourIndex < 24) {
-        byHour[dayIndex][hourIndex] = Number(row.revenue);
+
+      const currentStart = DateTime.fromISO(startDate);
+      const currentEnd = DateTime.fromISO(endDate);
+      const periodLength = currentEnd.diff(currentStart, 'days').days;
+
+      // Determine grouping based on period length
+      let dateFormat: string;
+      if (periodLength <= 7) {
+        dateFormat = 'DATE(o."createdAt")';
+      } else if (periodLength <= 30) {
+        dateFormat = 'DATE(o."createdAt")';
+      } else if (periodLength <= 90) {
+        dateFormat = `DATE_TRUNC('week', o."createdAt")`;
+      } else {
+        dateFormat = `DATE_TRUNC('month', o."createdAt")`;
       }
-    });
-    
-    // Calculate total revenue
-    const totalQuery = knex('shopOrder as o')
-      .join('shopListing as l', 'o.listingId', 'l.id')
-      .where('o.domain', this.domainId)
-      .whereIn('o.status', ['COMPLETED', 'PAID'])
-      .whereBetween('o.createdAt', [currentStart.toJSDate(), currentEnd.toJSDate()])
-      .sum({ total: knex.raw('o.amount * l.price') })
-      .first();
-    
-    if (gameServerIds?.length) {
-      totalQuery.whereIn('l.gameServerId', gameServerIds);
-    }
-    
-    const totalRevenue = await totalQuery;
-    
-    // Calculate growth vs previous period
-    const previousStart = currentStart.minus({ days: periodLength });
-    const previousEnd = currentStart;
-    
-    const previousQuery = knex('shopOrder as o')
-      .join('shopListing as l', 'o.listingId', 'l.id')
-      .where('o.domain', this.domainId)
-      .whereIn('o.status', ['COMPLETED', 'PAID'])
-      .whereBetween('o.createdAt', [previousStart.toJSDate(), previousEnd.toJSDate()])
-      .sum({ total: knex.raw('o.amount * l.price') })
-      .first();
-    
-    if (gameServerIds?.length) {
-      previousQuery.whereIn('l.gameServerId', gameServerIds);
-    }
-    
-    const previousRevenue = await previousQuery;
-    
-    const current = Number(totalRevenue?.total || 0);
-    const previous = Number(previousRevenue?.total || 0);
-    const growth = previous > 0 ? ((current - previous) / previous) * 100 : 0;
-    
-    return {
-      timeSeries: timeSeriesData.map((row: any) => ({
-        timestamp: new Date(row.timestamp).getTime(),
-        value: Number(row.value),
-        orders: Number(row.orders),
-      })),
-      byHour,
-      total: current,
-      growth,
-    };
+
+      // Get time series data
+      const timeSeriesQuery = knex('shopOrder as o')
+        .join('shopListing as l', 'o.listingId', 'l.id')
+        .where('o.domain', this.domainId)
+        .whereIn('o.status', ['COMPLETED', 'PAID'])
+        .whereBetween('o.createdAt', [currentStart.toJSDate(), currentEnd.toJSDate()])
+        .select(
+          knex.raw(`${dateFormat} as timestamp`),
+          knex.raw('SUM(o.amount * l.price) as value'),
+          knex.raw('COUNT(o.id) as orders'),
+        )
+        .groupBy(knex.raw(dateFormat))
+        .orderBy('timestamp');
+
+      if (gameServerIds?.length) {
+        timeSeriesQuery.whereIn('l.gameServerId', gameServerIds);
+      }
+
+      const timeSeriesData = await timeSeriesQuery;
+
+      // Calculate hourly heatmap (7 days x 24 hours)
+      const heatmapQuery = knex('shopOrder as o')
+        .join('shopListing as l', 'o.listingId', 'l.id')
+        .where('o.domain', this.domainId)
+        .whereIn('o.status', ['COMPLETED', 'PAID'])
+        .whereBetween('o.createdAt', [currentStart.toJSDate(), currentEnd.toJSDate()])
+        .select(
+          knex.raw('EXTRACT(DOW FROM o."createdAt") as day_of_week'),
+          knex.raw('EXTRACT(HOUR FROM o."createdAt") as hour'),
+          knex.raw('SUM(o.amount * l.price) as revenue'),
+        )
+        .groupBy('day_of_week', 'hour');
+
+      if (gameServerIds?.length) {
+        heatmapQuery.whereIn('l.gameServerId', gameServerIds);
+      }
+
+      const heatmapData = await heatmapQuery;
+
+      // Initialize 7x24 array
+      const byHour: number[][] = Array(7)
+        .fill(null)
+        .map(() => Array(24).fill(0));
+      heatmapData.forEach((row: any) => {
+        const dayIndex = Number(row.day_of_week);
+        const hourIndex = Number(row.hour);
+        if (dayIndex >= 0 && dayIndex < 7 && hourIndex >= 0 && hourIndex < 24) {
+          byHour[dayIndex][hourIndex] = Number(row.revenue);
+        }
+      });
+
+      // Calculate total revenue
+      const totalQuery = knex('shopOrder as o')
+        .join('shopListing as l', 'o.listingId', 'l.id')
+        .where('o.domain', this.domainId)
+        .whereIn('o.status', ['COMPLETED', 'PAID'])
+        .whereBetween('o.createdAt', [currentStart.toJSDate(), currentEnd.toJSDate()])
+        .sum({ total: knex.raw('o.amount * l.price') })
+        .first();
+
+      if (gameServerIds?.length) {
+        totalQuery.whereIn('l.gameServerId', gameServerIds);
+      }
+
+      const totalRevenue = await totalQuery;
+
+      // Calculate growth vs previous period
+      const previousStart = currentStart.minus({ days: periodLength });
+      const previousEnd = currentStart;
+
+      const previousQuery = knex('shopOrder as o')
+        .join('shopListing as l', 'o.listingId', 'l.id')
+        .where('o.domain', this.domainId)
+        .whereIn('o.status', ['COMPLETED', 'PAID'])
+        .whereBetween('o.createdAt', [previousStart.toJSDate(), previousEnd.toJSDate()])
+        .sum({ total: knex.raw('o.amount * l.price') })
+        .first();
+
+      if (gameServerIds?.length) {
+        previousQuery.whereIn('l.gameServerId', gameServerIds);
+      }
+
+      const previousRevenue = await previousQuery;
+
+      const current = Number(totalRevenue?.total || 0);
+      const previous = Number(previousRevenue?.total || 0);
+      const growth = previous > 0 ? ((current - previous) / previous) * 100 : 0;
+
+      return {
+        timeSeries: timeSeriesData.map((row: any) => ({
+          timestamp: new Date(row.timestamp).getTime(),
+          value: Number(row.value),
+          orders: Number(row.orders),
+        })),
+        byHour,
+        total: current,
+        growth,
+      };
     } finally {
       queryTimer();
       const queryDuration = Date.now() - queryStartTime;
@@ -871,10 +870,10 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
   private async calculateProducts(
     gameServerIds: string[] | undefined,
     startDate: string,
-    endDate: string
+    endDate: string,
   ): Promise<ProductMetrics> {
     const { knex } = await this.orderRepo.getModel();
-    
+
     // Get top selling products
     const topSellingQuery = knex('shopOrder as o')
       .join('shopListing as l', 'o.listingId', 'l.id')
@@ -886,18 +885,18 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
         'l.name',
         knex.raw('SUM(o.amount) as quantity'),
         knex.raw('SUM(o.amount * l.price) as revenue'),
-        knex.raw('MAX(o."createdAt") as last_sold')
+        knex.raw('MAX(o."createdAt") as last_sold'),
       )
       .groupBy('l.id', 'l.name')
       .orderBy('revenue', 'desc')
       .limit(10);
-    
+
     if (gameServerIds?.length) {
       topSellingQuery.whereIn('l.gameServerId', gameServerIds);
     }
-    
+
     const topSelling = await topSellingQuery;
-    
+
     // Calculate total revenue for percentage calculations
     const totalRevenueQuery = knex('shopOrder as o')
       .join('shopListing as l', 'o.listingId', 'l.id')
@@ -906,13 +905,13 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
       .whereBetween('o.createdAt', [DateTime.fromISO(startDate).toJSDate(), DateTime.fromISO(endDate).toJSDate()])
       .sum({ total: knex.raw('o.amount * l.price') })
       .first();
-    
+
     if (gameServerIds?.length) {
       totalRevenueQuery.whereIn('l.gameServerId', gameServerIds);
     }
-    
+
     const totalRevenue = Number((await totalRevenueQuery)?.total || 0);
-    
+
     // Get category performance
     const categoryQuery = knex('shopOrder as o')
       .join('shopListing as l', 'o.listingId', 'l.id')
@@ -925,56 +924,52 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
         'sc.id',
         'sc.name',
         knex.raw('SUM(o.amount * l.price) as revenue'),
-        knex.raw('COUNT(DISTINCT o.id) as order_count')
+        knex.raw('COUNT(DISTINCT o.id) as order_count'),
       )
       .groupBy('sc.id', 'sc.name')
       .orderBy('revenue', 'desc');
-    
+
     if (gameServerIds?.length) {
       categoryQuery.whereIn('l.gameServerId', gameServerIds);
     }
-    
+
     const categories = await categoryQuery;
-    
+
     // Get listings with no sales
     const noSalesQuery = knex('shopListing as l')
       .where('l.domain', this.domainId)
       .whereNull('l.deletedAt')
-      .whereNotExists(function() {
+      .whereNotExists(function () {
         this.select('o.id')
           .from('shopOrder as o')
           .whereRaw('o."listingId" = l.id')
           .whereBetween('o.createdAt', [DateTime.fromISO(startDate).toJSDate(), DateTime.fromISO(endDate).toJSDate()])
           .whereIn('o.status', ['COMPLETED', 'PAID']);
       })
-      .select(
-        'l.id',
-        'l.name',
-        knex.raw(`DATE_PART('day', NOW() - l."createdAt") as days_since_created`)
-      )
+      .select('l.id', 'l.name', knex.raw(`DATE_PART('day', NOW() - l."createdAt") as days_since_created`))
       .orderBy('days_since_created', 'desc')
       .limit(10);
-    
+
     if (gameServerIds?.length) {
       noSalesQuery.whereIn('l.gameServerId', gameServerIds);
     }
-    
+
     const noSales = await noSalesQuery;
-    
+
     // Get total count of products
     const totalCountQuery = knex('shopListing as l')
       .where('l.domain', this.domainId)
       .whereNull('l.deletedAt')
       .count('* as count')
       .first();
-    
+
     if (gameServerIds?.length) {
       totalCountQuery.whereIn('l.gameServerId', gameServerIds);
     }
-    
+
     const totalCountResult = await totalCountQuery;
     const totalCount = totalCountResult ? Number((totalCountResult as any).count || 0) : 0;
-    
+
     return {
       topSelling: topSelling.map((item: any) => ({
         id: item.id,
@@ -1004,39 +999,36 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
   private async calculateOrders(
     gameServerIds: string[] | undefined,
     startDate: string,
-    endDate: string
+    endDate: string,
   ): Promise<OrderMetrics> {
     const { knex } = await this.orderRepo.getModel();
-    
+
     // Get order status distribution
     const statusQuery = knex('shopOrder as o')
       .join('shopListing as l', 'o.listingId', 'l.id')
       .where('o.domain', this.domainId)
       .whereBetween('o.createdAt', [DateTime.fromISO(startDate).toJSDate(), DateTime.fromISO(endDate).toJSDate()])
-      .select(
-        'o.status',
-        knex.raw('COUNT(*) as count')
-      )
+      .select('o.status', knex.raw('COUNT(*) as count'))
       .groupBy('o.status');
-    
+
     if (gameServerIds?.length) {
       statusQuery.whereIn('l.gameServerId', gameServerIds);
     }
-    
+
     const statusData = await statusQuery;
-    
+
     const statusFlow = {
       paid: 0,
       completed: 0,
       canceled: 0,
     };
-    
+
     statusData.forEach((row: any) => {
       if (row.status === 'PAID') statusFlow.paid = Number(row.count);
       if (row.status === 'COMPLETED') statusFlow.completed = Number(row.count);
       if (row.status === 'CANCELED') statusFlow.canceled = Number(row.count);
     });
-    
+
     // Get recent orders
     const recentQuery = knex('shopOrder as o')
       .join('shopListing as l', 'o.listingId', 'l.id')
@@ -1050,36 +1042,33 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
         'l.name as itemName',
         knex.raw('o.amount * l.price as price'),
         'o.createdAt as timestamp',
-        'o.status'
+        'o.status',
       )
       .orderBy('o.createdAt', 'desc')
       .limit(10);
-    
+
     if (gameServerIds?.length) {
       recentQuery.whereIn('l.gameServerId', gameServerIds);
     }
-    
+
     const recent = await recentQuery;
-    
+
     // Get daily order counts
     const dailyQuery = knex('shopOrder as o')
       .join('shopListing as l', 'o.listingId', 'l.id')
       .where('o.domain', this.domainId)
       .whereIn('o.status', ['COMPLETED', 'PAID'])
       .whereBetween('o.createdAt', [DateTime.fromISO(startDate).toJSDate(), DateTime.fromISO(endDate).toJSDate()])
-      .select(
-        knex.raw('DATE(o."createdAt") as date'),
-        knex.raw('COUNT(*) as count')
-      )
+      .select(knex.raw('DATE(o."createdAt") as date'), knex.raw('COUNT(*) as count'))
       .groupBy('date')
       .orderBy('date');
-    
+
     if (gameServerIds?.length) {
       dailyQuery.whereIn('l.gameServerId', gameServerIds);
     }
-    
+
     const dailyCounts = await dailyQuery;
-    
+
     return {
       statusFlow,
       recent: recent.map((order: any) => ({
@@ -1104,46 +1093,43 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
   private async calculateCustomers(
     gameServerIds: string[] | undefined,
     startDate: string,
-    endDate: string
+    endDate: string,
   ): Promise<CustomerMetrics> {
     const { knex } = await this.orderRepo.getModel();
-    
+
     // Get customer purchase counts
     const customerOrdersQuery = knex('shopOrder as o')
       .join('shopListing as l', 'o.listingId', 'l.id')
       .where('o.domain', this.domainId)
       .whereIn('o.status', ['COMPLETED', 'PAID'])
       .whereBetween('o.createdAt', [DateTime.fromISO(startDate).toJSDate(), DateTime.fromISO(endDate).toJSDate()])
-      .select(
-        'o.playerId',
-        knex.raw('COUNT(*) as order_count')
-      )
+      .select('o.playerId', knex.raw('COUNT(*) as order_count'))
       .groupBy('o.playerId');
-    
+
     if (gameServerIds?.length) {
       customerOrdersQuery.whereIn('l.gameServerId', gameServerIds);
     }
-    
+
     const customerOrders = await customerOrdersQuery;
-    
+
     // Segment customers
     const segments = {
       new: 0,
       returning: 0,
       frequent: 0,
     };
-    
+
     customerOrders.forEach((customer: any) => {
       const orderCount = Number(customer.order_count);
       if (orderCount === 1) segments.new++;
       else if (orderCount >= 2 && orderCount <= 4) segments.returning++;
       else if (orderCount >= 5) segments.frequent++;
     });
-    
+
     const uniqueCount = customerOrders.length;
     const repeatCustomers = customerOrders.filter((c: any) => Number(c.order_count) > 1).length;
     const repeatPurchaseRate = uniqueCount > 0 ? (repeatCustomers / uniqueCount) * 100 : 0;
-    
+
     // Get top buyers
     const topBuyersQuery = knex('shopOrder as o')
       .join('shopListing as l', 'o.listingId', 'l.id')
@@ -1156,18 +1142,18 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
         'p.name',
         knex.raw('SUM(o.amount * l.price) as total_spent'),
         knex.raw('COUNT(o.id) as order_count'),
-        knex.raw('MAX(o."createdAt") as last_purchase')
+        knex.raw('MAX(o."createdAt") as last_purchase'),
       )
       .groupBy('o.playerId', 'p.name')
       .orderBy('total_spent', 'desc')
       .limit(10);
-    
+
     if (gameServerIds?.length) {
       topBuyersQuery.whereIn('l.gameServerId', gameServerIds);
     }
-    
+
     const topBuyers = await topBuyersQuery;
-    
+
     return {
       segments,
       topBuyers: topBuyers.map((buyer: any) => ({
@@ -1193,7 +1179,7 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
     customers: CustomerMetrics;
   }): Promise<Array<{ type: string; title: string; description: string; value?: string; icon: string }>> {
     const insights: Array<{ type: string; title: string; description: string; value?: string; icon: string }> = [];
-    
+
     // Revenue insights
     if (data.revenue.growth > 20) {
       insights.push({
@@ -1212,7 +1198,7 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
         icon: 'TrendingDown',
       });
     }
-    
+
     // Best selling product
     if (data.products.topSelling.length > 0) {
       const topProduct = data.products.topSelling[0];
@@ -1224,11 +1210,10 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
         icon: 'Trophy',
       });
     }
-    
+
     // Products with no sales
-    const noSalesCount = typeof data.products.noSales === 'number' 
-      ? data.products.noSales 
-      : data.products.noSales.length;
+    const noSalesCount =
+      typeof data.products.noSales === 'number' ? data.products.noSales : data.products.noSales.length;
     if (noSalesCount > 0) {
       insights.push({
         type: 'warning',
@@ -1238,7 +1223,7 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
         icon: 'AlertTriangle',
       });
     }
-    
+
     // Peak sales hour
     if (data.kpis.ordersToday.busiestHour !== undefined) {
       const hour = data.kpis.ordersToday.busiestHour;
@@ -1250,7 +1235,7 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
         icon: 'Clock',
       });
     }
-    
+
     // Customer insights
     if (data.customers.segments.new > 0) {
       const repeatRate = data.customers.repeatPurchaseRate;
@@ -1262,9 +1247,10 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
         icon: 'Users',
       });
     }
-    
+
     // Order completion rate
-    const totalOrders = data.orders.statusFlow.paid + data.orders.statusFlow.completed + data.orders.statusFlow.canceled;
+    const totalOrders =
+      data.orders.statusFlow.paid + data.orders.statusFlow.completed + data.orders.statusFlow.canceled;
     if (totalOrders > 0) {
       const completionRate = ((data.orders.statusFlow.completed / totalOrders) * 100).toFixed(1);
       if (Number(completionRate) < 80) {
@@ -1277,11 +1263,14 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
         });
       }
     }
-    
+
     // Average order value trend
     if (data.kpis.averageOrderValue.current > data.kpis.averageOrderValue.previous) {
-      const increase = ((data.kpis.averageOrderValue.current - data.kpis.averageOrderValue.previous) / 
-                       data.kpis.averageOrderValue.previous * 100).toFixed(1);
+      const increase = (
+        ((data.kpis.averageOrderValue.current - data.kpis.averageOrderValue.previous) /
+          data.kpis.averageOrderValue.previous) *
+        100
+      ).toFixed(1);
       insights.push({
         type: 'success',
         title: 'AOV Increase',
@@ -1290,7 +1279,7 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
         icon: 'DollarSign',
       });
     }
-    
+
     return insights;
   }
 
@@ -1310,7 +1299,7 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
       if (!this.redisClient) {
         this.redisClient = await Redis.getClient('shop-analytics');
       }
-      
+
       const cached = await this.redisClient.get(cacheKey);
       if (cached) {
         return JSON.parse(cached);
@@ -1329,7 +1318,7 @@ export class ShopAnalyticsService extends TakaroService<TakaroModel, TakaroDTO<v
       if (!this.redisClient) {
         this.redisClient = await Redis.getClient('shop-analytics');
       }
-      
+
       await this.redisClient.setEx(cacheKey, this.CACHE_TTL, JSON.stringify(analytics));
       this.log.debug('Analytics cached successfully', { cacheKey, ttl: this.CACHE_TTL });
     } catch (error) {

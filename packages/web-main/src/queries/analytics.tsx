@@ -15,11 +15,7 @@ export const shopAnalyticsQueryOptions = (gameServerIds?: string[], startDate?: 
     queryFn: async () => {
       const apiClient = getApiClient();
       // Using the generated analytics API
-      const response = await apiClient.analytics.analyticsControllerGetShopAnalytics(
-        gameServerIds,
-        startDate,
-        endDate
-      );
+      const response = await apiClient.analytics.analyticsControllerGetShopAnalytics(gameServerIds, startDate, endDate);
       return response.data.data;
     },
     staleTime: 30 * 1000, // 30 seconds for auto-refresh

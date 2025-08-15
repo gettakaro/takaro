@@ -1,11 +1,11 @@
 import { FC } from 'react';
 import { styled, Card, Skeleton } from '@takaro/lib-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
+import {
   AiOutlineBulb as BulbIcon,
   AiOutlineWarning as WarningIcon,
   AiOutlineInfoCircle as InfoIcon,
-  AiOutlineCheckCircle as CheckIcon
+  AiOutlineCheckCircle as CheckIcon,
 } from 'react-icons/ai';
 
 interface InsightsBarProps {
@@ -42,22 +42,23 @@ const InsightCard = styled(Card)<{ $type: string }>`
         return theme.colors.background;
     }
   }};
-  border-left: 3px solid ${({ theme, $type }) => {
-    switch ($type) {
-      case 'success':
-        return '#10b981';
-      case 'warning':
-        return '#fbbf24';
-      case 'info':
-        return '#3b82f6';
-      case 'tip':
-        return '#8b5cf6';
-      default:
-        return theme.colors.primary;
-    }
-  }};
+  border-left: 3px solid
+    ${({ theme, $type }) => {
+      switch ($type) {
+        case 'success':
+          return '#10b981';
+        case 'warning':
+          return '#fbbf24';
+        case 'info':
+          return '#3b82f6';
+        case 'tip':
+          return '#8b5cf6';
+        default:
+          return theme.colors.primary;
+      }
+    }};
   transition: all 0.2s ease;
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: ${({ theme }) => theme.elevation[300]};
@@ -106,7 +107,7 @@ const InsightIcon = styled.div<{ $type: string }>`
         return '#6366f1';
     }
   }};
-  
+
   svg {
     width: 18px;
     height: 18px;
@@ -141,7 +142,7 @@ const InsightAction = styled.div`
   align-items: center;
   gap: ${({ theme }) => theme.spacing[1]};
   margin-top: auto;
-  
+
   &:before {
     content: '→';
     font-size: ${({ theme }) => theme.fontSize.medium};
@@ -157,7 +158,7 @@ const EmptyInsights = styled.div`
   padding: ${({ theme }) => theme.spacing[8]};
   text-align: center;
   color: ${({ theme }) => theme.colors.textAlt};
-  
+
   svg {
     width: 48px;
     height: 48px;
@@ -189,36 +190,36 @@ const generateDefaultInsights = () => {
       title: 'Revenue Growth',
       description: 'Your revenue has increased compared to the previous period. Keep up the momentum!',
       value: '+12.5%',
-      action: 'View revenue trends'
+      action: 'View revenue trends',
     },
     {
       type: 'warning',
       title: 'Dead Stock Alert',
-      description: 'Several items haven\'t sold in the last 30 days. Consider promotions or price adjustments.',
+      description: "Several items haven't sold in the last 30 days. Consider promotions or price adjustments.",
       value: '8 items',
-      action: 'Review inactive products'
+      action: 'Review inactive products',
     },
     {
       type: 'info',
       title: 'Peak Shopping Hours',
       description: 'Most purchases occur between 7-10 PM. Schedule promotions during these hours for maximum impact.',
       value: '7-10 PM',
-      action: 'Optimize promotion timing'
+      action: 'Optimize promotion timing',
     },
     {
       type: 'tip',
       title: 'Customer Retention',
       description: 'Your repeat customer rate is above average. Consider loyalty rewards to maintain engagement.',
       value: '42%',
-      action: 'Create loyalty program'
-    }
+      action: 'Create loyalty program',
+    },
   ];
 };
 
 export const InsightsBar: FC<InsightsBarProps> = ({ insights, isLoading }) => {
   // Use provided insights or generate defaults
   const displayInsights = insights && insights.length > 0 ? insights : generateDefaultInsights();
-  
+
   if (isLoading) {
     return (
       <InsightsContainer>
@@ -228,7 +229,7 @@ export const InsightsBar: FC<InsightsBarProps> = ({ insights, isLoading }) => {
       </InsightsContainer>
     );
   }
-  
+
   if (!displayInsights || displayInsights.length === 0) {
     return (
       <InsightsContainer>
@@ -242,7 +243,7 @@ export const InsightsBar: FC<InsightsBarProps> = ({ insights, isLoading }) => {
       </InsightsContainer>
     );
   }
-  
+
   return (
     <InsightsContainer>
       <AnimatePresence>
@@ -255,20 +256,14 @@ export const InsightsBar: FC<InsightsBarProps> = ({ insights, isLoading }) => {
           >
             <InsightCard $type={insight.type as string}>
               <InsightHeader>
-                <InsightIcon $type={insight.type as string}>
-                  {getInsightIcon(insight.type)}
-                </InsightIcon>
+                <InsightIcon $type={insight.type as string}>{getInsightIcon(insight.type)}</InsightIcon>
                 <InsightTitle>{insight.title}</InsightTitle>
-                {insight.value && (
-                  <InsightValue>{insight.value}</InsightValue>
-                )}
+                {insight.value && <InsightValue>{insight.value}</InsightValue>}
               </InsightHeader>
-              
+
               <InsightDescription>{insight.description}</InsightDescription>
-              
-              {insight.action && (
-                <InsightAction>{insight.action}</InsightAction>
-              )}
+
+              {insight.action && <InsightAction>{insight.action}</InsightAction>}
             </InsightCard>
           </motion.div>
         ))}

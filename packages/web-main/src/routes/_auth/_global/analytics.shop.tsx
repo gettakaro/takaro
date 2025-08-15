@@ -28,11 +28,11 @@ export const Route = createFileRoute('/_auth/_global/analytics/shop')({
     // Load initial analytics data with default parameters
     const endDate = DateTime.now().toISO();
     const startDate = DateTime.now().minus({ days: 30 }).toISO();
-    
+
     const analyticsData = await context.queryClient.ensureQueryData(
-      shopAnalyticsQueryOptions(undefined, startDate!, endDate!)
+      shopAnalyticsQueryOptions(undefined, startDate!, endDate!),
     );
-    
+
     return { analyticsData };
   },
   component: ShopAnalyticsPage,
@@ -50,7 +50,7 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: ${({ theme }) => theme.spacing[4]};
-  
+
   h1 {
     font-size: ${({ theme }) => theme.fontSize.huge};
     margin: 0;
@@ -70,8 +70,6 @@ const ChartSection = styled.div`
   margin-top: ${({ theme }) => theme.spacing[4]};
 `;
 
-
-
 const LastUpdated = styled.div`
   font-size: ${({ theme }) => theme.fontSize.small};
   color: ${({ theme }) => theme.colors.textAlt};
@@ -81,21 +79,21 @@ const LastUpdated = styled.div`
 function ShopAnalyticsPage() {
   useDocumentTitle('Shop Analytics');
   const loaderData = Route.useLoaderData();
-  
+
   const { control } = useForm({
     defaultValues: {
       period: 'last30Days',
       gameServers: [] as string[],
     },
   });
-  
+
   const selectedPeriod = useWatch({ control, name: 'period' });
   const selectedGameServers = useWatch({ control, name: 'gameServers' });
-  
+
   const { startDate, endDate } = useMemo(() => {
     let startDate: string | null;
     const endDate = DateTime.now().toISO();
-    
+
     switch (selectedPeriod) {
       case 'last24Hours':
         startDate = DateTime.now().minus({ days: 1 }).toISO();
@@ -112,19 +110,20 @@ function ShopAnalyticsPage() {
       default:
         startDate = DateTime.now().minus({ days: 30 }).toISO();
     }
-    
+
     return { startDate: startDate!, endDate: endDate! };
   }, [selectedPeriod]);
-  
-  const { data: analyticsData, isLoading, refetch, isFetching } = useQuery({
-    ...shopAnalyticsQueryOptions(
-      selectedGameServers.length > 0 ? selectedGameServers : undefined,
-      startDate,
-      endDate
-    ),
+
+  const {
+    data: analyticsData,
+    isLoading,
+    refetch,
+    isFetching,
+  } = useQuery({
+    ...shopAnalyticsQueryOptions(selectedGameServers.length > 0 ? selectedGameServers : undefined, startDate, endDate),
     initialData: loaderData.analyticsData,
   });
-  
+
   if (isLoading && !analyticsData) {
     return (
       <Container>
@@ -138,19 +137,14 @@ function ShopAnalyticsPage() {
       </Container>
     );
   }
-  
+
   return (
     <Container>
       <Header>
         <h1>Shop Analytics</h1>
         <ControlBar>
           <div style={{ width: '300px' }}>
-            <GameServerSelectQueryField
-              control={control}
-              name="gameServers"
-              multiple={true}
-              canClear={true}
-            />
+            <GameServerSelectQueryField control={control} name="gameServers" multiple={true} canClear={true} />
           </div>
           <div style={{ width: '200px' }}>
             <TimePeriodSelectField control={control} name="period" />
@@ -166,19 +160,19 @@ function ShopAnalyticsPage() {
           </LastUpdated>
         </ControlBar>
       </Header>
-      
+
       {/* KPI Cards Section */}
       <KPICards kpis={analyticsData?.kpis} isLoading={isFetching} />
-      
+
       {/* Chart Sections */}
       <ChartSection>
         <RevenueCharts revenue={analyticsData?.revenue} isLoading={isFetching} />
-        
+
         <ProductCharts products={analyticsData?.products} orders={analyticsData?.orders} isLoading={isFetching} />
-        
+
         <CustomerCharts customers={analyticsData?.customers} orders={analyticsData?.orders} isLoading={isFetching} />
       </ChartSection>
-      
+
       {/* Insights Bar */}
       <InsightsBar insights={analyticsData?.insights} isLoading={isFetching} />
     </Container>
