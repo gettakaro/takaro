@@ -7,6 +7,7 @@ configuration.ts
 docs/APIOutput.md
 docs/ActivityInputDTO.md
 docs/AllowedFilters.md
+docs/AnalyticsApi.md
 docs/BanCreateDTO.md
 docs/BanDTO.md
 docs/BanOutputArrayDTOAPI.md
@@ -24,6 +25,7 @@ docs/BaseGameEvent.md
 docs/BaseStatsInputDTO.md
 docs/BaseTakaroEvent.md
 docs/BoundingBoxSearchInputDTO.md
+docs/CategoryPerformanceDTO.md
 docs/CommandApi.md
 docs/CommandArgumentCreateDTO.md
 docs/CommandArgumentDTOAPI.md
@@ -52,6 +54,8 @@ docs/CronJobSearchInputAllowedSearch.md
 docs/CronJobSearchInputDTO.md
 docs/CronJobTriggerDTO.md
 docs/CronJobUpdateDTO.md
+docs/CustomerMetricsDTO.md
+docs/CustomerSegmentDTO.md
 docs/DiscordApi.md
 docs/DiscordChannelOutputArrayDTOAPI.md
 docs/DiscordChannelOutputDTO.md
@@ -142,6 +146,7 @@ docs/GuildSearchInputAllowedSearch.md
 docs/GuildSearchInputDTO.md
 docs/GuildUpdateDTO.md
 docs/HealthOutputDTO.md
+docs/HeatmapDataPointDTO.md
 docs/HookApi.md
 docs/HookCreateDTO.md
 docs/HookEventDiscordMessage.md
@@ -170,6 +175,7 @@ docs/ITakaroQuery.md
 docs/ImportInputDTO.md
 docs/ImportOutputDTO.md
 docs/ImportOutputDTOAPI.md
+docs/InsightDTO.md
 docs/InstallModuleDTO.md
 docs/InviteCreateDTO.md
 docs/InviteOutputDTO.md
@@ -185,6 +191,7 @@ docs/ItemUpdateDTO.md
 docs/ItemsOutputDTO.md
 docs/JobStatusOutputDTO.md
 docs/JobStatusOutputDTOAPI.md
+docs/KPIMetricsDTO.md
 docs/KickPlayerInputDTO.md
 docs/LatencyInputDTO.md
 docs/LinkPlayerUnauthedInputDTO.md
@@ -234,6 +241,8 @@ docs/ModuleVersionUpdateDTO.md
 docs/NOTDOMAINSCOPEDTakaroModelDTO.md
 docs/NOTDOMAINSCOPEDTakaroModelDTOCreatedAt.md
 docs/OptionalPogStatsInputDTO.md
+docs/OrderMetricsDTO.md
+docs/OrderStatusCountDTO.md
 docs/PERMISSIONS.md
 docs/PaginationParams.md
 docs/PaginationParamsWithGameServer.md
@@ -286,10 +295,13 @@ docs/PlayersByItemInputDTO.md
 docs/PlayersOnlineInputDTO.md
 docs/PogParam.md
 docs/PogStatsInputDTO.md
+docs/ProductMetricsDTO.md
 docs/RadiusSearchInputDTO.md
 docs/RangeFilterCreatedAndUpdatedAt.md
+docs/RecentOrderDTO.md
 docs/RedirectQs.md
 docs/ResolveRegistrationTokenInputDTO.md
+docs/RevenueMetricsDTO.md
 docs/RoleApi.md
 docs/RoleCreateInputDTO.md
 docs/RoleMembersOutputDTO.md
@@ -314,6 +326,10 @@ docs/SettingsOutputArrayDTOAPI.md
 docs/SettingsOutputDTO.md
 docs/SettingsOutputDTOAPI.md
 docs/SettingsSetDTO.md
+docs/ShopAnalyticsInputDTO.md
+docs/ShopAnalyticsOutputDTO.md
+docs/ShopAnalyticsOutputDTOAPI.md
+docs/ShopAnalyticsQueryDTO.md
 docs/ShopCategoryApi.md
 docs/ShopCategoryBulkAssignDTO.md
 docs/ShopCategoryCreateDTO.md
@@ -395,9 +411,12 @@ docs/TakaroEventShopOrderStatusChanged.md
 docs/TakaroModelDTO.md
 docs/TeleportPlayerInputDTO.md
 docs/TestReachabilityOutputDTO.md
+docs/TimeSeriesDataPointDTO.md
 docs/TokenInputDTO.md
 docs/TokenOutputDTO.md
 docs/TokenOutputDTOAPI.md
+docs/TopBuyerDTO.md
+docs/TopItemDTO.md
 docs/TrackingApi.md
 docs/UserApi.md
 docs/UserAssignmentOutputDTO.md

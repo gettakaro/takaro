@@ -6,6 +6,7 @@ import { PaginatedOutput } from '../../db/base.js';
 import { ShopOrderRepo } from '../../db/shopOrder.js';
 
 export { ShopCategoryService } from './ShopCategoryService.js';
+export { ShopAnalyticsService } from './ShopAnalyticsService.js';
 import {
   ShopListingOutputDTO,
   ShopListingCreateDTO,
