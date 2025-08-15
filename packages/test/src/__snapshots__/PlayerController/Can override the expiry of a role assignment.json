@@ -71,7 +71,17 @@
           }
         }
       ],
-      "ipHistory": []
+      "ipHistory": [],
+      "nameHistory": [
+        {
+          "id": "b27a3c8d-d4ac-40b9-87ed-3dcae0e3c3d3",
+          "createdAt": "2025-08-13T16:49:04.374Z",
+          "updatedAt": "2025-08-13T16:49:04.375Z",
+          "playerId": "01128ab2-b4f1-4ec5-a7b3-74b29e37ab41",
+          "gameServerId": "ccfd1767-696d-4ecf-984e-ce2d5217dd90",
+          "name": "Rubie_Hilpert3"
+        }
+      ]
     }
   },
   "status": 200,

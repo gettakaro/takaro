@@ -13,6 +13,7 @@ export interface SimulationConfig {
   death: EventFrequency;
   kill: EventFrequency;
   itemInteraction: EventFrequency;
+  nameChange: EventFrequency;
 }
 
 // Base interval ranges for each event type (in milliseconds)
@@ -23,6 +24,7 @@ export const BASE_INTERVALS = {
   death: { min: 15000, max: 120000 }, // 15s to 2min
   kill: { min: 10000, max: 90000 }, // 10s to 1.5min
   itemInteraction: { min: 5000, max: 60000 }, // 5s to 1min
+  nameChange: { min: 30000, max: 180000 }, // 30s to 3min (rare event)
 };
 
 // User-friendly event type names for console commands
@@ -33,6 +35,7 @@ export const EVENT_TYPE_NAMES: Record<string, keyof SimulationConfig> = {
   death: 'death',
   kill: 'kill',
   items: 'itemInteraction',
+  name: 'nameChange',
 };
 
 export const getDefaultSimulationConfig = (): SimulationConfig => ({
@@ -59,6 +62,10 @@ export const getDefaultSimulationConfig = (): SimulationConfig => ({
   itemInteraction: {
     frequency: config.get('simulation.itemFrequency'),
     enabled: config.get('simulation.itemEnabled'),
+  },
+  nameChange: {
+    frequency: 2, // Very rare event (2% frequency)
+    enabled: true,
   },
 });
 

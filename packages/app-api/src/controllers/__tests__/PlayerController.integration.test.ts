@@ -124,7 +124,16 @@ const tests = [
       expect(playerRes.data.data.roleAssignments.find((a) => a.role.name === role.data.data.name)).to.be.undefined;
       return playerRes;
     },
-    filteredFields: ['name', 'playerId', 'steamId', 'roleId', 'epicOnlineServicesId', 'xboxLiveId', 'platformId'],
+    filteredFields: [
+      'name',
+      'playerId',
+      'steamId',
+      'roleId',
+      'epicOnlineServicesId',
+      'xboxLiveId',
+      'platformId',
+      'gameServerId',
+    ],
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
@@ -162,7 +171,16 @@ const tests = [
         .undefined;
       return playerRes;
     },
-    filteredFields: ['name', 'playerId', 'steamId', 'roleId', 'epicOnlineServicesId', 'xboxLiveId', 'platformId'],
+    filteredFields: [
+      'name',
+      'playerId',
+      'steamId',
+      'roleId',
+      'epicOnlineServicesId',
+      'xboxLiveId',
+      'platformId',
+      'gameServerId',
+    ],
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,

@@ -203,11 +203,21 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
           platformId: gamePlayer.platformId,
         }),
       );
+
+      // Add initial name to history
+      if (gamePlayer.name) {
+        await this.repo.observeName(player.id, gameServerId, gamePlayer.name);
+      }
     } else {
       // At least one player is found, use the first one
       player = uniquePlayers[0];
 
-      // Also, update any missing IDs and names
+      // Track name changes
+      if (gamePlayer.name && gamePlayer.name !== player.name) {
+        await this.repo.observeName(player.id, gameServerId, gamePlayer.name);
+      }
+
+      // Update any missing IDs and name if it changed
       await this.update(
         player.id,
         new PlayerUpdateDTO({

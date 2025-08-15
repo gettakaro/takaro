@@ -34,7 +34,17 @@
           }
         }
       ],
-      "ipHistory": []
+      "ipHistory": [],
+      "nameHistory": [
+        {
+          "id": "d691a012-c452-4a66-b584-4ffaae074646",
+          "createdAt": "2025-08-13T16:48:59.453Z",
+          "updatedAt": "2025-08-13T16:48:59.455Z",
+          "playerId": "0a016197-e1bd-4b64-ab1e-980469ebb2e3",
+          "gameServerId": "5e38c537-1338-48ad-a2a2-773bc19f3cc9",
+          "name": "Cornelius_Cassin"
+        }
+      ]
     }
   },
   "status": 200,
@@ -49,7 +59,8 @@
       "roleId",
       "epicOnlineServicesId",
       "xboxLiveId",
-      "platformId"
+      "platformId",
+      "gameServerId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true
