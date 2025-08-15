@@ -1,4 +1,4 @@
-import { IntegrationTest, SetupGameServerPlayers, expect } from '@takaro/test';
+import { IntegrationTest, SetupGameServerPlayers, expect, integrationConfig } from '@takaro/test';
 import { PERMISSIONS } from '@takaro/auth';
 import { faker } from '@faker-js/faker';
 import { Client } from '@takaro/apiclient';
@@ -476,7 +476,7 @@ const tests = [
           username: user.data.data.email,
           password: userPassword,
         },
-        url: process.env.TAKARO_API_URL || 'http://localhost:13000',
+        url: integrationConfig.get('host'),
       });
       await limitedClient.login();
 
