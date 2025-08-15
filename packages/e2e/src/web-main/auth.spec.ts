@@ -77,15 +77,43 @@ test('Invite user - happy path', async ({ page, takaro }) => {
   if (!inviteLinkMatch) throw new Error('No invite link found in email');
 
   const inviteLink = he.decode(inviteLinkMatch[1]);
-  await page.goto(inviteLink);
 
+  // Navigate to the invite link (recovery flow)
+  await page.goto(inviteLink);
+  await page.waitForLoadState('networkidle');
+
+  // Recovery link goes to profile page with flow ID for password setup
+  await expect(page).toHaveURL(/\/profile\?flowId=/);
+
+  // The warning banner should be visible for users without authentication methods
+  await expect(page.getByText('No Authentication Method Configured!')).toBeVisible();
+  await expect(page.getByText(/You currently have no way to log into your account/)).toBeVisible();
+
+  // The profile page should show password setup for new users
+  // Open the password change modal
+  await page.getByRole('button', { name: 'Change Password' }).click();
+
+  // Set the password in the modal
   const password = randomUUID();
-  await page.getByTestId('node/input/password').getByPlaceholder(' ').fill(password);
-  await page.getByTestId('password-settings-card').getByRole('button', { name: 'Save' }).click();
+  await page.getByPlaceholder('Enter new password').fill(password);
+  await page.getByRole('button', { name: 'Update Password' }).click();
+
+  // Wait for the modal to close
+  await expect(page.getByRole('button', { name: 'Change Password' })).toBeVisible();
+
+  // The warning banner should now be gone since password is set
+  await expect(page.getByText('No Authentication Method Configured!')).not.toBeVisible();
+
+  // Logout to test the new password
+  await page.getByRole('button').filter({ hasText: newUserEmail }).click();
+  await page.getByText('Logout').click();
   await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
   await page.waitForLoadState();
+
+  // Login with the new password
   await login(page, newUserEmail, password);
-  // since the user has no permissions, he should be redirected to an empty shop page.
+
+  // Since the user has no permissions, they should be redirected to an empty shop page
   await expect(page.getByText('No items in shop')).toBeVisible();
 });
 
@@ -126,8 +154,12 @@ test('Recover account and reset password', async ({ page, takaro }) => {
   await page.getByTestId('node/input/code').getByPlaceholder(' ').fill(recoveryCode);
   await page.getByRole('button', { name: 'Submit' }).click();
 
-  // After successful recovery, we're redirected to the profile page
-  await expect(page).toHaveURL(/\/profile/);
+  // After successful recovery, we're logged in and redirected to dashboard
+  await expect(page).toHaveURL(/\/dashboard/);
+
+  // Navigate to profile to change password
+  await page.goto('/profile');
+  await page.waitForLoadState('networkidle');
 
   // Open the password change modal
   await page.getByRole('button', { name: 'Change Password' }).click();

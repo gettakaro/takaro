@@ -45,6 +45,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
       discordId: oryIdentity.discordId || user.discordId,
       // Check Ory identity first for steamId, fall back to Takaro DB if not found
       steamId: oryIdentity.steamId || user.steamId,
+      hasPassword: oryIdentity.hasPassword,
     });
 
     const roleService = new RoleService(this.domainId);

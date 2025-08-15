@@ -90,11 +90,13 @@ function Component() {
         updateRecoveryFlowBody: body,
       });
 
-      // bandage fix, I expected this to automatically navigate to the settings flow (/profile).
-      if (data.continue_with && data.continue_with.length > 0) {
-        navigate({ to: '/profile', search: { flowId: data.continue_with[0]['flow']['id'] } });
+      // Check if recovery is complete (password has been set)
+      if (data.state === 'passed_challenge') {
+        enqueueSnackbar('Password set successfully! Please login with your new password.', { type: 'success' });
+        navigate({ to: '/login', replace: true });
+      } else {
+        setFlow(data);
       }
-      setFlow(data);
     } catch (e) {
       sdkErrorHandler(e as AxiosError);
     }

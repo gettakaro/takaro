@@ -12,6 +12,7 @@ import { LoginDiscordCard } from './settings/-discord/LoginDiscordCard';
 import { LoginSteamCard } from './settings/-steam/LoginSteamCard';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AiOutlineWarning } from 'react-icons/ai';
 
 export const Route = createFileRoute('/_auth/_global/profile')({
   component: Component,
@@ -69,6 +70,32 @@ const FormContainer = styled.form`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[2]};
+`;
+
+const WarningBanner = styled.div`
+  grid-column: 1 / -1;
+  background: ${({ theme }) => theme.colors.error};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  padding: ${({ theme }) => theme.spacing[3]};
+  margin-bottom: ${({ theme }) => theme.spacing[4]};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[2]};
+`;
+
+const WarningHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+  font-size: ${({ theme }) => theme.fontSize.mediumLarge};
+  font-weight: bold;
+  color: white;
+`;
+
+const WarningText = styled.div`
+  color: white;
+  font-size: ${({ theme }) => theme.fontSize.medium};
+  line-height: 1.5;
 `;
 
 // Form schema for email update
@@ -242,11 +269,31 @@ function Component() {
   const hasProfileMethod = flow.ui.nodes.some((node) => node.group === 'profile');
   const hasPasswordMethod = flow.ui.nodes.some((node) => node.group === 'password');
 
+  // Check if user has any authentication methods
+  const hasDiscord = !!session.user.discordId;
+  const hasSteam = !!session.user.steamId;
+  const hasPasswordSet = session.user.hasPassword ?? false;
+  const hasNoAuthMethods = !hasPasswordSet && !hasDiscord && !hasSteam;
+
   return (
     <Container>
       <FullWidthHeader>
         <PageHeader>Profile Settings</PageHeader>
       </FullWidthHeader>
+
+      {/* Warning Banner for users without authentication methods */}
+      {hasNoAuthMethods && (
+        <WarningBanner>
+          <WarningHeader>
+            <AiOutlineWarning size={24} />
+            No Authentication Method Configured!
+          </WarningHeader>
+          <WarningText>
+            You currently have no way to log into your account. If you log out now, you will be locked out permanently.
+            Please set up at least one authentication method immediately.
+          </WarningText>
+        </WarningBanner>
+      )}
 
       {/* Left Column */}
       <div>

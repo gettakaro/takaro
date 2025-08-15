@@ -29,6 +29,9 @@ export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
   player?: PlayerOutputWithRolesDTOType;
   @IsBoolean()
   isDashboardUser: boolean;
+  @IsBoolean()
+  @IsOptional()
+  hasPassword?: boolean;
 }
 
 export class UserOutputWithRolesDTO extends UserOutputDTO {

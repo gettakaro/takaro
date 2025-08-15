@@ -12747,6 +12747,55 @@ export interface UserCreateInputDTO {
 /**
  *
  * @export
+ * @interface UserCreateInternalDTO
+ */
+export interface UserCreateInternalDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof UserCreateInternalDTO
+   */
+  discordId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserCreateInternalDTO
+   */
+  steamId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserCreateInternalDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserCreateInternalDTO
+   */
+  email?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserCreateInternalDTO
+   */
+  password: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserCreateInternalDTO
+   */
+  idpId?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof UserCreateInternalDTO
+   */
+  isDashboardUser?: boolean;
+}
+/**
+ *
+ * @export
  * @interface UserOutputArrayDTOAPI
  */
 export interface UserOutputArrayDTOAPI {
@@ -12823,6 +12872,12 @@ export interface UserOutputDTO {
    * @memberof UserOutputDTO
    */
   isDashboardUser: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof UserOutputDTO
+   */
+  hasPassword?: boolean;
   /**
    *
    * @type {string}
@@ -12945,6 +13000,12 @@ export interface UserOutputWithRolesDTO {
    * @memberof UserOutputWithRolesDTO
    */
   isDashboardUser: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof UserOutputWithRolesDTO
+   */
+  hasPassword?: boolean;
 }
 /**
  *

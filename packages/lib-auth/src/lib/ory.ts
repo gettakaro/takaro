@@ -15,6 +15,7 @@ export interface ITakaroIdentity {
   steamId?: string;
   discordId?: string;
   name?: string;
+  hasPassword?: boolean;
 }
 
 class Ory {
@@ -44,7 +45,7 @@ class Ory {
   async getIdentity(id: string): Promise<ITakaroIdentity> {
     const res = await this.identityClient.getIdentity({
       id,
-      includeCredential: ['oidc'],
+      includeCredential: ['oidc', 'password'],
     });
 
     // Extract Discord ID from OIDC credentials
@@ -69,6 +70,14 @@ class Ory {
       }
     }
 
+    // Check if password credentials exist AND are actually configured
+    // Recovery flows create password credentials but without a password hash
+    const hasPassword = !!(
+      res.data.credentials?.password &&
+      res.data.credentials.password.config &&
+      Object.keys(res.data.credentials.password.config).length > 0
+    );
+
     return {
       id: res.data.id,
       email: res.data.traits.email,
@@ -76,6 +85,7 @@ class Ory {
       steamId: steamId || res.data.traits.steamId, // Use OIDC steamId first, fall back to traits
       discordId,
       name: res.data.traits.name,
+      hasPassword,
     };
   }
 
@@ -138,6 +148,7 @@ class Ory {
       steamId: res.data.traits.steamId,
       discordId: undefined,
       name: res.data.traits.name,
+      hasPassword: !!password,
     };
   }
 
