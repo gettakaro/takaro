@@ -93,7 +93,7 @@ const domainLinks: NavbarLink[] = [
     requiredPermissions: [PERMISSIONS.ReadModules],
   },
   {
-    label: 'Analytics',
+    label: 'Shop Analytics',
     linkProps: {
       to: '/analytics/shop',
     },

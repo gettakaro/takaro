@@ -7,10 +7,9 @@ import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { DateTime } from 'luxon';
-import { styled, IconButton, Skeleton } from '@takaro/lib-components';
+import { styled, Skeleton } from '@takaro/lib-components';
 import { useForm, useWatch } from 'react-hook-form';
 import { TimePeriodSelectField, GameServerSelectQueryField } from '../../../components/selects';
-import { AiOutlineReload as RefreshIcon } from 'react-icons/ai';
 import { KPICards } from './analytics.shop/-components/KPICards';
 import { RevenueCharts } from './analytics.shop/-components/RevenueCharts';
 import { ProductCharts } from './analytics.shop/-components/ProductCharts';
@@ -78,7 +77,6 @@ const LastUpdated = styled.div`
 
 function ShopAnalyticsPage() {
   useDocumentTitle('Shop Analytics');
-  const loaderData = Route.useLoaderData();
 
   const { control } = useForm({
     defaultValues: {
@@ -117,12 +115,10 @@ function ShopAnalyticsPage() {
   const {
     data: analyticsData,
     isLoading,
-    refetch,
     isFetching,
-  } = useQuery({
-    ...shopAnalyticsQueryOptions(selectedGameServers.length > 0 ? selectedGameServers : undefined, startDate, endDate),
-    initialData: loaderData.analyticsData,
-  });
+  } = useQuery(
+    shopAnalyticsQueryOptions(selectedGameServers.length > 0 ? selectedGameServers : undefined, startDate, endDate),
+  );
 
   if (isLoading && !analyticsData) {
     return (
@@ -149,12 +145,6 @@ function ShopAnalyticsPage() {
           <div style={{ width: '200px' }}>
             <TimePeriodSelectField control={control} name="period" />
           </div>
-          <IconButton
-            icon={<RefreshIcon />}
-            onClick={() => refetch()}
-            ariaLabel="Refresh analytics"
-            disabled={isFetching}
-          />
           <LastUpdated>
             Last updated: {DateTime.fromISO(analyticsData?.lastUpdated || DateTime.now().toISO()).toRelative()}
           </LastUpdated>

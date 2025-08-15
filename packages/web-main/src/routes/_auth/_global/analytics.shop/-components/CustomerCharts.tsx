@@ -47,9 +47,8 @@ const ChartTitle = styled.h3`
 `;
 
 const ChartContent = styled.div`
-  flex: 1;
   position: relative;
-  min-height: 300px;
+  height: 300px;
 `;
 
 const SegmentLegend = styled.div`
@@ -202,7 +201,7 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
         <ChartHeader>
           <ChartTitle>
             Customer Segments
-            <IconTooltip icon={<InfoIcon />} size="small">
+            <IconTooltip icon={<InfoIcon />} size="small" color="background">
               Classification of customers by purchase frequency. New = 1 order, Returning = 2-4 orders, Frequent = 5+
               orders. Helps understand customer loyalty and engagement patterns.
             </IconTooltip>
@@ -258,7 +257,7 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
         <ChartHeader>
           <ChartTitle>
             Purchase Timeline
-            <IconTooltip icon={<InfoIcon />} size="small">
+            <IconTooltip icon={<InfoIcon />} size="small" color="background">
               Shows the distribution of purchases over time. Helps identify trends, seasonal patterns, and the impact of
               promotions or events on customer buying behavior.
             </IconTooltip>
@@ -297,7 +296,7 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
         <ChartHeader>
           <ChartTitle>
             Recent Orders
-            <IconTooltip icon={<InfoIcon />} size="small">
+            <IconTooltip icon={<InfoIcon />} size="small" color="background">
               Latest 10 orders showing player, item, value and time. Helps monitor real-time shop activity and quickly
               identify any issues with orders or popular items.
             </IconTooltip>
@@ -343,7 +342,7 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
                 }}
               >
                 Top Buyers
-                <IconTooltip icon={<InfoIcon />} size="tiny">
+                <IconTooltip icon={<InfoIcon />} size="tiny" color="background">
                   Players ranked by total amount spent. Includes order count and last purchase date to identify your
                   most valuable customers and target them with special offers.
                 </IconTooltip>

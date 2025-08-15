@@ -48,9 +48,8 @@ const ChartTitle = styled.h3`
 `;
 
 const ChartContent = styled.div`
-  flex: 1;
   position: relative;
-  min-height: 300px;
+  height: 300px;
 `;
 
 const StatusFlow = styled.div`
@@ -166,7 +165,7 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
         <ChartHeader>
           <ChartTitle>
             Top Selling Items
-            <IconTooltip icon={<InfoIcon />} size="small">
+            <IconTooltip icon={<InfoIcon />} size="small" color="background">
               Products ranked by total revenue generated. Shows both quantity sold and revenue contribution. Helps
               identify your best-performing products and inventory needs.
             </IconTooltip>
@@ -200,7 +199,7 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
         <ChartHeader>
           <ChartTitle>
             Category Performance
-            <IconTooltip icon={<InfoIcon />} size="small">
+            <IconTooltip icon={<InfoIcon />} size="small" color="background">
               Revenue distribution across product categories. Shows which categories drive the most sales and helps
               identify opportunities for category expansion or optimization.
             </IconTooltip>
@@ -227,7 +226,7 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
         <ChartHeader>
           <ChartTitle>
             Order Status Distribution
-            <IconTooltip icon={<InfoIcon />} size="small">
+            <IconTooltip icon={<InfoIcon />} size="small" color="background">
               Breakdown of orders by status (Paid, Completed, Canceled). Helps monitor order fulfillment rates and
               identify potential issues with order completion.
             </IconTooltip>

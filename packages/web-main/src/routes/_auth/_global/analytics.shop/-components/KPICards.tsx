@@ -218,36 +218,38 @@ export const KPICards: FC<KPICardsProps> = ({ kpis, isLoading }) => {
               transition={{ delay: index * 0.1 }}
             >
               <KPICard $trend={trend}>
-                <KPIHeader>
-                  <KPITitle>
-                    {card.title}
-                    <IconTooltip icon={<InfoIcon />} size="tiny">
-                      {card.tooltip}
-                    </IconTooltip>
-                  </KPITitle>
-                  <KPIIcon $color={card.color}>{card.icon}</KPIIcon>
-                </KPIHeader>
+                <Card.Body>
+                  <KPIHeader>
+                    <KPITitle>
+                      {card.title}
+                      <IconTooltip icon={<InfoIcon />} size="tiny" color="background">
+                        {card.tooltip}
+                      </IconTooltip>
+                    </KPITitle>
+                    <KPIIcon $color={card.color}>{card.icon}</KPIIcon>
+                  </KPIHeader>
 
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: index * 0.1 + 0.2, type: 'spring' }}
-                >
-                  <KPIValue>{formatValue(card.value, card.type)}</KPIValue>
-                </motion.div>
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: index * 0.1 + 0.2, type: 'spring' }}
+                  >
+                    <KPIValue>{formatValue(card.value, card.type)}</KPIValue>
+                  </motion.div>
 
-                <KPIChange $trend={trend}>
-                  {trend === 'positive' && <ArrowUpIcon />}
-                  {trend === 'negative' && <ArrowDownIcon />}
-                  {formatChange(card.change)}
-                  <span style={{ opacity: 0.7 }}>vs last period</span>
-                </KPIChange>
+                  <KPIChange $trend={trend}>
+                    {trend === 'positive' && <ArrowUpIcon />}
+                    {trend === 'negative' && <ArrowDownIcon />}
+                    {formatChange(card.change)}
+                    <span style={{ opacity: 0.7 }}>vs last period</span>
+                  </KPIChange>
 
-                {card.sparkline && (
-                  <SparklineContainer>
-                    <Sparkline data={card.sparkline} />
-                  </SparklineContainer>
-                )}
+                  {card.sparkline && (
+                    <SparklineContainer>
+                      <Sparkline data={card.sparkline} />
+                    </SparklineContainer>
+                  )}
+                </Card.Body>
               </KPICard>
             </motion.div>
           );

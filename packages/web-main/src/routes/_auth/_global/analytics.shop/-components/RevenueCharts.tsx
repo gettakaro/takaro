@@ -42,9 +42,8 @@ const ChartTitle = styled.h3`
 `;
 
 const ChartContent = styled.div`
-  flex: 1;
   position: relative;
-  min-height: 300px;
+  height: 300px;
 `;
 
 const MetricInfo = styled.div`
@@ -111,7 +110,7 @@ export const RevenueCharts: FC<RevenueChartsProps> = ({ revenue, isLoading }) =>
         <ChartHeader>
           <ChartTitle>
             Revenue Over Time
-            <IconTooltip icon={<InfoIcon />} size="small">
+            <IconTooltip icon={<InfoIcon />} size="small" color="background">
               Shows revenue trends over the selected period. Toggle between daily, weekly, or monthly aggregation to see
               different patterns. The area under the line represents total revenue volume.
             </IconTooltip>
@@ -156,7 +155,7 @@ export const RevenueCharts: FC<RevenueChartsProps> = ({ revenue, isLoading }) =>
         <ChartHeader>
           <ChartTitle>
             Peak Sales Heatmap
-            <IconTooltip icon={<InfoIcon />} size="small">
+            <IconTooltip icon={<InfoIcon />} size="small" color="background">
               Heat map showing sales activity by hour (horizontal) and day of week (vertical). Darker colors indicate
               higher sales volume. Helps identify peak shopping times and patterns in customer behavior.
             </IconTooltip>
