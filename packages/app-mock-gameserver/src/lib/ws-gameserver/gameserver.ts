@@ -1070,5 +1070,9 @@ export class GameServer implements IGameServer {
   async listLocations(): Promise<ILocationDTO[]> {
     return [];
   }
+
+  isConnectedToTakaro(): boolean {
+    return this.wsClient.isConnectedToServer();
+  }
   //#endregion
 }
