@@ -1,4 +1,7 @@
 import { IntegrationTest, SetupGameServerPlayers, expect } from '@takaro/test';
+import { Client } from '@takaro/apiclient';
+import { faker } from '@faker-js/faker';
+import { PERMISSIONS } from '@takaro/auth';
 import { isAxiosError } from 'axios';
 import { describe } from 'node:test';
 
@@ -589,10 +592,6 @@ const tests = [
       const pog = res.data.data[0];
 
       // Create a client without MANAGE_PLAYERS permission
-      const { Client } = await import('@takaro/apiclient');
-      const { faker } = await import('@faker-js/faker');
-      const { PERMISSIONS } = await import('@takaro/auth');
-
       const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_PLAYERS]);
       const role = await this.client.role.roleControllerCreate({
         name: 'Read only role',
