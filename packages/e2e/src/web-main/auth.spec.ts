@@ -9,7 +9,10 @@ import { login } from './helpers.js';
 test('can logout', async ({ page, takaro }) => {
   const user = (await takaro.rootClient.user.userControllerMe()).data.data;
 
-  await page.getByRole('button').filter({ hasText: user.user.email }).click();
+  await page
+    .getByRole('button')
+    .filter({ hasText: user.user.email || user.user.name })
+    .click();
   await page.getByText('Logout').click();
   await page.waitForURL(`${integrationConfig.get('frontendHost')}/login`);
 
@@ -27,7 +30,10 @@ pwTest('should redirect to login when not logged in', async ({ page }) => {
 test('Logging in with invalid credentials shows error message', async ({ page, takaro }) => {
   const user = (await takaro.rootClient.user.userControllerMe()).data.data;
 
-  await page.getByRole('button').filter({ hasText: user.user.email }).click();
+  await page
+    .getByRole('button')
+    .filter({ hasText: user.user.email || user.user.name })
+    .click();
   await page.getByText('Logout').click();
   await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
   await page.waitForLoadState();
@@ -95,7 +101,7 @@ test('Recover account and reset password', async ({ page, takaro }) => {
   await page.getByRole('link', { name: 'Forgot your password?' }).click();
   await expect(page.getByRole('heading')).toHaveText('Recover your account');
 
-  await page.getByTestId('node/input/email').getByPlaceholder(' ').fill(user.user.email);
+  await page.getByTestId('node/input/email').getByPlaceholder(' ').fill(user.user.email!);
   await page.getByRole('button', { name: 'Submit' }).click();
   await expect(
     page.getByText('An email containing a recovery code has been sent to the email address you provided.'),
@@ -105,7 +111,7 @@ test('Recover account and reset password', async ({ page, takaro }) => {
 
   const mails = await takaro.mailhog.searchMessages({
     kind: 'to',
-    query: user.user.email,
+    query: user.user.email!,
   });
 
   expect(mails.items.length).toBe(1);
@@ -120,17 +126,30 @@ test('Recover account and reset password', async ({ page, takaro }) => {
   await page.getByTestId('node/input/code').getByPlaceholder(' ').fill(recoveryCode);
   await page.getByRole('button', { name: 'Submit' }).click();
 
-  await expect(
-    page.getByText(
-      'You successfully recovered your account. Please change your password or set up an alternative login method (e.g. social sign in) within the next',
-    ),
-  ).toBeVisible();
+  // After successful recovery, we're redirected to the profile page
+  await expect(page).toHaveURL(/\/profile/);
+
+  // Open the password change modal
+  await page.getByRole('button', { name: 'Change Password' }).click();
+
+  // Fill in the new password in the modal
   const newPassword = randomUUID();
-  await page.getByTestId('node/input/password').getByPlaceholder(' ').fill(newPassword);
-  await page.getByTestId('password-settings-card').getByRole('button', { name: 'Save' }).click();
+  await page.getByPlaceholder('Enter new password').fill(newPassword);
+
+  // Submit the password change
+  await page.getByRole('button', { name: 'Update Password' }).click();
+
+  // Wait for the modal to close and password to be updated
+  await expect(page.getByRole('button', { name: 'Change Password' })).toBeVisible();
+
+  // Password has been updated, now logout to test it
+  await page.getByRole('button').filter({ hasText: user.user.name }).click();
+  await page.getByText('Logout').click();
   await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
   await page.waitForLoadState();
-  await login(page, user.user.email, newPassword);
+
+  // Test login with the new password
+  await login(page, user.user.email!, newPassword);
 
   // check if we are on the dashboard
   await expect(page.getByTestId('takaro-icon-nav')).toBeVisible();
