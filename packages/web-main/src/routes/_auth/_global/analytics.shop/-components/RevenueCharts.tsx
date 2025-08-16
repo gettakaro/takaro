@@ -119,7 +119,7 @@ export const RevenueCharts: FC<RevenueChartsProps> = ({ revenue, isLoading }) =>
               tooltipFormatter={(params: any) => {
                 if (Array.isArray(params) && params.length > 0) {
                   const value = params[0].value;
-                  return `${params[0].name}<br/>Revenue: $${value.toLocaleString()}`;
+                  return `${params[0].name}<br/>Revenue: ${value.toLocaleString()}`;
                 }
                 return '';
               }}
@@ -166,7 +166,7 @@ export const RevenueCharts: FC<RevenueChartsProps> = ({ revenue, isLoading }) =>
                 const hour = hours[params.value[0]];
                 const day = days[params.value[1]];
                 const value = params.value[2];
-                return `${day} ${hour}<br/>Revenue: $${value.toLocaleString()}`;
+                return `${day} ${hour}<br/>Revenue: ${value.toLocaleString()}`;
               }}
             />
           ) : (

@@ -1,5 +1,5 @@
-import { FC } from 'react';
-import { styled, Card, EChartsPie, EChartsLine, Skeleton, Chip, Avatar, IconTooltip } from '@takaro/lib-components';
+import { FC, useState } from 'react';
+import { styled, Card, EChartsPie, Skeleton, Chip, Avatar, IconTooltip, Dialog, Button } from '@takaro/lib-components';
 import { CustomerMetricsDTO, OrderMetricsDTO } from '@takaro/apiclient';
 import { DateTime } from 'luxon';
 import {
@@ -20,7 +20,7 @@ const ChartsContainer = styled.div`
   grid-template-columns: 1fr;
 
   @media (min-width: 1200px) {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 `;
 
@@ -54,7 +54,7 @@ const ChartContent = styled.div`
 const OrdersList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[2]};
+  gap: ${({ theme }) => theme.spacing[1]};
   overflow-y: auto;
   max-height: 320px;
 `;
@@ -67,9 +67,11 @@ const OrderItem = styled.div`
   background: ${({ theme }) => theme.colors.backgroundAlt};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   transition: all 0.2s ease;
+  cursor: pointer;
 
   &:hover {
     background: ${({ theme }) => theme.colors.backgroundAccent};
+    transform: translateX(2px);
   }
 `;
 
@@ -163,7 +165,66 @@ const TopBuyerAmount = styled.span`
   color: ${({ theme }) => theme.colors.primary};
 `;
 
+const StatusBadge = styled.span<{ $status: string }>`
+  padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing[1]}`};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  font-size: ${({ theme }) => theme.fontSize.tiny};
+  font-weight: 600;
+  text-transform: uppercase;
+  background: ${({ theme, $status }) => {
+    switch ($status) {
+      case 'COMPLETED':
+        return theme.colors.success + '20';
+      case 'PAID':
+        return theme.colors.warning + '20';
+      case 'CANCELED':
+        return theme.colors.error + '20';
+      default:
+        return theme.colors.backgroundAlt;
+    }
+  }};
+  color: ${({ theme, $status }) => {
+    switch ($status) {
+      case 'COMPLETED':
+        return theme.colors.success;
+      case 'PAID':
+        return theme.colors.warning;
+      case 'CANCELED':
+        return theme.colors.error;
+      default:
+        return theme.colors.text;
+    }
+  }};
+`;
+
+const DialogSection = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing[3]};
+`;
+
+const DialogLabel = styled.div`
+  font-size: ${({ theme }) => theme.fontSize.tiny};
+  color: ${({ theme }) => theme.colors.textAlt};
+  margin-bottom: ${({ theme }) => theme.spacing['0_5']};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const DialogValue = styled.div`
+  font-size: ${({ theme }) => theme.fontSize.medium};
+  color: ${({ theme }) => theme.colors.text};
+  font-weight: 500;
+`;
+
+const DialogGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${({ theme }) => theme.spacing[3]};
+`;
+
 export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isLoading }) => {
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   // Prepare customer segments data for PieChart
   const segmentData =
     customers?.segments?.map((segment) => ({
@@ -172,11 +233,13 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
       percentage: segment.percentage,
     })) || [];
 
-  // Prepare purchase timeline data for LineChart
-  const timelineData: any[] = [];
-
   // Recent orders data
   const recentOrders = orders?.recentOrders || [];
+
+  const handleOrderClick = (order: any) => {
+    setSelectedOrder(order);
+    setDialogOpen(true);
+  };
 
   return (
     <ChartsContainer>
@@ -216,62 +279,13 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
                 </Stat>
                 <Stat>
                   <StatLabel>Avg Lifetime Value</StatLabel>
-                  <StatValue>$0</StatValue>
-                </Stat>
-              </StatsBox>
-            </>
-          ) : (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-              <span style={{ color: '#9ca3af' }}>No customer data available</span>
-            </div>
-          )}
-        </ChartContent>
-      </ChartCard>
-
-      <ChartCard>
-        <ChartHeader>
-          <ChartTitle>
-            Purchase Timeline
-            <IconTooltip icon={<InfoIcon />} size="small" color="background">
-              Shows the distribution of purchases over time. Helps identify trends, seasonal patterns, and the impact of
-              promotions or events on customer buying behavior.
-            </IconTooltip>
-          </ChartTitle>
-        </ChartHeader>
-        <ChartContent>
-          {isLoading ? (
-            <Skeleton variant="rectangular" width="100%" height="100%" />
-          ) : timelineData.length > 0 ? (
-            <>
-              <EChartsLine
-                data={timelineData}
-                xAccessor={(d: any) => d.date}
-                yAccessor={(d: any) => d.purchases}
-                seriesName="Purchases"
-                smooth={true}
-                showGrid={true}
-                showLegend={false}
-                tooltipFormatter={(params: any) => {
-                  if (Array.isArray(params) && params.length > 0) {
-                    return `${params[0].name}<br/>Purchases: ${params[0].value}`;
-                  }
-                  return '';
-                }}
-              />
-              <StatsBox>
-                <Stat>
-                  <StatLabel>Peak Day</StatLabel>
-                  <StatValue>N/A</StatValue>
-                </Stat>
-                <Stat>
-                  <StatLabel>Avg Daily Customers</StatLabel>
                   <StatValue>0</StatValue>
                 </Stat>
               </StatsBox>
             </>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-              <span style={{ color: '#9ca3af' }}>No timeline data available</span>
+              <span style={{ color: '#9ca3af' }}>No customer data available</span>
             </div>
           )}
         </ChartContent>
@@ -295,7 +309,7 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
             <OrdersList>
               {recentOrders.length > 0 ? (
                 recentOrders.map((order) => (
-                  <OrderItem key={order.id}>
+                  <OrderItem key={order.id} onClick={() => handleOrderClick(order)}>
                     <OrderInfo>
                       <Avatar size="tiny">
                         <UserIcon />
@@ -308,7 +322,12 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
                         </OrderMeta>
                       </OrderDetails>
                     </OrderInfo>
-                    <OrderValue $isLarge={order.value > 100}>${order.value.toFixed(0)}</OrderValue>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <StatusBadge $status={order.status}>
+                        {order.status === 'COMPLETED' ? '✓' : ''} {order.status}
+                      </StatusBadge>
+                      <OrderValue $isLarge={order.value > 100}>{order.value.toFixed(0)}</OrderValue>
+                    </div>
                   </OrderItem>
                 ))
               ) : (
@@ -332,13 +351,87 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
                   <TopBuyerRank>
                     {index + 1}. {buyer.name}
                   </TopBuyerRank>
-                  <TopBuyerAmount>${buyer.totalSpent.toFixed(0)}</TopBuyerAmount>
+                  <TopBuyerAmount>{buyer.totalSpent.toFixed(0)}</TopBuyerAmount>
                 </TopBuyerItem>
               ))}
             </TopBuyersContainer>
           )}
         </ChartContent>
       </ChartCard>
+
+      {/* Order Details Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog.Content>
+          <Dialog.Heading>Order Details</Dialog.Heading>
+          <Dialog.Body>
+            {selectedOrder && (
+              <>
+                <DialogSection>
+                  <DialogGrid>
+                    <div>
+                      <DialogLabel>Customer</DialogLabel>
+                      <DialogValue style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Avatar size="tiny">
+                          <UserIcon />
+                        </Avatar>
+                        {selectedOrder.playerName}
+                      </DialogValue>
+                    </div>
+                    <div>
+                      <DialogLabel>Status</DialogLabel>
+                      <DialogValue>
+                        <StatusBadge $status={selectedOrder.status}>
+                          {selectedOrder.status === 'COMPLETED' ? '✓' : ''} {selectedOrder.status}
+                        </StatusBadge>
+                      </DialogValue>
+                    </div>
+                  </DialogGrid>
+                </DialogSection>
+
+                <DialogSection>
+                  <DialogGrid>
+                    <div>
+                      <DialogLabel>Item</DialogLabel>
+                      <DialogValue>{selectedOrder.itemName}</DialogValue>
+                    </div>
+                    <div>
+                      <DialogLabel>Value</DialogLabel>
+                      <DialogValue style={{ fontSize: '1.2em', fontWeight: 'bold', color: '#10b981' }}>
+                        {selectedOrder.value.toFixed(2)}
+                      </DialogValue>
+                    </div>
+                  </DialogGrid>
+                </DialogSection>
+
+                <DialogSection>
+                  <DialogGrid>
+                    <div>
+                      <DialogLabel>Order Time</DialogLabel>
+                      <DialogValue>
+                        {DateTime.fromISO(selectedOrder.time || DateTime.now().toISO()).toLocaleString(
+                          DateTime.DATETIME_MED,
+                        )}
+                      </DialogValue>
+                    </div>
+                    <div>
+                      <DialogLabel>Order ID</DialogLabel>
+                      <DialogValue style={{ fontSize: '0.85em', fontFamily: 'monospace', opacity: 0.7 }}>
+                        {selectedOrder.id}
+                      </DialogValue>
+                    </div>
+                  </DialogGrid>
+                </DialogSection>
+
+                <div style={{ marginTop: '24px' }}>
+                  <Button onClick={() => setDialogOpen(false)} fullWidth>
+                    Close
+                  </Button>
+                </div>
+              </>
+            )}
+          </Dialog.Body>
+        </Dialog.Content>
+      </Dialog>
     </ChartsContainer>
   );
 };

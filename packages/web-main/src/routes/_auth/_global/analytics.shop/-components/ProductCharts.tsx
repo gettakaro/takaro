@@ -200,7 +200,7 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
               tooltipFormatter={(params: any) => {
                 if (Array.isArray(params) && params.length > 0) {
                   const data = topItemsData[params[0].dataIndex];
-                  return `${data.name}<br/>Revenue: $${data.revenue.toLocaleString()}<br/>Quantity: ${data.quantity}`;
+                  return `${data.name}<br/>Revenue: ${data.revenue.toLocaleString()}<br/>Quantity: ${data.quantity}`;
                 }
                 return '';
               }}
@@ -242,7 +242,7 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
               roseType="area"
               showLegend={true}
               tooltipFormatter={(params: any) => {
-                return `${params.name}<br/>Revenue: $${params.value.toLocaleString()}<br/>${params.percent}% of total`;
+                return `${params.name}<br/>Revenue: ${params.value.toLocaleString()}<br/>${params.percent}% of total`;
               }}
             />
           ) : (

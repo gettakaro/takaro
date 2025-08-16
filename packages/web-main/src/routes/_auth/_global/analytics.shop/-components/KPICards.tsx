@@ -132,16 +132,12 @@ const Sparkline: FC<{ data?: number[] }> = ({ data = [] }) => {
   );
 };
 
-const formatValue = (value: number, type: 'currency' | 'number') => {
-  if (type === 'currency') {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-  }
-  return new Intl.NumberFormat('en-US').format(value);
+const formatValue = (value: number, _type: 'currency' | 'number') => {
+  // Format both currency and numbers the same way - just with thousand separators
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
 };
 
 const formatChange = (value: number) => {
