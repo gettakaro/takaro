@@ -586,8 +586,8 @@ const tests = [
 
       // Reset all currency
       const resetRes = await this.client.gameserver.gameServerControllerResetCurrency(this.setupData.gameServer1.id);
-      expect(resetRes.data).to.have.property('affectedPlayerCount');
-      expect((resetRes.data as any).affectedPlayerCount).to.be.eq(res.data.data.length);
+      expect((resetRes.data as any).data).to.have.property('affectedPlayerCount');
+      expect((resetRes.data as any).data.affectedPlayerCount).to.be.eq(res.data.data.length);
 
       // Verify all players have 0 currency
       const afterReset = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
@@ -670,7 +670,7 @@ const tests = [
         if (!isAxiosError(error)) throw error;
         if (!error.response) throw error;
         expect(error.response.status).to.be.eq(400);
-        expect(error.response.data.meta.error.message).to.include('economy');
+        expect(error.response.data.meta.error.message.toLowerCase()).to.include('economy');
       }
     },
   }),

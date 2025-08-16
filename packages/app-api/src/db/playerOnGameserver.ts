@@ -360,11 +360,12 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
   }
 
   async resetAllCurrencyForGameServer(gameServerId: string): Promise<number> {
-    const result = await this.raw(
+    const result: any = await this.raw(
       `
       UPDATE "playerOnGameServer"
       SET currency = 0
-      WHERE "gameServerId" = ? AND "domainId" = ?
+      WHERE "gameServerId" = ? AND "domain" = ?
+      RETURNING *;
     `,
       [gameServerId, this.domainId],
     );

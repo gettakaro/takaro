@@ -500,6 +500,7 @@ export class GameServerController {
 
   @Post('/gameserver/:id/reset-currency')
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]), onlyIfEconomyEnabledMiddleware)
+  @ResponseSchema(APIOutput)
   @OpenAPI({
     description: "Resets all players' currency to 0 on the specified game server. This action is irreversible.",
   })
