@@ -10067,6 +10067,17 @@ export interface DeadStockItemDTO {
 /**
  *
  * @export
+ * @enum {string}
+ */
+export enum ShopAnalyticsPeriod {
+  LAST_24_HOURS = 'last24Hours',
+  LAST_7_DAYS = 'last7Days',
+  LAST_30_DAYS = 'last30Days',
+  LAST_90_DAYS = 'last90Days',
+}
+/**
+ *
+ * @export
  * @interface ProductMetricsDTO
  */
 export interface ProductMetricsDTO {
@@ -14220,8 +14231,7 @@ export const AnalyticsApiAxiosParamCreator = function (configuration?: Configura
      */
     analyticsControllerGetShopAnalytics: async (
       gameServerIds?: Array<string>,
-      startDate?: string,
-      endDate?: string,
+      period?: ShopAnalyticsPeriod,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/analytics/shop`;
@@ -14242,12 +14252,8 @@ export const AnalyticsApiAxiosParamCreator = function (configuration?: Configura
         localVarQueryParameter['gameServerIds'] = gameServerIds;
       }
 
-      if (startDate !== undefined) {
-        localVarQueryParameter['startDate'] = startDate;
-      }
-
-      if (endDate !== undefined) {
-        localVarQueryParameter['endDate'] = endDate;
+      if (period !== undefined) {
+        localVarQueryParameter['period'] = period;
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -14280,14 +14286,12 @@ export const AnalyticsApiFp = function (configuration?: Configuration) {
      */
     async analyticsControllerGetShopAnalytics(
       gameServerIds?: Array<string>,
-      startDate?: string,
-      endDate?: string,
+      period?: ShopAnalyticsPeriod,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopAnalyticsOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.analyticsControllerGetShopAnalytics(
         gameServerIds,
-        startDate,
-        endDate,
+        period,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -14352,12 +14356,11 @@ export class AnalyticsApi extends BaseAPI {
    */
   public analyticsControllerGetShopAnalytics(
     gameServerIds?: Array<string>,
-    startDate?: string,
-    endDate?: string,
+    period?: ShopAnalyticsPeriod,
     options?: RawAxiosRequestConfig,
   ) {
     return AnalyticsApiFp(this.configuration)
-      .analyticsControllerGetShopAnalytics(gameServerIds, startDate, endDate, options)
+      .analyticsControllerGetShopAnalytics(gameServerIds, period, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

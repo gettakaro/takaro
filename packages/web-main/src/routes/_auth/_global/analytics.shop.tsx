@@ -1,10 +1,9 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { PERMISSIONS } from '@takaro/apiclient';
+import { PERMISSIONS, ShopAnalyticsPeriod } from '@takaro/apiclient';
 import { hasPermission } from '../../../hooks/useHasPermission';
 import { userMeQueryOptions } from '../../../queries/user';
 import { shopAnalyticsQueryOptions } from '../../../queries/analytics';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
-import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { DateTime } from 'luxon';
 import { styled } from '@takaro/lib-components';
@@ -25,11 +24,8 @@ export const Route = createFileRoute('/_auth/_global/analytics/shop')({
   },
   loader: async ({ context }) => {
     // Load initial analytics data with default parameters
-    const endDate = DateTime.now().toISO();
-    const startDate = DateTime.now().minus({ days: 30 }).toISO();
-
     const analyticsData = await context.queryClient.ensureQueryData(
-      shopAnalyticsQueryOptions(undefined, startDate!, endDate!),
+      shopAnalyticsQueryOptions(undefined, ShopAnalyticsPeriod.LAST_30_DAYS),
     );
 
     return { analyticsData };
@@ -92,7 +88,7 @@ function ShopAnalyticsPage() {
 
   const { control } = useForm({
     defaultValues: {
-      period: 'last30Days',
+      period: ShopAnalyticsPeriod.LAST_30_DAYS,
       gameServers: [] as string[],
     },
   });
@@ -100,32 +96,8 @@ function ShopAnalyticsPage() {
   const selectedPeriod = useWatch({ control, name: 'period' });
   const selectedGameServers = useWatch({ control, name: 'gameServers' });
 
-  const { startDate, endDate } = useMemo(() => {
-    let startDate: string | null;
-    const endDate = DateTime.now().toISO();
-
-    switch (selectedPeriod) {
-      case 'last24Hours':
-        startDate = DateTime.now().minus({ days: 1 }).toISO();
-        break;
-      case 'last7Days':
-        startDate = DateTime.now().minus({ days: 7 }).toISO();
-        break;
-      case 'last30Days':
-        startDate = DateTime.now().minus({ days: 30 }).toISO();
-        break;
-      case 'last90Days':
-        startDate = DateTime.now().minus({ days: 90 }).toISO();
-        break;
-      default:
-        startDate = DateTime.now().minus({ days: 30 }).toISO();
-    }
-
-    return { startDate: startDate!, endDate: endDate! };
-  }, [selectedPeriod]);
-
   const { data: analyticsData, isFetching } = useQuery(
-    shopAnalyticsQueryOptions(selectedGameServers.length > 0 ? selectedGameServers : undefined, startDate, endDate),
+    shopAnalyticsQueryOptions(selectedGameServers.length > 0 ? selectedGameServers : undefined, selectedPeriod),
   );
 
   return (

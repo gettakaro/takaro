@@ -25,6 +25,7 @@ import {
   TopBuyerDTO,
   InsightDTO,
   ShopOrderStatus,
+  ShopAnalyticsPeriod,
 } from './dto.js';
 
 export interface KPIMetrics {
@@ -218,18 +219,39 @@ export class ShopAnalyticsService extends TakaroService<
   /**
    * Main entry point for getting shop analytics
    */
-  async getAnalytics(gameServerIds?: string[], startDate?: string, endDate?: string): Promise<ShopAnalyticsOutputDTO> {
+  async getAnalytics(
+    gameServerIds?: string[],
+    period: ShopAnalyticsPeriod = ShopAnalyticsPeriod.LAST_30_DAYS,
+  ): Promise<ShopAnalyticsOutputDTO> {
     const overallTimer = analyticsMetrics.generationTime.startTimer({
       domain: this.domainId,
       operation: 'getAnalytics',
     });
 
     try {
-      const start = startDate || DateTime.now().minus({ days: 30 }).toISO();
-      const end = endDate || DateTime.now().toISO();
+      // Calculate dates from period
+      const end = DateTime.now().toISO();
+      let start: string;
+
+      switch (period) {
+        case ShopAnalyticsPeriod.LAST_24_HOURS:
+          start = DateTime.now().minus({ days: 1 }).toISO();
+          break;
+        case ShopAnalyticsPeriod.LAST_7_DAYS:
+          start = DateTime.now().minus({ days: 7 }).toISO();
+          break;
+        case ShopAnalyticsPeriod.LAST_30_DAYS:
+          start = DateTime.now().minus({ days: 30 }).toISO();
+          break;
+        case ShopAnalyticsPeriod.LAST_90_DAYS:
+          start = DateTime.now().minus({ days: 90 }).toISO();
+          break;
+        default:
+          start = DateTime.now().minus({ days: 30 }).toISO();
+      }
 
       // Try to get from cache first
-      const cacheKey = this.generateCacheKey(gameServerIds, start, end);
+      const cacheKey = this.generateCacheKey(gameServerIds, period);
       const cached = await this.getCachedAnalytics(cacheKey);
       if (cached) {
         analyticsMetrics.cacheHits.inc({ domain: this.domainId });
@@ -1369,9 +1391,9 @@ export class ShopAnalyticsService extends TakaroService<
   /**
    * Generate cache key from parameters
    */
-  private generateCacheKey(gameServerIds: string[] | undefined, startDate: string, endDate: string): string {
+  private generateCacheKey(gameServerIds: string[] | undefined, period: ShopAnalyticsPeriod): string {
     const serverKey = gameServerIds ? gameServerIds.sort().join(',') : 'all';
-    return `shop:analytics:${this.domainId}:${serverKey}:${startDate}:${endDate}`;
+    return `shop:analytics:${this.domainId}:${serverKey}:${period}`;
   }
 
   /**

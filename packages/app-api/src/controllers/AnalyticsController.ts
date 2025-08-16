@@ -1,4 +1,4 @@
-import { IsOptional, IsUUID, IsISO8601, IsDateString, ValidateNested, IsArray } from 'class-validator';
+import { IsOptional, IsUUID, ValidateNested, IsArray, IsEnum } from 'class-validator';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import { Get, JsonController, UseBefore, Req, QueryParams } from 'routing-controllers';
@@ -6,7 +6,7 @@ import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { PERMISSIONS } from '@takaro/auth';
 import { ShopAnalyticsService } from '../service/Shop/ShopAnalyticsService.js';
-import { ShopAnalyticsOutputDTO } from '../service/Shop/dto.js';
+import { ShopAnalyticsOutputDTO, ShopAnalyticsPeriod } from '../service/Shop/dto.js';
 import { TakaroDTO } from '@takaro/util';
 
 class ShopAnalyticsOutputDTOAPI extends APIOutput<ShopAnalyticsOutputDTO> {
@@ -21,15 +21,9 @@ class ShopAnalyticsQueryDTO extends TakaroDTO<ShopAnalyticsQueryDTO> {
   @IsOptional()
   gameServerIds?: string[];
 
-  @IsISO8601()
-  @IsDateString()
+  @IsEnum(ShopAnalyticsPeriod)
   @IsOptional()
-  startDate?: string;
-
-  @IsISO8601()
-  @IsDateString()
-  @IsOptional()
-  endDate?: string;
+  period?: ShopAnalyticsPeriod;
 }
 
 @OpenAPI({
@@ -46,7 +40,7 @@ export class AnalyticsController {
   @Get('/analytics/shop')
   async getShopAnalytics(@Req() req: AuthenticatedRequest, @QueryParams() query: ShopAnalyticsQueryDTO) {
     const service = new ShopAnalyticsService(req.domainId);
-    const analytics = await service.getAnalytics(query.gameServerIds, query.startDate, query.endDate);
+    const analytics = await service.getAnalytics(query.gameServerIds, query.period || ShopAnalyticsPeriod.LAST_30_DAYS);
     return apiResponse(analytics);
   }
 }

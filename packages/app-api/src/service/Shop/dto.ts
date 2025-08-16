@@ -108,6 +108,13 @@ export enum ShopOrderStatus {
   CANCELED = 'CANCELED',
 }
 
+export enum ShopAnalyticsPeriod {
+  LAST_24_HOURS = 'last24Hours',
+  LAST_7_DAYS = 'last7Days',
+  LAST_30_DAYS = 'last30Days',
+  LAST_90_DAYS = 'last90Days',
+}
+
 export class ShopOrderOutputDTO extends TakaroModelDTO<ShopOrderOutputDTO> {
   @IsUUID()
   id: string;

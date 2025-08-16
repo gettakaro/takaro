@@ -7,6 +7,7 @@ import { ShopOrderRepo } from '../../db/shopOrder.js';
 
 export { ShopCategoryService } from './ShopCategoryService.js';
 export { ShopAnalyticsService } from './ShopAnalyticsService.js';
+export { ShopAnalyticsPeriod } from './dto.js';
 import {
   ShopListingOutputDTO,
   ShopListingCreateDTO,
