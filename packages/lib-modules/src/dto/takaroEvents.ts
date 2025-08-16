@@ -31,6 +31,7 @@ export const TakaroEvents = {
   CURRENCY_DEDUCTED: 'currency-deducted',
   SETTINGS_SET: 'settings-set',
   PLAYER_NEW_IP_DETECTED: 'player-new-ip-detected',
+  PLAYER_NEW_NAME_DETECTED: 'player-new-name-detected',
   SERVER_STATUS_CHANGED: 'server-status-changed',
   MODULE_CREATED: 'module-created',
   MODULE_UPDATED: 'module-updated',
@@ -79,6 +80,18 @@ export class TakaroEventPlayerNewIpDetected extends BaseEvent<TakaroEventPlayerN
 
   @IsIP()
   ip: string;
+}
+
+export class TakaroEventPlayerNewNameDetected extends BaseEvent<TakaroEventPlayerNewNameDetected> {
+  @IsString()
+  type = TakaroEvents.PLAYER_NEW_NAME_DETECTED;
+
+  @IsString()
+  @IsOptional()
+  oldName: string | null;
+
+  @IsString()
+  newName: string;
 }
 
 export class TakaroEventCurrencyDeducted extends BaseEvent<TakaroEventCurrencyDeducted> {
@@ -467,6 +480,7 @@ export class TakaroEventPlayerDeleted extends BaseEvent<TakaroEventPlayerDeleted
 export const TakaroEventsMapping = {
   [TakaroEvents.ROLE_ASSIGNED]: TakaroEventRoleAssigned,
   [TakaroEvents.PLAYER_NEW_IP_DETECTED]: TakaroEventPlayerNewIpDetected,
+  [TakaroEvents.PLAYER_NEW_NAME_DETECTED]: TakaroEventPlayerNewNameDetected,
   [TakaroEvents.CURRENCY_DEDUCTED]: TakaroEventCurrencyDeducted,
   [TakaroEvents.CURRENCY_ADDED]: TakaroEventCurrencyAdded,
   [TakaroEvents.COMMAND_EXECUTED]: TakaroEventCommandExecuted,

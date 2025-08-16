@@ -6,7 +6,7 @@ extendedTest('can view player info', async ({ page, extended }) => {
 
   await PlayerProfilePage.goto();
   await expect(page.getByText('IP History')).toBeVisible();
-  await expect(page.getByText(PlayerProfilePage.player.name)).toBeVisible();
+  await expect(page.getByRole('heading', { name: PlayerProfilePage.player.name, level: 1 })).toBeVisible();
 });
 
 extendedTest('Can assign role to player', async ({ page, extended }) => {

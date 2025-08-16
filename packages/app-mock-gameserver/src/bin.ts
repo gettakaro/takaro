@@ -1,9 +1,12 @@
 import { HTTP } from '@takaro/http';
-import { logger, errors } from '@takaro/util';
+import { logger, errors, health } from '@takaro/util';
 import { config } from './config.js';
 import { getMockServer } from './main.js';
+import { GameServer } from './lib/ws-gameserver/gameserver.js';
 
 const log = logger('mock-gameserver');
+
+let gameServerInstance: GameServer | null = null;
 
 export const server = new HTTP(
   {},
@@ -44,7 +47,7 @@ async function main() {
 
     while (attempt < maxRetries) {
       try {
-        await getMockServer();
+        gameServerInstance = await getMockServer();
         log.info('✅ Successfully connected to Takaro server');
         break;
       } catch (error) {
@@ -77,6 +80,15 @@ async function main() {
   } else {
     log.info('❌ No registration and identity tokens provided, will not register with the Takaro server');
   }
+
+  // Register health check hook
+  health.registerHook('takaro-connection', () => {
+    if (!gameServerInstance) {
+      // No game server instance yet
+      return false;
+    }
+    return gameServerInstance.isConnectedToTakaro();
+  });
 
   process.on('uncaughtException', (err) => {
     log.error('uncaughtException', err);

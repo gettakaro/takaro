@@ -11,6 +11,7 @@ import {
   ChatChannel,
 } from '@takaro/modules';
 import { logger } from '@takaro/util';
+import { faker } from '@faker-js/faker';
 import { GameDataHandler } from './DataHandler.js';
 import { CHAT_MESSAGES, WEAPONS, ACTIONS } from './EventContent.js';
 import { getItemCodes, getEntityCodes } from './GameContent.js';
@@ -201,6 +202,74 @@ export class EventGenerator {
       msg: message,
       type: GameEvents.LOG_LINE,
     });
+  }
+
+  /**
+   * Generate a player name change event
+   */
+  generateNameChange(players: Array<{ player: IGamePlayer; meta: any }>): {
+    player: IGamePlayer;
+    oldName: string;
+    newName: string;
+  } {
+    const player = this.getRandomPlayer(players);
+    const currentName = player.player.name;
+
+    // Different strategies for generating new names
+    const strategies = [
+      // Generate completely new username
+      () => faker.internet.userName(),
+      // Display name style
+      () => faker.internet.displayName(),
+      // Adjective_Noun combination
+      () => `${faker.word.adjective()}_${faker.word.noun()}`,
+      // First name with number
+      () => faker.person.firstName() + faker.number.int({ min: 1, max: 999 }),
+      // Add clan tag to existing name
+      () => `[${faker.string.alpha({ length: 3 }).toUpperCase()}]${currentName}`,
+      // Add number suffix to existing name
+      () => currentName + faker.number.int({ min: 1, max: 99 }),
+      // Add decorations to existing name
+      () => `xx${currentName}xx`,
+      // Capitalize variation
+      () => currentName.toUpperCase(),
+      // Lowercase variation
+      () => currentName.toLowerCase(),
+      // Replace letters with numbers (l33t style)
+      () => currentName.replace(/e/gi, '3').replace(/a/gi, '4').replace(/o/gi, '0').replace(/i/gi, '1'),
+      // Add underscore and word
+      () => `${currentName}_${faker.word.noun()}`,
+      // Gaming-style name
+      () => `${faker.word.adjective()}${faker.animal.type()}${faker.number.int({ min: 1, max: 99 })}`,
+    ];
+
+    // Pick a random strategy and generate the new name
+    const strategy = this.getRandomElement(strategies);
+    let newName = strategy();
+
+    // Ensure the new name is different from the current name
+    // If by chance they're the same, try another strategy
+    let attempts = 0;
+    while (newName === currentName && attempts < 5) {
+      const alternativeStrategy = this.getRandomElement(strategies);
+      newName = alternativeStrategy();
+      attempts++;
+    }
+
+    // If still the same after attempts, force a change by adding a number
+    if (newName === currentName) {
+      newName = currentName + faker.number.int({ min: 100, max: 999 });
+    }
+
+    // Ensure the name is valid (not too long, no special chars except allowed ones)
+    // Limit to 32 characters and remove any problematic characters
+    newName = newName.substring(0, 32).replace(/[^a-zA-Z0-9_\-\[\]]/g, '');
+
+    return {
+      player: player.player,
+      oldName: currentName,
+      newName: newName,
+    };
   }
 
   /**

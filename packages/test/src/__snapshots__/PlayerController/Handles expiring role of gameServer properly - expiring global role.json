@@ -71,7 +71,17 @@
           }
         }
       ],
-      "ipHistory": []
+      "ipHistory": [],
+      "nameHistory": [
+        {
+          "id": "9735c533-55a9-4620-9c67-a9080dd93813",
+          "createdAt": "2025-08-13T16:49:02.744Z",
+          "updatedAt": "2025-08-13T16:49:02.745Z",
+          "playerId": "14ff03e7-7c2d-4f0a-8865-25446122058a",
+          "gameServerId": "5437ade2-efa3-4352-885a-5255f3e172dc",
+          "name": "Zachary6"
+        }
+      ]
     }
   },
   "status": 200,

@@ -1,4 +1,5 @@
 import { logger } from '@takaro/util';
+import { EventLogLine, GameEvents } from '@takaro/modules';
 import { GameDataHandler } from './DataHandler.js';
 import { EventGenerator } from './EventGenerator.js';
 import { PlayerMovementSimulator } from './PlayerMovementSimulator.js';
@@ -60,6 +61,7 @@ export class ActivitySimulator {
     await this.startDeathSimulation();
     await this.startKillSimulation();
     await this.startItemInteractionSimulation();
+    await this.startNameChangeSimulation();
 
     this.log.info('Activity simulation started successfully');
 
@@ -451,6 +453,56 @@ export class ActivitySimulator {
           this.serverLogger(`📦 Simulated item interaction: ${logEvent.msg}`);
         } catch (error) {
           this.log.error('Error generating item interaction:', error);
+        }
+      },
+      intervals.minInterval,
+      intervals.maxInterval,
+    );
+  }
+
+  /**
+   * Start player name change simulation
+   */
+  private async startNameChangeSimulation(): Promise<void> {
+    const config = this.state.getConfig().nameChange;
+    if (!config.enabled) return;
+
+    const intervals = this.state.frequencyToInterval(config.frequency, 'nameChange');
+
+    this.scheduleRandomEvent(
+      'nameChange',
+      async () => {
+        if (!this.state.isActive()) return;
+
+        try {
+          const players = await this.dataHandler.getOnlinePlayers();
+          if (players.length === 0) {
+            this.serverLogger('⚠️ No online players available for name change simulation');
+            return;
+          }
+
+          const nameChangeData = this.eventGenerator.generateNameChange(players);
+          const { player, oldName, newName } = nameChangeData;
+
+          // Update the player's name in the data handler
+          await this.dataHandler.updatePlayerData(player.gameId, { name: newName });
+
+          // Emit a log event about the name change
+          const logEvent = new EventLogLine({
+            msg: `Player '${oldName}' changed name to '${newName}'`,
+            type: GameEvents.LOG_LINE,
+          });
+          await this.eventEmitter('log', logEvent);
+
+          this.log.debug('Generated player name change event', {
+            playerId: player.gameId,
+            oldName,
+            newName,
+          });
+
+          this.serverLogger(`👤 Name change: ${oldName} → ${newName}`);
+        } catch (error) {
+          this.log.error('Error generating name change event:', error);
         }
       },
       intervals.minInterval,

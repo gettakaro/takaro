@@ -2788,6 +2788,7 @@ export const EventCreateDTOEventNameEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -3061,6 +3062,7 @@ export const EventOutputDTOEventNameEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -3122,6 +3124,7 @@ export type EventOutputDTOMeta =
   | TakaroEventPlayerDeleted
   | TakaroEventPlayerLinked
   | TakaroEventPlayerNewIpDetected
+  | TakaroEventPlayerNewNameDetected
   | TakaroEventPlayerUnbanned
   | TakaroEventRoleAssigned
   | TakaroEventRoleCreated
@@ -3288,6 +3291,7 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -3473,6 +3477,7 @@ export const EventsCountInputDTOEventNameEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -4702,6 +4707,7 @@ export const HookCreateDTOEventTypeEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -4859,6 +4865,7 @@ export const HookOutputDTOEventTypeEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -4961,6 +4968,7 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -5135,6 +5143,7 @@ export const HookTriggerDTOEventTypeEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -5219,6 +5228,7 @@ export const HookUpdateDTOEventTypeEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -5545,6 +5555,7 @@ export const IHookEventTypeEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -7777,6 +7788,37 @@ export type NOTDOMAINSCOPEDTakaroModelDTOCreatedAt = string;
 /**
  *
  * @export
+ * @interface NameHistoryOutputDTO
+ */
+export interface NameHistoryOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof NameHistoryOutputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof NameHistoryOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof NameHistoryOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof NameHistoryOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
  * @interface OptionalPogStatsInputDTO
  */
 export interface OptionalPogStatsInputDTO {
@@ -9149,6 +9191,12 @@ export interface PlayerOutputDTO {
   ipHistory: Array<IpHistoryOutputDTO>;
   /**
    *
+   * @type {Array<NameHistoryOutputDTO>}
+   * @memberof PlayerOutputDTO
+   */
+  nameHistory: Array<NameHistoryOutputDTO>;
+  /**
+   *
    * @type {string}
    * @memberof PlayerOutputDTO
    */
@@ -9311,6 +9359,12 @@ export interface PlayerOutputWithRolesDTO {
    * @memberof PlayerOutputWithRolesDTO
    */
   ipHistory: Array<IpHistoryOutputDTO>;
+  /**
+   *
+   * @type {Array<NameHistoryOutputDTO>}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  nameHistory: Array<NameHistoryOutputDTO>;
 }
 /**
  *
@@ -12220,6 +12274,31 @@ export interface TakaroEventPlayerNewIpDetected {
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof TakaroEventPlayerNewIpDetected
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventPlayerNewNameDetected
+ */
+export interface TakaroEventPlayerNewNameDetected {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventPlayerNewNameDetected
+   */
+  oldName?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventPlayerNewNameDetected
+   */
+  newName: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventPlayerNewNameDetected
    */
   timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
@@ -28999,6 +29078,7 @@ export const StatsControllerGetEventsCountEventNameEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
