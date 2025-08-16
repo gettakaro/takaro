@@ -140,16 +140,6 @@ const CompletionRateValue = styled.span<{ $isGood: boolean }>`
 `;
 
 export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoading }) => {
-  if (isLoading) {
-    return (
-      <ChartsContainer>
-        <Skeleton variant="rectangular" height="400px" />
-        <Skeleton variant="rectangular" height="400px" />
-        <Skeleton variant="rectangular" height="400px" />
-      </ChartsContainer>
-    );
-  }
-
   // Prepare data for top items bar chart
   const topItemsData =
     products?.topItems?.map((item) => ({
@@ -197,7 +187,9 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
           <Chip label={`${products?.totalProducts || 0} products`} color="primary" variant="outline" />
         </ChartHeader>
         <ChartContent>
-          {topItemsData.length > 0 ? (
+          {isLoading ? (
+            <Skeleton variant="rectangular" width="100%" height="100%" />
+          ) : topItemsData.length > 0 ? (
             <EChartsBar
               data={topItemsData}
               xAccessor={(d: any) => d.name}
@@ -238,7 +230,9 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
           </ChartTitle>
         </ChartHeader>
         <ChartContent>
-          {categoryData.length > 0 ? (
+          {isLoading ? (
+            <Skeleton variant="rectangular" width="100%" height="100%" />
+          ) : categoryData.length > 0 ? (
             <EChartsPie
               data={categoryData}
               nameAccessor={(d: any) => d.name}
@@ -271,30 +265,34 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
           <Chip label={`${orders?.totalOrders || 0} total`} color="primary" variant="outline" />
         </ChartHeader>
         <ChartContent>
-          <StatusFlow>
-            {statusData.length > 0 ? (
-              statusData.map((status) => {
-                const { icon, color } = getStatusIcon(status.status);
-                return (
-                  <StatusItem key={status.status}>
-                    <StatusInfo>
-                      <StatusIcon $color={color}>{icon}</StatusIcon>
-                      <StatusLabel>{status.status}</StatusLabel>
-                    </StatusInfo>
-                    <StatusValue>
-                      <StatusCount>{status.count}</StatusCount>
-                      <StatusPercent>({status.percentage.toFixed(1)}%)</StatusPercent>
-                    </StatusValue>
-                  </StatusItem>
-                );
-              })
-            ) : (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                <span style={{ color: '#9ca3af' }}>No order data available</span>
-              </div>
-            )}
-          </StatusFlow>
-          {orders?.completionRate !== undefined && (
+          {isLoading ? (
+            <Skeleton variant="rectangular" width="100%" height="100%" />
+          ) : (
+            <StatusFlow>
+              {statusData.length > 0 ? (
+                statusData.map((status) => {
+                  const { icon, color } = getStatusIcon(status.status);
+                  return (
+                    <StatusItem key={status.status}>
+                      <StatusInfo>
+                        <StatusIcon $color={color}>{icon}</StatusIcon>
+                        <StatusLabel>{status.status}</StatusLabel>
+                      </StatusInfo>
+                      <StatusValue>
+                        <StatusCount>{status.count}</StatusCount>
+                        <StatusPercent>({status.percentage.toFixed(1)}%)</StatusPercent>
+                      </StatusValue>
+                    </StatusItem>
+                  );
+                })
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                  <span style={{ color: '#9ca3af' }}>No order data available</span>
+                </div>
+              )}
+            </StatusFlow>
+          )}
+          {orders?.completionRate !== undefined && !isLoading && (
             <CompletionRateContainer>
               <CompletionRateContent>
                 <CompletionRateLabel>Completion Rate</CompletionRateLabel>

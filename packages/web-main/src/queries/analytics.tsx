@@ -20,5 +20,6 @@ export const shopAnalyticsQueryOptions = (gameServerIds?: string[], startDate?: 
     },
     staleTime: 30 * 1000, // 30 seconds for auto-refresh
     refetchInterval: 30 * 1000, // Auto-refresh every 30 seconds
+    placeholderData: (previousData) => previousData, // Keep previous data while fetching new data
   });
 };

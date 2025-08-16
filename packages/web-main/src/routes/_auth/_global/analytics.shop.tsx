@@ -7,7 +7,7 @@ import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { DateTime } from 'luxon';
-import { styled, Skeleton } from '@takaro/lib-components';
+import { styled } from '@takaro/lib-components';
 import { useForm, useWatch } from 'react-hook-form';
 import { TimePeriodSelectField, GameServerSelectQueryField } from '../../../components/selects';
 import { KPICards } from './analytics.shop/-components/KPICards';
@@ -124,27 +124,9 @@ function ShopAnalyticsPage() {
     return { startDate: startDate!, endDate: endDate! };
   }, [selectedPeriod]);
 
-  const {
-    data: analyticsData,
-    isLoading,
-    isFetching,
-  } = useQuery(
+  const { data: analyticsData, isFetching } = useQuery(
     shopAnalyticsQueryOptions(selectedGameServers.length > 0 ? selectedGameServers : undefined, startDate, endDate),
   );
-
-  if (isLoading && !analyticsData) {
-    return (
-      <Container>
-        <Header>
-          <h1>Shop Analytics</h1>
-        </Header>
-        <KPICards isLoading={true} />
-        <ChartSection>
-          <Skeleton variant="rectangular" height="400px" />
-        </ChartSection>
-      </Container>
-    );
-  }
 
   return (
     <Container>

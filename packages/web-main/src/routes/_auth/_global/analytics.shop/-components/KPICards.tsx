@@ -150,16 +150,6 @@ const formatChange = (value: number) => {
 };
 
 export const KPICards: FC<KPICardsProps> = ({ kpis, isLoading }) => {
-  if (isLoading) {
-    return (
-      <KPIGrid>
-        {[...Array(4)].map((_, i) => (
-          <Skeleton key={i} variant="rectangular" height="140px" />
-        ))}
-      </KPIGrid>
-    );
-  }
-
   const cards = [
     {
       title: 'Total Revenue',
@@ -229,20 +219,31 @@ export const KPICards: FC<KPICardsProps> = ({ kpis, isLoading }) => {
                     <KPIIcon $color={card.color}>{card.icon}</KPIIcon>
                   </KPIHeader>
 
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: index * 0.1 + 0.2, type: 'spring' }}
-                  >
-                    <KPIValue>{formatValue(card.value, card.type)}</KPIValue>
-                  </motion.div>
+                  {isLoading ? (
+                    <>
+                      <div style={{ marginTop: '8px', marginBottom: '8px' }}>
+                        <Skeleton variant="text" width="80%" height="40px" />
+                      </div>
+                      <Skeleton variant="text" width="60%" height="20px" />
+                    </>
+                  ) : (
+                    <>
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: index * 0.1 + 0.2, type: 'spring' }}
+                      >
+                        <KPIValue>{formatValue(card.value, card.type)}</KPIValue>
+                      </motion.div>
 
-                  <KPIChange $trend={trend}>
-                    {trend === 'positive' && <ArrowUpIcon />}
-                    {trend === 'negative' && <ArrowDownIcon />}
-                    {formatChange(card.change)}
-                    <span style={{ opacity: 0.7 }}>vs last period</span>
-                  </KPIChange>
+                      <KPIChange $trend={trend}>
+                        {trend === 'positive' && <ArrowUpIcon />}
+                        {trend === 'negative' && <ArrowDownIcon />}
+                        {formatChange(card.change)}
+                        <span style={{ opacity: 0.7 }}>vs last period</span>
+                      </KPIChange>
+                    </>
+                  )}
 
                   {card.sparkline && (
                     <SparklineContainer>

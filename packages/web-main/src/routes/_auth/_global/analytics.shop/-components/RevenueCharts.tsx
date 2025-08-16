@@ -1,13 +1,5 @@
-import { FC, useState } from 'react';
-import {
-  styled,
-  Card,
-  EChartsArea,
-  EChartsHeatmap,
-  Skeleton,
-  ToggleButtonGroup,
-  IconTooltip,
-} from '@takaro/lib-components';
+import { FC } from 'react';
+import { styled, Card, EChartsArea, EChartsHeatmap, Skeleton, IconTooltip } from '@takaro/lib-components';
 import { RevenueMetricsDTO } from '@takaro/apiclient';
 import { DateTime } from 'luxon';
 import { AiOutlineInfoCircle as InfoIcon } from 'react-icons/ai';
@@ -80,17 +72,6 @@ const MetricValue = styled.span`
 `;
 
 export const RevenueCharts: FC<RevenueChartsProps> = ({ revenue, isLoading }) => {
-  const [timePeriod, setTimePeriod] = useState<'daily' | 'weekly' | 'monthly'>('daily');
-
-  if (isLoading) {
-    return (
-      <ChartsContainer>
-        <Skeleton variant="rectangular" height="400px" />
-        <Skeleton variant="rectangular" height="400px" />
-      </ChartsContainer>
-    );
-  }
-
   // Prepare data for AreaChart
   const chartData =
     revenue?.timeSeries?.map((point) => ({
@@ -119,22 +100,14 @@ export const RevenueCharts: FC<RevenueChartsProps> = ({ revenue, isLoading }) =>
           <ChartTitle>
             Revenue Over Time
             <IconTooltip icon={<InfoIcon />} size="small" color="background">
-              Shows revenue trends over the selected period. Toggle between daily, weekly, or monthly aggregation to see
-              different patterns. The area under the line represents total revenue volume.
+              Shows daily revenue trends over time. The area under the line represents total revenue volume.
             </IconTooltip>
           </ChartTitle>
-          <ToggleButtonGroup
-            exclusive
-            defaultValue={timePeriod}
-            onChange={(value) => setTimePeriod(value as 'daily' | 'weekly' | 'monthly')}
-          >
-            <ToggleButtonGroup.Button value="daily">Daily</ToggleButtonGroup.Button>
-            <ToggleButtonGroup.Button value="weekly">Weekly</ToggleButtonGroup.Button>
-            <ToggleButtonGroup.Button value="monthly">Monthly</ToggleButtonGroup.Button>
-          </ToggleButtonGroup>
         </ChartHeader>
         <ChartContent>
-          {chartData.length > 0 ? (
+          {isLoading ? (
+            <Skeleton variant="rectangular" width="100%" height="100%" />
+          ) : chartData.length > 0 ? (
             <EChartsArea
               data={chartData}
               xAccessor={(d: any) => d.date}
@@ -178,7 +151,9 @@ export const RevenueCharts: FC<RevenueChartsProps> = ({ revenue, isLoading }) =>
           </ChartTitle>
         </ChartHeader>
         <ChartContent>
-          {heatmapData.length > 0 ? (
+          {isLoading ? (
+            <Skeleton variant="rectangular" width="100%" height="100%" />
+          ) : heatmapData.length > 0 ? (
             <EChartsHeatmap
               data={heatmapData}
               xAccessor={(d: any) => d.x}

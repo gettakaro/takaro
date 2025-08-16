@@ -206,7 +206,27 @@ export const EChartsBase: FC<EChartsBaseProps> = ({
 
   // Merge theme options with provided options
   const mergedOptions = useMemo(() => {
-    return echarts.util.merge(themeOptions, option);
+    // Check if this is a chart type that doesn't use axes
+    const hasNonCartesianChart =
+      option.series &&
+      Array.isArray(option.series) &&
+      option.series.some((s: any) =>
+        ['pie', 'radar', 'gauge', 'funnel', 'sankey', 'graph', 'tree', 'treemap', 'sunburst'].includes(s.type),
+      );
+
+    // Create adjusted theme options based on chart type
+    const adjustedThemeOptions = hasNonCartesianChart
+      ? {
+          backgroundColor: themeOptions.backgroundColor,
+          textStyle: themeOptions.textStyle,
+          title: themeOptions.title,
+          legend: themeOptions.legend,
+          tooltip: themeOptions.tooltip,
+          color: themeOptions.color,
+        }
+      : themeOptions;
+
+    return echarts.util.merge(adjustedThemeOptions, option);
   }, [themeOptions, option]);
 
   // Handle resize

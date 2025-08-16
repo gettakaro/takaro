@@ -164,16 +164,6 @@ const TopBuyerAmount = styled.span`
 `;
 
 export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isLoading }) => {
-  if (isLoading) {
-    return (
-      <ChartsContainer>
-        <Skeleton variant="rectangular" height="400px" />
-        <Skeleton variant="rectangular" height="400px" />
-        <Skeleton variant="rectangular" height="400px" />
-      </ChartsContainer>
-    );
-  }
-
   // Prepare customer segments data for PieChart
   const segmentData =
     customers?.segments?.map((segment) => ({
@@ -202,7 +192,9 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
           <Chip label={`${customers?.totalCustomers || 0} total`} color="primary" variant="outline" />
         </ChartHeader>
         <ChartContent>
-          {segmentData.length > 0 ? (
+          {isLoading ? (
+            <Skeleton variant="rectangular" width="100%" height="100%" />
+          ) : segmentData.length > 0 ? (
             <>
               <div style={{ height: '200px' }}>
                 <EChartsPie
@@ -247,7 +239,9 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
           </ChartTitle>
         </ChartHeader>
         <ChartContent>
-          {timelineData.length > 0 ? (
+          {isLoading ? (
+            <Skeleton variant="rectangular" width="100%" height="100%" />
+          ) : timelineData.length > 0 ? (
             <>
               <EChartsLine
                 data={timelineData}
@@ -295,32 +289,36 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
           <Chip label="Live" color="success" variant="outline" />
         </ChartHeader>
         <ChartContent>
-          <OrdersList>
-            {recentOrders.length > 0 ? (
-              recentOrders.map((order) => (
-                <OrderItem key={order.id}>
-                  <OrderInfo>
-                    <Avatar size="tiny">
-                      <UserIcon />
-                    </Avatar>
-                    <OrderDetails>
-                      <OrderPlayer>{order.playerName}</OrderPlayer>
-                      <OrderMeta>
-                        <ClockIcon style={{ width: '12px', height: '12px' }} />
-                        {DateTime.fromISO(order.time || DateTime.now().toISO()).toRelative()}
-                      </OrderMeta>
-                    </OrderDetails>
-                  </OrderInfo>
-                  <OrderValue $isLarge={order.value > 100}>${order.value.toFixed(0)}</OrderValue>
-                </OrderItem>
-              ))
-            ) : (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                <span style={{ color: '#9ca3af' }}>No recent orders</span>
-              </div>
-            )}
-          </OrdersList>
-          {customers?.topBuyers && customers.topBuyers.length > 0 && (
+          {isLoading ? (
+            <Skeleton variant="rectangular" width="100%" height="100%" />
+          ) : (
+            <OrdersList>
+              {recentOrders.length > 0 ? (
+                recentOrders.map((order) => (
+                  <OrderItem key={order.id}>
+                    <OrderInfo>
+                      <Avatar size="tiny">
+                        <UserIcon />
+                      </Avatar>
+                      <OrderDetails>
+                        <OrderPlayer>{order.playerName}</OrderPlayer>
+                        <OrderMeta>
+                          <ClockIcon style={{ width: '12px', height: '12px' }} />
+                          {DateTime.fromISO(order.time || DateTime.now().toISO()).toRelative()}
+                        </OrderMeta>
+                      </OrderDetails>
+                    </OrderInfo>
+                    <OrderValue $isLarge={order.value > 100}>${order.value.toFixed(0)}</OrderValue>
+                  </OrderItem>
+                ))
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                  <span style={{ color: '#9ca3af' }}>No recent orders</span>
+                </div>
+              )}
+            </OrdersList>
+          )}
+          {customers?.topBuyers && customers.topBuyers.length > 0 && !isLoading && (
             <TopBuyersContainer>
               <TopBuyersHeader>
                 Top Buyers
