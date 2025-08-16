@@ -50,7 +50,9 @@
           }
         ],
         "email": "nopermissions@example.com",
-        "isDashboardUser": false
+        "isDashboardUser": false,
+        "steamId": null,
+        "hasPassword": true
       },
       {
         "createdAt": "2024-06-21T19:09:23.782Z",
@@ -132,7 +134,9 @@
           }
         ],
         "email": "root@green-times-fly.com",
-        "isDashboardUser": false
+        "isDashboardUser": false,
+        "steamId": null,
+        "hasPassword": true
       }
     ]
   },

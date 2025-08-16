@@ -142,24 +142,36 @@ services:
       - DISPLAY=:0
 
   kratos-migrate:
-    image: oryd/kratos:v1.2.0
+    build:
+      context: .
+      dockerfile: ./containers/kratos/Dockerfile
+    image: takaro-kratos:latest
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
-    volumes:
-      - ./containers/ory/kratos:/etc/config/kratos
-    command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
+      - STEAM_CLIENT_ID=${STEAM_CLIENT_ID}
+      - STEAM_CLIENT_SECRET=${STEAM_CLIENT_SECRET}
+      - STEAM_AUTH_PROXY_URL=${STEAM_AUTH_PROXY_URL}
+    command: migrate sql -c /etc/config/kratos/kratos.yml -e --yes
     restart: on-failure
   kratos:
-    image: oryd/kratos:v1.2.0
+    build:
+      context: .
+      dockerfile: ./containers/kratos/Dockerfile
+    image: takaro-kratos:latest
     ports:
       - '4433:4433' # public
       - '4434:4434' # admin
     restart: on-failure
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
-    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
-    volumes:
-      - ./containers/ory/kratos:/etc/config/kratos 
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
+      - STEAM_CLIENT_ID=${STEAM_CLIENT_ID}
+      - STEAM_CLIENT_SECRET=${STEAM_CLIENT_SECRET}
+      - STEAM_AUTH_PROXY_URL=${STEAM_AUTH_PROXY_URL}
+    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier 
   postgresql_kratos:
     image: postgres:15
     ports:

@@ -11,6 +11,11 @@ enum IDENTITY_SCHEMA {
 export interface ITakaroIdentity {
   id: string;
   email: string;
+  stripeId?: string;
+  steamId?: string;
+  discordId?: string;
+  name?: string;
+  hasPassword?: boolean;
 }
 
 class Ory {
@@ -40,11 +45,47 @@ class Ory {
   async getIdentity(id: string): Promise<ITakaroIdentity> {
     const res = await this.identityClient.getIdentity({
       id,
+      includeCredential: ['oidc', 'password'],
     });
+
+    // Extract Discord ID from OIDC credentials
+    let discordId: string | undefined;
+    if (res.data.credentials?.oidc?.identifiers) {
+      const discordIdentifier = res.data.credentials.oidc.identifiers.find((identifier: string) =>
+        identifier.startsWith('discord:'),
+      );
+      if (discordIdentifier) {
+        discordId = discordIdentifier.replace('discord:', '');
+      }
+    }
+
+    // Extract Steam ID from OIDC credentials (not traits)
+    let steamId: string | undefined;
+    if (res.data.credentials?.oidc?.identifiers) {
+      const steamIdentifier = res.data.credentials.oidc.identifiers.find((identifier: string) =>
+        identifier.startsWith('steam:'),
+      );
+      if (steamIdentifier) {
+        steamId = steamIdentifier.replace('steam:', '');
+      }
+    }
+
+    // Check if password credentials exist AND are actually configured
+    // Recovery flows create password credentials but without a password hash
+    const hasPassword = !!(
+      res.data.credentials?.password &&
+      res.data.credentials.password.config &&
+      Object.keys(res.data.credentials.password.config).length > 0
+    );
 
     return {
       id: res.data.id,
       email: res.data.traits.email,
+      stripeId: res.data.traits.stripeId,
+      steamId: steamId || res.data.traits.steamId, // Use OIDC steamId first, fall back to traits
+      discordId,
+      name: res.data.traits.name,
+      hasPassword,
     };
   }
 
@@ -53,10 +94,20 @@ class Ory {
 
     if (!identity.data.length) return null;
 
-    return {
-      id: identity.data[0].id,
-      email: identity.data[0].traits.email,
-    };
+    // We need to fetch the full identity to get credentials
+    return this.getIdentity(identity.data[0].id);
+  }
+
+  async getIdentityBySteamId(steamId: string): Promise<ITakaroIdentity | null> {
+    // Search using credentialsIdentifier which is indexed and efficient
+    const identities = await this.identityClient.listIdentities({
+      credentialsIdentifier: steamId,
+    });
+
+    if (!identities.data.length) return null;
+
+    // Get the full identity with credentials
+    return this.getIdentity(identities.data[0].id);
   }
 
   async createIdentity(email: string, password?: string): Promise<ITakaroIdentity> {
@@ -64,10 +115,8 @@ class Ory {
 
     if (existing.data.length) {
       this.log.warn('Identity already exists, returning existing one.', { email });
-      return {
-        id: existing.data[0].id,
-        email: existing.data[0].traits.email,
-      };
+      // Return the full identity with credentials
+      return this.getIdentity(existing.data[0].id);
     }
 
     const body: CreateIdentityBody = {
@@ -91,9 +140,15 @@ class Ory {
       createIdentityBody: body,
     });
 
+    // Return the newly created identity (won't have Discord ID yet)
     return {
       id: res.data.id,
       email: res.data.traits.email,
+      stripeId: res.data.traits.stripeId,
+      steamId: res.data.traits.steamId,
+      discordId: undefined,
+      name: res.data.traits.name,
+      hasPassword: !!password,
     };
   }
 
@@ -112,10 +167,8 @@ class Ory {
         xSessionToken: tokenFromAuthHeader,
       });
 
-      return {
-        id: sessionRes.data.identity!.id,
-        email: sessionRes.data.identity!.traits.email,
-      };
+      // Session response doesn't include credentials, so we need to fetch the full identity
+      return this.getIdentity(sessionRes.data.identity!.id);
     } catch (error) {
       this.log.warn('Could not get identity from request', { error });
       return null;

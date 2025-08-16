@@ -1,0 +1,162 @@
+version: v0.11.0
+
+dsn: postgres
+
+serve:
+  public:
+    base_url: ${KRATOS_PUBLIC_URL:-http://127.0.0.1:4433/}
+    cors:
+      enabled: true
+      allowed_origins: ${KRATOS_CORS_ALLOWED_ORIGINS:-["http://127.0.0.1:13001","http://127.0.0.1:13002"]}
+      allowed_methods:
+        - POST
+        - GET
+        - PUT
+        - PATCH
+        - DELETE
+      allowed_headers:
+        - Authorization
+        - Cookie
+        - Content-Type
+        - X-TAKARO
+      exposed_headers:
+        - Content-Type
+        - Set-Cookie
+  admin:
+    base_url: ${KRATOS_ADMIN_URL:-http://127.0.0.1:4434/}
+
+selfservice:
+  default_browser_return_url: ${KRATOS_BROWSER_RETURN_URL:-http://127.0.0.1:13001/login}
+  allowed_return_urls: ${KRATOS_ALLOWED_RETURN_URLS:-["http://127.0.0.1:13001/login","http://127.0.0.1:13001/settings","http://127.0.0.1:13001/settings/discord","http://127.0.0.1:13001/settings/steam","http://127.0.0.1:13001/"]}
+
+  methods:
+    password:
+      enabled: true
+    totp:
+      config:
+        issuer: Kratos
+      enabled: false
+    lookup_secret:
+      enabled: false
+    link:
+      enabled: true
+    code:
+      enabled: true
+    oidc:
+      enabled: true
+      config:
+        providers:
+          - id: discord
+            provider: discord
+            client_id: ${DISCORD_CLIENT_ID:-"placeholder"}
+            client_secret: ${DISCORD_CLIENT_SECRET:-"placeholder"}
+            mapper_url: file:///etc/config/kratos/discord.jsonnet
+            scope:
+              - identify
+              - email
+          - id: steam
+            provider: generic
+            client_id: ${STEAM_CLIENT_ID:-"placeholder"}
+            client_secret: ${STEAM_CLIENT_SECRET:-"placeholder"}
+            mapper_url: file:///etc/config/kratos/steam.jsonnet
+            issuer_url: ${STEAM_AUTH_PROXY_URL:-"placeholder"}
+            auth_url: ${STEAM_AUTH_PROXY_URL:-"placeholder"}/authorize
+            token_url: ${STEAM_AUTH_PROXY_URL:-"placeholder"}/token
+            scope:
+              - openid
+
+  flows:
+    error:
+      ui_url: ${KRATOS_UI_ERROR_URL:-http://127.0.0.1:13001/error}
+
+    settings:
+      ui_url: ${KRATOS_UI_SETTINGS_URL:-http://127.0.0.1:13001/account/profile}
+      privileged_session_max_age: 15m
+      required_aal: highest_available
+
+    recovery:
+      enabled: true
+      ui_url: ${KRATOS_UI_RECOVERY_URL:-http://127.0.0.1:13001/account/recovery}
+      use: code
+
+    verification:
+      enabled: false
+      ui_url: ${KRATOS_UI_VERIFICATION_URL:-http://127.0.0.1:13001/account/verification}
+      use: code
+      after:
+        default_browser_return_url: ${KRATOS_UI_DASHBOARD_URL:-http://127.0.0.1:13001/dashboard}
+
+    logout:
+      after:
+        default_browser_return_url: ${KRATOS_UI_LOGOUT_RETURN_URL:-http://127.0.0.1:13001/logout-return}
+
+    login:
+      ui_url: ${KRATOS_UI_LOGIN_URL:-http://127.0.0.1:13001/login}
+      lifespan: 10m
+      after:
+        default_browser_return_url: ${KRATOS_UI_DEFAULT_RETURN_URL:-http://127.0.0.1:13001/}
+        oidc:
+          hooks:
+            - hook: session
+
+    registration:
+      enabled: false
+      lifespan: 10m
+      ui_url: ${KRATOS_UI_REGISTRATION_URL:-http://127.0.0.1:13001/registration}
+      after:
+        password:
+          hooks:
+            - hook: session
+
+log:
+  level: debug
+  format: text
+  leak_sensitive_values: false
+
+secrets:
+  cookie:
+    - PLEASE-CHANGE-ME-I-AM-VERY-INSECURE
+  cipher:
+    - 32-LONG-SECRET-NOT-SECURE-AT-ALL
+
+ciphers:
+  algorithm: xchacha20-poly1305
+
+hashers:
+  algorithm: bcrypt
+  bcrypt:
+    cost: 8
+
+identity:
+  default_schema_id: user_v0
+  schemas:
+    - id: user_v0
+      url: file:///etc/config/kratos/user.schema.json
+
+courier:
+  smtp:
+    connection_uri: ${KRATOS_COURIER_SMTP_CONNECTION_URI:-smtp://mailhog:1025/?disable_starttls=true}
+    from_address: ${KRATOS_COURIER_FROM_ADDRESS:-noreply@takaro.io}
+    from_name: ${KRATOS_COURIER_FROM_NAME:-Takaro}
+# courier:
+#   delivery_strategy: http
+#   http:
+#     request_config:
+#       #url: https://api.postmarkapp.com/email
+#       url: http://192.168.50.35:9999
+#       method: POST
+#       body: file:///etc/config/kratos/default.template.jsonnet
+#       headers:
+#         Content-Type: application/json
+#         Accept: application/json
+#       auth:
+#         type: api_key
+#         config:
+#           name: X-Postmark-Server-Token
+#           value: xxx
+#           in: header
+
+# https://github.com/ory/kratos/pull/3624
+# SPA flows no longer return a 422 error.
+feature_flags:
+  use_continue_with_transitions: true

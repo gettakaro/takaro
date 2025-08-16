@@ -22,12 +22,14 @@ import { Request, Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
 import { AllowedFilters, AllowedSearch, RangeFilterCreatedAndUpdatedAt } from './shared.js';
 import { DomainOutputDTO, DomainService } from '../service/DomainService.js';
-import { TakaroDTO } from '@takaro/util';
+import { TakaroDTO, logger } from '@takaro/util';
 import { config } from '../config.js';
 import { PlayerService } from '../service/Player/index.js';
 import { PlayerOnGameserverOutputDTO } from '../service/PlayerOnGameserverService.js';
 import { PlayerOutputWithRolesDTO } from '../service/Player/dto.js';
 import { SettingsService, SETTINGS_KEYS } from '../service/SettingsService.js';
+
+const log = logger('UserController');
 
 export class GetUserDTO {
   @Length(3, 50)
@@ -107,6 +109,9 @@ class UserSearchInputAllowedFilters extends AllowedFilters {
   @IsString({ each: true })
   discordId?: string[] | undefined;
   @IsOptional()
+  @IsString({ each: true })
+  steamId?: string[] | undefined;
+  @IsOptional()
   @IsUUID(4, { each: true })
   playerId?: string[] | undefined;
   @IsOptional()
@@ -124,6 +129,9 @@ class UserSearchInputAllowedSearch extends AllowedSearch {
   @IsOptional()
   @IsString({ each: true })
   discordId?: string[] | undefined;
+  @IsOptional()
+  @IsString({ each: true })
+  steamId?: string[] | undefined;
 }
 
 class UserSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
@@ -189,8 +197,80 @@ export class UserController {
     description:
       'Get the current user and the domains that the user has access to. Note that you can only make requests in the scope of a single domain. In order to switch the domain, you need to use the domain selection endpoints',
   })
-  async me(@Req() req: AuthenticatedRequest) {
+  async me(@Req() req: AuthenticatedRequest, @Res() res: Response) {
     const user = await new UserService(req.domainId).findOne(req.user.id);
+
+    // Auto-link Steam players after successful Steam login
+    let mostRecentDomainId: string | null = null;
+    if (user.steamId && !user.playerId && user.idpId) {
+      try {
+        const { linkSteamPlayerOnWebLogin } = await import('../lib/steamAutoLinking.js');
+        const linkingResults = await linkSteamPlayerOnWebLogin(user.idpId);
+
+        if (linkingResults.some((result) => result.success)) {
+          log.info('Successfully auto-linked Steam players on web login', {
+            userId: user.id,
+            steamId: user.steamId,
+            successCount: linkingResults.filter((r) => r.success).length,
+          });
+
+          // Find the most recently active domain from linked players
+          const successfulLinks = linkingResults.filter((r) => r.success && r.domainId);
+          if (successfulLinks.length > 0) {
+            try {
+              // Get player activity across domains to find most recent
+              let mostRecentActivity: Date | null = null;
+
+              for (const link of successfulLinks) {
+                if (!link.playerId || !link.domainId) continue;
+
+                try {
+                  const playerService = new PlayerService(link.domainId);
+                  const playerData = await playerService.resolveFromId(link.playerId);
+
+                  // Check all PlayerOnGameserver associations for most recent activity
+                  if (playerData && playerData.pogs && playerData.pogs.length > 0) {
+                    for (const pog of playerData.pogs) {
+                      if (pog.lastSeen) {
+                        const lastSeenDate = new Date(pog.lastSeen);
+                        if (!mostRecentActivity || lastSeenDate > mostRecentActivity) {
+                          mostRecentActivity = lastSeenDate;
+                          mostRecentDomainId = link.domainId;
+                        }
+                      }
+                    }
+                  }
+                } catch (error) {
+                  log.debug('Failed to get player data for domain', {
+                    playerId: link.playerId,
+                    domainId: link.domainId,
+                    error,
+                  });
+                }
+              }
+
+              if (mostRecentDomainId) {
+                log.info('Found most recent domain for Steam user', {
+                  userId: user.id,
+                  domainId: mostRecentDomainId,
+                  lastActivity: mostRecentActivity,
+                });
+              }
+            } catch (error) {
+              log.warn('Failed to determine most recent domain for Steam user', { error });
+            }
+          }
+        }
+      } catch (error) {
+        // Don't fail the me endpoint if auto-linking fails
+        log.error('Failed to auto-link Steam players on web login', {
+          userId: user.id,
+          steamId: user.steamId,
+          error,
+        });
+      }
+    }
+
     const domainService = new DomainService();
     let domains = await domainService.resolveDomainByIdpId(user.idpId);
 
@@ -229,7 +309,20 @@ export class UserController {
       response.pogs = pogs;
     }
 
-    return apiResponse(response);
+    // Set domain cookie if we found a most recent domain from Steam auto-linking
+    if (mostRecentDomainId && domains.some((d) => d.id === mostRecentDomainId)) {
+      res.cookie('takaro-domain', mostRecentDomainId, {
+        maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+        httpOnly: true,
+        secure: config.get('http.domainCookie.secure'),
+        sameSite: config.get('http.domainCookie.sameSite') as 'lax' | 'strict' | 'none',
+        domain: config.get('http.domainCookie.domain'),
+      });
+      log.info('Set domain cookie for Steam user', { userId: user.id, domainId: mostRecentDomainId });
+    }
+
+    res.json(apiResponse(response));
+    return res;
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_USERS], false))

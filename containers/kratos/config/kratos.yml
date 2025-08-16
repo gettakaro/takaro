@@ -31,6 +31,11 @@ selfservice:
   default_browser_return_url: http://127.0.0.1:13001/login
   allowed_return_urls:
     - http://127.0.0.1:13001/login
+    - http://127.0.0.1:13001/settings
+    - http://127.0.0.1:13001/settings/discord
+    - http://127.0.0.1:13001/settings/steam
+    - http://127.0.0.1:13001/profile
+    - http://127.0.0.1:13001/
 
   methods:
     password:
@@ -45,13 +50,35 @@ selfservice:
       enabled: true
     code:
       enabled: true
+    oidc:
+      enabled: true
+      config:
+        providers:
+          - id: discord
+            provider: discord
+            client_id: "placeholder"
+            client_secret: "placeholder"
+            mapper_url: file:///etc/config/kratos/discord.jsonnet
+            scope:
+              - identify
+              - email
+          - id: steam
+            provider: generic
+            client_id: "placeholder"
+            client_secret: "placeholder"
+            mapper_url: file:///etc/config/kratos/steam.jsonnet
+            issuer_url: "http://steam-auth-proxy:19000"
+            auth_url: "http://localhost:19000/authorize"
+            token_url: "http://steam-auth-proxy:19000/token"
+            scope:
+              - openid
 
   flows:
     error:
       ui_url: http://127.0.0.1:13001/error
 
     settings:
-      ui_url: http://127.0.0.1:13001/account/profile
+      ui_url: http://127.0.0.1:13001/profile
       privileged_session_max_age: 15m
       required_aal: highest_available
 
@@ -74,16 +101,18 @@ selfservice:
     login:
       ui_url: http://127.0.0.1:13001/login
       lifespan: 10m
-    #      after:
-    #        hooks:
-    #          - hook: require_verified_address
+      after:
+        default_browser_return_url: http://127.0.0.1:13001/
 
     registration:
-      enabled: false
+      enabled: true
       lifespan: 10m
       ui_url: http://127.0.0.1:13001/registration
       after:
         password:
+          hooks:
+            - hook: session
+        oidc:
           hooks:
             - hook: session
 
