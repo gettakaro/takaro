@@ -130,6 +130,39 @@ const StatValue = styled.span`
   font-weight: bold;
 `;
 
+const TopBuyersContainer = styled.div`
+  margin-top: auto;
+  padding: ${({ theme }) => theme.spacing[2]};
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+`;
+
+const TopBuyersHeader = styled.div`
+  font-size: ${({ theme }) => theme.fontSize.tiny};
+  font-weight: bold;
+  margin-bottom: ${({ theme }) => theme.spacing[1]};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing['0_5']};
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const TopBuyerItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  font-size: ${({ theme }) => theme.fontSize.tiny};
+  margin-bottom: ${({ theme }) => theme.spacing['0_5']};
+`;
+
+const TopBuyerRank = styled.span`
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const TopBuyerAmount = styled.span`
+  font-weight: bold;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
 export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isLoading }) => {
   if (isLoading) {
     return (
@@ -288,35 +321,23 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
             )}
           </OrdersList>
           {customers?.topBuyers && customers.topBuyers.length > 0 && (
-            <div style={{ marginTop: 'auto', padding: '12px', background: '#f3f4f6', borderRadius: '8px' }}>
-              <div
-                style={{
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                  marginBottom: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                }}
-              >
+            <TopBuyersContainer>
+              <TopBuyersHeader>
                 Top Buyers
                 <IconTooltip icon={<InfoIcon />} size="tiny" color="background">
                   Players ranked by total amount spent. Includes order count and last purchase date to identify your
                   most valuable customers and target them with special offers.
                 </IconTooltip>
-              </div>
+              </TopBuyersHeader>
               {customers.topBuyers.slice(0, 3).map((buyer, index) => (
-                <div
-                  key={buyer.id}
-                  style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '4px' }}
-                >
-                  <span>
+                <TopBuyerItem key={buyer.id}>
+                  <TopBuyerRank>
                     {index + 1}. {buyer.name}
-                  </span>
-                  <span style={{ fontWeight: 'bold' }}>${buyer.totalSpent.toFixed(0)}</span>
-                </div>
+                  </TopBuyerRank>
+                  <TopBuyerAmount>${buyer.totalSpent.toFixed(0)}</TopBuyerAmount>
+                </TopBuyerItem>
               ))}
-            </div>
+            </TopBuyersContainer>
           )}
         </ChartContent>
       </ChartCard>
