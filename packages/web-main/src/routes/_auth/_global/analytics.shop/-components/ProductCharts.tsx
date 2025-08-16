@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { styled, Card, BarChart, RadialBarChart, Skeleton, Chip, IconTooltip } from '@takaro/lib-components';
+import { styled, Card, EChartsBar, EChartsPie, Skeleton, Chip, IconTooltip } from '@takaro/lib-components';
 import { ProductMetricsDTO, OrderMetricsDTO } from '@takaro/apiclient';
 import {
   AiOutlineShoppingCart as CartIcon,
@@ -21,7 +21,7 @@ const ChartsContainer = styled.div`
   grid-template-columns: 1fr;
 
   @media (min-width: 1200px) {
-    grid-template-columns: 40% 30% 30%;
+    grid-template-columns: 4fr 3fr 3fr;
   }
 `;
 
@@ -55,7 +55,7 @@ const ChartContent = styled.div`
 const StatusFlow = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[3]};
+  gap: ${({ theme }) => theme.spacing[1_5]};
   padding: ${({ theme }) => theme.spacing[2]};
 `;
 
@@ -113,6 +113,30 @@ const DeadStockWarning = styled.div`
   background: rgba(239, 68, 68, 0.1);
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   margin-top: ${({ theme }) => theme.spacing[2]};
+`;
+
+const CompletionRateContainer = styled.div`
+  margin-top: auto;
+  padding: ${({ theme }) => theme.spacing[2]};
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+`;
+
+const CompletionRateContent = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const CompletionRateLabel = styled.span`
+  font-size: ${({ theme }) => theme.fontSize.small};
+  color: ${({ theme }) => theme.colors.textAlt};
+`;
+
+const CompletionRateValue = styled.span<{ $isGood: boolean }>`
+  font-size: ${({ theme }) => theme.fontSize.large};
+  font-weight: bold;
+  color: ${({ $isGood, theme }) => ($isGood ? theme.colors.success : theme.colors.warning)};
 `;
 
 export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoading }) => {
@@ -174,12 +198,20 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
         </ChartHeader>
         <ChartContent>
           {topItemsData.length > 0 ? (
-            <BarChart
-              name="Top Items"
+            <EChartsBar
               data={topItemsData}
               xAccessor={(d: any) => d.name}
               yAccessor={(d: any) => d.revenue}
-              showGrid
+              seriesName="Revenue"
+              showGrid={true}
+              showLegend={false}
+              tooltipFormatter={(params: any) => {
+                if (Array.isArray(params) && params.length > 0) {
+                  const data = topItemsData[params[0].dataIndex];
+                  return `${data.name}<br/>Revenue: $${data.revenue.toLocaleString()}<br/>Quantity: ${data.quantity}`;
+                }
+                return '';
+              }}
             />
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
@@ -207,12 +239,17 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
         </ChartHeader>
         <ChartContent>
           {categoryData.length > 0 ? (
-            <RadialBarChart
-              name="Categories"
+            <EChartsPie
               data={categoryData}
-              xAccessor={(d: any) => d.name}
-              yAccessor={(d: any) => d.value}
-              tooltipAccessor={(d: any) => `${d.name}: $${d.value}`}
+              nameAccessor={(d: any) => d.name}
+              valueAccessor={(d: any) => d.value}
+              seriesName="Categories"
+              donut={true}
+              roseType="area"
+              showLegend={true}
+              tooltipFormatter={(params: any) => {
+                return `${params.name}<br/>Revenue: $${params.value.toLocaleString()}<br/>${params.percent}% of total`;
+              }}
             />
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
@@ -258,20 +295,14 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
             )}
           </StatusFlow>
           {orders?.completionRate !== undefined && (
-            <div style={{ marginTop: 'auto', padding: '12px', background: '#f3f4f6', borderRadius: '8px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '14px', color: '#6b7280' }}>Completion Rate</span>
-                <span
-                  style={{
-                    fontSize: '18px',
-                    fontWeight: 'bold',
-                    color: orders.completionRate > 80 ? '#10b981' : '#f59e0b',
-                  }}
-                >
+            <CompletionRateContainer>
+              <CompletionRateContent>
+                <CompletionRateLabel>Completion Rate</CompletionRateLabel>
+                <CompletionRateValue $isGood={orders.completionRate > 80}>
                   {orders.completionRate.toFixed(1)}%
-                </span>
-              </div>
-            </div>
+                </CompletionRateValue>
+              </CompletionRateContent>
+            </CompletionRateContainer>
           )}
         </ChartContent>
       </ChartCard>

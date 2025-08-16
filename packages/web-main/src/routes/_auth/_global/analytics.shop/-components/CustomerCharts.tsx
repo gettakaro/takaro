@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { styled, Card, PieChart, LineChart, Skeleton, Chip, Avatar, IconTooltip } from '@takaro/lib-components';
+import { styled, Card, EChartsPie, EChartsLine, Skeleton, Chip, Avatar, IconTooltip } from '@takaro/lib-components';
 import { CustomerMetricsDTO, OrderMetricsDTO } from '@takaro/apiclient';
 import { DateTime } from 'luxon';
 import {
@@ -20,7 +20,7 @@ const ChartsContainer = styled.div`
   grid-template-columns: 1fr;
 
   @media (min-width: 1200px) {
-    grid-template-columns: 35% 35% 30%;
+    grid-template-columns: 1fr 1fr 1fr;
   }
 `;
 
@@ -49,44 +49,6 @@ const ChartTitle = styled.h3`
 const ChartContent = styled.div`
   position: relative;
   height: 300px;
-`;
-
-const SegmentLegend = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[2]};
-  margin-top: ${({ theme }) => theme.spacing[3]};
-`;
-
-const LegendItem = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: ${({ theme }) => theme.spacing[1]} ${({ theme }) => theme.spacing[2]};
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border-radius: ${({ theme }) => theme.borderRadius.small};
-`;
-
-const LegendInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[2]};
-`;
-
-const LegendDot = styled.div<{ $color: string }>`
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: ${({ $color }) => $color};
-`;
-
-const LegendLabel = styled.span`
-  font-size: ${({ theme }) => theme.fontSize.small};
-`;
-
-const LegendValue = styled.span`
-  font-size: ${({ theme }) => theme.fontSize.small};
-  color: ${({ theme }) => theme.colors.textAlt};
 `;
 
 const OrdersList = styled.div`
@@ -187,8 +149,6 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
       percentage: segment.percentage,
     })) || [];
 
-  const segmentColors = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'];
-
   // Prepare purchase timeline data for LineChart
   const timelineData: any[] = [];
 
@@ -212,28 +172,18 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
           {segmentData.length > 0 ? (
             <>
               <div style={{ height: '200px' }}>
-                <PieChart
-                  name="Customer Segments"
+                <EChartsPie
                   data={segmentData}
-                  variant="donut"
-                  xAccessor={(d: any) => d.name}
-                  yAccessor={(d: any) => d.value}
-                  tooltipAccessor={(d: any) => `${d.name}: ${d.value}`}
+                  nameAccessor={(d: any) => d.name}
+                  valueAccessor={(d: any) => d.value}
+                  seriesName="Customers"
+                  donut={true}
+                  showLegend={true}
+                  tooltipFormatter={(params: any) => {
+                    return `${params.name}<br/>Customers: ${params.value} (${params.percent}%)`;
+                  }}
                 />
               </div>
-              <SegmentLegend>
-                {segmentData.map((segment, index) => (
-                  <LegendItem key={segment.name}>
-                    <LegendInfo>
-                      <LegendDot $color={segmentColors[index % segmentColors.length]} />
-                      <LegendLabel>{segment.name}</LegendLabel>
-                    </LegendInfo>
-                    <LegendValue>
-                      {segment.value} ({segment.percentage.toFixed(1)}%)
-                    </LegendValue>
-                  </LegendItem>
-                ))}
-              </SegmentLegend>
               <StatsBox>
                 <Stat>
                   <StatLabel>Repeat Rate</StatLabel>
@@ -266,12 +216,20 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
         <ChartContent>
           {timelineData.length > 0 ? (
             <>
-              <LineChart
-                name="Purchase Timeline"
-                data={timelineData.length > 0 ? timelineData : [{ date: new Date(), purchases: 0 }]}
-                xAccessor={(d: any) => new Date(d.date)}
+              <EChartsLine
+                data={timelineData}
+                xAccessor={(d: any) => d.date}
                 yAccessor={(d: any) => d.purchases}
-                showGrid
+                seriesName="Purchases"
+                smooth={true}
+                showGrid={true}
+                showLegend={false}
+                tooltipFormatter={(params: any) => {
+                  if (Array.isArray(params) && params.length > 0) {
+                    return `${params[0].name}<br/>Purchases: ${params[0].value}`;
+                  }
+                  return '';
+                }}
               />
               <StatsBox>
                 <Stat>

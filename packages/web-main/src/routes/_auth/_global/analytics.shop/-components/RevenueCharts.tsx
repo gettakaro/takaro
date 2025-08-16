@@ -1,5 +1,13 @@
 import { FC, useState } from 'react';
-import { styled, Card, AreaChart, HeatMap, Skeleton, ToggleButtonGroup, IconTooltip } from '@takaro/lib-components';
+import {
+  styled,
+  Card,
+  EChartsArea,
+  EChartsHeatmap,
+  Skeleton,
+  ToggleButtonGroup,
+  IconTooltip,
+} from '@takaro/lib-components';
 import { RevenueMetricsDTO } from '@takaro/apiclient';
 import { DateTime } from 'luxon';
 import { AiOutlineInfoCircle as InfoIcon } from 'react-icons/ai';
@@ -15,7 +23,7 @@ const ChartsContainer = styled.div`
   grid-template-columns: 1fr;
 
   @media (min-width: 1200px) {
-    grid-template-columns: 70% 30%;
+    grid-template-columns: 7fr 3fr;
   }
 `;
 
@@ -92,15 +100,15 @@ export const RevenueCharts: FC<RevenueChartsProps> = ({ revenue, isLoading }) =>
     })) || [];
 
   // Prepare data for HeatMap (7 days x 24 hours)
-  const heatmapData = Array.from({ length: 7 }, (_, dayIndex) =>
-    Array.from({ length: 24 }, (_, hourIndex) => {
-      const dataPoint = revenue?.heatmap?.find((p) => p.day === dayIndex && p.hour === hourIndex);
-      return dataPoint?.value || 0;
-    }),
-  );
+  const heatmapData =
+    revenue?.heatmap?.map((p) => ({
+      x: p.hour,
+      y: p.day,
+      value: p.value,
+    })) || [];
 
-  const _days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const _hours = Array.from({ length: 24 }, (_, i) =>
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const hours = Array.from({ length: 24 }, (_, i) =>
     i === 0 ? '12am' : i < 12 ? `${i}am` : i === 12 ? '12pm' : `${i - 12}pm`,
   );
 
@@ -127,13 +135,21 @@ export const RevenueCharts: FC<RevenueChartsProps> = ({ revenue, isLoading }) =>
         </ChartHeader>
         <ChartContent>
           {chartData.length > 0 ? (
-            <AreaChart
-              name="Revenue"
+            <EChartsArea
               data={chartData}
-              xAccessor={(d: any) => new Date(d.date)}
+              xAccessor={(d: any) => d.date}
               yAccessor={(d: any) => d.revenue}
-              tooltipAccessor={(d: any) => `$${d.revenue.toFixed(0)}`}
-              showGrid
+              seriesName="Revenue"
+              smooth={true}
+              gradient={true}
+              showGrid={true}
+              tooltipFormatter={(params: any) => {
+                if (Array.isArray(params) && params.length > 0) {
+                  const value = params[0].value;
+                  return `${params[0].name}<br/>Revenue: $${value.toLocaleString()}`;
+                }
+                return '';
+              }}
             />
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
@@ -162,18 +178,21 @@ export const RevenueCharts: FC<RevenueChartsProps> = ({ revenue, isLoading }) =>
           </ChartTitle>
         </ChartHeader>
         <ChartContent>
-          {heatmapData.some((row) => row.some((val) => val > 0)) ? (
-            <HeatMap
-              name="Revenue Heatmap"
-              data={heatmapData.flat().map((value, index) => ({
-                x: index % 24,
-                y: Math.floor(index / 24),
-                z: value,
-              }))}
+          {heatmapData.length > 0 ? (
+            <EChartsHeatmap
+              data={heatmapData}
               xAccessor={(d: any) => d.x}
               yAccessor={(d: any) => d.y}
-              zAccessor={(d: any) => d.z}
-              tooltipAccessor={(d: any) => `$${d.z}`}
+              valueAccessor={(d: any) => d.value}
+              xCategories={hours}
+              yCategories={days}
+              showLabel={false}
+              tooltipFormatter={(params: any) => {
+                const hour = hours[params.value[0]];
+                const day = days[params.value[1]];
+                const value = params.value[2];
+                return `${day} ${hour}<br/>Revenue: $${value.toLocaleString()}`;
+              }}
             />
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>

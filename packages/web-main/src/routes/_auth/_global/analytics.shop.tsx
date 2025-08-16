@@ -42,6 +42,7 @@ const Container = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[4]};
   padding: ${({ theme }) => theme.spacing[4]};
+  box-sizing: border-box;
 `;
 
 const Header = styled.div`
@@ -61,6 +62,17 @@ const ControlBar = styled.div`
   gap: ${({ theme }) => theme.spacing[2]};
   align-items: center;
   flex-wrap: wrap;
+
+  > div:first-child {
+    flex: 1 1 280px;
+    max-width: 400px;
+    min-width: 200px;
+  }
+
+  > div:nth-child(2) {
+    flex: 0 1 180px;
+    min-width: 150px;
+  }
 `;
 
 const ChartSection = styled.div`
@@ -139,10 +151,10 @@ function ShopAnalyticsPage() {
       <Header>
         <h1>Shop Analytics</h1>
         <ControlBar>
-          <div style={{ width: '300px' }}>
+          <div>
             <GameServerSelectQueryField control={control} name="gameServers" multiple={true} canClear={true} />
           </div>
-          <div style={{ width: '200px' }}>
+          <div>
             <TimePeriodSelectField control={control} name="period" />
           </div>
           <LastUpdated>
