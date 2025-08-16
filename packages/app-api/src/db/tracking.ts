@@ -182,7 +182,6 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
       });
 
       await redis.set(cacheKey, JSON.stringify(inventoryItems), { EX: 1800 });
-      this.log.debug('Inventory cache updated', { playerId, itemCount: items.length });
     } catch (error) {
       this.log.warn('Failed to update inventory cache', { error, playerId });
     }
