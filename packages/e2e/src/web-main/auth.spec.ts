@@ -44,7 +44,7 @@ test('Logging in with invalid credentials shows error message', async ({ page, t
   await emailInput.click();
   await emailInput.fill('invalid+e2e@takaro.dev');
   await page.getByLabel('PasswordRequired').fill('invalid');
-  await page.getByRole('button', { name: 'Log in', exact: true }).click();
+  await page.locator('button[type="submit"]:has-text("Log in")').click();
   await expect(
     page.getByText(
       'The provided credentials are invalid, check for spelling mistakes in your password or username, email address, or phone number.',
@@ -217,7 +217,7 @@ test('Login with inactive domain shows error message', async ({ page, takaro }) 
   await emailInput.click();
   await emailInput.fill(testUserEmail);
   await page.getByLabel('PasswordRequired').fill(testUserPassword);
-  await page.getByRole('button', { name: 'Log in' }).click();
+  await page.locator('button[type="submit"]:has-text("Log in")').click();
 
   // Verify the error message is displayed
   await expect(page.getByText('Domain is disabled. Please contact support.')).toBeVisible();
@@ -257,7 +257,7 @@ test('Login with maintenance domain shows error message', async ({ page, takaro 
   await emailInput.click();
   await emailInput.fill(testUserEmail);
   await page.getByLabel('PasswordRequired').fill(testUserPassword);
-  await page.getByRole('button', { name: 'Log in' }).click();
+  await page.locator('button[type="submit"]:has-text("Log in")').click();
 
   // Verify the error message is displayed
   await expect(
