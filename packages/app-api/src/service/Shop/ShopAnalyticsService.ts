@@ -16,6 +16,7 @@ import {
   ProductMetricsDTO,
   TopItemDTO,
   CategoryPerformanceDTO,
+  DeadStockItemDTO,
   OrderMetricsDTO,
   OrderStatusCountDTO,
   RecentOrderDTO,
@@ -418,6 +419,17 @@ export class ShopAnalyticsService extends TakaroService<
             }),
         ),
         deadStock: typeof products.noSales === 'number' ? products.noSales : products.noSales.length,
+        deadStockItems:
+          typeof products.noSales !== 'number'
+            ? products.noSales.map(
+                (item) =>
+                  new DeadStockItemDTO({
+                    id: item.id,
+                    name: item.name,
+                    daysSinceCreated: item.daysSinceCreated,
+                  }),
+              )
+            : undefined,
         totalProducts: products.totalCount,
       }),
       orders: new OrderMetricsDTO({
@@ -993,7 +1005,11 @@ export class ShopAnalyticsService extends TakaroService<
           orderCount: Number(cat.order_count),
           percentOfTotal: totalRevenue > 0 ? (Number(cat.revenue) / totalRevenue) * 100 : 0,
         })),
-      noSales: noSales.length,
+      noSales: noSales.map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        daysSinceCreated: Number(item.days_since_created),
+      })),
       totalCount: totalCount,
     };
   }

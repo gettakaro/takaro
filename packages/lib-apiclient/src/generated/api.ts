@@ -10042,6 +10042,31 @@ export interface PogStatsInputDTO {
 /**
  *
  * @export
+ * @interface DeadStockItemDTO
+ */
+export interface DeadStockItemDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof DeadStockItemDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DeadStockItemDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {number}
+   * @memberof DeadStockItemDTO
+   */
+  daysSinceCreated: number;
+}
+/**
+ *
+ * @export
  * @interface ProductMetricsDTO
  */
 export interface ProductMetricsDTO {
@@ -10063,6 +10088,12 @@ export interface ProductMetricsDTO {
    * @memberof ProductMetricsDTO
    */
   deadStock: number;
+  /**
+   *
+   * @type {Array<DeadStockItemDTO>}
+   * @memberof ProductMetricsDTO
+   */
+  deadStockItems?: Array<DeadStockItemDTO>;
   /**
    *
    * @type {number}

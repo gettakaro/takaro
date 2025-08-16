@@ -326,6 +326,11 @@ export class ProductMetricsDTO extends TakaroDTO<ProductMetricsDTO> {
   @IsNumber()
   deadStock: number;
 
+  @ValidateNested({ each: true })
+  @Type(() => DeadStockItemDTO)
+  @IsOptional()
+  deadStockItems?: DeadStockItemDTO[];
+
   @IsNumber()
   totalProducts: number;
 }
@@ -359,6 +364,17 @@ export class CategoryPerformanceDTO extends TakaroDTO<CategoryPerformanceDTO> {
 
   @IsNumber()
   percentage: number;
+}
+
+export class DeadStockItemDTO extends TakaroDTO<DeadStockItemDTO> {
+  @IsString()
+  id: string;
+
+  @IsString()
+  name: string;
+
+  @IsNumber()
+  daysSinceCreated: number;
 }
 
 export class OrderMetricsDTO extends TakaroDTO<OrderMetricsDTO> {

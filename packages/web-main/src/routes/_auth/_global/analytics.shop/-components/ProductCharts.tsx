@@ -1,5 +1,15 @@
-import { FC } from 'react';
-import { styled, Card, EChartsBar, EChartsPie, Skeleton, Chip, IconTooltip } from '@takaro/lib-components';
+import { FC, useState } from 'react';
+import {
+  styled,
+  Card,
+  EChartsBar,
+  EChartsPie,
+  Skeleton,
+  Chip,
+  IconTooltip,
+  Dialog,
+  Button,
+} from '@takaro/lib-components';
 import { ProductMetricsDTO, OrderMetricsDTO } from '@takaro/apiclient';
 import {
   AiOutlineShoppingCart as CartIcon,
@@ -114,6 +124,13 @@ const DeadStockWarning = styled.div`
   background: rgba(239, 68, 68, 0.1);
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   margin-top: ${({ theme }) => theme.spacing[2]};
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.15);
+    transform: translateY(-1px);
+  }
 `;
 
 const CompletionRateContainer = styled.div`
@@ -140,7 +157,40 @@ const CompletionRateValue = styled.span<{ $isGood: boolean }>`
   color: ${({ $isGood, theme }) => ($isGood ? theme.colors.success : theme.colors.warning)};
 `;
 
+const DeadStockList = styled.div`
+  max-height: 400px;
+  overflow-y: auto;
+`;
+
+const DeadStockItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: ${({ theme }) => theme.spacing[2]};
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  margin-bottom: ${({ theme }) => theme.spacing[1]};
+`;
+
+const DeadStockItemInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing['0_5']};
+`;
+
+const DeadStockItemName = styled.span`
+  font-size: ${({ theme }) => theme.fontSize.medium};
+  font-weight: 500;
+`;
+
+const DeadStockItemDays = styled.span`
+  font-size: ${({ theme }) => theme.fontSize.tiny};
+  color: ${({ theme }) => theme.colors.textAlt};
+`;
+
 export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoading }) => {
+  const [deadStockDialogOpen, setDeadStockDialogOpen] = useState(false);
+
   // Prepare data for top items bar chart
   const topItemsData =
     products?.topItems?.map((item) => ({
@@ -213,7 +263,7 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
           )}
         </ChartContent>
         {products?.deadStock && products.deadStock > 0 && (
-          <DeadStockWarning>
+          <DeadStockWarning onClick={() => setDeadStockDialogOpen(true)}>
             <CartIcon style={{ color: '#ef4444' }} />
             <span>{products.deadStock} items with no sales in 30 days</span>
           </DeadStockWarning>
@@ -310,6 +360,46 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
           )}
         </ChartContent>
       </ChartCard>
+
+      {/* Dead Stock Dialog */}
+      <Dialog open={deadStockDialogOpen} onOpenChange={setDeadStockDialogOpen}>
+        <Dialog.Content>
+          <Dialog.Heading>Products with No Sales</Dialog.Heading>
+          <Dialog.Body>
+            {products?.deadStockItems && products.deadStockItems.length > 0 ? (
+              <>
+                <div style={{ marginBottom: '16px', color: '#9ca3af', fontSize: '14px' }}>
+                  These products have not sold in the selected period:
+                </div>
+                <DeadStockList>
+                  {products.deadStockItems.map((item) => (
+                    <DeadStockItem key={item.id}>
+                      <DeadStockItemInfo>
+                        <DeadStockItemName>{item.name}</DeadStockItemName>
+                        <DeadStockItemDays>Created {item.daysSinceCreated} days ago</DeadStockItemDays>
+                      </DeadStockItemInfo>
+                    </DeadStockItem>
+                  ))}
+                </DeadStockList>
+                {products.deadStock > products.deadStockItems.length && (
+                  <div style={{ marginTop: '16px', textAlign: 'center', color: '#9ca3af', fontSize: '14px' }}>
+                    Showing {products.deadStockItems.length} of {products.deadStock} items with no sales
+                  </div>
+                )}
+              </>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '32px', color: '#9ca3af' }}>
+                No detailed information available
+              </div>
+            )}
+            <div style={{ marginTop: '24px' }}>
+              <Button onClick={() => setDeadStockDialogOpen(false)} fullWidth>
+                Close
+              </Button>
+            </div>
+          </Dialog.Body>
+        </Dialog.Content>
+      </Dialog>
     </ChartsContainer>
   );
 };
