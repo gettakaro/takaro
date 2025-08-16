@@ -5,6 +5,7 @@ import type { SinonSandbox } from 'sinon';
 import { ShopAnalyticsService } from '../ShopAnalyticsService.js';
 import { Redis } from '@takaro/db';
 import { DateTime } from 'luxon';
+import { ShopAnalyticsPeriod } from '../dto.js';
 
 describe('ShopAnalyticsService', () => {
   let service: ShopAnalyticsService;
@@ -74,7 +75,7 @@ describe('ShopAnalyticsService', () => {
 
       redisClientStub.get.resolves(JSON.stringify(cachedData));
 
-      const result = await service.getAnalytics(gameServerIds, startDate, endDate);
+      const result = await service.getAnalytics(gameServerIds, ShopAnalyticsPeriod.LAST_30_DAYS);
 
       expect(result.kpis.totalRevenue).to.equal(1000);
       expect(redisClientStub.get.calledOnce).to.equal(true);
@@ -123,7 +124,7 @@ describe('ShopAnalyticsService', () => {
 
       sandbox.stub(service as any, 'generateInsights').resolves([]);
 
-      const result = await service.getAnalytics(gameServerIds, startDate, endDate);
+      const result = await service.getAnalytics(gameServerIds, ShopAnalyticsPeriod.LAST_30_DAYS);
 
       expect(result.kpis.totalRevenue).to.equal(5000);
       expect(redisClientStub.setEx.calledOnce).to.equal(true);
@@ -169,7 +170,7 @@ describe('ShopAnalyticsService', () => {
       });
       sandbox.stub(service as any, 'generateInsights').resolves([]);
 
-      const result = await service.getAnalytics(gameServerIds, startDate, endDate);
+      const result = await service.getAnalytics(gameServerIds, ShopAnalyticsPeriod.LAST_30_DAYS);
 
       expect(result.kpis.totalRevenue).to.equal(1000);
     });
@@ -333,13 +334,11 @@ describe('ShopAnalyticsService', () => {
       sandbox.stub(service as any, 'generateInsights').resolves([]);
 
       // Test with ISO dates
-      const result1 = await service.getAnalytics([], startDate, endDate);
+      const result1 = await service.getAnalytics([], ShopAnalyticsPeriod.LAST_30_DAYS);
       expect(result1).to.not.equal(undefined);
 
-      // Test with DateTime objects converted to ISO
-      const startDateTime = DateTime.now().minus({ days: 7 });
-      const endDateTime = DateTime.now();
-      const result2 = await service.getAnalytics([], startDateTime.toISO()!, endDateTime.toISO()!);
+      // Test with period parameter
+      const result2 = await service.getAnalytics([], ShopAnalyticsPeriod.LAST_30_DAYS);
       expect(result2).to.not.equal(undefined);
     });
   });
@@ -359,7 +358,7 @@ describe('ShopAnalyticsService', () => {
       sandbox.stub(service as any, 'generateInsights').resolves([]);
 
       try {
-        await service.getAnalytics(gameServerIds, startDate, endDate);
+        await service.getAnalytics(gameServerIds, ShopAnalyticsPeriod.LAST_30_DAYS);
         expect.fail('Should have thrown an error');
       } catch (error: any) {
         expect(error.message).to.include('Database connection failed');
@@ -412,7 +411,7 @@ describe('ShopAnalyticsService', () => {
       });
       sandbox.stub(service as any, 'generateInsights').resolves([]);
 
-      await service.getAnalytics(multiServerIds, startDate, endDate);
+      await service.getAnalytics(multiServerIds, ShopAnalyticsPeriod.LAST_30_DAYS);
 
       expect(capturedServerIds).to.deep.equal(multiServerIds);
     });
@@ -459,7 +458,7 @@ describe('ShopAnalyticsService', () => {
       });
       sandbox.stub(service as any, 'generateInsights').resolves([]);
 
-      const result = await service.getAnalytics(undefined, startDate, endDate);
+      const result = await service.getAnalytics(undefined, ShopAnalyticsPeriod.LAST_30_DAYS);
 
       expect(capturedServerIds).to.equal(undefined);
       expect(result.kpis.totalRevenue).to.equal(5000);

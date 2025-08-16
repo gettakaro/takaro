@@ -1,7 +1,11 @@
 import { IntegrationTest, expect, IShopSetup, shopSetup } from '@takaro/test';
-import { ShopOrderOutputDTOStatusEnum, isAxiosError, Client } from '@takaro/apiclient';
+import {
+  ShopOrderOutputDTOStatusEnum,
+  isAxiosError,
+  Client,
+  AnalyticsControllerGetShopAnalyticsPeriodEnum,
+} from '@takaro/apiclient';
 import { Redis } from '@takaro/db';
-import { DateTime } from 'luxon';
 import { describe } from 'node:test';
 
 const group = 'Analytics/ShopAnalyticsController';
@@ -109,16 +113,12 @@ const tests = [
   new IntegrationTest<IAnalyticsTestSetup>({
     group,
     snapshot: false,
-    name: 'Get shop analytics with date range filter',
+    name: 'Get shop analytics with Last7Days period',
     setup: analyticsSetup,
     test: async function () {
-      const startDate = DateTime.now().minus({ days: 7 }).toISO();
-      const endDate = DateTime.now().toISO();
-
       const res = await this.setupData.client1WithPermissions.analytics.analyticsControllerGetShopAnalytics(
         undefined, // gameServerIds
-        startDate as any, // startDate
-        endDate as any, // endDate
+        AnalyticsControllerGetShopAnalyticsPeriodEnum.Last7Days,
       );
 
       expect(res.data.data).to.have.property('kpis');
@@ -278,22 +278,18 @@ const tests = [
   new IntegrationTest<IAnalyticsTestSetup>({
     group,
     snapshot: false,
-    name: 'Analytics should handle empty date range gracefully',
+    name: 'Analytics should handle Last24Hours period',
     setup: analyticsSetup,
     test: async function () {
-      // Request analytics for a future date range with no data
-      const startDate = DateTime.now().plus({ days: 100 }).toISO();
-      const endDate = DateTime.now().plus({ days: 101 }).toISO();
-
       const res = await this.setupData.client1WithPermissions.analytics.analyticsControllerGetShopAnalytics(
         undefined,
-        startDate || undefined,
-        endDate || undefined,
+        AnalyticsControllerGetShopAnalyticsPeriodEnum.Last24Hours,
       );
 
       expect(res.data.data).to.have.property('kpis');
-      expect(res.data.data.kpis.totalRevenue).to.equal(0);
-      expect(res.data.data.orders.recentOrders).to.be.an('array').that.is.empty;
+      expect(res.data.data.kpis.totalRevenue).to.be.greaterThanOrEqual(0);
+      // With test data created "today", Last24Hours should have data
+      expect(res.data.data.orders.recentOrders).to.be.an('array');
     },
   }),
 
@@ -324,6 +320,72 @@ const tests = [
         expect(status.percentage).to.be.greaterThanOrEqual(0);
         expect(status.percentage).to.be.lessThanOrEqual(100);
       });
+    },
+  }),
+
+  new IntegrationTest<IAnalyticsTestSetup>({
+    group,
+    snapshot: false,
+    name: 'Analytics should support Last30Days period',
+    setup: analyticsSetup,
+    test: async function () {
+      const res = await this.setupData.client1WithPermissions.analytics.analyticsControllerGetShopAnalytics(
+        undefined,
+        AnalyticsControllerGetShopAnalyticsPeriodEnum.Last30Days,
+      );
+
+      expect(res.data.data).to.have.property('kpis');
+      expect(res.data.data.kpis.totalRevenue).to.be.greaterThanOrEqual(0);
+      expect(res.data.data).to.have.property('lastUpdated');
+    },
+  }),
+
+  new IntegrationTest<IAnalyticsTestSetup>({
+    group,
+    snapshot: false,
+    name: 'Analytics should support Last90Days period',
+    setup: analyticsSetup,
+    test: async function () {
+      const res = await this.setupData.client1WithPermissions.analytics.analyticsControllerGetShopAnalytics(
+        undefined,
+        AnalyticsControllerGetShopAnalyticsPeriodEnum.Last90Days,
+      );
+
+      expect(res.data.data).to.have.property('kpis');
+      expect(res.data.data.kpis.totalRevenue).to.be.greaterThanOrEqual(0);
+      expect(res.data.data).to.have.property('lastUpdated');
+    },
+  }),
+
+  new IntegrationTest<IAnalyticsTestSetup>({
+    group,
+    snapshot: false,
+    name: 'Analytics with different periods should return consistent structure',
+    setup: analyticsSetup,
+    test: async function () {
+      const periods = [
+        AnalyticsControllerGetShopAnalyticsPeriodEnum.Last24Hours,
+        AnalyticsControllerGetShopAnalyticsPeriodEnum.Last7Days,
+        AnalyticsControllerGetShopAnalyticsPeriodEnum.Last30Days,
+        AnalyticsControllerGetShopAnalyticsPeriodEnum.Last90Days,
+      ];
+
+      for (const period of periods) {
+        const res = await this.setupData.client1WithPermissions.analytics.analyticsControllerGetShopAnalytics(
+          undefined,
+          period,
+        );
+
+        // All periods should return the same structure
+        expect(res.data.data).to.have.property('kpis');
+        expect(res.data.data).to.have.property('revenue');
+        expect(res.data.data).to.have.property('products');
+        expect(res.data.data).to.have.property('orders');
+        expect(res.data.data).to.have.property('customers');
+        expect(res.data.data).to.have.property('insights');
+        expect(res.data.data).to.have.property('lastUpdated');
+        expect(res.data.data).to.have.property('metadata');
+      }
     },
   }),
 ];
