@@ -21,9 +21,9 @@ const db = knex({
 // Configuration
 const config = {
   domain: process.env.SHOP_DATA_DOMAIN || process.env.TAKARO_DEV_DOMAIN_NAME || 'test-domain',
-  listingCount: parseInt(process.env.SHOP_DATA_LISTING_COUNT) || 50,
-  orderCount: parseInt(process.env.SHOP_DATA_ORDER_COUNT) || 300,
-  daysBack: parseInt(process.env.SHOP_DATA_DAYS_BACK) || 30,
+  listingCount: parseInt(process.env.SHOP_DATA_LISTING_COUNT) || 100,
+  orderCount: parseInt(process.env.SHOP_DATA_ORDER_COUNT) || 3650,
+  daysBack: parseInt(process.env.SHOP_DATA_DAYS_BACK) || 365,
   clean: process.env.SHOP_DATA_CLEAN === 'true',
 };
 
@@ -265,7 +265,7 @@ async function createListings(server, categories, domainId) {
     );
     
     const createdDate = new Date();
-    createdDate.setDate(createdDate.getDate() - Math.floor(Math.random() * 60)); // Random date in last 60 days
+    createdDate.setDate(createdDate.getDate() - Math.floor(Math.random() * 365)); // Random date in last 365 days
     
     const [listing] = await db('shopListing')
       .insert({
@@ -358,6 +358,33 @@ async function generateOrders(server, listings, domainId) {
     const daysAgo = Math.random() * config.daysBack;
     const orderDate = new Date(now);
     orderDate.setDate(orderDate.getDate() - daysAgo);
+    
+    // Seasonal variation based on month
+    const month = orderDate.getMonth();
+    let seasonalMultiplier = 1.0;
+    
+    // Apply seasonal patterns
+    if (month === 11) {
+      // December - Holiday season spike (2x orders)
+      seasonalMultiplier = 2.0;
+    } else if (month === 10) {
+      // November - Black Friday/Cyber Monday (1.8x orders)
+      seasonalMultiplier = 1.8;
+    } else if (month === 6 || month === 7) {
+      // July/August - Summer sale season (1.5x orders)
+      seasonalMultiplier = 1.5;
+    } else if (month === 0) {
+      // January - Post-holiday lull (0.7x orders)
+      seasonalMultiplier = 0.7;
+    } else if (month === 3 || month === 4) {
+      // April/May - Spring season (1.3x orders)
+      seasonalMultiplier = 1.3;
+    }
+    
+    // Apply seasonal effect by randomly skipping orders
+    if (Math.random() > seasonalMultiplier) {
+      continue;
+    }
     
     // Randomize time of day with realistic distribution
     // Peak hours: 10am-10pm with highest activity 6pm-9pm
