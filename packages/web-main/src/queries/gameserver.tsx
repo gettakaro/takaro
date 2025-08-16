@@ -245,6 +245,37 @@ export const useGameServerSendMessage = () => {
   );
 };
 
+interface ResetCurrencyInput {
+  gameServerId: string;
+}
+
+export const useGameServerResetCurrency = () => {
+  const apiClient = getApiClient();
+  const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return mutationWrapper<any, ResetCurrencyInput>(
+    useMutation<any, AxiosError<any>, ResetCurrencyInput>({
+      mutationFn: async ({ gameServerId }) => {
+        const response = await apiClient.gameserver.gameServerControllerResetCurrency(gameServerId);
+        return response.data;
+      },
+      onSuccess: async (data) => {
+        const affectedCount = data?.affectedPlayerCount || 0;
+        enqueueSnackbar(`Successfully reset currency for ${affectedCount} players`, {
+          variant: 'default',
+          type: 'success',
+        });
+        // Invalidate player queries to refresh the UI
+        await queryClient.invalidateQueries({
+          queryKey: ['playerOnGameserver'],
+        });
+      },
+    }),
+    {},
+  );
+};
+
 export const moduleInstallationsOptions = (queryParams: ModuleInstallationSearchInputDTO = {}) => {
   return queryOptions<ModuleInstallationOutputDTO[], AxiosError<ModuleInstallationOutputDTOAPI>>({
     queryKey: [...ModuleInstallationKeys.list(), ...queryParamsToArray(queryParams)],

@@ -359,6 +359,20 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     return this.findOne(playerId);
   }
 
+  async resetAllCurrencyForGameServer(gameServerId: string): Promise<number> {
+    const result: any = await this.raw(
+      `
+      UPDATE "playerOnGameServer"
+      SET currency = 0
+      WHERE "gameServerId" = ? AND "domain" = ?
+      RETURNING *;
+    `,
+      [gameServerId, this.domainId],
+    );
+
+    return result.rowCount ?? 0;
+  }
+
   async getInventory(pogId: string): Promise<IItemDTO[]> {
     const redis = await Redis.getClient('inventory');
     const cacheKey = `inventory:${this.domainId}:${pogId}`;

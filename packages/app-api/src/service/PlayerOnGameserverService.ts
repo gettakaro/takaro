@@ -9,7 +9,13 @@ import { IItemDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 import { EVENT_TYPES, EventCreateDTO, EventOutputDTO, EventService } from './EventService.js';
-import { IGamePlayer, TakaroEventCurrencyAdded, TakaroEventCurrencyDeducted, TakaroEvents } from '@takaro/modules';
+import {
+  IGamePlayer,
+  TakaroEventCurrencyAdded,
+  TakaroEventCurrencyDeducted,
+  TakaroEventCurrencyResetAll,
+  TakaroEvents,
+} from '@takaro/modules';
 import { PlayerService } from './Player/index.js';
 import { PlayerUpdateDTO } from './Player/dto.js';
 
@@ -329,6 +335,27 @@ export class PlayerOnGameServerService extends TakaroService<
 
     return updatedPlayerOnGameServer;
   }
+
+  async resetAllPlayersCurrency(gameServerId: string): Promise<number> {
+    const affectedPlayerCount = await this.repo.resetAllCurrencyForGameServer(gameServerId);
+
+    if (affectedPlayerCount > 0) {
+      const eventsService = new EventService(this.domainId);
+      const userId = ctx.data.user;
+
+      await eventsService.create(
+        new EventCreateDTO({
+          eventName: EVENT_TYPES.CURRENCY_RESET_ALL,
+          gameserverId: gameServerId,
+          userId,
+          meta: new TakaroEventCurrencyResetAll({ affectedPlayerCount }),
+        }),
+      );
+    }
+
+    return affectedPlayerCount;
+  }
+
   async setOnlinePlayers(gameServerId: string, players: IGamePlayer[]) {
     await this.repo.setOnlinePlayers(gameServerId, players);
   }

@@ -41,6 +41,8 @@ import { UserService } from '../service/User/index.js';
 import { AllowedFilters, AllowedSearch } from './shared.js';
 import multer from 'multer';
 import { SystemTaskType } from '../workers/systemWorkerDefinitions.js';
+import { PlayerOnGameServerService } from '../service/PlayerOnGameserverService.js';
+import { onlyIfEconomyEnabledMiddleware } from '../middlewares/onlyIfEconomyEnabled.js';
 
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -494,6 +496,18 @@ export class GameServerController {
     const service = new GameServerService(req.domainId);
     await service.shutdown(params.id);
     return apiResponse();
+  }
+
+  @Post('/gameserver/:id/reset-currency')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]), onlyIfEconomyEnabledMiddleware)
+  @ResponseSchema(APIOutput)
+  @OpenAPI({
+    description: "Resets all players' currency to 0 on the specified game server. This action is irreversible.",
+  })
+  async resetCurrency(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
+    const playerService = new PlayerOnGameServerService(req.domainId);
+    const affectedCount = await playerService.resetAllPlayersCurrency(params.id);
+    return apiResponse({ affectedPlayerCount: affectedCount });
   }
 
   @Get('/gameserver/:id/players')

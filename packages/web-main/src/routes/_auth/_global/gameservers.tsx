@@ -23,12 +23,14 @@ import {
   AiOutlineSetting as SettingsIcon,
   AiOutlineStop as ShutdownIcon,
   AiOutlineReload as ResetTokenIcon,
+  AiOutlineDollarCircle as ResetCurrencyIcon,
 } from 'react-icons/ai';
 import { FC, MouseEvent, useRef, useState } from 'react';
 import { PermissionsGuard } from '../../../components/PermissionsGuard';
 import { TableListToggleButton } from '../../../components/TableListToggleButton';
 import { GameServerDeleteDialog } from '../../../components/dialogs/GameServerDeleteDialog';
 import { GameServerResetTokenDialog } from '../../../components/dialogs/GameServerResetRegistrationToken';
+import { GameServerResetCurrencyDialog } from '../../../components/dialogs/GameServerResetCurrencyDialog';
 import { DeleteImperativeHandle } from '../../../components/dialogs';
 import { MaxUsage } from '../../../components/MaxUsage';
 import { userMeQueryOptions } from '../../../queries/user';
@@ -139,6 +141,7 @@ export const GameServerActions: FC<GameServerActionsProps> = ({ gameServerId, ga
   const theme = useTheme();
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openShutdownDialog, setOpenShutdownDialog] = useState<boolean>(false);
+  const [openResetCurrencyDialog, setOpenResetCurrencyDialog] = useState<boolean>(false);
   const gameServerDeleteDialogRef = useRef<DeleteImperativeHandle>(null);
 
   const hasManageGameServerPermission = useHasPermission(['MANAGE_GAMESERVERS']);
@@ -169,6 +172,12 @@ export const GameServerActions: FC<GameServerActionsProps> = ({ gameServerId, ga
     navigator.clipboard.writeText(gameServerId);
   };
 
+  const handleOnResetCurrencyClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setOpenResetCurrencyDialog(true);
+  };
+
   return (
     <>
       <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageGameservers]]}>
@@ -185,6 +194,12 @@ export const GameServerActions: FC<GameServerActionsProps> = ({ gameServerId, ga
           gameServerId={gameServerId}
           gameServerName={gameServerName}
         />
+        <GameServerResetCurrencyDialog
+          open={openResetCurrencyDialog}
+          onOpenChange={setOpenResetCurrencyDialog}
+          gameServerId={gameServerId}
+          gameServerName={gameServerName}
+        />
         <Dropdown>
           <Dropdown.Trigger asChild>
             <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
@@ -197,6 +212,12 @@ export const GameServerActions: FC<GameServerActionsProps> = ({ gameServerId, ga
                 onClick={handleOnEditClick}
                 label="Edit gameserver"
                 disabled={!hasManageGameServerPermission}
+              />
+              <Dropdown.Menu.Item
+                icon={<ResetCurrencyIcon fill={theme.colors.error} />}
+                label="Reset all players' currency"
+                disabled={!hasManageGameServerPermission}
+                onClick={handleOnResetCurrencyClick}
               />
               <Dropdown.Menu.Item
                 icon={<ShutdownIcon fill={theme.colors.error} />}
