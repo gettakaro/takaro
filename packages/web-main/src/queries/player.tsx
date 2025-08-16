@@ -21,6 +21,7 @@ import { AxiosError } from 'axios';
 import { getNextPage, mutationWrapper, queryParamsToArray } from '../queries/util';
 import { useSnackbar } from 'notistack';
 import { queryClient } from '../queryClient';
+import { useNavigate } from '@tanstack/react-router';
 
 export const playerKeys = {
   all: ['players'] as const,
@@ -136,6 +137,30 @@ export const useUnbanPlayer = () => {
       onSuccess: async (_, { banId }) => {
         queryClient.invalidateQueries({ queryKey: playerKeys.bans.list() });
         queryClient.removeQueries({ queryKey: playerKeys.bans.detail(banId) });
+      },
+    }),
+    {},
+  );
+};
+
+interface PlayerRemoveInput {
+  playerId: string;
+}
+
+export const usePlayerRemove = () => {
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return mutationWrapper<APIOutput, PlayerRemoveInput>(
+    useMutation<APIOutput, AxiosError<APIOutput>, PlayerRemoveInput>({
+      mutationFn: async ({ playerId }) => {
+        return (await getApiClient().player.playerControllerDelete(playerId)).data;
+      },
+      onSuccess: async (_, { playerId }) => {
+        await queryClient.invalidateQueries({ queryKey: playerKeys.detail(playerId) });
+        await queryClient.invalidateQueries({ queryKey: playerKeys.list() });
+        enqueueSnackbar('Player deleted successfully', { variant: 'default', type: 'success' });
+        navigate({ to: '/players' });
       },
     }),
     {},

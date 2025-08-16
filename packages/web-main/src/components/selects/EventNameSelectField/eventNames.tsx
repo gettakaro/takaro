@@ -26,6 +26,7 @@ export const categorizedEventNames = [
       e.PlayerLinked,
       e.PlayerBanned,
       e.PlayerUnbanned,
+      e.PlayerDeleted,
     ],
   },
   {

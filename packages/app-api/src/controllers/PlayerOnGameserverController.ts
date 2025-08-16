@@ -12,7 +12,7 @@ import {
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res } from 'routing-controllers';
+import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { PogParam } from '../lib/validators.js';
@@ -206,5 +206,15 @@ export class PlayerOnGameServerController {
     const service = new PlayerOnGameServerService(req.domainId);
     const pog = await service.getPog(params.playerId, params.gameServerId);
     return apiResponse(await service.deductCurrency(pog.id, body.currency));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS]))
+  @Delete('/gameserver/:gameServerId/player/:playerId')
+  @ResponseSchema(APIOutput)
+  async delete(@Req() req: AuthenticatedRequest, @Params() params: PogParam) {
+    const service = new PlayerOnGameServerService(req.domainId);
+    const pog = await service.getPog(params.playerId, params.gameServerId);
+    await service.delete(pog.id);
+    return apiResponse();
   }
 }

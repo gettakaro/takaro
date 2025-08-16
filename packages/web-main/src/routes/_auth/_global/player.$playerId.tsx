@@ -1,13 +1,26 @@
-import { Stats, styled, Skeleton, useTheme, Avatar, getInitials, HorizontalNav } from '@takaro/lib-components';
+import {
+  Stats,
+  styled,
+  Skeleton,
+  useTheme,
+  Avatar,
+  getInitials,
+  HorizontalNav,
+  IconButton,
+} from '@takaro/lib-components';
 import { Outlet, redirect, createFileRoute, Link } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
 import { playerQueryOptions } from '../../../queries/player';
 import { playersOnGameServersQueryOptions } from '../../../queries/pog';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { ErrorBoundary } from '../../../components/ErrorBoundary';
-import { hasPermission } from '../../../hooks/useHasPermission';
+import { hasPermission, useHasPermission } from '../../../hooks/useHasPermission';
 import { userMeQueryOptions } from '../../../queries/user';
 import { useQueries } from '@tanstack/react-query';
+import { AiOutlineDelete as DeleteIcon } from 'react-icons/ai';
+import { PlayerDeleteDialog } from '../../../components/dialogs/PlayerDeleteDialog';
+import { useState } from 'react';
+import { PERMISSIONS } from '@takaro/apiclient';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId')({
   beforeLoad: async ({ context }) => {
@@ -45,6 +58,8 @@ const Header = styled.div`
 function Component() {
   const { playerId } = Route.useParams();
   const loaderData = Route.useLoaderData();
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const hasManagePlayersPermission = useHasPermission([PERMISSIONS.ManagePlayers]);
 
   const [{ data: player }, { data: pogs }] = useQueries({
     queries: [
@@ -63,8 +78,13 @@ function Component() {
           <Avatar.Image src={player.steamAvatar} />
           <Avatar.FallBack>{getInitials(player.name)}</Avatar.FallBack>
         </Avatar>
-        <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column' }}>
-          <h1 style={{ lineHeight: 1 }}>{player.name}</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column', flexGrow: 1 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h1 style={{ lineHeight: 1 }}>{player.name}</h1>
+            {hasManagePlayersPermission && (
+              <IconButton icon={<DeleteIcon />} ariaLabel="Delete player" onClick={() => setOpenDeleteDialog(true)} />
+            )}
+          </div>
           <div style={{ display: 'flex', gap: theme.spacing[2] }}>
             <Stats border={false} direction="horizontal">
               <Stats.Stat
@@ -106,6 +126,12 @@ function Component() {
       <ErrorBoundary>
         <Outlet />
       </ErrorBoundary>
+      <PlayerDeleteDialog
+        open={openDeleteDialog}
+        onOpenChange={setOpenDeleteDialog}
+        playerId={player.id}
+        playerName={player.name}
+      />
     </Container>
   );
 }

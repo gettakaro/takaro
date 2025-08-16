@@ -167,3 +167,26 @@ export const useGiveItem = () => {
     {},
   );
 };
+
+interface PogRemoveInput {
+  playerId: string;
+  gameServerId: string;
+}
+
+export const usePogRemove = () => {
+  const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return mutationWrapper<APIOutput, PogRemoveInput>(
+    useMutation<APIOutput, AxiosError<APIOutput>, PogRemoveInput>({
+      mutationFn: async ({ playerId, gameServerId }) =>
+        (await getApiClient().playerOnGameserver.playerOnGameServerControllerDelete(gameServerId, playerId)).data,
+      onSuccess: async (_, { playerId, gameServerId }) => {
+        await queryClient.invalidateQueries({ queryKey: pogKeys.detail(playerId, gameServerId) });
+        await queryClient.invalidateQueries({ queryKey: pogKeys.list() });
+        enqueueSnackbar('Player removed from server successfully', { variant: 'default', type: 'success' });
+      },
+    }),
+    {},
+  );
+};

@@ -1,4 +1,4 @@
-import { IntegrationTest, SetupGameServerPlayers, expect } from '@takaro/test';
+import { IntegrationTest, SetupGameServerPlayers, expect, integrationConfig } from '@takaro/test';
 import { PERMISSIONS } from '@takaro/auth';
 import { faker } from '@faker-js/faker';
 import { Client } from '@takaro/apiclient';
@@ -437,6 +437,100 @@ const tests = [
         // This should execute without validation errors
         expect(searchResult.data.data.length).to.be.eq(0);
       }
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Can delete a player with proper permissions',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const player = this.setupData.players[0];
+
+      // Verify player exists
+      const playerBefore = await this.client.player.playerControllerGetOne(player.id);
+      expect(playerBefore.data.data.id).to.be.eq(player.id);
+
+      // Delete the player
+      await this.client.player.playerControllerDelete(player.id);
+
+      // Verify player is deleted
+      try {
+        await this.client.player.playerControllerGetOne(player.id);
+        throw new Error('Should have thrown 404');
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).to.be.eq(404);
+        }
+      }
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Cannot delete a player without MANAGE_PLAYERS permission',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const player = this.setupData.players[0];
+
+      // Create a client without MANAGE_PLAYERS permission
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_PLAYERS]);
+      const role = await this.client.role.roleControllerCreate({
+        name: 'Read only role',
+        permissions,
+      });
+
+      const userPassword = faker.internet.password();
+      const user = await this.client.user.userControllerCreate({
+        email: faker.internet.email(),
+        password: userPassword,
+        name: faker.person.firstName(),
+      });
+
+      await this.client.user.userControllerAssignRole(user.data.data.id, role.data.data.id);
+
+      const limitedClient = new Client({
+        auth: {
+          username: user.data.data.email,
+          password: userPassword,
+        },
+        url: integrationConfig.get('host'),
+      });
+      await limitedClient.login();
+
+      // Try to delete with limited permissions
+      try {
+        await limitedClient.player.playerControllerDelete(player.id);
+        throw new Error('Should have thrown 403');
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).to.be.eq(403);
+        }
+      }
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Deleting a player cascades to POGs and related data',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const player = this.setupData.players[0];
+
+      // Verify POGs exist
+      const pogsBefore = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: { playerId: [player.id] },
+      });
+      expect(pogsBefore.data.data.length).to.be.greaterThan(0);
+
+      // Delete the player
+      await this.client.player.playerControllerDelete(player.id);
+
+      // Verify POGs are deleted
+      const pogsAfter = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: { playerId: [player.id] },
+      });
+      expect(pogsAfter.data.data.length).to.be.eq(0);
     },
   }),
 ];
