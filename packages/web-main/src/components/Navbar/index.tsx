@@ -1,8 +1,8 @@
-import { FC, ReactElement, useState, useEffect, cloneElement } from 'react';
+import { FC, ReactElement, useState, useEffect } from 'react';
 import { LinkProps } from '@tanstack/react-router';
 import { Chip, RequiredPermissions, Tooltip, useTheme, IconButton } from '@takaro/lib-components';
 import { UserDropdown } from './UserDropdown';
-import { Nav, IconNav, Container, IconNavContainer, NavItem, NestedNav, ExpandIndicator } from './style';
+import { Nav, IconNav, Container, IconNavContainer } from './style';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { useSession } from '../../hooks/useSession';
 import {
@@ -18,8 +18,6 @@ import {
   AiOutlineLeft as CollapseIcon,
   AiOutlineRight as ExpandIcon,
   AiOutlineBarChart as AnalyticsIcon,
-  AiOutlineShoppingCart as ShopIcon,
-  AiOutlineRight as ChevronRightIcon,
 
   // icon nav
   AiOutlineBook as DocumentationIcon,
@@ -30,8 +28,6 @@ import { FaDiscord as DiscordIcon } from 'react-icons/fa';
 import { GameServerNav } from './GameServerNav';
 import { getConfigVar, getTakaroVersionComponents } from '../../util/getConfigVar';
 import { renderLink } from './renderLink';
-import { DeveloperModeGuard } from '../DeveloperModeGuard';
-import { PermissionsGuard } from '../PermissionsGuard';
 
 const domainLinks: NavbarLink[] = [
   {
@@ -98,19 +94,12 @@ const domainLinks: NavbarLink[] = [
   },
   {
     label: 'Analytics',
+    linkProps: {
+      to: '/analytics',
+    },
     icon: <AnalyticsIcon />,
     requiresDevelopmentModeEnabled: false,
-    children: [
-      {
-        label: 'Shop',
-        linkProps: {
-          to: '/analytics/shop',
-        },
-        icon: <ShopIcon />,
-        requiresDevelopmentModeEnabled: false,
-        requiredPermissions: [PERMISSIONS.ManageShopListings],
-      },
-    ],
+    requiredPermissions: [PERMISSIONS.ManageShopListings],
   },
   {
     label: 'Variables',
@@ -140,7 +129,6 @@ export interface NavbarLink {
   requiredPermissions?: RequiredPermissions;
   requiresDevelopmentModeEnabled?: boolean;
   end?: boolean;
-  children?: NavbarLink[];
 }
 
 interface NavbarProps {
@@ -151,7 +139,6 @@ export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
   const theme = useTheme();
   const { version } = getTakaroVersionComponents(getConfigVar('takaroVersion'));
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
   const { session } = useSession();
 
   // Find the current domain from the session
@@ -163,12 +150,6 @@ export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
     if (savedState !== null) {
       setIsCollapsed(JSON.parse(savedState));
     }
-
-    // Load expanded items state
-    const savedExpanded = localStorage.getItem('navbar-expanded-items');
-    if (savedExpanded !== null) {
-      setExpandedItems(JSON.parse(savedExpanded));
-    }
   }, []);
 
   // Save collapsed state to localStorage when it changes
@@ -176,83 +157,8 @@ export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
     localStorage.setItem('navbar-collapsed', JSON.stringify(isCollapsed));
   }, [isCollapsed]);
 
-  // Save expanded items state to localStorage when it changes
-  useEffect(() => {
-    localStorage.setItem('navbar-expanded-items', JSON.stringify(expandedItems));
-  }, [expandedItems]);
-
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
-  };
-
-  const toggleExpanded = (label: string) => {
-    setExpandedItems((prev) => ({
-      ...prev,
-      [label]: !prev[label],
-    }));
-  };
-
-  const renderNavLink = (link: NavbarLink, depth = 0) => {
-    const key = link.label;
-    const isExpanded = expandedItems[link.label] || false;
-    const hasChildren = link.children && link.children.length > 0;
-
-    // If it's a parent item with children
-    if (hasChildren) {
-      const parentContent = (
-        <NavItem
-          $isParent={true}
-          $isCollapsed={isCollapsed}
-          className="parent-item"
-          onClick={() => toggleExpanded(link.label)}
-        >
-          <span>
-            {link.icon && cloneElement(link.icon, { size: 20 })}
-            {!isCollapsed && <p>{link.label}</p>}
-          </span>
-          {!isCollapsed && (
-            <ExpandIndicator animate={{ rotate: isExpanded ? 90 : 0 }} transition={{ duration: 0.2 }}>
-              <ChevronRightIcon />
-            </ExpandIndicator>
-          )}
-        </NavItem>
-      );
-
-      const wrappedParent = isCollapsed ? (
-        <Tooltip>
-          <Tooltip.Trigger asChild>{parentContent}</Tooltip.Trigger>
-          <Tooltip.Content>{link.label}</Tooltip.Content>
-        </Tooltip>
-      ) : (
-        parentContent
-      );
-
-      return (
-        <DeveloperModeGuard key={key} enabled={link.requiresDevelopmentModeEnabled || false}>
-          <PermissionsGuard requiredPermissions={link.requiredPermissions || []}>
-            <div>
-              {wrappedParent}
-              {!isCollapsed && (
-                <NestedNav
-                  initial={false}
-                  animate={{
-                    height: isExpanded ? 'auto' : 0,
-                    opacity: isExpanded ? 1 : 0,
-                  }}
-                  transition={{ duration: 0.2 }}
-                  $isCollapsed={isCollapsed}
-                >
-                  {link.children?.map((child) => renderNavLink(child, depth + 1))}
-                </NestedNav>
-              )}
-            </div>
-          </PermissionsGuard>
-        </DeveloperModeGuard>
-      );
-    }
-
-    // Regular link item
-    return renderLink(link, isCollapsed);
   };
 
   return (
@@ -278,7 +184,7 @@ export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
         {showGameServerNav && <GameServerNav isCollapsed={isCollapsed} />}
         <Nav data-testid="global-nav" $isCollapsed={isCollapsed}>
           {domainLinks.length > 0 && <h3 style={{ visibility: isCollapsed ? 'hidden' : 'visible' }}>Global</h3>}
-          {domainLinks.map((link) => renderNavLink(link))}
+          {domainLinks.map((link) => renderLink(link, isCollapsed))}
         </Nav>
       </IconNavContainer>
       {!isCollapsed && (

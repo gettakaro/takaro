@@ -1,19 +1,19 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { PERMISSIONS, AnalyticsControllerGetShopAnalyticsPeriodEnum } from '@takaro/apiclient';
-import { hasPermission } from '../../../hooks/useHasPermission';
-import { userMeQueryOptions } from '../../../queries/user';
-import { shopAnalyticsQueryOptions } from '../../../queries/analytics';
-import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { hasPermission } from '../../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../../queries/user';
+import { shopAnalyticsQueryOptions } from '../../../../queries/analytics';
+import { useDocumentTitle } from '../../../../hooks/useDocumentTitle';
 import { useQuery } from '@tanstack/react-query';
 import { DateTime } from 'luxon';
 import { styled } from '@takaro/lib-components';
 import { useForm, useWatch } from 'react-hook-form';
-import { TimePeriodSelectField, GameServerSelectQueryField } from '../../../components/selects';
-import { KPICards } from './analytics.shop/-components/KPICards';
-import { RevenueCharts } from './analytics.shop/-components/RevenueCharts';
-import { ProductCharts } from './analytics.shop/-components/ProductCharts';
-import { CustomerCharts } from './analytics.shop/-components/CustomerCharts';
-import { InsightsBar } from './analytics.shop/-components/InsightsBar';
+import { TimePeriodSelectField, GameServerSelectQueryField } from '../../../../components/selects';
+import { KPICards } from './shop/-components/KPICards';
+import { RevenueCharts } from './shop/-components/RevenueCharts';
+import { ProductCharts } from './shop/-components/ProductCharts';
+import { CustomerCharts } from './shop/-components/CustomerCharts';
+import { InsightsBar } from './shop/-components/InsightsBar';
 
 export const Route = createFileRoute('/_auth/_global/analytics/shop')({
   beforeLoad: async ({ context }) => {
@@ -36,8 +36,8 @@ export const Route = createFileRoute('/_auth/_global/analytics/shop')({
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[4]};
-  padding: ${({ theme }) => theme.spacing[4]};
+  gap: ${({ theme }) => theme.spacing[2]};
+  padding: ${({ theme }) => theme.spacing[2]};
   box-sizing: border-box;
 `;
 
@@ -45,36 +45,28 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing[4]};
-
-  h1 {
-    font-size: ${({ theme }) => theme.fontSize.huge};
-    margin: 0;
-  }
 `;
 
 const ControlBar = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing[2]};
   align-items: center;
-  flex-wrap: wrap;
+  width: 100%;
 
   > div:first-child {
-    flex: 1 1 280px;
-    max-width: 400px;
-    min-width: 200px;
+    flex: 0 1 300px;
+    min-width: 180px;
   }
 
   > div:nth-child(2) {
-    flex: 0 1 180px;
-    min-width: 150px;
+    flex: 0 0 150px;
   }
 `;
 
 const ChartSection = styled.div`
   display: grid;
   gap: ${({ theme }) => theme.spacing[4]};
-  margin-top: ${({ theme }) => theme.spacing[4]};
+  margin-top: ${({ theme }) => theme.spacing[2]};
 `;
 
 const LastUpdated = styled.div`
@@ -103,7 +95,6 @@ function ShopAnalyticsPage() {
   return (
     <Container>
       <Header>
-        <h1>Shop Analytics</h1>
         <ControlBar>
           <div>
             <GameServerSelectQueryField control={control} name="gameServers" multiple={true} canClear={true} />
