@@ -1,5 +1,5 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { PERMISSIONS, ShopAnalyticsPeriod } from '@takaro/apiclient';
+import { PERMISSIONS, AnalyticsControllerGetShopAnalyticsPeriodEnum } from '@takaro/apiclient';
 import { hasPermission } from '../../../hooks/useHasPermission';
 import { userMeQueryOptions } from '../../../queries/user';
 import { shopAnalyticsQueryOptions } from '../../../queries/analytics';
@@ -25,7 +25,7 @@ export const Route = createFileRoute('/_auth/_global/analytics/shop')({
   loader: async ({ context }) => {
     // Load initial analytics data with default parameters
     const analyticsData = await context.queryClient.ensureQueryData(
-      shopAnalyticsQueryOptions(undefined, ShopAnalyticsPeriod.LAST_30_DAYS),
+      shopAnalyticsQueryOptions(undefined, AnalyticsControllerGetShopAnalyticsPeriodEnum.Last30Days),
     );
 
     return { analyticsData };
@@ -88,7 +88,7 @@ function ShopAnalyticsPage() {
 
   const { control } = useForm({
     defaultValues: {
-      period: ShopAnalyticsPeriod.LAST_30_DAYS,
+      period: AnalyticsControllerGetShopAnalyticsPeriodEnum.Last30Days,
       gameServers: [] as string[],
     },
   });

@@ -1645,6 +1645,31 @@ export interface CustomerSegmentDTO {
 /**
  *
  * @export
+ * @interface DeadStockItemDTO
+ */
+export interface DeadStockItemDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof DeadStockItemDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DeadStockItemDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {number}
+   * @memberof DeadStockItemDTO
+   */
+  daysSinceCreated: number;
+}
+/**
+ *
+ * @export
  * @interface DiscordChannelOutputArrayDTOAPI
  */
 export interface DiscordChannelOutputArrayDTOAPI {
@@ -10042,42 +10067,6 @@ export interface PogStatsInputDTO {
 /**
  *
  * @export
- * @interface DeadStockItemDTO
- */
-export interface DeadStockItemDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof DeadStockItemDTO
-   */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof DeadStockItemDTO
-   */
-  name: string;
-  /**
-   *
-   * @type {number}
-   * @memberof DeadStockItemDTO
-   */
-  daysSinceCreated: number;
-}
-/**
- *
- * @export
- * @enum {string}
- */
-export enum ShopAnalyticsPeriod {
-  LAST_24_HOURS = 'last24Hours',
-  LAST_7_DAYS = 'last7Days',
-  LAST_30_DAYS = 'last30Days',
-  LAST_90_DAYS = 'last90Days',
-}
-/**
- *
- * @export
  * @interface ProductMetricsDTO
  */
 export interface ProductMetricsDTO {
@@ -11071,14 +11060,19 @@ export interface ShopAnalyticsQueryDTO {
    * @type {string}
    * @memberof ShopAnalyticsQueryDTO
    */
-  startDate?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ShopAnalyticsQueryDTO
-   */
-  endDate?: string;
+  period?: ShopAnalyticsQueryDTOPeriodEnum;
 }
+
+export const ShopAnalyticsQueryDTOPeriodEnum = {
+  Last24Hours: 'last24Hours',
+  Last7Days: 'last7Days',
+  Last30Days: 'last30Days',
+  Last90Days: 'last90Days',
+} as const;
+
+export type ShopAnalyticsQueryDTOPeriodEnum =
+  (typeof ShopAnalyticsQueryDTOPeriodEnum)[keyof typeof ShopAnalyticsQueryDTOPeriodEnum];
+
 /**
  *
  * @export
@@ -14224,14 +14218,13 @@ export const AnalyticsApiAxiosParamCreator = function (configuration?: Configura
      * Retrieve comprehensive analytics for shop performance across selected game servers   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `AnalyticsControllerGetShopAnalytics`
      * @summary Get shop analytics
      * @param {Array<string>} [gameServerIds]
-     * @param {string} [startDate]
-     * @param {string} [endDate]
+     * @param {AnalyticsControllerGetShopAnalyticsPeriodEnum} [period]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     analyticsControllerGetShopAnalytics: async (
       gameServerIds?: Array<string>,
-      period?: ShopAnalyticsPeriod,
+      period?: AnalyticsControllerGetShopAnalyticsPeriodEnum,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/analytics/shop`;
@@ -14279,14 +14272,13 @@ export const AnalyticsApiFp = function (configuration?: Configuration) {
      * Retrieve comprehensive analytics for shop performance across selected game servers   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `AnalyticsControllerGetShopAnalytics`
      * @summary Get shop analytics
      * @param {Array<string>} [gameServerIds]
-     * @param {string} [startDate]
-     * @param {string} [endDate]
+     * @param {AnalyticsControllerGetShopAnalyticsPeriodEnum} [period]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async analyticsControllerGetShopAnalytics(
       gameServerIds?: Array<string>,
-      period?: ShopAnalyticsPeriod,
+      period?: AnalyticsControllerGetShopAnalyticsPeriodEnum,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopAnalyticsOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.analyticsControllerGetShopAnalytics(
@@ -14319,19 +14311,17 @@ export const AnalyticsApiFactory = function (configuration?: Configuration, base
      * Retrieve comprehensive analytics for shop performance across selected game servers   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `AnalyticsControllerGetShopAnalytics`
      * @summary Get shop analytics
      * @param {Array<string>} [gameServerIds]
-     * @param {string} [startDate]
-     * @param {string} [endDate]
+     * @param {AnalyticsControllerGetShopAnalyticsPeriodEnum} [period]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     analyticsControllerGetShopAnalytics(
       gameServerIds?: Array<string>,
-      startDate?: string,
-      endDate?: string,
+      period?: AnalyticsControllerGetShopAnalyticsPeriodEnum,
       options?: RawAxiosRequestConfig,
     ): AxiosPromise<ShopAnalyticsOutputDTOAPI> {
       return localVarFp
-        .analyticsControllerGetShopAnalytics(gameServerIds, startDate, endDate, options)
+        .analyticsControllerGetShopAnalytics(gameServerIds, period, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -14348,15 +14338,14 @@ export class AnalyticsApi extends BaseAPI {
    * Retrieve comprehensive analytics for shop performance across selected game servers   Required permissions: `MANAGE_SHOP_LISTINGS`<br> OperationId: `AnalyticsControllerGetShopAnalytics`
    * @summary Get shop analytics
    * @param {Array<string>} [gameServerIds]
-   * @param {string} [startDate]
-   * @param {string} [endDate]
+   * @param {AnalyticsControllerGetShopAnalyticsPeriodEnum} [period]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AnalyticsApi
    */
   public analyticsControllerGetShopAnalytics(
     gameServerIds?: Array<string>,
-    period?: ShopAnalyticsPeriod,
+    period?: AnalyticsControllerGetShopAnalyticsPeriodEnum,
     options?: RawAxiosRequestConfig,
   ) {
     return AnalyticsApiFp(this.configuration)
@@ -14364,6 +14353,18 @@ export class AnalyticsApi extends BaseAPI {
       .then((request) => request(this.axios, this.basePath));
   }
 }
+
+/**
+ * @export
+ */
+export const AnalyticsControllerGetShopAnalyticsPeriodEnum = {
+  Last24Hours: 'last24Hours',
+  Last7Days: 'last7Days',
+  Last30Days: 'last30Days',
+  Last90Days: 'last90Days',
+} as const;
+export type AnalyticsControllerGetShopAnalyticsPeriodEnum =
+  (typeof AnalyticsControllerGetShopAnalyticsPeriodEnum)[keyof typeof AnalyticsControllerGetShopAnalyticsPeriodEnum];
 
 /**
  * CommandApi - axios parameter creator

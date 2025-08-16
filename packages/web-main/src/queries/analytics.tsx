@@ -1,17 +1,17 @@
 import { queryOptions } from '@tanstack/react-query';
 import { getApiClient } from '../util/getApiClient';
-import { ShopAnalyticsOutputDTO, ShopAnalyticsPeriod } from '@takaro/apiclient';
+import { ShopAnalyticsOutputDTO, AnalyticsControllerGetShopAnalyticsPeriodEnum } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
 
 const analyticsKeys = {
   all: ['analytics'] as const,
-  shop: (gameServerIds?: string[], period?: ShopAnalyticsPeriod) =>
+  shop: (gameServerIds?: string[], period?: AnalyticsControllerGetShopAnalyticsPeriodEnum) =>
     [...analyticsKeys.all, 'shop', gameServerIds, period] as const,
 };
 
 export const shopAnalyticsQueryOptions = (
   gameServerIds?: string[],
-  period: ShopAnalyticsPeriod = ShopAnalyticsPeriod.LAST_30_DAYS,
+  period: AnalyticsControllerGetShopAnalyticsPeriodEnum = AnalyticsControllerGetShopAnalyticsPeriodEnum.Last30Days,
 ) => {
   return queryOptions<ShopAnalyticsOutputDTO, AxiosError<ShopAnalyticsOutputDTO>, ShopAnalyticsOutputDTO>({
     queryKey: analyticsKeys.shop(gameServerIds, period),
@@ -21,7 +21,7 @@ export const shopAnalyticsQueryOptions = (
       const response = await apiClient.analytics.analyticsControllerGetShopAnalytics(gameServerIds, period);
       return response.data.data;
     },
-    staleTime: 30 * 1000, // 30 seconds for auto-refresh
+    staleTime: 0, // Always consider data stale to ensure refetch on period change
     refetchInterval: 30 * 1000, // Auto-refresh every 30 seconds
     placeholderData: (previousData) => previousData, // Keep previous data while fetching new data
   });

@@ -253,7 +253,7 @@ export const EChartsBase: FC<EChartsBaseProps> = ({
       onChartReady={onChartReady}
       onEvents={onEvents}
       opts={{ renderer: 'canvas' }}
-      notMerge={false}
+      notMerge={true}
       lazyUpdate={true}
     />
   );
