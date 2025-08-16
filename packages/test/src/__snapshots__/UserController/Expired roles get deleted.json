@@ -27,7 +27,8 @@
       ],
       "email": "testUser@example.com",
       "isDashboardUser": false,
-      "steamId": null
+      "steamId": null,
+      "hasPassword": true
     }
   },
   "status": 200,

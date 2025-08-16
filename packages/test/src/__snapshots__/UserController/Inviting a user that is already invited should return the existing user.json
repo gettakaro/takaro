@@ -27,7 +27,8 @@
       ],
       "email": "Felix.Legros25@yahoo.com",
       "isDashboardUser": true,
-      "steamId": null
+      "steamId": null,
+      "hasPassword": false
     }
   },
   "status": 200,
