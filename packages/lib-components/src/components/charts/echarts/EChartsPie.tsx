@@ -16,6 +16,9 @@ export interface EChartsPieProps<T = any> extends Omit<EChartsBaseProps, 'option
   radius?: string | [string, string];
   center?: [string, string];
   tooltipFormatter?: (params: any) => string;
+  legendOrient?: 'horizontal' | 'vertical';
+  legendLeft?: string | number;
+  legendTop?: string | number;
 }
 
 export const EChartsPie: FC<EChartsPieProps> = ({
@@ -32,6 +35,9 @@ export const EChartsPie: FC<EChartsPieProps> = ({
   radius,
   center = ['50%', '50%'],
   tooltipFormatter,
+  legendOrient = 'vertical',
+  legendLeft = 'left',
+  legendTop = 'middle',
   ...chartProps
 }) => {
   const option: EChartsOption = useMemo(() => {
@@ -84,9 +90,9 @@ export const EChartsPie: FC<EChartsPieProps> = ({
         : undefined,
       legend: showLegend
         ? {
-            orient: 'vertical',
-            left: 'left',
-            top: 'middle',
+            orient: legendOrient,
+            left: legendLeft,
+            top: legendTop,
           }
         : undefined,
       tooltip: {
@@ -109,6 +115,9 @@ export const EChartsPie: FC<EChartsPieProps> = ({
     radius,
     center,
     tooltipFormatter,
+    legendOrient,
+    legendLeft,
+    legendTop,
   ]);
 
   return <ResponsiveECharts option={option} {...chartProps} />;

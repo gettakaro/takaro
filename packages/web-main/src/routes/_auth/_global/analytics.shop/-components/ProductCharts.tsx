@@ -91,8 +91,9 @@ const StatusLabel = styled.span`
 
 const StatusValue = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing[1]};
+  gap: ${({ theme }) => theme.spacing['0_5']};
 `;
 
 const StatusCount = styled.span`
@@ -241,6 +242,11 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
               donut={true}
               roseType="area"
               showLegend={true}
+              center={['50%', '42%']}
+              radius={['30%', '65%']}
+              legendOrient="horizontal"
+              legendLeft="center"
+              legendTop="bottom"
               tooltipFormatter={(params: any) => {
                 return `${params.name}<br/>Revenue: ${params.value.toLocaleString()}<br/>${params.percent}% of total`;
               }}
