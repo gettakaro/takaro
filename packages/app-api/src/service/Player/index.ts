@@ -14,6 +14,7 @@ import {
   TakaroEventRoleAssigned,
   TakaroEventRoleRemoved,
   TakaroEventPlayerNewIpDetected,
+  TakaroEventPlayerDeleted,
   TakaroEvents,
 } from '@takaro/modules';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from '../RoleService.js';
@@ -135,8 +136,23 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     return updated;
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<string> {
+    const player = await this.findOne(id);
+    if (!player) throw new errors.NotFoundError();
+
     await this.repo.delete(id);
+
+    const eventService = new EventService(this.domainId);
+    await eventService.create(
+      new EventCreateDTO({
+        eventName: TakaroEvents.PLAYER_DELETED,
+        playerId: id,
+        meta: new TakaroEventPlayerDeleted({
+          playerName: player.name,
+        }),
+      }),
+    );
+
     return id;
   }
 

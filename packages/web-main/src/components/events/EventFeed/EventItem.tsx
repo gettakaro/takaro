@@ -331,6 +331,15 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
+    case EventOutputDTOEventNameEnum.PlayerDeleted:
+      properties = (
+        <>
+          <EventProperty name="player" value={event.player?.name || meta?.playerName || 'Unknown'} />
+          <EventProperty name="gameserver" value={event.gameServer?.name || 'Global'} />
+          {event.user && <EventProperty name="deleted by" value={event.user?.name} />}
+        </>
+      );
+      break;
     case EventOutputDTOEventNameEnum.GameserverCreated:
     case EventOutputDTOEventNameEnum.GameserverUpdated:
     case EventOutputDTOEventNameEnum.GameserverDeleted:
