@@ -1,4 +1,5 @@
-import { IntegrationTest, SetupGameServerPlayers, expect } from '@takaro/test';
+import { IntegrationTest, SetupGameServerPlayers, expect, integrationConfig } from '@takaro/test';
+import { Client } from '@takaro/apiclient';
 import { isAxiosError } from 'axios';
 import { describe } from 'node:test';
 
@@ -543,6 +544,134 @@ const tests = [
 
       expect(rejectedRes.data.meta.error.message).to.be.eq('Validation error');
       return rejectedRes;
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Can reset all players currency on a gameserver',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const res = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: {
+          gameServerId: [this.setupData.gameServer1.id],
+        },
+      });
+
+      // Set currency for multiple players
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: this.setupData.gameServer1.id,
+        value: 'true',
+      });
+
+      for (const player of res.data.data) {
+        await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+          player.gameServerId,
+          player.playerId,
+          {
+            currency: 100 + Math.floor(Math.random() * 900), // Random currency between 100-1000
+          },
+        );
+      }
+
+      // Verify players have currency
+      const beforeReset = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: {
+          gameServerId: [this.setupData.gameServer1.id],
+        },
+      });
+      for (const player of beforeReset.data.data) {
+        expect(player.currency).to.be.greaterThan(0);
+      }
+
+      // Reset all currency
+      const resetRes = await this.client.gameserver.gameServerControllerResetCurrency(this.setupData.gameServer1.id);
+      expect(resetRes.data).to.have.property('affectedPlayerCount');
+      expect((resetRes.data as any).affectedPlayerCount).to.be.eq(res.data.data.length);
+
+      // Verify all players have 0 currency
+      const afterReset = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: {
+          gameServerId: [this.setupData.gameServer1.id],
+        },
+      });
+      for (const player of afterReset.data.data) {
+        expect(player.currency).to.be.eq(0);
+      }
+
+      // Check that the event was created
+      const events = await this.client.event.eventControllerSearch({
+        filters: {
+          eventName: ['currency-reset-all'],
+          gameserverId: [this.setupData.gameServer1.id],
+        },
+      });
+      expect(events.data.data.length).to.be.greaterThan(0);
+      const resetEvent = events.data.data[0];
+      expect(resetEvent.meta).to.not.be.undefined;
+      expect((resetEvent.meta as any).affectedPlayerCount).to.be.eq(res.data.data.length);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Reset currency requires MANAGE_GAMESERVERS permission',
+    setup: SetupGameServerPlayers.setup,
+    expectedStatus: 403,
+    test: async function () {
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: this.setupData.gameServer1.id,
+        value: 'true',
+      });
+
+      // Create a user without MANAGE_GAMESERVERS permission
+      const testUser = await this.client.user.userControllerCreate({
+        name: 'Test User',
+        email: 'testuser@test.com',
+        password: 'Test123!@#',
+      });
+
+      // Login as the test user
+      const testClient = new Client({
+        auth: { username: testUser.data.data.email, password: 'Test123!@#' },
+        url: integrationConfig.get('host'),
+      });
+      await testClient.login();
+
+      // Attempt to reset currency should fail
+      try {
+        await testClient.gameserver.gameServerControllerResetCurrency(this.setupData.gameServer1.id);
+        throw new Error('Should have thrown 403');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        if (!error.response) throw error;
+        expect(error.response.status).to.be.eq(403);
+      }
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Reset currency requires economy to be enabled',
+    setup: SetupGameServerPlayers.setup,
+    expectedStatus: 400,
+    test: async function () {
+      // Ensure economy is disabled
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: this.setupData.gameServer1.id,
+        value: 'false',
+      });
+
+      // Attempt to reset currency should fail
+      try {
+        await this.client.gameserver.gameServerControllerResetCurrency(this.setupData.gameServer1.id);
+        throw new Error('Should have thrown 400');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        if (!error.response) throw error;
+        expect(error.response.status).to.be.eq(400);
+        expect(error.response.data.meta.error.message).to.include('economy');
+      }
     },
   }),
 ];

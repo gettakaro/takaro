@@ -361,6 +361,7 @@ docs/TakaroEventCronjobDetails.md
 docs/TakaroEventCronjobExecuted.md
 docs/TakaroEventCurrencyAdded.md
 docs/TakaroEventCurrencyDeducted.md
+docs/TakaroEventCurrencyResetAll.md
 docs/TakaroEventFunctionLog.md
 docs/TakaroEventFunctionResult.md
 docs/TakaroEventGameserverCreated.md
