@@ -1102,37 +1102,99 @@ export class ShopAnalyticsService extends TakaroService<
   ): Promise<CustomerMetrics> {
     const { knex } = await this.orderRepo.getModel();
 
-    // Get customer purchase counts
-    const customerOrdersQuery = knex('shopOrder as o')
+    const startDt = DateTime.fromISO(startDate);
+    const endDt = DateTime.fromISO(endDate);
+
+    // Look back 6 months from start date to understand customer history
+    const historyStartDate = startDt.minus({ months: 6 }).toJSDate();
+
+    // Get all customer orders in current period + 6 months history
+    const allCustomerOrdersQuery = knex('shopOrder as o')
       .join('shopListing as l', 'o.listingId', 'l.id')
       .where('o.domain', this.domainId)
       .whereIn('o.status', ['COMPLETED', 'PAID'])
-      .whereBetween('o.createdAt', [DateTime.fromISO(startDate).toJSDate(), DateTime.fromISO(endDate).toJSDate()])
-      .select('o.playerId', knex.raw('COUNT(*) as order_count'))
-      .groupBy('o.playerId');
+      .where('o.createdAt', '>=', historyStartDate)
+      .where('o.createdAt', '<=', endDt.toJSDate())
+      .select('o.playerId', 'o.createdAt', knex.raw('DATE_TRUNC(\'month\', o."createdAt") as order_month'));
 
     if (gameServerIds?.length) {
-      customerOrdersQuery.whereIn('l.gameServerId', gameServerIds);
+      allCustomerOrdersQuery.whereIn('l.gameServerId', gameServerIds);
     }
 
-    const customerOrders = await customerOrdersQuery;
+    const allOrders = await allCustomerOrdersQuery;
 
-    // Segment customers
+    // Group orders by customer and month
+    const customerPurchasePatterns = new Map<string, Set<string>>();
+    const customersInCurrentPeriod = new Set<string>();
+    const customersBeforePeriod = new Set<string>();
+
+    allOrders.forEach((order: any) => {
+      const playerId = order.playerId;
+      const orderDate = DateTime.fromJSDate(order.createdAt);
+      const monthKey = order.order_month;
+
+      if (!customerPurchasePatterns.has(playerId)) {
+        customerPurchasePatterns.set(playerId, new Set());
+      }
+      customerPurchasePatterns.get(playerId)!.add(monthKey);
+
+      // Track if customer purchased in current period or before
+      if (orderDate >= startDt && orderDate <= endDt) {
+        customersInCurrentPeriod.add(playerId);
+      } else {
+        customersBeforePeriod.add(playerId);
+      }
+    });
+
+    // Segment customers based on time-based patterns
     const segments = {
       new: 0,
       returning: 0,
       frequent: 0,
     };
 
-    customerOrders.forEach((customer: any) => {
-      const orderCount = Number(customer.order_count);
-      if (orderCount === 1) segments.new++;
-      else if (orderCount >= 2 && orderCount <= 4) segments.returning++;
-      else if (orderCount >= 5) segments.frequent++;
+    customersInCurrentPeriod.forEach((playerId) => {
+      const monthsWithPurchases = customerPurchasePatterns.get(playerId)!;
+      const hasHistoryBeforePeriod = customersBeforePeriod.has(playerId);
+
+      // Convert month strings to DateTime for consecutive month checking
+      const sortedMonths = Array.from(monthsWithPurchases)
+        .map((m) => DateTime.fromJSDate(new Date(m)))
+        .sort((a, b) => a.toMillis() - b.toMillis());
+
+      // Check for consecutive months
+      let maxConsecutiveMonths = 1;
+      let currentConsecutive = 1;
+
+      for (let i = 1; i < sortedMonths.length; i++) {
+        const monthDiff = sortedMonths[i].diff(sortedMonths[i - 1], 'months').months;
+        if (Math.round(monthDiff) === 1) {
+          currentConsecutive++;
+          maxConsecutiveMonths = Math.max(maxConsecutiveMonths, currentConsecutive);
+        } else {
+          currentConsecutive = 1;
+        }
+      }
+
+      const totalMonthsWithPurchases = monthsWithPurchases.size;
+
+      // Apply time-based segmentation logic
+      if (!hasHistoryBeforePeriod) {
+        // Customer with no purchase history before current period = NEW
+        segments.new++;
+      } else if (maxConsecutiveMonths >= 3 || totalMonthsWithPurchases >= 4) {
+        // Customer with 3+ consecutive months OR 4+ total months = FREQUENT
+        segments.frequent++;
+      } else {
+        // Customer with history who doesn't qualify as frequent = RETURNING
+        segments.returning++;
+      }
     });
 
-    const uniqueCount = customerOrders.length;
-    const repeatCustomers = customerOrders.filter((c: any) => Number(c.order_count) > 1).length;
+    const uniqueCount = customersInCurrentPeriod.size;
+    const repeatCustomers = Array.from(customersInCurrentPeriod).filter((playerId) =>
+      customersBeforePeriod.has(playerId),
+    ).length;
     const repeatPurchaseRate = uniqueCount > 0 ? (repeatCustomers / uniqueCount) * 100 : 0;
 
     // Get top buyers

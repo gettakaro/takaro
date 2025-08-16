@@ -248,8 +248,10 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
           <ChartTitle>
             Customer Segments
             <IconTooltip icon={<InfoIcon />} size="small" color="background">
-              Classification of customers by purchase frequency. New = 1 order, Returning = 2-4 orders, Frequent = 5+
-              orders. Helps understand customer loyalty and engagement patterns.
+              Time-based customer segmentation. New = first-time buyers in current period with no prior history.
+              Returning = customers with purchase history who don't qualify as frequent. Frequent = customers with 3+
+              consecutive months of purchases OR 4+ total months with purchases in the last 6 months. Helps identify
+              true customer loyalty patterns over time.
             </IconTooltip>
           </ChartTitle>
           <Chip label={`${customers?.totalCustomers || 0} total`} color="primary" variant="outline" />
@@ -300,7 +302,6 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
               identify any issues with orders or popular items.
             </IconTooltip>
           </ChartTitle>
-          <Chip label="Live" color="success" variant="outline" />
         </ChartHeader>
         <ChartContent>
           {isLoading ? (
