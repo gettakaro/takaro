@@ -1,0 +1,136 @@
+import { createFileRoute, redirect } from '@tanstack/react-router';
+import { PERMISSIONS, ShopAnalyticsPeriod } from '@takaro/apiclient';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
+import { shopAnalyticsQueryOptions } from '../../../queries/analytics';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { useQuery } from '@tanstack/react-query';
+import { DateTime } from 'luxon';
+import { styled } from '@takaro/lib-components';
+import { useForm, useWatch } from 'react-hook-form';
+import { TimePeriodSelectField, GameServerSelectQueryField } from '../../../components/selects';
+import { KPICards } from './analytics.shop/-components/KPICards';
+import { RevenueCharts } from './analytics.shop/-components/RevenueCharts';
+import { ProductCharts } from './analytics.shop/-components/ProductCharts';
+import { CustomerCharts } from './analytics.shop/-components/CustomerCharts';
+import { InsightsBar } from './analytics.shop/-components/InsightsBar';
+
+export const Route = createFileRoute('/_auth/_global/analytics/shop')({
+  beforeLoad: async ({ context }) => {
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
+    if (!hasPermission(session, [PERMISSIONS.ManageShopListings])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
+  loader: async ({ context }) => {
+    // Load initial analytics data with default parameters
+    const analyticsData = await context.queryClient.ensureQueryData(
+      shopAnalyticsQueryOptions(undefined, ShopAnalyticsPeriod.LAST_30_DAYS),
+    );
+
+    return { analyticsData };
+  },
+  component: ShopAnalyticsPage,
+});
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[4]};
+  padding: ${({ theme }) => theme.spacing[4]};
+  box-sizing: border-box;
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing[4]};
+
+  h1 {
+    font-size: ${({ theme }) => theme.fontSize.huge};
+    margin: 0;
+  }
+`;
+
+const ControlBar = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing[2]};
+  align-items: center;
+  flex-wrap: wrap;
+
+  > div:first-child {
+    flex: 1 1 280px;
+    max-width: 400px;
+    min-width: 200px;
+  }
+
+  > div:nth-child(2) {
+    flex: 0 1 180px;
+    min-width: 150px;
+  }
+`;
+
+const ChartSection = styled.div`
+  display: grid;
+  gap: ${({ theme }) => theme.spacing[4]};
+  margin-top: ${({ theme }) => theme.spacing[4]};
+`;
+
+const LastUpdated = styled.div`
+  font-size: ${({ theme }) => theme.fontSize.small};
+  color: ${({ theme }) => theme.colors.textAlt};
+  margin-left: auto;
+`;
+
+function ShopAnalyticsPage() {
+  useDocumentTitle('Shop Analytics');
+
+  const { control } = useForm({
+    defaultValues: {
+      period: ShopAnalyticsPeriod.LAST_30_DAYS,
+      gameServers: [] as string[],
+    },
+  });
+
+  const selectedPeriod = useWatch({ control, name: 'period' });
+  const selectedGameServers = useWatch({ control, name: 'gameServers' });
+
+  const { data: analyticsData, isFetching } = useQuery(
+    shopAnalyticsQueryOptions(selectedGameServers.length > 0 ? selectedGameServers : undefined, selectedPeriod),
+  );
+
+  return (
+    <Container>
+      <Header>
+        <h1>Shop Analytics</h1>
+        <ControlBar>
+          <div>
+            <GameServerSelectQueryField control={control} name="gameServers" multiple={true} canClear={true} />
+          </div>
+          <div>
+            <TimePeriodSelectField control={control} name="period" />
+          </div>
+          <LastUpdated>
+            Last updated: {DateTime.fromISO(analyticsData?.lastUpdated || DateTime.now().toISO()).toRelative()}
+          </LastUpdated>
+        </ControlBar>
+      </Header>
+
+      {/* KPI Cards Section */}
+      <KPICards kpis={analyticsData?.kpis} isLoading={isFetching} />
+
+      {/* Chart Sections */}
+      <ChartSection>
+        <RevenueCharts revenue={analyticsData?.revenue} isLoading={isFetching} />
+
+        <ProductCharts products={analyticsData?.products} orders={analyticsData?.orders} isLoading={isFetching} />
+
+        <CustomerCharts customers={analyticsData?.customers} orders={analyticsData?.orders} isLoading={isFetching} />
+      </ChartSection>
+
+      {/* Insights Bar */}
+      <InsightsBar insights={analyticsData?.insights} isLoading={isFetching} />
+    </Container>
+  );
+}

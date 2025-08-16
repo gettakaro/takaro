@@ -8,6 +8,7 @@ import {
   Min,
   IsISO8601,
   IsBoolean,
+  IsArray,
 } from 'class-validator';
 import { TakaroModelDTO, TakaroDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
@@ -105,6 +106,13 @@ export enum ShopOrderStatus {
   COMPLETED = 'COMPLETED',
   PAID = 'PAID',
   CANCELED = 'CANCELED',
+}
+
+export enum ShopAnalyticsPeriod {
+  LAST_24_HOURS = 'last24Hours',
+  LAST_7_DAYS = 'last7Days',
+  LAST_30_DAYS = 'last30Days',
+  LAST_90_DAYS = 'last90Days',
 }
 
 export class ShopOrderOutputDTO extends TakaroModelDTO<ShopOrderOutputDTO> {
@@ -223,4 +231,306 @@ export class ShopCategoryBulkAssignDTO extends TakaroDTO<ShopCategoryBulkAssignD
   @IsUUID('4', { each: true })
   @IsOptional()
   removeCategoryIds?: string[];
+}
+
+// Analytics DTOs
+export class ShopAnalyticsInputDTO extends TakaroDTO<ShopAnalyticsInputDTO> {
+  @IsUUID('4', { each: true })
+  @IsOptional()
+  gameServerIds?: string[];
+
+  @IsISO8601()
+  @IsOptional()
+  startDate?: string;
+
+  @IsISO8601()
+  @IsOptional()
+  endDate?: string;
+}
+
+export class KPIMetricsDTO extends TakaroDTO<KPIMetricsDTO> {
+  @IsNumber()
+  totalRevenue: number;
+
+  @IsNumber()
+  revenueChange: number;
+
+  @IsArray()
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  revenueSparkline?: number[];
+
+  @IsNumber()
+  ordersToday: number;
+
+  @IsNumber()
+  ordersChange: number;
+
+  @IsNumber()
+  activeCustomers: number;
+
+  @IsNumber()
+  customersChange: number;
+
+  @IsNumber()
+  averageOrderValue: number;
+
+  @IsNumber()
+  aovChange: number;
+}
+
+export class RevenueMetricsDTO extends TakaroDTO<RevenueMetricsDTO> {
+  @ValidateNested({ each: true })
+  @Type(() => TimeSeriesDataPointDTO)
+  timeSeries: TimeSeriesDataPointDTO[];
+
+  @ValidateNested({ each: true })
+  @Type(() => HeatmapDataPointDTO)
+  heatmap: HeatmapDataPointDTO[];
+
+  @IsNumber()
+  growth: number;
+
+  @IsString()
+  peakHour: string;
+
+  @IsString()
+  peakDay: string;
+}
+
+export class TimeSeriesDataPointDTO extends TakaroDTO<TimeSeriesDataPointDTO> {
+  @IsString()
+  date: string;
+
+  @IsNumber()
+  value: number;
+
+  @IsNumber()
+  @IsOptional()
+  comparison?: number;
+}
+
+export class HeatmapDataPointDTO extends TakaroDTO<HeatmapDataPointDTO> {
+  @IsNumber()
+  day: number;
+
+  @IsNumber()
+  hour: number;
+
+  @IsNumber()
+  value: number;
+}
+
+export class ProductMetricsDTO extends TakaroDTO<ProductMetricsDTO> {
+  @ValidateNested({ each: true })
+  @Type(() => TopItemDTO)
+  topItems: TopItemDTO[];
+
+  @ValidateNested({ each: true })
+  @Type(() => CategoryPerformanceDTO)
+  categories: CategoryPerformanceDTO[];
+
+  @IsNumber()
+  deadStock: number;
+
+  @ValidateNested({ each: true })
+  @Type(() => DeadStockItemDTO)
+  @IsOptional()
+  deadStockItems?: DeadStockItemDTO[];
+
+  @IsNumber()
+  totalProducts: number;
+}
+
+export class TopItemDTO extends TakaroDTO<TopItemDTO> {
+  @IsString()
+  id: string;
+
+  @IsString()
+  name: string;
+
+  @IsNumber()
+  quantity: number;
+
+  @IsNumber()
+  revenue: number;
+
+  @IsNumber()
+  percentage: number;
+}
+
+export class CategoryPerformanceDTO extends TakaroDTO<CategoryPerformanceDTO> {
+  @IsString()
+  name: string;
+
+  @IsNumber()
+  revenue: number;
+
+  @IsNumber()
+  orders: number;
+
+  @IsNumber()
+  percentage: number;
+}
+
+export class DeadStockItemDTO extends TakaroDTO<DeadStockItemDTO> {
+  @IsString()
+  id: string;
+
+  @IsString()
+  name: string;
+
+  @IsNumber()
+  daysSinceCreated: number;
+}
+
+export class OrderMetricsDTO extends TakaroDTO<OrderMetricsDTO> {
+  @ValidateNested({ each: true })
+  @Type(() => OrderStatusCountDTO)
+  statusBreakdown: OrderStatusCountDTO[];
+
+  @ValidateNested({ each: true })
+  @Type(() => RecentOrderDTO)
+  recentOrders: RecentOrderDTO[];
+
+  @IsNumber()
+  totalOrders: number;
+
+  @IsNumber()
+  completionRate: number;
+}
+
+export class OrderStatusCountDTO extends TakaroDTO<OrderStatusCountDTO> {
+  @IsEnum(ShopOrderStatus)
+  status: ShopOrderStatus;
+
+  @IsNumber()
+  count: number;
+
+  @IsNumber()
+  percentage: number;
+}
+
+export class RecentOrderDTO extends TakaroDTO<RecentOrderDTO> {
+  @IsString()
+  id: string;
+
+  @IsString()
+  playerName: string;
+
+  @IsString()
+  itemName: string;
+
+  @IsNumber()
+  value: number;
+
+  @IsString()
+  time: string;
+
+  @IsEnum(ShopOrderStatus)
+  status: ShopOrderStatus;
+}
+
+export class CustomerMetricsDTO extends TakaroDTO<CustomerMetricsDTO> {
+  @ValidateNested({ each: true })
+  @Type(() => CustomerSegmentDTO)
+  segments: CustomerSegmentDTO[];
+
+  @ValidateNested({ each: true })
+  @Type(() => TopBuyerDTO)
+  topBuyers: TopBuyerDTO[];
+
+  @IsNumber()
+  repeatRate: number;
+
+  @IsNumber()
+  newCustomers: number;
+
+  @IsNumber()
+  totalCustomers: number;
+}
+
+export class CustomerSegmentDTO extends TakaroDTO<CustomerSegmentDTO> {
+  @IsString()
+  name: string;
+
+  @IsNumber()
+  count: number;
+
+  @IsNumber()
+  percentage: number;
+
+  @IsString()
+  color: string;
+}
+
+export class TopBuyerDTO extends TakaroDTO<TopBuyerDTO> {
+  @IsString()
+  id: string;
+
+  @IsString()
+  name: string;
+
+  @IsNumber()
+  totalSpent: number;
+
+  @IsNumber()
+  orderCount: number;
+
+  @IsString()
+  lastPurchase: string;
+}
+
+export class InsightDTO extends TakaroDTO<InsightDTO> {
+  @IsString()
+  type: string;
+
+  @IsString()
+  title: string;
+
+  @IsString()
+  description: string;
+
+  @IsString()
+  @IsOptional()
+  value?: string;
+
+  @IsString()
+  icon: string;
+}
+
+export class ShopAnalyticsOutputDTO extends TakaroDTO<ShopAnalyticsOutputDTO> {
+  @ValidateNested()
+  @Type(() => KPIMetricsDTO)
+  kpis: KPIMetricsDTO;
+
+  @ValidateNested()
+  @Type(() => RevenueMetricsDTO)
+  revenue: RevenueMetricsDTO;
+
+  @ValidateNested()
+  @Type(() => ProductMetricsDTO)
+  products: ProductMetricsDTO;
+
+  @ValidateNested()
+  @Type(() => OrderMetricsDTO)
+  orders: OrderMetricsDTO;
+
+  @ValidateNested()
+  @Type(() => CustomerMetricsDTO)
+  customers: CustomerMetricsDTO;
+
+  @ValidateNested({ each: true })
+  @Type(() => InsightDTO)
+  insights: InsightDTO[];
+
+  @IsString()
+  lastUpdated: string;
+
+  @IsString()
+  dateRange: string;
+
+  @IsString({ each: true })
+  @IsOptional()
+  gameServerIds?: string[];
 }
