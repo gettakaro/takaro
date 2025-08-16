@@ -9,6 +9,11 @@ export const renderLink = (
   { linkProps, icon, label, requiredPermissions, requiresDevelopmentModeEnabled = false }: NavbarLink,
   isCollapsed?: boolean,
 ) => {
+  // Parent items with children don't have linkProps
+  if (!linkProps) {
+    return null;
+  }
+
   const linkContent = (
     <Link to={linkProps.to} key={`link-${linkProps.to}`}>
       <span key={`inner-${linkProps.to}`}>
