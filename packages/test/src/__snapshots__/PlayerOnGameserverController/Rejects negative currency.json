@@ -12,7 +12,7 @@
             "property": "currency",
             "children": [],
             "constraints": {
-              "min": "currency must not be less than 0.01"
+              "min": "currency must not be less than 0"
             }
           }
         ],

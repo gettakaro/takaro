@@ -1,4 +1,19 @@
-import { TakaroWorker, IConnectorQueueData } from '@takaro/queues';
+import { TakaroWorker } from '@takaro/queues';
+import { GameEvents, GameEventsMapping } from '@takaro/modules';
+import { ValueOf } from 'type-fest';
+
+export interface IConnectorQueueData {
+  domainId: string;
+  gameServerId: string;
+  operation: 'create' | 'update' | 'delete';
+}
+
+export interface IEventQueueData extends Record<string, unknown> {
+  domainId: string;
+  type: ValueOf<typeof GameEvents>;
+  gameServerId: string;
+  event: ValueOf<(typeof GameEventsMapping)[ValueOf<typeof GameEvents>]>;
+}
 import { Job } from 'bullmq';
 import { ctx, errors, logger } from '@takaro/util';
 import { gameServerManager } from './GameServerManager.js';

@@ -397,6 +397,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
       .select('createdAt')
       .where('playerId', pogId)
       .orderBy('createdAt', 'desc')
+      .limit(1)
       .first();
 
     if (!latestSnapshot) {

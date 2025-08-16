@@ -249,7 +249,18 @@ function Component() {
       console.log(error);
 
       if (isAxiosError(error)) {
-        setError(error.response?.data.ui.messages.map((message) => message.text));
+        // Check if this is an error from the Ory flow (has ui.messages)
+        if (error.response?.data?.ui?.messages) {
+          setError(error.response.data.ui.messages.map((message) => message.text));
+        }
+        // Check if this is an error from our API (has meta.error.message)
+        else if (error.response?.data?.meta?.error?.message) {
+          setError(error.response.data.meta.error.message);
+        }
+        // Fallback to generic error message
+        else {
+          setError('An error occurred during login. Please try again.');
+        }
       }
     } finally {
       setLoading(false);

@@ -203,6 +203,22 @@ export class AuthService extends DomainScoped {
         const identity = await ory.getIdentityFromReq(req);
         if (!identity) return null;
 
+        // If we have a domain cookie, validate that the domain is still active
+        if (domainId) {
+          const domain = await domainService.findOne(domainId);
+          if (domain && domain.state !== DOMAIN_STATES.ACTIVE) {
+            // Clear the invalid domain cookie
+            if (req.res?.cookie) {
+              req.res.cookie('takaro-domain', '', { maxAge: 0 });
+            }
+
+            // Instead of throwing error immediately, try to find another active domain
+            log.info(`Domain ${domainId} is ${domain.state}, attempting to find another active domain for user`);
+            domainId = null; // Reset domainId to trigger the domain selection logic below
+          }
+          // If domain not found or is active, continue with the existing domainId
+        }
+
         // If the client didn't provide a domain hint, we assume the first one.
         if (!domainId) {
           const domains = await domainService.resolveDomainByIdpId(identity.id);
@@ -217,6 +233,16 @@ export class AuthService extends DomainScoped {
             log.warn(
               `No active domain found for identity (but domains found: ${domains.map((d) => ({ id: d.id, state: d.state })).join(',')})`,
             );
+
+            // Check if any domain is in maintenance mode
+            const maintenanceDomain = domains.find((d) => d.state === DOMAIN_STATES.MAINTENANCE);
+            if (maintenanceDomain) {
+              throw new errors.BadRequestError(
+                'Domain is in maintenance mode. Please try again later or contact support if the issue persists.',
+              );
+            }
+
+            // Otherwise, domain is disabled
             throw new errors.BadRequestError('Domain is disabled. Please contact support.');
           }
 
