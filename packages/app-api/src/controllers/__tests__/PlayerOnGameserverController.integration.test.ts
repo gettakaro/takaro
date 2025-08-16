@@ -674,6 +674,124 @@ const tests = [
       }
     },
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Reset currency on one server does not affect another server',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      // Enable economy on both servers
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: this.setupData.gameServer1.id,
+        value: 'true',
+      });
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: this.setupData.gameServer2.id,
+        value: 'true',
+      });
+
+      // Get players for both servers
+      const server1Players = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: {
+          gameServerId: [this.setupData.gameServer1.id],
+        },
+      });
+      const server2Players = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: {
+          gameServerId: [this.setupData.gameServer2.id],
+        },
+      });
+
+      // Set currency for players on both servers
+      const server1Currencies = new Map<string, number>();
+      const server2Currencies = new Map<string, number>();
+
+      for (const player of server1Players.data.data) {
+        const currency = 100 + Math.floor(Math.random() * 900);
+        server1Currencies.set(player.id, currency);
+        await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+          player.gameServerId,
+          player.playerId,
+          { currency },
+        );
+      }
+
+      for (const player of server2Players.data.data) {
+        const currency = 200 + Math.floor(Math.random() * 800);
+        server2Currencies.set(player.id, currency);
+        await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+          player.gameServerId,
+          player.playerId,
+          { currency },
+        );
+      }
+
+      // Verify both servers have players with currency
+      const beforeServer1 = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: {
+          gameServerId: [this.setupData.gameServer1.id],
+        },
+      });
+      const beforeServer2 = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: {
+          gameServerId: [this.setupData.gameServer2.id],
+        },
+      });
+
+      for (const player of beforeServer1.data.data) {
+        expect(player.currency).to.be.greaterThan(0);
+        expect(player.currency).to.be.eq(server1Currencies.get(player.id));
+      }
+      for (const player of beforeServer2.data.data) {
+        expect(player.currency).to.be.greaterThan(0);
+        expect(player.currency).to.be.eq(server2Currencies.get(player.id));
+      }
+
+      // Reset currency ONLY on server 1
+      const resetRes = await this.client.gameserver.gameServerControllerResetCurrency(this.setupData.gameServer1.id);
+      expect((resetRes.data as any).data).to.have.property('affectedPlayerCount');
+      expect((resetRes.data as any).data.affectedPlayerCount).to.be.eq(server1Players.data.data.length);
+
+      // Verify server 1 players have 0 currency
+      const afterServer1 = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: {
+          gameServerId: [this.setupData.gameServer1.id],
+        },
+      });
+      for (const player of afterServer1.data.data) {
+        expect(player.currency).to.be.eq(0);
+      }
+
+      // Verify server 2 players STILL have their original currency (unaffected)
+      const afterServer2 = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: {
+          gameServerId: [this.setupData.gameServer2.id],
+        },
+      });
+      for (const player of afterServer2.data.data) {
+        expect(player.currency).to.be.greaterThan(0);
+        expect(player.currency).to.be.eq(server2Currencies.get(player.id));
+      }
+
+      // Verify the event was created only for server 1
+      const events = await this.client.event.eventControllerSearch({
+        filters: {
+          eventName: ['currency-reset-all'],
+          gameserverId: [this.setupData.gameServer1.id],
+        },
+      });
+      expect(events.data.data.length).to.be.greaterThan(0);
+
+      // Verify no reset event was created for server 2
+      const server2Events = await this.client.event.eventControllerSearch({
+        filters: {
+          eventName: ['currency-reset-all'],
+          gameserverId: [this.setupData.gameServer2.id],
+        },
+      });
+      expect(server2Events.data.data.length).to.be.eq(0);
+    },
+  }),
 ];
 
 describe(group, function () {
