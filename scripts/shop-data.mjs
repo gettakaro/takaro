@@ -359,6 +359,31 @@ async function generateOrders(server, listings, domainId) {
     const orderDate = new Date(now);
     orderDate.setDate(orderDate.getDate() - daysAgo);
     
+    // Randomize time of day with realistic distribution
+    // Peak hours: 10am-10pm with highest activity 6pm-9pm
+    const hourWeight = Math.random();
+    let hour;
+    if (hourWeight < 0.1) {
+      // 10% chance: Early morning (0-8am)
+      hour = Math.floor(Math.random() * 9);
+    } else if (hourWeight < 0.3) {
+      // 20% chance: Morning (9am-12pm)
+      hour = 9 + Math.floor(Math.random() * 3);
+    } else if (hourWeight < 0.5) {
+      // 20% chance: Afternoon (12pm-5pm)
+      hour = 12 + Math.floor(Math.random() * 5);
+    } else if (hourWeight < 0.85) {
+      // 35% chance: Peak evening (6pm-9pm)
+      hour = 18 + Math.floor(Math.random() * 3);
+    } else {
+      // 15% chance: Late evening (9pm-11pm)
+      hour = 21 + Math.floor(Math.random() * 3);
+    }
+    
+    orderDate.setHours(hour);
+    orderDate.setMinutes(Math.floor(Math.random() * 60));
+    orderDate.setSeconds(Math.floor(Math.random() * 60));
+    
     // Weekend spike - 50-100% more orders on weekends
     const dayOfWeek = orderDate.getDay();
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;

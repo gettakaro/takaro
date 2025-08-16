@@ -282,13 +282,17 @@ export class ShopAnalyticsService extends TakaroService<
     });
 
     // Transform revenue byHour array to heatmap format
+    // Note: Frontend expects Monday as index 0, but PostgreSQL DOW gives Sunday as 0
+    // So we need to convert: DOW 0 (Sunday) → index 6, DOW 1-6 (Mon-Sat) → index 0-5
     const heatmapData: HeatmapDataPointDTO[] = [];
     revenue.byHour.forEach((dayData, dayIndex) => {
       dayData.forEach((value, hourIndex) => {
         if (value > 0) {
+          // Convert from PostgreSQL DOW (0=Sunday) to frontend index (0=Monday)
+          const frontendDayIndex = dayIndex === 0 ? 6 : dayIndex - 1;
           heatmapData.push(
             new HeatmapDataPointDTO({
-              day: dayIndex,
+              day: frontendDayIndex,
               hour: hourIndex,
               value: value,
             }),
@@ -310,6 +314,7 @@ export class ShopAnalyticsService extends TakaroService<
         }
       });
     });
+    // Day names matching PostgreSQL DOW order (0=Sunday, 1=Monday, etc.)
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     // Calculate AOV change
