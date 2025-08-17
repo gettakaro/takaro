@@ -1,7 +1,7 @@
 import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested, Matches } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { PlayerOnGameserverOutputDTO } from '../PlayerOnGameserverService.js';
-import { Type } from 'class-transformer';
+import { Type, Exclude } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO } from '../RoleService.js';
 
 export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
@@ -68,6 +68,21 @@ export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @ValidateNested({ each: true })
   @Type(() => IpHistoryOutputDTO)
   ipHistory: IpHistoryOutputDTO[];
+
+  @ValidateNested({ each: true })
+  @Type(() => NameHistoryOutputDTO)
+  nameHistory: NameHistoryOutputDTO[];
+}
+
+export class NameHistoryOutputDTO extends TakaroModelDTO<NameHistoryOutputDTO> {
+  @Exclude()
+  playerId?: string;
+
+  @Exclude()
+  gameServerId?: string;
+
+  @IsString()
+  name: string;
 }
 
 export class IpHistoryOutputDTO extends TakaroDTO<IpHistoryOutputDTO> {

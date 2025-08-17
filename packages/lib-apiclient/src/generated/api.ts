@@ -2912,6 +2912,7 @@ export const EventCreateDTOEventNameEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -2931,6 +2932,7 @@ export const EventCreateDTOEventNameEnum = {
   GameserverDeleted: 'gameserver-deleted',
   PlayerBanned: 'player-banned',
   PlayerUnbanned: 'player-unbanned',
+  PlayerDeleted: 'player-deleted',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -3184,6 +3186,7 @@ export const EventOutputDTOEventNameEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -3203,6 +3206,7 @@ export const EventOutputDTOEventNameEnum = {
   GameserverDeleted: 'gameserver-deleted',
   PlayerBanned: 'player-banned',
   PlayerUnbanned: 'player-unbanned',
+  PlayerDeleted: 'player-deleted',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -3241,8 +3245,10 @@ export type EventOutputDTOMeta =
   | TakaroEventModuleUpdated
   | TakaroEventPlayerBanned
   | TakaroEventPlayerCreated
+  | TakaroEventPlayerDeleted
   | TakaroEventPlayerLinked
   | TakaroEventPlayerNewIpDetected
+  | TakaroEventPlayerNewNameDetected
   | TakaroEventPlayerUnbanned
   | TakaroEventRoleAssigned
   | TakaroEventRoleCreated
@@ -3409,6 +3415,7 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -3428,6 +3435,7 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   GameserverDeleted: 'gameserver-deleted',
   PlayerBanned: 'player-banned',
   PlayerUnbanned: 'player-unbanned',
+  PlayerDeleted: 'player-deleted',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -3593,6 +3601,7 @@ export const EventsCountInputDTOEventNameEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -3612,6 +3621,7 @@ export const EventsCountInputDTOEventNameEnum = {
   GameserverDeleted: 'gameserver-deleted',
   PlayerBanned: 'player-banned',
   PlayerUnbanned: 'player-unbanned',
+  PlayerDeleted: 'player-deleted',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -4846,6 +4856,7 @@ export const HookCreateDTOEventTypeEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -4865,6 +4876,7 @@ export const HookCreateDTOEventTypeEnum = {
   GameserverDeleted: 'gameserver-deleted',
   PlayerBanned: 'player-banned',
   PlayerUnbanned: 'player-unbanned',
+  PlayerDeleted: 'player-deleted',
 } as const;
 
 export type HookCreateDTOEventTypeEnum = (typeof HookCreateDTOEventTypeEnum)[keyof typeof HookCreateDTOEventTypeEnum];
@@ -5002,6 +5014,7 @@ export const HookOutputDTOEventTypeEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -5021,6 +5034,7 @@ export const HookOutputDTOEventTypeEnum = {
   GameserverDeleted: 'gameserver-deleted',
   PlayerBanned: 'player-banned',
   PlayerUnbanned: 'player-unbanned',
+  PlayerDeleted: 'player-deleted',
 } as const;
 
 export type HookOutputDTOEventTypeEnum = (typeof HookOutputDTOEventTypeEnum)[keyof typeof HookOutputDTOEventTypeEnum];
@@ -5103,6 +5117,7 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -5122,6 +5137,7 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   GameserverDeleted: 'gameserver-deleted',
   PlayerBanned: 'player-banned',
   PlayerUnbanned: 'player-unbanned',
+  PlayerDeleted: 'player-deleted',
 } as const;
 
 export type HookSearchInputAllowedFiltersEventTypeEnum =
@@ -5276,6 +5292,7 @@ export const HookTriggerDTOEventTypeEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -5295,6 +5312,7 @@ export const HookTriggerDTOEventTypeEnum = {
   GameserverDeleted: 'gameserver-deleted',
   PlayerBanned: 'player-banned',
   PlayerUnbanned: 'player-unbanned',
+  PlayerDeleted: 'player-deleted',
 } as const;
 
 export type HookTriggerDTOEventTypeEnum =
@@ -5359,6 +5377,7 @@ export const HookUpdateDTOEventTypeEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -5378,6 +5397,7 @@ export const HookUpdateDTOEventTypeEnum = {
   GameserverDeleted: 'gameserver-deleted',
   PlayerBanned: 'player-banned',
   PlayerUnbanned: 'player-unbanned',
+  PlayerDeleted: 'player-deleted',
 } as const;
 
 export type HookUpdateDTOEventTypeEnum = (typeof HookUpdateDTOEventTypeEnum)[keyof typeof HookUpdateDTOEventTypeEnum];
@@ -5684,6 +5704,7 @@ export const IHookEventTypeEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -5703,6 +5724,7 @@ export const IHookEventTypeEnum = {
   GameserverDeleted: 'gameserver-deleted',
   PlayerBanned: 'player-banned',
   PlayerUnbanned: 'player-unbanned',
+  PlayerDeleted: 'player-deleted',
 } as const;
 
 export type IHookEventTypeEnum = (typeof IHookEventTypeEnum)[keyof typeof IHookEventTypeEnum];
@@ -8013,6 +8035,37 @@ export type NOTDOMAINSCOPEDTakaroModelDTOCreatedAt = string;
 /**
  *
  * @export
+ * @interface NameHistoryOutputDTO
+ */
+export interface NameHistoryOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof NameHistoryOutputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof NameHistoryOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof NameHistoryOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof NameHistoryOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
  * @interface OptionalPogStatsInputDTO
  */
 export interface OptionalPogStatsInputDTO {
@@ -9451,6 +9504,12 @@ export interface PlayerOutputDTO {
   ipHistory: Array<IpHistoryOutputDTO>;
   /**
    *
+   * @type {Array<NameHistoryOutputDTO>}
+   * @memberof PlayerOutputDTO
+   */
+  nameHistory: Array<NameHistoryOutputDTO>;
+  /**
+   *
    * @type {string}
    * @memberof PlayerOutputDTO
    */
@@ -9613,6 +9672,12 @@ export interface PlayerOutputWithRolesDTO {
    * @memberof PlayerOutputWithRolesDTO
    */
   ipHistory: Array<IpHistoryOutputDTO>;
+  /**
+   *
+   * @type {Array<NameHistoryOutputDTO>}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  nameHistory: Array<NameHistoryOutputDTO>;
 }
 /**
  *
@@ -12714,6 +12779,25 @@ export interface TakaroEventPlayerCreated {
 /**
  *
  * @export
+ * @interface TakaroEventPlayerDeleted
+ */
+export interface TakaroEventPlayerDeleted {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventPlayerDeleted
+   */
+  playerName?: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventPlayerDeleted
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
  * @interface TakaroEventPlayerLinked
  */
 export interface TakaroEventPlayerLinked {
@@ -12764,6 +12848,31 @@ export interface TakaroEventPlayerNewIpDetected {
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof TakaroEventPlayerNewIpDetected
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventPlayerNewNameDetected
+ */
+export interface TakaroEventPlayerNewNameDetected {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventPlayerNewNameDetected
+   */
+  oldName?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventPlayerNewNameDetected
+   */
+  newName: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventPlayerNewNameDetected
    */
   timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
@@ -24225,6 +24334,39 @@ export const PlayerApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
+     *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerDelete`
+     * @summary Delete
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerDelete: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('playerControllerDelete', 'id', id);
+      const localVarPath = `/player/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Get the player that is currently authenticated. This is a low-privilege route, returning limited data.<br> OperationId: `PlayerControllerGetMe`
      * @summary Get current player
      * @param {*} [options] Override http request option.
@@ -24535,6 +24677,29 @@ export const PlayerApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
+     *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerDelete`
+     * @summary Delete
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerControllerDelete(
+      id: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerDelete(id, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PlayerApi.playerControllerDelete']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
      * Get the player that is currently authenticated. This is a low-privilege route, returning limited data.<br> OperationId: `PlayerControllerGetMe`
      * @summary Get current player
      * @param {*} [options] Override http request option.
@@ -24721,6 +24886,16 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
         .then((request) => request(axios, basePath));
     },
     /**
+     *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerDelete`
+     * @summary Delete
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerDelete(id: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
+      return localVarFp.playerControllerDelete(id, options).then((request) => request(axios, basePath));
+    },
+    /**
      * Get the player that is currently authenticated. This is a low-privilege route, returning limited data.<br> OperationId: `PlayerControllerGetMe`
      * @summary Get current player
      * @param {*} [options] Override http request option.
@@ -24872,6 +25047,20 @@ export class PlayerApi extends BaseAPI {
   ) {
     return PlayerApiFp(this.configuration)
       .playerControllerAssignRole(id, roleId, playerRoleAssignChangeDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerDelete`
+   * @summary Delete
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerApi
+   */
+  public playerControllerDelete(id: string, options?: RawAxiosRequestConfig) {
+    return PlayerApiFp(this.configuration)
+      .playerControllerDelete(id, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -25040,6 +25229,48 @@ export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: 
         localVarRequestOptions,
         configuration,
       );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerDelete`
+     * @summary Delete
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerDelete: async (
+      gameServerId: string,
+      playerId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('playerOnGameServerControllerDelete', 'gameServerId', gameServerId);
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists('playerOnGameServerControllerDelete', 'playerId', playerId);
+      const localVarPath = `/gameserver/{gameServerId}/player/{playerId}`
+        .replace(`{${'gameServerId'}}`, encodeURIComponent(String(gameServerId)))
+        .replace(`{${'playerId'}}`, encodeURIComponent(String(playerId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
       return {
         url: toPathString(localVarUrlObj),
@@ -25315,6 +25546,36 @@ export const PlayerOnGameServerApiFp = function (configuration?: Configuration) 
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
+     *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerDelete`
+     * @summary Delete
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerOnGameServerControllerDelete(
+      gameServerId: string,
+      playerId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerDelete(
+        gameServerId,
+        playerId,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PlayerOnGameServerApi.playerOnGameServerControllerDelete']?.[localVarOperationServerIndex]
+          ?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
      *    Required permissions: `READ_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerGetOne`
      * @summary Get one
      * @param {string} gameServerId
@@ -25500,6 +25761,23 @@ export const PlayerOnGameServerApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
+     *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerDelete`
+     * @summary Delete
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerDelete(
+      gameServerId: string,
+      playerId: string,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .playerOnGameServerControllerDelete(gameServerId, playerId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      *    Required permissions: `READ_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerGetOne`
      * @summary Get one
      * @param {string} gameServerId
@@ -25631,6 +25909,21 @@ export class PlayerOnGameServerApi extends BaseAPI {
         playerOnGameServerSetCurrencyInputDTO,
         options,
       )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerDelete`
+   * @summary Delete
+   * @param {string} gameServerId
+   * @param {string} playerId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerOnGameServerApi
+   */
+  public playerOnGameServerControllerDelete(gameServerId: string, playerId: string, options?: RawAxiosRequestConfig) {
+    return PlayerOnGameServerApiFp(this.configuration)
+      .playerOnGameServerControllerDelete(gameServerId, playerId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -29616,6 +29909,7 @@ export const StatsControllerGetEventsCountEventNameEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerNewNameDetected: 'player-new-name-detected',
   ServerStatusChanged: 'server-status-changed',
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
@@ -29635,6 +29929,7 @@ export const StatsControllerGetEventsCountEventNameEnum = {
   GameserverDeleted: 'gameserver-deleted',
   PlayerBanned: 'player-banned',
   PlayerUnbanned: 'player-unbanned',
+  PlayerDeleted: 'player-deleted',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',

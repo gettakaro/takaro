@@ -367,7 +367,6 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     try {
       const cached = await redis.get(cacheKey);
       if (cached) {
-        this.log.debug('Inventory cache hit', { pogId });
         return JSON.parse(cached);
       }
     } catch (error) {

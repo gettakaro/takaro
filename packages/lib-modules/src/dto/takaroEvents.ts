@@ -31,6 +31,7 @@ export const TakaroEvents = {
   CURRENCY_DEDUCTED: 'currency-deducted',
   SETTINGS_SET: 'settings-set',
   PLAYER_NEW_IP_DETECTED: 'player-new-ip-detected',
+  PLAYER_NEW_NAME_DETECTED: 'player-new-name-detected',
   SERVER_STATUS_CHANGED: 'server-status-changed',
   MODULE_CREATED: 'module-created',
   MODULE_UPDATED: 'module-updated',
@@ -50,6 +51,7 @@ export const TakaroEvents = {
   GAMESERVER_DELETED: 'gameserver-deleted',
   PLAYER_BANNED: 'player-banned',
   PLAYER_UNBANNED: 'player-unbanned',
+  PLAYER_DELETED: 'player-deleted',
 } as const;
 
 export class BaseTakaroEvent<T> extends BaseEvent<T> {
@@ -78,6 +80,18 @@ export class TakaroEventPlayerNewIpDetected extends BaseEvent<TakaroEventPlayerN
 
   @IsIP()
   ip: string;
+}
+
+export class TakaroEventPlayerNewNameDetected extends BaseEvent<TakaroEventPlayerNewNameDetected> {
+  @IsString()
+  type = TakaroEvents.PLAYER_NEW_NAME_DETECTED;
+
+  @IsString()
+  @IsOptional()
+  oldName: string | null;
+
+  @IsString()
+  newName: string;
 }
 
 export class TakaroEventCurrencyDeducted extends BaseEvent<TakaroEventCurrencyDeducted> {
@@ -454,9 +468,19 @@ export class TakaroEventPlayerUnbanned extends BaseEvent<TakaroEventPlayerUnbann
   takaroManaged: boolean;
 }
 
+export class TakaroEventPlayerDeleted extends BaseEvent<TakaroEventPlayerDeleted> {
+  @IsString()
+  type = TakaroEvents.PLAYER_DELETED;
+
+  @IsString()
+  @IsOptional()
+  playerName?: string;
+}
+
 export const TakaroEventsMapping = {
   [TakaroEvents.ROLE_ASSIGNED]: TakaroEventRoleAssigned,
   [TakaroEvents.PLAYER_NEW_IP_DETECTED]: TakaroEventPlayerNewIpDetected,
+  [TakaroEvents.PLAYER_NEW_NAME_DETECTED]: TakaroEventPlayerNewNameDetected,
   [TakaroEvents.CURRENCY_DEDUCTED]: TakaroEventCurrencyDeducted,
   [TakaroEvents.CURRENCY_ADDED]: TakaroEventCurrencyAdded,
   [TakaroEvents.COMMAND_EXECUTED]: TakaroEventCommandExecuted,
@@ -487,4 +511,5 @@ export const TakaroEventsMapping = {
   [TakaroEvents.GAMESERVER_DELETED]: TakaroEventGameserverDeleted,
   [TakaroEvents.PLAYER_BANNED]: TakaroEventPlayerBanned,
   [TakaroEvents.PLAYER_UNBANNED]: TakaroEventPlayerUnbanned,
+  [TakaroEvents.PLAYER_DELETED]: TakaroEventPlayerDeleted,
 } as const;
