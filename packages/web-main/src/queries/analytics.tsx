@@ -21,8 +21,7 @@ export const shopAnalyticsQueryOptions = (
       const response = await apiClient.analytics.analyticsControllerGetShopAnalytics(gameServerIds, period);
       return response.data.data;
     },
-    staleTime: 0, // Always consider data stale to ensure refetch on period change
-    refetchInterval: 30 * 1000, // Auto-refresh every 30 seconds
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
     placeholderData: (previousData) => previousData, // Keep previous data while fetching new data
   });
 };
