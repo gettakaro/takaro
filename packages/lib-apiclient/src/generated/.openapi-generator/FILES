@@ -376,6 +376,7 @@ docs/TakaroEventModuleUninstalled.md
 docs/TakaroEventModuleUpdated.md
 docs/TakaroEventPlayerBanned.md
 docs/TakaroEventPlayerCreated.md
+docs/TakaroEventPlayerDeleted.md
 docs/TakaroEventPlayerLinked.md
 docs/TakaroEventPlayerNewIpDetected.md
 docs/TakaroEventPlayerNewNameDetected.md

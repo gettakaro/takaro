@@ -52,6 +52,7 @@ export const TakaroEvents = {
   GAMESERVER_DELETED: 'gameserver-deleted',
   PLAYER_BANNED: 'player-banned',
   PLAYER_UNBANNED: 'player-unbanned',
+  PLAYER_DELETED: 'player-deleted',
 } as const;
 
 export class BaseTakaroEvent<T> extends BaseEvent<T> {
@@ -476,6 +477,15 @@ export class TakaroEventPlayerUnbanned extends BaseEvent<TakaroEventPlayerUnbann
   takaroManaged: boolean;
 }
 
+export class TakaroEventPlayerDeleted extends BaseEvent<TakaroEventPlayerDeleted> {
+  @IsString()
+  type = TakaroEvents.PLAYER_DELETED;
+
+  @IsString()
+  @IsOptional()
+  playerName?: string;
+}
+
 export const TakaroEventsMapping = {
   [TakaroEvents.ROLE_ASSIGNED]: TakaroEventRoleAssigned,
   [TakaroEvents.PLAYER_NEW_IP_DETECTED]: TakaroEventPlayerNewIpDetected,
@@ -511,4 +521,5 @@ export const TakaroEventsMapping = {
   [TakaroEvents.GAMESERVER_DELETED]: TakaroEventGameserverDeleted,
   [TakaroEvents.PLAYER_BANNED]: TakaroEventPlayerBanned,
   [TakaroEvents.PLAYER_UNBANNED]: TakaroEventPlayerUnbanned,
+  [TakaroEvents.PLAYER_DELETED]: TakaroEventPlayerDeleted,
 } as const;

@@ -222,4 +222,13 @@ export class PlayerController {
     await service.removeRole(params.roleId, params.id, data.gameServerId);
     return apiResponse();
   }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS]))
+  @Delete('/player/:id')
+  @ResponseSchema(APIOutput)
+  async delete(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
+    const service = new PlayerService(req.domainId);
+    await service.delete(params.id);
+    return apiResponse();
+  }
 }

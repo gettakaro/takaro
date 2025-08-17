@@ -14,6 +14,7 @@ import {
   TakaroEventCurrencyAdded,
   TakaroEventCurrencyDeducted,
   TakaroEventCurrencyResetAll,
+  TakaroEventPlayerDeleted,
   TakaroEvents,
 } from '@takaro/modules';
 import { PlayerService } from './Player/index.js';
@@ -198,8 +199,28 @@ export class PlayerOnGameServerService extends TakaroService<
     return this.findOne(updated.id);
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<string> {
+    const pog = await this.findOne(id);
+    if (!pog) throw new errors.NotFoundError();
+
+    // Get player name for the event
+    const playerService = new PlayerService(this.domainId);
+    const player = await playerService.findOne(pog.playerId);
+
     await this.repo.delete(id);
+
+    const eventService = new EventService(this.domainId);
+    await eventService.create(
+      new EventCreateDTO({
+        eventName: TakaroEvents.PLAYER_DELETED,
+        playerId: pog.playerId,
+        gameserverId: pog.gameServerId,
+        meta: new TakaroEventPlayerDeleted({
+          playerName: player?.name || 'Unknown',
+        }),
+      }),
+    );
+
     return id;
   }
 
