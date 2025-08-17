@@ -30,7 +30,7 @@ import { PlayerSearchInputDTO } from '../../controllers/PlayerController.js';
 import { PlayerOutputDTO, PlayerCreateDTO, PlayerUpdateDTO, PlayerOutputWithRolesDTO } from './dto.js';
 import { UserService } from '../User/index.js';
 import { DiscordService } from '../DiscordService.js';
-
+import { linkSteamPlayerOnGameJoin } from '../../lib/steamAutoLinking.js';
 const ipLookup = await open(GeoIpDbName.City, (path) => maxmind.open<CityResponse>(path));
 
 @traceableClass('service:player')
@@ -241,7 +241,6 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     // Auto-link Steam player to user if they have Steam ID and no user linked yet
     if (gamePlayer.steamId && player) {
       try {
-        const { linkSteamPlayerOnGameJoin } = await import('../../lib/steamAutoLinking.js');
         const linkingResult = await linkSteamPlayerOnGameJoin(player.id, gamePlayer.steamId, this.domainId);
 
         if (linkingResult.success) {
