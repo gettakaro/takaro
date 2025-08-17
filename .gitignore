@@ -51,3 +51,4 @@ CLAUDE.local.md
 
 # Generated API documentation files
 packages/lib-apiclient/src/generated/docs/
+packages/lib-apiclient/src/generated/.openapi-generator/
