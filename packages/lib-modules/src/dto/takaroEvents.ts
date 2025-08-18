@@ -29,6 +29,7 @@ export const TakaroEvents = {
   CRONJOB_EXECUTED: 'cronjob-executed',
   CURRENCY_ADDED: 'currency-added',
   CURRENCY_DEDUCTED: 'currency-deducted',
+  CURRENCY_RESET_ALL: 'currency-reset-all',
   SETTINGS_SET: 'settings-set',
   PLAYER_NEW_IP_DETECTED: 'player-new-ip-detected',
   PLAYER_NEW_NAME_DETECTED: 'player-new-name-detected',
@@ -108,6 +109,14 @@ export class TakaroEventCurrencyAdded extends BaseEvent<TakaroEventCurrencyAdded
 
   @IsNumber()
   amount: number;
+}
+
+export class TakaroEventCurrencyResetAll extends BaseEvent<TakaroEventCurrencyResetAll> {
+  @IsString()
+  type = TakaroEvents.CURRENCY_RESET_ALL;
+
+  @IsNumber()
+  affectedPlayerCount: number;
 }
 
 export class TakaroEventFunctionResult extends TakaroDTO<TakaroEventFunctionResult> {
@@ -483,6 +492,7 @@ export const TakaroEventsMapping = {
   [TakaroEvents.PLAYER_NEW_NAME_DETECTED]: TakaroEventPlayerNewNameDetected,
   [TakaroEvents.CURRENCY_DEDUCTED]: TakaroEventCurrencyDeducted,
   [TakaroEvents.CURRENCY_ADDED]: TakaroEventCurrencyAdded,
+  [TakaroEvents.CURRENCY_RESET_ALL]: TakaroEventCurrencyResetAll,
   [TakaroEvents.COMMAND_EXECUTED]: TakaroEventCommandExecuted,
   [TakaroEvents.COMMAND_EXECUTION_DENIED]: TakaroEventCommandExecutionDenied,
   [TakaroEvents.ROLE_REMOVED]: TakaroEventRoleRemoved,

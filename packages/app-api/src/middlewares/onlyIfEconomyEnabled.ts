@@ -13,6 +13,11 @@ export async function onlyIfEconomyEnabledMiddleware(
     let gameServerId: string | null = null;
     // First, we need to try and find out if this route is gameserver-related
 
+    // Check if this is a direct gameserver route with :id parameter (e.g., /gameserver/:id/reset-currency)
+    if (req.params.id && req.path.includes('/gameserver/')) {
+      gameServerId = req.params.id;
+    }
+
     // Could be a playerOnGameServer route
     const playerOnGameServerService = new PlayerOnGameServerService(req.domainId);
 
