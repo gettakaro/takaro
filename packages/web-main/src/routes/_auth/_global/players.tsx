@@ -13,7 +13,12 @@ import {
 import { PlayerOutputDTO, PERMISSIONS, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper, Row } from '@tanstack/react-table';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
+import {
+  AiOutlineUser as ProfileIcon,
+  AiOutlineEdit as EditIcon,
+  AiOutlineRight as ActionIcon,
+  AiOutlineDelete as DeleteIcon,
+} from 'react-icons/ai';
 import { DateTime, Duration } from 'luxon';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { hasPermission, useHasPermission } from '../../../hooks/useHasPermission';
@@ -25,6 +30,7 @@ import { PlayerStats } from './-players/playerStats';
 import { userMeQueryOptions } from '../../../queries/user';
 import { GameServerContainer } from '../../../components/GameServer';
 import { PlayerBanDialog } from '../../../components/dialogs/PlayerBanDialog';
+import { PlayerDeleteDialog } from '../../../components/dialogs/PlayerDeleteDialog';
 import { InvestigationLink } from '../../../components/InvestigationLink';
 
 export const StyledDialogBody = styled(Dialog.Body)`
@@ -301,6 +307,7 @@ interface PlayerActionsProps {
 
 const PlayerActions: FC<PlayerActionsProps> = ({ player }) => {
   const [openBanDialog, setOpenBanDialog] = useState<boolean>(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const hasManageRoles = useHasPermission([PERMISSIONS.ManageRoles]);
   const hasManagePlayers = useHasPermission([PERMISSIONS.ManagePlayers]);
   const navigate = useNavigate({ from: Route.fullPath });
@@ -333,9 +340,22 @@ const PlayerActions: FC<PlayerActionsProps> = ({ player }) => {
             }}
             disabled={!hasManagePlayers}
           />
+
+          <Dropdown.Menu.Item
+            label="Delete player"
+            icon={<DeleteIcon />}
+            onClick={() => setOpenDeleteDialog(true)}
+            disabled={!hasManagePlayers}
+          />
         </Dropdown.Menu>
       </Dropdown>
       <PlayerBanDialog open={openBanDialog} onOpenChange={setOpenBanDialog} playerId={player.id} />
+      <PlayerDeleteDialog
+        open={openDeleteDialog}
+        onOpenChange={setOpenDeleteDialog}
+        playerId={player.id}
+        playerName={player.name}
+      />
     </>
   );
 };

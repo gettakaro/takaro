@@ -117,6 +117,58 @@ test.describe('List of gameservers', () => {
   });
 });
 
+test.describe('Reset Currency', () => {
+  test('Can reset all players currency', async ({ takaro }) => {
+    const { GameServersPage, rootClient } = takaro;
+
+    // Enable economy on the gameserver
+    await rootClient.settings.settingsControllerSet('economyEnabled', {
+      gameServerId: GameServersPage.gameServer.id,
+      value: 'true',
+    });
+
+    // Get players on the gameserver
+    const playersResponse = await rootClient.playerOnGameserver.playerOnGameServerControllerSearch({
+      filters: {
+        gameServerId: [GameServersPage.gameServer.id],
+      },
+    });
+
+    // Set currency for players
+    for (const player of playersResponse.data.data) {
+      await rootClient.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        player.gameServerId,
+        player.playerId,
+        { currency: 500 },
+      );
+    }
+
+    // Verify players have currency before reset
+    const beforeReset = await rootClient.playerOnGameserver.playerOnGameServerControllerSearch({
+      filters: {
+        gameServerId: [GameServersPage.gameServer.id],
+      },
+    });
+    for (const player of beforeReset.data.data) {
+      expect(player.currency).toBe(500);
+    }
+
+    // Navigate to gameservers page and perform reset
+    await GameServersPage.goto();
+    await GameServersPage.resetCurrency();
+
+    // Verify all players now have 0 currency
+    const afterReset = await rootClient.playerOnGameserver.playerOnGameServerControllerSearch({
+      filters: {
+        gameServerId: [GameServersPage.gameServer.id],
+      },
+    });
+    for (const player of afterReset.data.data) {
+      expect(player.currency).toBe(0);
+    }
+  });
+});
+
 test.describe('Dashboard', () => {
   test.describe('Command history', () => {
     test('Pressing arrow up should show last command', async ({ takaro }) => {

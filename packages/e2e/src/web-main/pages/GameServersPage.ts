@@ -55,4 +55,22 @@ export class GameServersPage extends BasePage {
   async clickSave() {
     await this.page.getByRole('button', { name: 'Save changes' }).click();
   }
+
+  async resetCurrency() {
+    const card = this.page.getByTestId(`gameserver-${this.gameServer.id}-card`);
+    await card.getByRole('button', { name: 'Settings' }).click();
+    await this.page.getByText("Reset all players' currency").click();
+
+    // Wait for dialog to appear
+    await expect(this.page.getByRole('dialog')).toBeVisible();
+
+    // Type RESET in confirmation field
+    await this.page.getByLabel('Confirmation').fill('RESET');
+
+    // Click reset button
+    await this.page.getByRole('button', { name: 'Reset all currency' }).click();
+
+    // Wait for dialog to close
+    await expect(this.page.getByRole('dialog')).not.toBeVisible();
+  }
 }

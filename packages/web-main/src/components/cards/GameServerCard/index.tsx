@@ -59,7 +59,9 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
           <InnerBody>
             <Header>
               <StatusChip reachable={reachable} enabled={enabled} />
-              <GameServerActions gameServerName={name} gameServerId={id} />
+              <div onClick={(e) => e.stopPropagation()}>
+                <GameServerActions gameServerName={name} gameServerId={id} />
+              </div>
             </Header>
             <DetailsContainer>
               <TitleContainer>

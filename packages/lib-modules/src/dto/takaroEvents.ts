@@ -29,8 +29,10 @@ export const TakaroEvents = {
   CRONJOB_EXECUTED: 'cronjob-executed',
   CURRENCY_ADDED: 'currency-added',
   CURRENCY_DEDUCTED: 'currency-deducted',
+  CURRENCY_RESET_ALL: 'currency-reset-all',
   SETTINGS_SET: 'settings-set',
   PLAYER_NEW_IP_DETECTED: 'player-new-ip-detected',
+  PLAYER_NEW_NAME_DETECTED: 'player-new-name-detected',
   SERVER_STATUS_CHANGED: 'server-status-changed',
   MODULE_CREATED: 'module-created',
   MODULE_UPDATED: 'module-updated',
@@ -50,6 +52,7 @@ export const TakaroEvents = {
   GAMESERVER_DELETED: 'gameserver-deleted',
   PLAYER_BANNED: 'player-banned',
   PLAYER_UNBANNED: 'player-unbanned',
+  PLAYER_DELETED: 'player-deleted',
 } as const;
 
 export class BaseTakaroEvent<T> extends BaseEvent<T> {
@@ -80,6 +83,18 @@ export class TakaroEventPlayerNewIpDetected extends BaseEvent<TakaroEventPlayerN
   ip: string;
 }
 
+export class TakaroEventPlayerNewNameDetected extends BaseEvent<TakaroEventPlayerNewNameDetected> {
+  @IsString()
+  type = TakaroEvents.PLAYER_NEW_NAME_DETECTED;
+
+  @IsString()
+  @IsOptional()
+  oldName: string | null;
+
+  @IsString()
+  newName: string;
+}
+
 export class TakaroEventCurrencyDeducted extends BaseEvent<TakaroEventCurrencyDeducted> {
   @IsString()
   type = TakaroEvents.CURRENCY_DEDUCTED;
@@ -94,6 +109,14 @@ export class TakaroEventCurrencyAdded extends BaseEvent<TakaroEventCurrencyAdded
 
   @IsNumber()
   amount: number;
+}
+
+export class TakaroEventCurrencyResetAll extends BaseEvent<TakaroEventCurrencyResetAll> {
+  @IsString()
+  type = TakaroEvents.CURRENCY_RESET_ALL;
+
+  @IsNumber()
+  affectedPlayerCount: number;
 }
 
 export class TakaroEventFunctionResult extends TakaroDTO<TakaroEventFunctionResult> {
@@ -454,11 +477,22 @@ export class TakaroEventPlayerUnbanned extends BaseEvent<TakaroEventPlayerUnbann
   takaroManaged: boolean;
 }
 
+export class TakaroEventPlayerDeleted extends BaseEvent<TakaroEventPlayerDeleted> {
+  @IsString()
+  type = TakaroEvents.PLAYER_DELETED;
+
+  @IsString()
+  @IsOptional()
+  playerName?: string;
+}
+
 export const TakaroEventsMapping = {
   [TakaroEvents.ROLE_ASSIGNED]: TakaroEventRoleAssigned,
   [TakaroEvents.PLAYER_NEW_IP_DETECTED]: TakaroEventPlayerNewIpDetected,
+  [TakaroEvents.PLAYER_NEW_NAME_DETECTED]: TakaroEventPlayerNewNameDetected,
   [TakaroEvents.CURRENCY_DEDUCTED]: TakaroEventCurrencyDeducted,
   [TakaroEvents.CURRENCY_ADDED]: TakaroEventCurrencyAdded,
+  [TakaroEvents.CURRENCY_RESET_ALL]: TakaroEventCurrencyResetAll,
   [TakaroEvents.COMMAND_EXECUTED]: TakaroEventCommandExecuted,
   [TakaroEvents.COMMAND_EXECUTION_DENIED]: TakaroEventCommandExecutionDenied,
   [TakaroEvents.ROLE_REMOVED]: TakaroEventRoleRemoved,
@@ -487,4 +521,5 @@ export const TakaroEventsMapping = {
   [TakaroEvents.GAMESERVER_DELETED]: TakaroEventGameserverDeleted,
   [TakaroEvents.PLAYER_BANNED]: TakaroEventPlayerBanned,
   [TakaroEvents.PLAYER_UNBANNED]: TakaroEventPlayerUnbanned,
+  [TakaroEvents.PLAYER_DELETED]: TakaroEventPlayerDeleted,
 } as const;

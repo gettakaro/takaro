@@ -26,6 +26,7 @@ export const categorizedEventNames = [
       e.PlayerLinked,
       e.PlayerBanned,
       e.PlayerUnbanned,
+      e.PlayerDeleted,
     ],
   },
   {
@@ -47,6 +48,7 @@ export const categorizedEventNames = [
     events: [
       e.CurrencyAdded,
       e.CurrencyDeducted,
+      e.CurrencyResetAll,
       e.ShopOrderCreated,
       e.ShopOrderStatusChanged,
       e.ShopOrderDeliveryFailed,

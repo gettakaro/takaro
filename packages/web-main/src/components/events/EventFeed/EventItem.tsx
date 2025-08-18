@@ -186,6 +186,15 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
+    case EventOutputDTOEventNameEnum.CurrencyResetAll:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty name="affected players" value={(event.meta as any).affectedPlayerCount} />
+          <EventProperty name="reset by" value={event.user?.name} />
+        </>
+      );
+      break;
     case EventOutputDTOEventNameEnum.SettingsSet:
       properties = (
         <>
@@ -328,6 +337,15 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
           <EventProperty name="player" value={event.player?.name} />
           <EventProperty name="gameserver" value={meta?.isGlobal ? 'All servers' : event.gameServer?.name} />
           {event.user && <EventProperty name="unbanned by" value={event.user?.name} />}
+        </>
+      );
+      break;
+    case EventOutputDTOEventNameEnum.PlayerDeleted:
+      properties = (
+        <>
+          <EventProperty name="player" value={event.player?.name || meta?.playerName || 'Unknown'} />
+          <EventProperty name="gameserver" value={event.gameServer?.name || 'Global'} />
+          {event.user && <EventProperty name="deleted by" value={event.user?.name} />}
         </>
       );
       break;
