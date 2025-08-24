@@ -43,13 +43,13 @@ const analyticsSetup = async function (this: IntegrationTest<IAnalyticsTestSetup
   await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
     shopData.gameserver.id,
     shopData.players[0].id,
-    { currency: 1000 },
+    { currency: 10000 },
   );
 
   await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
     shopData.gameserver.id,
     shopData.players[1].id,
-    { currency: 1000 },
+    { currency: 10000 },
   );
 
   // Create multiple orders across different time periods for testing
@@ -454,6 +454,164 @@ const tests = [
         expect(res.data.data).to.have.property('insights');
         expect(res.data.data).to.have.property('lastUpdated');
         expect(res.data.data).to.have.property('dateRange');
+      }
+    },
+  }),
+
+  new IntegrationTest<IAnalyticsTestSetup>({
+    group,
+    snapshot: false,
+    name: 'Analytics should generate appropriate insights based on metrics',
+    setup: analyticsSetup,
+    test: async function () {
+      const res = await this.setupData.client1WithPermissions.analytics.analyticsControllerGetShopAnalytics();
+
+      const insights = res.data.data.insights;
+      expect(insights).to.be.an('array');
+
+      // Should have at least some insights based on the test data
+      expect(insights.length).to.be.greaterThan(0);
+
+      // Verify insight structure
+      insights.forEach((insight: any) => {
+        expect(insight).to.have.property('type');
+        expect(insight).to.have.property('title');
+        expect(insight).to.have.property('description');
+        expect(insight).to.have.property('icon');
+        expect(['success', 'warning', 'info', 'tip']).to.include(insight.type);
+      });
+
+      // Should have Best Seller insight since we have orders
+      const bestSellerInsight = insights.find((i: any) => i.title === 'Best Seller');
+      expect(bestSellerInsight).to.not.be.undefined;
+      if (bestSellerInsight) {
+        expect(bestSellerInsight.type).to.equal('info');
+        expect(bestSellerInsight.icon).to.equal('Trophy');
+      }
+
+      // Should have Peak Sales Hour insight
+      const peakHourInsight = insights.find((i: any) => i.title === 'Peak Sales Hour');
+      expect(peakHourInsight).to.not.be.undefined;
+      if (peakHourInsight) {
+        expect(peakHourInsight.type).to.equal('info');
+        expect(peakHourInsight.icon).to.equal('Clock');
+      }
+
+      // Should have Customer Retention insight since we have new customers
+      const retentionInsight = insights.find((i: any) => i.title === 'Customer Retention');
+      expect(retentionInsight).to.not.be.undefined;
+      if (retentionInsight) {
+        expect(retentionInsight.type).to.equal('info');
+        expect(retentionInsight.icon).to.equal('Users');
+      }
+    },
+  }),
+
+  new IntegrationTest<IAnalyticsTestSetup>({
+    group,
+    snapshot: false,
+    name: 'Analytics should generate warning insights for low completion rates',
+    setup: async function (this: IntegrationTest<IAnalyticsTestSetup>): Promise<IAnalyticsTestSetup> {
+      const baseSetup = await analyticsSetup.call(this as any);
+
+      // Create many canceled orders to trigger low completion rate warning
+      for (let i = 0; i < 20; i++) {
+        const order = await baseSetup.client1.shopOrder.shopOrderControllerCreate({
+          listingId: baseSetup.listing100.id,
+          amount: 1,
+        });
+        await baseSetup.client1.shopOrder.shopOrderControllerCancel(order.data.data.id);
+      }
+
+      return baseSetup;
+    },
+    test: async function () {
+      const res = await this.setupData.client1WithPermissions.analytics.analyticsControllerGetShopAnalytics();
+
+      const insights = res.data.data.insights;
+
+      // Should have Low Completion Rate warning due to many canceled orders
+      const completionRateInsight = insights.find((i: any) => i.title === 'Low Completion Rate');
+      expect(completionRateInsight).to.not.be.undefined;
+      if (completionRateInsight) {
+        expect(completionRateInsight.type).to.equal('warning');
+        expect(completionRateInsight.icon).to.equal('AlertCircle');
+        expect(completionRateInsight.description).to.include('consider investigating unclaimed orders');
+      }
+    },
+  }),
+
+  new IntegrationTest<IAnalyticsTestSetup>({
+    group,
+    snapshot: false,
+    name: 'Analytics should generate insights for slow moving stock',
+    setup: async function (this: IntegrationTest<IAnalyticsTestSetup>): Promise<IAnalyticsTestSetup> {
+      const baseSetup = await analyticsSetup.call(this as any);
+
+      // Create additional listings without any orders
+      await baseSetup.createListings(this.client, {
+        gameServerId: baseSetup.gameserver.id,
+        amount: 5,
+        name: 'Unsold Item',
+      });
+
+      return baseSetup;
+    },
+    test: async function () {
+      const res = await this.setupData.client1WithPermissions.analytics.analyticsControllerGetShopAnalytics();
+
+      const insights = res.data.data.insights;
+
+      // Should have Slow Moving Stock warning for listings with no sales
+      const slowMovingInsight = insights.find((i: any) => i.title === 'Slow Moving Stock');
+      expect(slowMovingInsight).to.not.be.undefined;
+      if (slowMovingInsight) {
+        expect(slowMovingInsight.type).to.equal('warning');
+        expect(slowMovingInsight.icon).to.equal('AlertTriangle');
+        expect(slowMovingInsight.description).to.include('listings have not sold recently');
+        expect(parseInt(slowMovingInsight.value || '0')).to.be.greaterThan(0);
+      }
+    },
+  }),
+
+  new IntegrationTest<IAnalyticsTestSetup>({
+    group,
+    snapshot: false,
+    name: 'Analytics insights should reflect revenue and AOV changes',
+    setup: analyticsSetup,
+    test: async function () {
+      const res = await this.setupData.client1WithPermissions.analytics.analyticsControllerGetShopAnalytics();
+
+      const insights = res.data.data.insights;
+      const kpis = res.data.data.kpis;
+
+      // Check for revenue-related insights based on actual metrics
+      if (kpis.revenueChange > 20) {
+        const revenueGrowthInsight = insights.find((i: any) => i.title === 'Revenue Growth');
+        expect(revenueGrowthInsight).to.not.be.undefined;
+        if (revenueGrowthInsight) {
+          expect(revenueGrowthInsight.type).to.equal('success');
+          expect(revenueGrowthInsight.icon).to.equal('TrendingUp');
+          expect(revenueGrowthInsight.description).to.include('Revenue up');
+        }
+      } else if (kpis.revenueChange < -10) {
+        const revenueDeclineInsight = insights.find((i: any) => i.title === 'Revenue Decline');
+        expect(revenueDeclineInsight).to.not.be.undefined;
+        if (revenueDeclineInsight) {
+          expect(revenueDeclineInsight.type).to.equal('warning');
+          expect(revenueDeclineInsight.icon).to.equal('TrendingDown');
+          expect(revenueDeclineInsight.description).to.include('Revenue down');
+        }
+      }
+
+      // Check for AOV insights if there's a positive change
+      if (kpis.aovChange > 0) {
+        const aovInsight = insights.find((i: any) => i.title === 'AOV Increase');
+        if (aovInsight) {
+          expect(aovInsight.type).to.equal('success');
+          expect(aovInsight.icon).to.equal('DollarSign');
+          expect(aovInsight.description).to.include('Average order value increased');
+        }
       }
     },
   }),
