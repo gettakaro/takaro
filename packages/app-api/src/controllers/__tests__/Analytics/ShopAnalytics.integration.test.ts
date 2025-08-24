@@ -1,6 +1,7 @@
 import { IntegrationTest, expect, IShopSetup, shopSetup, integrationConfig } from '@takaro/test';
 import {
   ShopOrderOutputDTOStatusEnum,
+  ShopListingOutputDTO,
   isAxiosError,
   Client,
   AnalyticsControllerGetShopAnalyticsPeriodEnum,
@@ -12,6 +13,7 @@ const group = 'Analytics/ShopAnalyticsController';
 interface IAnalyticsTestSetup extends IShopSetup {
   client1WithPermissions: Client;
   client2WithoutPermissions: Client;
+  gameserver2Listings: ShopListingOutputDTO[];
 }
 
 const analyticsSetup = async function (this: IntegrationTest<IAnalyticsTestSetup>): Promise<IAnalyticsTestSetup> {
@@ -76,10 +78,43 @@ const analyticsSetup = async function (this: IntegrationTest<IAnalyticsTestSetup
 
   await shopData.client1.shopOrder.shopOrderControllerCancel(canceledOrder.data.data.id);
 
+  // Create listings and orders on gameserver2 for proper filtering tests
+  await this.client.settings.settingsControllerSet('economyEnabled', {
+    value: 'true',
+    gameServerId: shopData.gameserver2.id,
+  });
+
+  await this.client.settings.settingsControllerSet('currencyName', {
+    gameServerId: shopData.gameserver2.id,
+    value: 'test coin',
+  });
+
+  const gameserver2Listings = await shopData.createListings(this.client, {
+    gameServerId: shopData.gameserver2.id,
+    amount: 2,
+    name: 'Server2 Item',
+  });
+
+  // Add currency to players on gameserver2
+  await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
+    shopData.gameserver2.id,
+    shopData.players2[0].id,
+    { currency: 500 },
+  );
+
+  // Create orders on gameserver2
+  for (let i = 0; i < 4; i++) {
+    await shopData.client3.shopOrder.shopOrderControllerCreate({
+      listingId: gameserver2Listings[0].id,
+      amount: 2,
+    });
+  }
+
   return {
     ...shopData,
     client1WithPermissions,
     client2WithoutPermissions,
+    gameserver2Listings,
   };
 };
 
@@ -131,16 +166,73 @@ const tests = [
   new IntegrationTest<IAnalyticsTestSetup>({
     group,
     snapshot: false,
-    name: 'Get shop analytics filtered by game server',
+    name: 'Should properly filter analytics by game server',
     setup: analyticsSetup,
     test: async function () {
-      const res = await this.setupData.client1WithPermissions.analytics.analyticsControllerGetShopAnalytics([
+      // Get analytics for ALL servers (no filter)
+      const allServersRes = await this.setupData.client1WithPermissions.analytics.analyticsControllerGetShopAnalytics();
+
+      // Get analytics for gameserver1 only
+      const server1Res = await this.setupData.client1WithPermissions.analytics.analyticsControllerGetShopAnalytics([
         this.setupData.gameserver.id,
       ]);
 
-      expect(res.data.data).to.have.property('kpis');
-      // Verify the analytics data was filtered by the provided game server
-      expect(res.data.data.kpis.totalRevenue).to.be.a('number');
+      // Get analytics for gameserver2 only
+      const server2Res = await this.setupData.client1WithPermissions.analytics.analyticsControllerGetShopAnalytics([
+        this.setupData.gameserver2.id,
+      ]);
+
+      // Verify all responses have data
+      expect(allServersRes.data.data).to.have.property('kpis');
+      expect(server1Res.data.data).to.have.property('kpis');
+      expect(server2Res.data.data).to.have.property('kpis');
+
+      // Extract revenue values
+      const allRevenue = allServersRes.data.data.kpis.totalRevenue;
+      const server1Revenue = server1Res.data.data.kpis.totalRevenue;
+      const server2Revenue = server2Res.data.data.kpis.totalRevenue;
+
+      // Each server should have revenue (we created orders on both)
+      expect(server1Revenue, 'Server 1 should have revenue').to.be.greaterThan(0);
+      expect(server2Revenue, 'Server 2 should have revenue').to.be.greaterThan(0);
+
+      // Combined revenue should equal sum of individual servers
+      expect(allRevenue, 'Combined revenue should equal sum of individual servers').to.equal(
+        server1Revenue + server2Revenue,
+      );
+
+      // Extract order counts
+      const allOrders = allServersRes.data.data.orders.totalOrders;
+      const server1Orders = server1Res.data.data.orders.totalOrders;
+      const server2Orders = server2Res.data.data.orders.totalOrders;
+
+      // Each server should have orders
+      expect(server1Orders, 'Server 1 should have orders').to.be.greaterThan(0);
+      expect(server2Orders, 'Server 2 should have orders').to.be.greaterThan(0);
+
+      // Combined orders should equal sum of individual servers
+      expect(allOrders, 'Combined orders should equal sum of individual servers').to.equal(
+        server1Orders + server2Orders,
+      );
+
+      // Check customer counts
+      const allCustomers = allServersRes.data.data.customers.totalCustomers;
+      const server1Customers = server1Res.data.data.customers.totalCustomers;
+      const server2Customers = server2Res.data.data.customers.totalCustomers;
+
+      // Each server should have customers
+      expect(server1Customers, 'Server 1 should have customers').to.be.greaterThan(0);
+      expect(server2Customers, 'Server 2 should have customers').to.be.greaterThan(0);
+
+      // Combined customers should equal sum of individual servers
+      // (assuming no overlap of players between servers in test data)
+      expect(allCustomers, 'Combined customers should equal sum of individual servers').to.equal(
+        server1Customers + server2Customers,
+      );
+
+      // Verify that filtering actually makes a difference
+      expect(server1Revenue, 'Server revenues should be different').to.not.equal(server2Revenue);
+      expect(server1Orders, 'Server order counts should be different').to.not.equal(server2Orders);
     },
   }),
 
