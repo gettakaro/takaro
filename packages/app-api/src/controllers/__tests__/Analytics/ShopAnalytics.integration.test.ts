@@ -1,4 +1,4 @@
-import { IntegrationTest, expect, IShopSetup, shopSetup } from '@takaro/test';
+import { IntegrationTest, expect, IShopSetup, shopSetup, integrationConfig } from '@takaro/test';
 import {
   ShopOrderOutputDTOStatusEnum,
   isAxiosError,
@@ -34,7 +34,7 @@ const analyticsSetup = async function (this: IntegrationTest<IAnalyticsTestSetup
       username: 'nopermission@test.com',
       password: 'testPassword123!',
     },
-    url: (this.client as any).baseURL || (this.client as any).defaults?.baseURL || 'http://127.0.0.1:13000',
+    url: integrationConfig.get('host'),
   });
   await client2WithoutPermissions.login();
 
