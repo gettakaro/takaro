@@ -70,6 +70,19 @@ class ItemSearchInputDTO extends ITakaroQuery<ItemSearchInputAllowedFilters> {
 export class ItemController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_ITEMS]))
   @ResponseSchema(ItemOutputArrayDTOAPI)
+  @OpenAPI({
+    description: 'Search items',
+    examples: {
+      withRelations: {
+        summary: 'Search with related data',
+        value: {
+          extend: ['gameServer'],
+          page: 1,
+          limit: 10,
+        },
+      },
+    },
+  })
   @Post('/items/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: ItemSearchInputDTO) {
     const service = new ItemsService(req.domainId);

@@ -98,6 +98,19 @@ export class CommandSearchInputDTO extends ITakaroQuery<CommandOutputDTO> {
 export class CommandController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
   @ResponseSchema(CommandOutputArrayDTOAPI)
+  @OpenAPI({
+    description: 'Search commands',
+    examples: {
+      withRelations: {
+        summary: 'Search with related data',
+        value: {
+          extend: ['module'],
+          page: 1,
+          limit: 10,
+        },
+      },
+    },
+  })
   @Post('/command/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: CommandSearchInputDTO) {
     const service = new CommandService(req.domainId);

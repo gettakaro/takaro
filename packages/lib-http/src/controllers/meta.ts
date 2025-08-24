@@ -60,19 +60,6 @@ function addSearchExamples(original: OpenAPIObject): OpenAPIObject {
               greaterThan: { createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() },
             },
           },
-          withRelations: {
-            summary: 'Search with related data',
-            description:
-              'Use the extend parameter to include related entities in the response, reducing the need for multiple API calls.',
-            value: {
-              filters: {
-                name: ['admin'],
-              },
-              extend: ['roles', 'gameServers'],
-              page: 1,
-              limit: 10,
-            },
-          },
         };
 
         if (!operation.requestBody) {

@@ -70,6 +70,16 @@ export class ModuleVersionController {
   @ResponseSchema(ModuleVersionOutputArrayDTOAPI)
   @OpenAPI({
     summary: 'Search module versions',
+    examples: {
+      withRelations: {
+        summary: 'Search with related data',
+        value: {
+          extend: ['module'],
+          page: 1,
+          limit: 10,
+        },
+      },
+    },
   })
   @Post('/search')
   async searchVersions(

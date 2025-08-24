@@ -267,6 +267,16 @@ export class GameServerController {
   @ResponseSchema(GameServerOutputArrayDTOAPI)
   @OpenAPI({
     description: 'Fetch gameservers',
+    examples: {
+      withRelations: {
+        summary: 'Search with related data',
+        value: {
+          extend: ['players'],
+          page: 1,
+          limit: 10,
+        },
+      },
+    },
   })
   @Post('/gameserver/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: GameServerSearchInputDTO) {

@@ -69,6 +69,19 @@ export class EventController {
   private log = logger('EventController');
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_EVENTS]))
   @ResponseSchema(EventOutputArrayDTOAPI)
+  @OpenAPI({
+    description: 'Search events',
+    examples: {
+      withRelations: {
+        summary: 'Search with related data',
+        value: {
+          extend: [],
+          page: 1,
+          limit: 10,
+        },
+      },
+    },
+  })
   @Post('/event/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: EventSearchInputDTO) {
     const service = new EventService(req.domainId);

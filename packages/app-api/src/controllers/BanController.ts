@@ -75,6 +75,16 @@ export class BanController {
   @OpenAPI({
     description: 'Search for bans',
     summary: 'Search for bans',
+    examples: {
+      withRelations: {
+        summary: 'Search with related data',
+        value: {
+          extend: ['player', 'gameServer'],
+          page: 1,
+          limit: 10,
+        },
+      },
+    },
   })
   @Post('/ban/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: BanSearchInputDTO) {
