@@ -13,6 +13,7 @@ import {
   IGamePlayer,
   TakaroEventCurrencyAdded,
   TakaroEventCurrencyDeducted,
+  TakaroEventCurrencyResetAll,
   TakaroEventPlayerDeleted,
   TakaroEvents,
 } from '@takaro/modules';
@@ -355,6 +356,27 @@ export class PlayerOnGameServerService extends TakaroService<
 
     return updatedPlayerOnGameServer;
   }
+
+  async resetAllPlayersCurrency(gameServerId: string): Promise<number> {
+    const affectedPlayerCount = await this.repo.resetAllCurrencyForGameServer(gameServerId);
+
+    if (affectedPlayerCount > 0) {
+      const eventsService = new EventService(this.domainId);
+      const userId = ctx.data.user;
+
+      await eventsService.create(
+        new EventCreateDTO({
+          eventName: EVENT_TYPES.CURRENCY_RESET_ALL,
+          gameserverId: gameServerId,
+          userId,
+          meta: new TakaroEventCurrencyResetAll({ affectedPlayerCount }),
+        }),
+      );
+    }
+
+    return affectedPlayerCount;
+  }
+
   async setOnlinePlayers(gameServerId: string, players: IGamePlayer[]) {
     await this.repo.setOnlinePlayers(gameServerId, players);
   }

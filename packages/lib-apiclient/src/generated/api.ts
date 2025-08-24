@@ -2910,6 +2910,7 @@ export const EventCreateDTOEventNameEnum = {
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
+  CurrencyResetAll: 'currency-reset-all',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   PlayerNewNameDetected: 'player-new-name-detected',
@@ -3184,6 +3185,7 @@ export const EventOutputDTOEventNameEnum = {
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
+  CurrencyResetAll: 'currency-reset-all',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   PlayerNewNameDetected: 'player-new-name-detected',
@@ -3234,6 +3236,7 @@ export type EventOutputDTOMeta =
   | TakaroEventCronjobExecuted
   | TakaroEventCurrencyAdded
   | TakaroEventCurrencyDeducted
+  | TakaroEventCurrencyResetAll
   | TakaroEventGameserverCreated
   | TakaroEventGameserverDeleted
   | TakaroEventGameserverUpdated
@@ -3413,6 +3416,7 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
+  CurrencyResetAll: 'currency-reset-all',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   PlayerNewNameDetected: 'player-new-name-detected',
@@ -3599,6 +3603,7 @@ export const EventsCountInputDTOEventNameEnum = {
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
+  CurrencyResetAll: 'currency-reset-all',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   PlayerNewNameDetected: 'player-new-name-detected',
@@ -4854,6 +4859,7 @@ export const HookCreateDTOEventTypeEnum = {
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
+  CurrencyResetAll: 'currency-reset-all',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   PlayerNewNameDetected: 'player-new-name-detected',
@@ -5012,6 +5018,7 @@ export const HookOutputDTOEventTypeEnum = {
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
+  CurrencyResetAll: 'currency-reset-all',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   PlayerNewNameDetected: 'player-new-name-detected',
@@ -5115,6 +5122,7 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
+  CurrencyResetAll: 'currency-reset-all',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   PlayerNewNameDetected: 'player-new-name-detected',
@@ -5290,6 +5298,7 @@ export const HookTriggerDTOEventTypeEnum = {
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
+  CurrencyResetAll: 'currency-reset-all',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   PlayerNewNameDetected: 'player-new-name-detected',
@@ -5375,6 +5384,7 @@ export const HookUpdateDTOEventTypeEnum = {
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
+  CurrencyResetAll: 'currency-reset-all',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   PlayerNewNameDetected: 'player-new-name-detected',
@@ -5702,6 +5712,7 @@ export const IHookEventTypeEnum = {
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
+  CurrencyResetAll: 'currency-reset-all',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   PlayerNewNameDetected: 'player-new-name-detected',
@@ -12477,6 +12488,25 @@ export interface TakaroEventCurrencyDeducted {
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof TakaroEventCurrencyDeducted
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventCurrencyResetAll
+ */
+export interface TakaroEventCurrencyResetAll {
+  /**
+   *
+   * @type {number}
+   * @memberof TakaroEventCurrencyResetAll
+   */
+  affectedPlayerCount: number;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventCurrencyResetAll
    */
   timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
@@ -19571,6 +19601,42 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
+     * Resets all players\' currency to 0 on the specified game server. This action is irreversible.   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerResetCurrency`
+     * @summary Reset currency
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerResetCurrency: async (
+      id: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerResetCurrency', 'id', id);
+      const localVarPath = `/gameserver/{id}/reset-currency`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Fetch gameservers<br> OperationId: `GameServerControllerSearch`
      * @summary Search
      * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
@@ -20363,6 +20429,29 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
+     * Resets all players\' currency to 0 on the specified game server. This action is irreversible.   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerResetCurrency`
+     * @summary Reset currency
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerResetCurrency(
+      id: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerResetCurrency(id, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['GameServerApi.gameServerControllerResetCurrency']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
      * Fetch gameservers<br> OperationId: `GameServerControllerSearch`
      * @summary Search
      * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
@@ -20838,6 +20927,16 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
+     * Resets all players\' currency to 0 on the specified game server. This action is irreversible.   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerResetCurrency`
+     * @summary Reset currency
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerResetCurrency(id: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
+      return localVarFp.gameServerControllerResetCurrency(id, options).then((request) => request(axios, basePath));
+    },
+    /**
      * Fetch gameservers<br> OperationId: `GameServerControllerSearch`
      * @summary Search
      * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
@@ -21240,6 +21339,20 @@ export class GameServerApi extends BaseAPI {
   public gameServerControllerRemove(id: string, options?: RawAxiosRequestConfig) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerRemove(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Resets all players\' currency to 0 on the specified game server. This action is irreversible.   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerResetCurrency`
+   * @summary Reset currency
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerResetCurrency(id: string, options?: RawAxiosRequestConfig) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerResetCurrency(id, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -29907,6 +30020,7 @@ export const StatsControllerGetEventsCountEventNameEnum = {
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
+  CurrencyResetAll: 'currency-reset-all',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   PlayerNewNameDetected: 'player-new-name-detected',
