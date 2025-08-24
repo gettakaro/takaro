@@ -76,6 +76,19 @@ class VariableSearchInputDTO extends ITakaroQuery<VariableSearchInputAllowedFilt
 export class VariableController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_VARIABLES]))
   @ResponseSchema(VariableOutputArrayDTOAPI)
+  @OpenAPI({
+    description: 'Search variables',
+    examples: {
+      withRelations: {
+        summary: 'Search with related data',
+        value: {
+          extend: [],
+          page: 1,
+          limit: 10,
+        },
+      },
+    },
+  })
   @Post('/variables/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: VariableSearchInputDTO) {
     const service = new VariablesService(req.domainId);

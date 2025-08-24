@@ -238,12 +238,7 @@ export class UserController {
     requestBody: {
       content: {
         'application/json': {
-          examples: {
-            membersOfRole: {
-              summary: 'Get all users with a specific role',
-              value: { filters: { roleId: ['1ec529af-0f8f-4d8d-b06a-7f83c64f0086'] } },
-            },
-          },
+          examples: {},
         },
       },
     },

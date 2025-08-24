@@ -105,6 +105,16 @@ export class ShopOrderController {
     summary: 'Search orders',
     description:
       'Search for orders. By default, this endpoint only returns your own orders. When the caller has permission to view all orders, they can search for all orders.',
+    examples: {
+      withRelations: {
+        summary: 'Search with related data',
+        value: {
+          extend: ['listing', 'user'],
+          page: 1,
+          limit: 10,
+        },
+      },
+    },
   })
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: ShopOrderSearchInputDTO) {
     const service = new ShopListingService(req.domainId);

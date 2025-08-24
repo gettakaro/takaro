@@ -74,6 +74,19 @@ class FunctionSearchInputDTO extends ITakaroQuery<FunctionOutputDTO> {
 export class FunctionController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
   @ResponseSchema(FunctionOutputArrayDTOAPI)
+  @OpenAPI({
+    description: 'Search functions',
+    examples: {
+      withRelations: {
+        summary: 'Search with related data',
+        value: {
+          extend: ['module'],
+          page: 1,
+          limit: 10,
+        },
+      },
+    },
+  })
   @Post('/function/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: FunctionSearchInputDTO) {
     const service = new FunctionService(req.domainId);

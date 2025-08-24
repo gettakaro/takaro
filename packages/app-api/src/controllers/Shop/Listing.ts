@@ -112,6 +112,19 @@ class ShopListingSearchInputDTO extends ITakaroQuery<ShopListingSearchInputAllow
 export class ShopListingController {
   @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(ShopListingOutputArrayDTOAPI)
+  @OpenAPI({
+    description: 'Search shop listings',
+    examples: {
+      withRelations: {
+        summary: 'Search with related data',
+        value: {
+          extend: ['category', 'items'],
+          page: 1,
+          limit: 10,
+        },
+      },
+    },
+  })
   @Post('/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: ShopListingSearchInputDTO) {
     const service = new ShopListingService(req.domainId);
