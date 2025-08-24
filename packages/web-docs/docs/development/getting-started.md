@@ -87,6 +87,42 @@ VITE_ORY_URL=http://127.0.0.1:4433 VITE_API=http://127.0.0.1:13000 VITE_TAKARO_V
 # The frontend is available at http://localhost:13002
 ```
 
+## Authentication
+
+### Local Development Authentication
+
+For local development, Takaro uses Ory Kratos for authentication. By default, you can:
+- Create local accounts using email/password
+- Use the development data script to create test users
+
+### Steam Authentication (Optional)
+
+Steam authentication requires an external [steam-auth-proxy](https://github.com/niekcandaele/steam-auth-proxy) service with a proper TLS certificate. This is **not** included in the local development setup.
+
+#### Why External?
+
+Steam's OpenID authentication requires HTTPS/TLS for security. Since local development typically runs on HTTP, you need to host the proxy externally with proper SSL certificates.
+
+#### Setting up Steam Authentication
+
+If you want to test Steam authentication locally:
+
+1. **Deploy steam-auth-proxy externally** with TLS (e.g., on a VPS, cloud service, or using ngrok)
+2. **Get a Steam API key** from [Steam Community Dev](https://steamcommunity.com/dev/apikey)
+3. **Update your `.env` file**:
+   ```bash
+   STEAM_API_KEY="your-steam-api-key"
+   STEAM_AUTH_PROXY_URL="https://your-proxy-domain.com"
+   ```
+4. **Restart your development environment**
+
+#### Alternatives for Testing
+
+For most development tasks, you don't need Steam authentication:
+- Use local email/password accounts
+- The development data script creates test users automatically
+- Player linking and authentication flows can be tested with local accounts
+
 ## Repo setup
 
 This repo is a monorepo, using [NPM workspaces](https://docs.npmjs.com/cli/v7/using-npm/workspaces).

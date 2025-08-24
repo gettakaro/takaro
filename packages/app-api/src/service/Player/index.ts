@@ -31,7 +31,7 @@ import { PlayerSearchInputDTO } from '../../controllers/PlayerController.js';
 import { PlayerOutputDTO, PlayerCreateDTO, PlayerUpdateDTO, PlayerOutputWithRolesDTO } from './dto.js';
 import { UserService } from '../User/index.js';
 import { DiscordService } from '../DiscordService.js';
-
+import { linkSteamPlayerOnGameJoin } from '../../lib/steamAutoLinking.js';
 const ipLookup = await open(GeoIpDbName.City, (path) => maxmind.open<CityResponse>(path));
 
 @traceableClass('service:player')
@@ -253,6 +253,33 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
 
     if (!pog) throw new errors.NotFoundError('PlayerOnGameServer not found');
     if (!player) throw new errors.NotFoundError('Player not found');
+
+    // Auto-link Steam player to user if they have Steam ID and no user linked yet
+    if (gamePlayer.steamId && player) {
+      try {
+        const linkingResult = await linkSteamPlayerOnGameJoin(player.id, gamePlayer.steamId, this.domainId);
+
+        if (linkingResult.success) {
+          this.log.info('Successfully auto-linked player to Steam user', {
+            playerId: player.id,
+            steamId: gamePlayer.steamId,
+          });
+        } else {
+          this.log.debug('Steam auto-linking not successful', {
+            playerId: player.id,
+            steamId: gamePlayer.steamId,
+            reason: linkingResult.error,
+          });
+        }
+      } catch (error) {
+        // Don't fail player resolution if auto-linking fails
+        this.log.error('Failed to auto-link Steam player', {
+          playerId: player.id,
+          steamId: gamePlayer.steamId,
+          error,
+        });
+      }
+    }
 
     return {
       player,

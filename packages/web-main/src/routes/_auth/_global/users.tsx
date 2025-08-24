@@ -75,6 +75,7 @@ function Component() {
       filters: {
         name: columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value,
         discordId: columnFilters.columnFiltersState.find((filter) => filter.id === 'discordId')?.value,
+        steamId: columnFilters.columnFiltersState.find((filter) => filter.id === 'steamId')?.value,
         playerId: columnFilters.columnFiltersState.find((filter) => filter.id === 'playerId')?.value,
       },
       search: {
@@ -83,6 +84,7 @@ function Component() {
           quickSearchInput,
         ],
         discordId: columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value,
+        steamId: columnSearch.columnSearchState.find((search) => search.id === 'steamId')?.value,
       },
     }),
   });
@@ -127,6 +129,11 @@ function Component() {
       header: 'Discord ID',
       id: 'discordId',
       cell: (info) => <CopyId placeholder="Discord ID" id={info.getValue()} />,
+    }),
+    columnHelper.accessor('steamId', {
+      header: 'Steam ID',
+      id: 'steamId',
+      cell: (info) => <CopyId placeholder="Steam ID" id={info.getValue()} />,
     }),
 
     columnHelper.accessor('playerId', {

@@ -25,11 +25,33 @@
               "via": "email"
             }
           }
+        },
+        "authProvider": {
+          "type": "string",
+          "title": "Authentication Provider",
+          "description": "The provider used for registration",
+          "enum": ["password", "steam", "discord"],
+          "default": "password"
+        },
+        "name": {
+          "type": "string",
+          "title": "Display Name",
+          "description": "User's display name"
+        },
+        "steamId": {
+          "type": "string",
+          "title": "Steam ID",
+          "description": "User's Steam ID",
+          "ory.sh/kratos": {
+            "credentials": {
+              "password": {
+                "identifier": true
+              }
+            }
+          }
         }
       },
-      "required": [
-        "email"
-      ],
+      "required": [],
       "additionalProperties": false
     }
   }

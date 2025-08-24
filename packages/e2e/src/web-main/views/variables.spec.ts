@@ -46,8 +46,8 @@ extendedTest('Can create variable', async ({ page, takaro, extended }) => {
 
   await page.getByRole('button', { name: 'Save variable' }).click();
   await page.waitForURL(`${integrationConfig.get('frontendHost')}/variables`);
-  await expect(page.getByText(variableName)).toBeVisible();
-  await expect(page.getByText(variableValue)).toBeVisible();
+  await expect(page.getByRole('cell', { name: variableName })).toBeVisible();
+  await expect(page.getByRole('cell', { name: variableValue })).toBeVisible();
 });
 
 extendedTest('Can delete variable', async ({ page, takaro }) => {
@@ -171,6 +171,6 @@ extendedTest('Can update variable', async ({ page, takaro }) => {
   await page.getByLabel('Value').fill(newVariableValue);
 
   await page.getByRole('button', { name: 'Update variable' }).click();
-  await expect(page.getByText(newVariableKey)).toBeVisible();
-  await expect(page.getByText(newVariableValue)).toBeVisible();
+  await expect(page.getByRole('cell', { name: newVariableKey })).toBeVisible();
+  await expect(page.getByRole('cell', { name: newVariableValue })).toBeVisible();
 });

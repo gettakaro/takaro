@@ -9,12 +9,16 @@ export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
   @IsString()
   name: string;
   @IsString()
-  email: string;
+  @IsOptional()
+  email?: string;
   @IsString()
   idpId: string;
   @IsString()
   @IsOptional()
   discordId?: string;
+  @IsString()
+  @IsOptional()
+  steamId?: string;
   @IsISO8601()
   lastSeen: string;
   @IsUUID()
@@ -25,6 +29,9 @@ export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
   player?: PlayerOutputWithRolesDTOType;
   @IsBoolean()
   isDashboardUser: boolean;
+  @IsBoolean()
+  @IsOptional()
+  hasPassword?: boolean;
 }
 
 export class UserOutputWithRolesDTO extends UserOutputDTO {
@@ -37,7 +44,8 @@ export class UserCreateInputDTO extends TakaroDTO<UserCreateInputDTO> {
   name: string;
 
   @IsEmail()
-  email: string;
+  @IsOptional()
+  email?: string;
 
   @IsString()
   password?: string;
@@ -68,7 +76,29 @@ export class UserUpdateAuthDTO extends TakaroDTO<UserUpdateAuthDTO> {
   @Length(18, 18)
   discordId?: string;
 
+  @IsString()
+  @IsOptional()
+  @Length(17, 17)
+  steamId?: string;
+
   @IsISO8601()
   @IsOptional()
   lastSeen?: string;
+}
+
+/**
+ * Internal-only DTO for creating users with OAuth provider IDs.
+ * This should NEVER be exposed via public API endpoints.
+ * Only used internally by AuthService when creating users from Ory identities.
+ */
+export class UserCreateInternalDTO extends UserCreateInputDTO {
+  @IsString()
+  @IsOptional()
+  @Length(18, 18)
+  discordId?: string;
+
+  @IsString()
+  @IsOptional()
+  @Length(17, 17)
+  steamId?: string;
 }
