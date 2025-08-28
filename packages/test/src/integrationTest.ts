@@ -94,11 +94,11 @@ export class IntegrationTest<SetupData> {
     this.standardDomainId = createdDomain.data.data.createdDomain.id;
     this.domainRegistrationToken = createdDomain.data.data.createdDomain.serverRegistrationToken!;
 
-    this.client.username = createdDomain.data.data.rootUser.email;
+    this.client.username = createdDomain.data.data.rootUser.email!;
     this.client.password = createdDomain.data.data.password;
 
     this.standardLogin = {
-      username: createdDomain.data.data.rootUser.email,
+      username: createdDomain.data.data.rootUser.email!,
       password: createdDomain.data.data.password,
     };
 
@@ -293,7 +293,7 @@ export async function logInWithPermissions(client: Client, permissions: string[]
 
   await client.user.userControllerAssignRole(user.data.data.id, role.data.data.id);
 
-  client.username = user.data.data.email;
+  client.username = user.data.data.email!;
   client.password = integrationConfig.get('auth.password');
   await client.login();
 

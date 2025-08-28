@@ -1,0 +1,11 @@
+# Exclude any temporary files
+*.tmp
+*.log
+
+# Exclude git files if any
+.git
+.gitignore
+
+# Exclude documentation
+README.md
+*.md

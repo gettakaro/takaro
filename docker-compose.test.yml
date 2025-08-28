@@ -11,38 +11,51 @@ services:
   redis:
     extends:
       file: docker-compose.yml
-      service: redis    
+      service: redis
 
   prometheus:
     extends:
       file: docker-compose.yml
-      service: prometheus  
+      service: prometheus
 
   pushgateway:
     extends:
       file: docker-compose.yml
-      service: pushgateway        
+      service: pushgateway
 
   kratos:
+    image: ghcr.io/gettakaro/takaro-kratos:${DOCKER_TAG}
+    ports:
+      - '4433:4433' # public
+      - '4434:4434' # admin
+    restart: on-failure
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/${POSTGRES_DB}
-    extends:
-      file: docker-compose.yml
-      service: kratos   
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
+      - STEAM_CLIENT_ID=${STEAM_CLIENT_ID}
+      - STEAM_CLIENT_SECRET=${STEAM_CLIENT_SECRET}
+      - STEAM_AUTH_PROXY_URL=${STEAM_AUTH_PROXY_URL}
+    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
 
   kratos-migrate:
+    image: ghcr.io/gettakaro/takaro-kratos:${DOCKER_TAG}
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/${POSTGRES_DB}
-    extends:
-      file: docker-compose.yml
-      service: kratos-migrate   
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
+      - STEAM_CLIENT_ID=${STEAM_CLIENT_ID}
+      - STEAM_CLIENT_SECRET=${STEAM_CLIENT_SECRET}
+      - STEAM_AUTH_PROXY_URL=${STEAM_AUTH_PROXY_URL}
+    command: migrate sql -c /etc/config/kratos/kratos.yml -e --yes
+    restart: on-failure
 
   postgresql_kratos:
     image: postgres:15
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}   
+      POSTGRES_DB: ${POSTGRES_DB}
 
   takaro:
     container_name: takaro
@@ -66,10 +79,9 @@ services:
       MOCK_GAMESERVER_HOST: 'http://takaro_mock_gameserver:3002'
       TAKARO_TEST_RUNNER_ATTEMPTS: ${TAKARO_TEST_RUNNER_ATTEMPTS}
       TRACING_ENABLED: "true"
-      T_WS_URL: "ws://takaro_connector:3004" 
+      T_WS_URL: "ws://takaro_connector:3004"
       CONNECTOR_HOST: http://takaro_connector:3003
       LOGGING_LEVEL: none
-      
   takaro_api:
     image: ghcr.io/gettakaro/takaro-app-api:${DOCKER_TAG}
     restart: always
@@ -118,7 +130,7 @@ services:
       LOGGING_LEVEL: debug
       REDIS_HOST: 'redis'
       TRACING_ENABLED: "true"
-      T_WS_URL: "ws://takaro_connector:3004"     
+      T_WS_URL: "ws://takaro_connector:3004"
     ports:
       - 3002:3002
 
@@ -148,7 +160,6 @@ services:
       - 8025:8025
     logging:
       driver: none
-      
 networks:
   takaro:
     external: true

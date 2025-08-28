@@ -1,6 +1,6 @@
 import { FC, useContext, useState, useEffect } from 'react';
 import { Card, Button, styled, useTheme, Chip } from '@takaro/lib-components';
-import { FaDiscord as DiscordIcon } from 'react-icons/fa';
+import { FaSteam as SteamIcon } from 'react-icons/fa';
 import { SessionContext } from '../../../../../hooks/useSession';
 import { MeOutputDTO } from '@takaro/apiclient';
 import { useOry } from '../../../../../hooks/useOry';
@@ -32,18 +32,18 @@ const StatusText = styled.div<{ connected: boolean }>`
     font-weight: 500;
   }
 
-  .discord-id {
+  .steam-id {
     font-size: ${({ theme }) => theme.fontSize.small};
     color: ${({ theme }) => theme.colors.text};
     font-family: monospace;
   }
 `;
 
-interface LoginDiscordCardProps {
+interface LoginSteamCardProps {
   session?: MeOutputDTO;
 }
 
-export const LoginDiscordCard: FC<LoginDiscordCardProps> = ({ session: sessionProp }) => {
+export const LoginSteamCard: FC<LoginSteamCardProps> = ({ session: sessionProp }) => {
   const { colors } = useTheme();
   const { oryClient } = useOry();
   const [isConnecting, setIsConnecting] = useState(false);
@@ -58,27 +58,27 @@ export const LoginDiscordCard: FC<LoginDiscordCardProps> = ({ session: sessionPr
     return null;
   }
 
-  const hasLinkedDiscord = !!session.user.discordId;
+  const hasLinkedSteam = !!session.user.steamId;
 
   // Fetch settings flow to check if unlink is available
   useEffect(() => {
-    if (hasLinkedDiscord && oryClient) {
+    if (hasLinkedSteam && oryClient) {
       oryClient
         .createBrowserSettingsFlow()
         .then(({ data }) => {
-          setCanUnlink(canUnlinkProvider(data, 'discord'));
+          setCanUnlink(canUnlinkProvider(data, 'steam'));
         })
         .catch(() => {
           // Settings flow fetch failed, but we can still show the update button
         });
     }
-  }, [hasLinkedDiscord, oryClient]);
+  }, [hasLinkedSteam, oryClient]);
 
-  const handleDiscordConnect = async () => {
+  const handleSteamConnect = async () => {
     setIsConnecting(true);
     try {
       await initiateOryOAuth(oryClient, {
-        provider: 'discord',
+        provider: 'steam',
         returnTo: window.location.href,
         flowType: 'settings', // Use settings flow for linking social accounts
       });
@@ -87,7 +87,7 @@ export const LoginDiscordCard: FC<LoginDiscordCardProps> = ({ session: sessionPr
     }
   };
 
-  const handleDiscordUnlink = async () => {
+  const handleSteamUnlink = async () => {
     if (!canUnlink || !oryClient) {
       return;
     }
@@ -97,15 +97,15 @@ export const LoginDiscordCard: FC<LoginDiscordCardProps> = ({ session: sessionPr
       // Get current settings flow
       const { data: settingsFlow } = await oryClient.createBrowserSettingsFlow();
 
-      // Unlink Discord through Ory
-      await unlinkOAuthProvider(oryClient, settingsFlow, 'discord');
+      // Unlink Steam through Ory
+      await unlinkOAuthProvider(oryClient, settingsFlow, 'steam');
 
       // The form submission will redirect, so this won't be reached
     } catch (error: any) {
       setIsConnecting(false);
 
       // Show error message
-      const errorMessage = error?.message || 'Failed to unlink Discord account';
+      const errorMessage = error?.message || 'Failed to unlink Steam account';
       enqueueSnackbar(errorMessage, { variant: 'default', type: 'error' });
     }
   };
@@ -115,23 +115,23 @@ export const LoginDiscordCard: FC<LoginDiscordCardProps> = ({ session: sessionPr
       <Card.Body>
         <InnerBody>
           <ConnectionInfo>
-            <DiscordIcon size={48} color={hasLinkedDiscord ? colors.primary : colors.backgroundAccent} />
-            <StatusText connected={hasLinkedDiscord}>
-              <div className="status-label">Discord Account</div>
-              {hasLinkedDiscord ? (
-                session.user.discordId && <div className="discord-id">{session.user.discordId}</div>
+            <SteamIcon size={48} color={hasLinkedSteam ? colors.primary : colors.backgroundAccent} />
+            <StatusText connected={hasLinkedSteam}>
+              <div className="status-label">Steam Account</div>
+              {hasLinkedSteam ? (
+                session.user.steamId && <div className="steam-id">{session.user.steamId}</div>
               ) : (
                 <Chip color="backgroundAccent" label="Not connected" />
               )}
             </StatusText>
           </ConnectionInfo>
           <Button
-            onClick={hasLinkedDiscord && canUnlink ? handleDiscordUnlink : handleDiscordConnect}
+            onClick={hasLinkedSteam && canUnlink ? handleSteamUnlink : handleSteamConnect}
             isLoading={isConnecting}
             disabled={isConnecting}
-            color={hasLinkedDiscord && canUnlink ? 'error' : 'primary'}
+            color={hasLinkedSteam && canUnlink ? 'error' : 'primary'}
           >
-            {hasLinkedDiscord ? (canUnlink ? 'Unlink Discord' : 'Update connection') : 'Connect Discord'}
+            {hasLinkedSteam ? (canUnlink ? 'Unlink Steam' : 'Update connection') : 'Connect Steam'}
           </Button>
         </InnerBody>
       </Card.Body>

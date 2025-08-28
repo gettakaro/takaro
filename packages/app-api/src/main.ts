@@ -20,8 +20,6 @@ import { PlayerController } from './controllers/PlayerController.js';
 import { SettingsController } from './controllers/SettingsController.js';
 import { CommandController } from './controllers/CommandController.js';
 import { VariableController } from './controllers/VariableController.js';
-import { ExternalAuthController } from './controllers/ExternalAuthController.js';
-import { AuthService } from './service/AuthService.js';
 import { DiscordController } from './controllers/DiscordController.js';
 import { discordBot } from './lib/DiscordBot.js';
 import { EventController } from './controllers/EventController.js';
@@ -63,7 +61,6 @@ export const server = new HTTP(
       SettingsController,
       CommandController,
       VariableController,
-      ExternalAuthController,
       DiscordController,
       EventController,
       PlayerOnGameServerController,
@@ -99,8 +96,8 @@ async function main() {
     }
   }
 
-  const initProviders = await AuthService.initPassport();
-  log.info(`🔑 External auth provider(s) initialized: ${initProviders.join(' ')}`);
+  // External auth providers are now handled by Ory Kratos
+  log.info(`🔑 External auth handled by Ory Kratos`);
 
   if (config.get('takaro.startWorkers')) {
     new EventsWorker();

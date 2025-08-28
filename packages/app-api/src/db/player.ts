@@ -1,4 +1,4 @@
-import { QueryBuilder, TakaroModel, Redis, RedisClient } from '@takaro/db';
+import { QueryBuilder, TakaroModel, getKnex, Redis, RedisClient } from '@takaro/db';
 import { Model } from 'objection';
 import { errors, traceableClass, ctx, logger } from '@takaro/util';
 import { GameServerModel, GAMESERVER_TABLE_NAME } from './gameserver.js';
@@ -633,5 +633,31 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
 
     const deletedCount = await query;
     this.log.info('Batch removed expired roles', { requestedCount: expiredRoles.length, deletedCount });
+  }
+
+  /**
+   * Finds all players with a specific Steam ID across all domains
+   * Returns player records with their domain IDs for cross-domain linking
+   */
+  static async NOT_DOMAIN_SCOPED_findBySteamIdAcrossDomains(
+    steamId: string,
+  ): Promise<Array<PlayerOutputDTO & { domainId: string }>> {
+    const knex = await getKnex();
+    const model = PlayerModel.bindKnex(knex);
+
+    // Query without domain filter to get players across all domains
+    const query = model.query();
+
+    const results = await query.where('steamId', steamId).select('*'); // domainId is already included in base model
+
+    if (!results.length) {
+      return [];
+    }
+
+    // Map results to include domainId in the output
+    return results.map((player) => {
+      const playerDto = new PlayerOutputDTO(player);
+      return Object.assign(playerDto, { domainId: player.domain });
+    });
   }
 }

@@ -6,10 +6,17 @@ import { UserModel, UserRepo } from '../../db/user.js';
 import { errors, traceableClass } from '@takaro/util';
 import { RoleService, UserAssignmentOutputDTO } from '../RoleService.js';
 import { ory } from '@takaro/auth';
-import { EVENT_TYPES, EventCreateDTO, EventService } from '../EventService.js';
+import { EventCreateDTO, EventService } from '../EventService.js';
 import { HookEvents, TakaroEventPlayerLinked, TakaroEventRoleAssigned, TakaroEventRoleRemoved } from '@takaro/modules';
 import { AuthenticatedRequest } from '../AuthService.js';
-import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO, UserUpdateAuthDTO } from './dto.js';
+import {
+  UserOutputDTO,
+  UserCreateInputDTO,
+  UserCreateInternalDTO,
+  UserUpdateDTO,
+  UserOutputWithRolesDTO,
+  UserUpdateAuthDTO,
+} from './dto.js';
 import { UserSearchInputDTO } from '../../controllers/UserController.js';
 import { DomainService } from '../DomainService.js';
 import { PlayerService } from '../Player/index.js';
@@ -33,7 +40,12 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     const oryIdentity = await ory.getIdentity(user.idpId);
     const withOry = new UserOutputWithRolesDTO({
       ...user,
-      email: oryIdentity.email,
+      email: oryIdentity.email || undefined, // Email is now optional
+      // Check Ory identity first for discordId, fall back to Takaro DB if not found
+      discordId: oryIdentity.discordId || user.discordId,
+      // Check Ory identity first for steamId, fall back to Takaro DB if not found
+      steamId: oryIdentity.steamId || user.steamId,
+      hasPassword: oryIdentity.hasPassword,
     });
 
     const roleService = new RoleService(this.domainId);
@@ -103,9 +115,43 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
         throw new errors.BadRequestError(`Max users (${maxUsers}) limit reached`);
       }
     }
-    const idpUser = await ory.createIdentity(user.email, user.password);
-    user.idpId = idpUser.id;
+    // Only create Ory identity if we have email (for traditional registration)
+    // Steam users will already have an Ory identity
+    if (user.email) {
+      const idpUser = await ory.createIdentity(user.email, user.password);
+      user.idpId = idpUser.id;
+    } else if (!user.idpId) {
+      throw new errors.BadRequestError('Either email or idpId must be provided');
+    }
+
     const createdUser = await this.repo.create(user);
+    return this.extend.bind(this)(createdUser);
+  }
+
+  /**
+   * Internal method for creating users with OAuth provider IDs.
+   * This should ONLY be used by AuthService when creating users from Ory identities.
+   * Never expose this through public API endpoints.
+   */
+  async createInternal(user: UserCreateInternalDTO): Promise<UserOutputWithRolesDTO> {
+    if (user.isDashboardUser) {
+      const domain = await new DomainService().findOne(this.domainId);
+      if (!domain) throw new errors.NotFoundError(`Domain ${this.domainId} not found`);
+
+      const maxUsers = domain.maxUsers;
+      const existingDashboardUsers = await this.repo.find({ filters: { isDashboardUser: [true] } });
+      if (existingDashboardUsers.total >= maxUsers) {
+        throw new errors.BadRequestError(`Max users (${maxUsers}) limit reached`);
+      }
+    }
+
+    // For internal creation, we expect the Ory identity to already exist
+    if (!user.idpId) {
+      throw new errors.BadRequestError('idpId is required for internal user creation');
+    }
+
+    // Use the repo's createInternal method to handle OAuth fields
+    const createdUser = await (this.repo as UserRepo).createInternal(user);
     return this.extend.bind(this)(createdUser);
   }
 
@@ -133,7 +179,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     await this.repo.assignRole(userId, roleId, expiresAt);
     await eventService.create(
       new EventCreateDTO({
-        eventName: EVENT_TYPES.ROLE_ASSIGNED,
+        eventName: HookEvents.ROLE_ASSIGNED,
         userId,
         meta: new TakaroEventRoleAssigned({ role: { id: role.id, name: role.name } }),
       }),
@@ -163,7 +209,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
 
     await eventService.create(
       new EventCreateDTO({
-        eventName: EVENT_TYPES.ROLE_REMOVED,
+        eventName: HookEvents.ROLE_REMOVED,
         userId,
         meta: new TakaroEventRoleRemoved({ role: { id: role.id, name: role.name } }),
       }),
@@ -187,7 +233,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     const existingIdpProfile = await ory.getIdentityByEmail(email);
 
     const user = await this.create(
-      new UserCreateInputDTO({ email, name: email, isDashboardUser: opts.isDashboardUser }),
+      new UserCreateInputDTO({ email, name: email || 'Unknown', isDashboardUser: opts.isDashboardUser }),
     );
     if (!existingIdpProfile) {
       const recoveryFlow = await ory.getRecoveryFlow(user.idpId);
