@@ -1,0 +1,56 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "createdAt": "2025-08-08T16:11:16.662Z",
+      "updatedAt": "2025-08-08T16:11:16.662Z",
+      "id": "cb59d946-0bfd-4c66-a9f3-3c5a6f444ede",
+      "gameServerId": "cf30ba5f-de26-4f0b-9e62-387b19287723",
+      "price": 150,
+      "name": "Test item with icon",
+      "deletedAt": null,
+      "draft": false,
+      "stockManagementEnabled": false,
+      "stock": null,
+      "icon": "data:image/webp;base64,UklGRsgAAABXRUJQVlA4ILwAAABwEQCdASoAAQABPm02mUmkIyKhICgAgA2JaW7hdrEe3AfgAAAT2Ae+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ycKAAP7/cD3///kFywuuRr//+QH/ID/kB//HxTTacMCECAAAAAAAAAAAAA==",
+      "description": "This is a test description for the shop listing",
+      "items": [
+        {
+          "createdAt": "2025-08-08T16:11:16.667Z",
+          "updatedAt": "2025-08-08T16:11:16.668Z",
+          "id": "e70a717b-3782-4ea8-9ced-ebda8a75081d",
+          "listingId": "cb59d946-0bfd-4c66-a9f3-3c5a6f444ede",
+          "itemId": "059c5497-1e91-44c2-bc7b-d1dada981f13",
+          "amount": 1,
+          "quality": null,
+          "item": {
+            "id": "059c5497-1e91-44c2-bc7b-d1dada981f13",
+            "createdAt": "2025-08-08T16:11:12.627Z",
+            "updatedAt": "2025-08-08T16:11:12.627Z",
+            "gameserverId": "cf30ba5f-de26-4f0b-9e62-387b19287723",
+            "name": "Stone",
+            "code": "stone",
+            "description": "Stone can get you stoned",
+            "icon": null
+          }
+        }
+      ],
+      "categories": []
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "Shop/ShopListingIconDescription",
+    "snapshot": true,
+    "name": "Create listing with valid icon and description",
+    "filteredFields": [
+      "itemId",
+      "gameServerId",
+      "gameserverId",
+      "listingId",
+      "icon"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

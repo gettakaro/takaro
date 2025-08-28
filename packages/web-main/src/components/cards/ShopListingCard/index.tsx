@@ -1,5 +1,5 @@
-import { Avatar, Card, Chip, getInitials, Tooltip } from '@takaro/lib-components';
-import { FC } from 'react';
+import { Avatar, Card, Chip, getInitials, Tooltip, Button } from '@takaro/lib-components';
+import { FC, useState, useCallback } from 'react';
 import { Header, CardBody } from './style';
 import { GameServerOutputDTOTypeEnum, ShopListingOutputDTO } from '@takaro/apiclient';
 import { useHasPermission } from '../../../hooks/useHasPermission';
@@ -34,6 +34,14 @@ export const ShopListingCard: FC<ShopListingCard> = ({
   const firstItem = shopListing.items[0]?.item || { name: 'Unknown', code: 'unknown' };
   const shopListingName = shopListing.name || firstItem.name;
   const hasPermission = useHasPermission(['MANAGE_SHOP_LISTINGS']);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [iconError, setIconError] = useState(false);
+
+  const handleIconError = useCallback(() => {
+    setIconError(true);
+  }, []);
+
+  const defaultIconPath = `/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${firstItem.code}.png`;
 
   return (
     <>
@@ -53,8 +61,9 @@ export const ShopListingCard: FC<ShopListingCard> = ({
               </Header>
               <Avatar size="huge">
                 <Avatar.Image
-                  src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${firstItem.code}.png`}
-                  alt={`Item icon of ${firstItem.name}`}
+                  src={shopListing.icon && !iconError ? shopListing.icon : defaultIconPath}
+                  alt={`Icon of ${shopListingName}`}
+                  onError={handleIconError}
                 />
                 <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
               </Avatar>
@@ -68,6 +77,29 @@ export const ShopListingCard: FC<ShopListingCard> = ({
                       onClick={onCategoryClick ? () => onCategoryClick(category.id) : undefined}
                     />
                   ))}
+                </div>
+              )}
+              {shopListing.description && (
+                <div
+                  style={{
+                    width: '100%',
+                    marginBottom: '1rem',
+                    padding: '0.5rem',
+                    textAlign: 'left',
+                    borderTop: '1px solid var(--color-backgroundAccent)',
+                    borderBottom: '1px solid var(--color-backgroundAccent)',
+                  }}
+                >
+                  <p style={{ margin: 0, wordBreak: 'break-word' }}>
+                    {showFullDescription || shopListing.description.length <= 150
+                      ? shopListing.description
+                      : `${shopListing.description.substring(0, 150)}...`}
+                  </p>
+                  {shopListing.description.length > 150 && (
+                    <Button size="tiny" variant="outline" onClick={() => setShowFullDescription(!showFullDescription)}>
+                      {showFullDescription ? 'Show less' : 'Show more'}
+                    </Button>
+                  )}
                 </div>
               )}
               <div
