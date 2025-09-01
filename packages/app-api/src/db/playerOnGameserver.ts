@@ -426,7 +426,17 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
       .where('playerInventoryHistory.playerId', pogId)
       .andWhere('playerInventoryHistory.createdAt', latestSnapshot.createdAt);
 
-    return Promise.all(items.map((item) => new IItemDTO({ ...item, amount: item.quantity })));
+    return Promise.all(
+      items.map(
+        (item: any) =>
+          new IItemDTO({
+            name: item.name,
+            code: item.code,
+            description: item.description,
+            amount: item.quantity,
+          }),
+      ),
+    );
   }
 
   async setOnlinePlayers(gameServerId: string, players: IGamePlayer[]) {
