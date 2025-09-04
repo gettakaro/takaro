@@ -100,13 +100,19 @@ export class ShopCategoryController {
   @ResponseSchema(ShopCategoryOutputArrayDTOAPI)
   @OpenAPI({
     description: 'Search shop categories',
-    examples: {
-      withRelations: {
-        summary: 'Search with related data',
-        value: {
-          extend: ['parent', 'children'],
-          page: 1,
-          limit: 10,
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['parent', 'children'],
+                page: 1,
+                limit: 10,
+              },
+            },
+          },
         },
       },
     },

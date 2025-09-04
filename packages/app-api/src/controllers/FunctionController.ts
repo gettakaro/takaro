@@ -50,7 +50,7 @@ class FunctionSearchInputAllowedSearch extends AllowedSearch {
   name: string[];
 }
 
-const functionExtendOptions = ['module', 'cronJobs', 'hooks', 'commands'];
+const functionExtendOptions = ['version', 'cronJob', 'hook', 'command'];
 type FunctionExtendOptions = (typeof functionExtendOptions)[number];
 
 class FunctionSearchInputDTO extends ITakaroQuery<FunctionOutputDTO> {
@@ -76,13 +76,19 @@ export class FunctionController {
   @ResponseSchema(FunctionOutputArrayDTOAPI)
   @OpenAPI({
     description: 'Search functions',
-    examples: {
-      withRelations: {
-        summary: 'Search with related data',
-        value: {
-          extend: ['module'],
-          page: 1,
-          limit: 10,
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['version'],
+                page: 1,
+                limit: 10,
+              },
+            },
+          },
         },
       },
     },

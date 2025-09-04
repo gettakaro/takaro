@@ -100,13 +100,19 @@ export class CommandController {
   @ResponseSchema(CommandOutputArrayDTOAPI)
   @OpenAPI({
     description: 'Search commands',
-    examples: {
-      withRelations: {
-        summary: 'Search with related data',
-        value: {
-          extend: ['module'],
-          page: 1,
-          limit: 10,
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['module'],
+                page: 1,
+                limit: 10,
+              },
+            },
+          },
         },
       },
     },

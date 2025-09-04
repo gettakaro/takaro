@@ -71,13 +71,19 @@ export class EventController {
   @ResponseSchema(EventOutputArrayDTOAPI)
   @OpenAPI({
     description: 'Search events',
-    examples: {
-      withRelations: {
-        summary: 'Search with related data',
-        value: {
-          extend: [],
-          page: 1,
-          limit: 10,
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: [],
+                page: 1,
+                limit: 10,
+              },
+            },
+          },
         },
       },
     },

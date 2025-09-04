@@ -267,13 +267,19 @@ export class GameServerController {
   @ResponseSchema(GameServerOutputArrayDTOAPI)
   @OpenAPI({
     description: 'Fetch gameservers',
-    examples: {
-      withRelations: {
-        summary: 'Search with related data',
-        value: {
-          extend: ['players'],
-          page: 1,
-          limit: 10,
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['players'],
+                page: 1,
+                limit: 10,
+              },
+            },
+          },
         },
       },
     },

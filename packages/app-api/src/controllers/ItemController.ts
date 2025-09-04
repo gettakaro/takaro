@@ -46,7 +46,7 @@ class ItemSearchInputAllowedSearch extends AllowedSearch {
   code!: string[];
 }
 
-const itemExtendOptions = ['gameServer'];
+const itemExtendOptions = ['gameserver'];
 type ItemExtendOptions = (typeof itemExtendOptions)[number];
 
 class ItemSearchInputDTO extends ITakaroQuery<ItemSearchInputAllowedFilters> {
@@ -72,13 +72,19 @@ export class ItemController {
   @ResponseSchema(ItemOutputArrayDTOAPI)
   @OpenAPI({
     description: 'Search items',
-    examples: {
-      withRelations: {
-        summary: 'Search with related data',
-        value: {
-          extend: ['gameServer'],
-          page: 1,
-          limit: 10,
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['gameserver'],
+                page: 1,
+                limit: 10,
+              },
+            },
+          },
         },
       },
     },

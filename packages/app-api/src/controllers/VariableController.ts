@@ -78,13 +78,19 @@ export class VariableController {
   @ResponseSchema(VariableOutputArrayDTOAPI)
   @OpenAPI({
     description: 'Search variables',
-    examples: {
-      withRelations: {
-        summary: 'Search with related data',
-        value: {
-          extend: [],
-          page: 1,
-          limit: 10,
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: [],
+                page: 1,
+                limit: 10,
+              },
+            },
+          },
         },
       },
     },

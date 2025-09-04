@@ -86,13 +86,19 @@ export class HookController {
   @ResponseSchema(HookOutputArrayDTOAPI)
   @OpenAPI({
     description: 'Search hooks',
-    examples: {
-      withRelations: {
-        summary: 'Search with related data',
-        value: {
-          extend: ['module'],
-          page: 1,
-          limit: 10,
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['module'],
+                page: 1,
+                limit: 10,
+              },
+            },
+          },
         },
       },
     },
