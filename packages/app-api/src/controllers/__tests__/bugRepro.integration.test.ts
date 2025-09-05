@@ -536,7 +536,7 @@ const tests = [
       expect(secondVariable.data.data.key).to.equal(variableKey);
       expect(secondVariable.data.data.value).to.equal('second-value');
     },
-   }),
+  }),
   /**
    * Bug repro: Builtin modules get uninstalled in production during seedModules job
    *
