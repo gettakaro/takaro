@@ -297,18 +297,18 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
   async seedBuiltinModules() {
     const modules = getModules();
-    await Promise.all(
-      modules.map(async (m: ModuleTransferDTO<unknown>) => {
-        try {
-          await this.seedModule(m, { isBuiltin: true });
-        } catch (error) {
-          this.log.warn('Failed to seed builtin module', {
-            error: (error as Error).message,
-            module: m.name,
-          });
-        }
-      }),
-    );
+    // Process builtin modules sequentially to avoid race conditions
+    // where parallel updates trigger uninstall/reinstall cycles
+    for (const m of modules) {
+      try {
+        await this.seedModule(m as ModuleTransferDTO<unknown>, { isBuiltin: true });
+      } catch (error) {
+        this.log.warn('Failed to seed builtin module', {
+          error: (error as Error).message,
+          module: (m as ModuleTransferDTO<unknown>).name,
+        });
+      }
+    }
   }
 
   async seedModule(data: ModuleTransferDTO<unknown>, { isBuiltin } = { isBuiltin: false }): Promise<ModuleOutputDTO> {
@@ -395,6 +395,16 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           continue;
         }
 
+        // IMPORTANT: For builtin modules in production, skip ALL processing of this version
+        // to avoid race conditions when updating commands/hooks/cronjobs
+        if (isBuiltin && process.env.NODE_ENV === 'production') {
+          this.log.info('Builtin version already exists and in prod mode, skipping all processing', {
+            moduleId: mod.id,
+            tag: version.tag,
+          });
+          continue;
+        }
+
         if (!isBuiltin && importingLatest) {
           this.log.info('Overriding "latest" version', { moduleId: mod.id, tag: version.tag });
           await this.repo.deleteVersion(existingVersions[0].id);
@@ -406,14 +416,6 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
             tag: version.tag,
           });
           await this.repo.deleteVersion(existingVersions[0].id);
-        }
-
-        if (isBuiltin && process.env.NODE_ENV === 'production') {
-          this.log.info('Builtin version already exists and in prod mode, skipping', {
-            moduleId: mod.id,
-            tag: version.tag,
-          });
-          continue;
         }
       }
 

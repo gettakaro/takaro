@@ -17,6 +17,7 @@ import {
   AiOutlineClockCircle as EventsIcon,
   AiOutlineLeft as CollapseIcon,
   AiOutlineRight as ExpandIcon,
+  AiOutlineBarChart as AnalyticsIcon,
 
   // icon nav
   AiOutlineBook as DocumentationIcon,
@@ -92,6 +93,15 @@ const domainLinks: NavbarLink[] = [
     requiredPermissions: [PERMISSIONS.ReadModules],
   },
   {
+    label: 'Analytics',
+    linkProps: {
+      to: '/analytics',
+    },
+    icon: <AnalyticsIcon />,
+    requiresDevelopmentModeEnabled: false,
+    requiredPermissions: [PERMISSIONS.ManageShopListings],
+  },
+  {
     label: 'Variables',
     linkProps: {
       to: '/variables',
@@ -113,7 +123,7 @@ const domainLinks: NavbarLink[] = [
 ];
 
 export interface NavbarLink {
-  linkProps: Partial<LinkProps>;
+  linkProps?: Partial<LinkProps>;
   label: string;
   icon: ReactElement;
   requiredPermissions?: RequiredPermissions;

@@ -4,8 +4,16 @@ import { readFile } from 'fs/promises';
 import { join } from 'path';
 import * as url from 'url';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
-import { HookCreateDTOEventTypeEnum, PERMISSIONS, isAxiosError } from '@takaro/apiclient';
+import {
+  HookCreateDTOEventTypeEnum,
+  PERMISSIONS,
+  isAxiosError,
+  GameServerOutputDTO,
+  ModuleOutputDTO,
+} from '@takaro/apiclient';
 import { describe } from 'node:test';
+import { getMockServer } from '@takaro/mock-gameserver';
+import { ModuleService } from '../../service/Module/index.js';
 
 const group = 'Bug repros';
 
@@ -527,6 +535,149 @@ const tests = [
       // The variable should be created successfully with the new value
       expect(secondVariable.data.data.key).to.equal(variableKey);
       expect(secondVariable.data.data.value).to.equal('second-value');
+    },
+   }),
+  /**
+   * Bug repro: Builtin modules get uninstalled in production during seedModules job
+   *
+   * This test validates that builtin modules (teleports, economyUtils) with "latest" version
+   * installed do NOT get uninstalled when seedBuiltinModules runs.
+   *
+   * Root cause: When updating commands/hooks/cronjobs, the services call installModule which
+   * first uninstalls existing installations. With parallel processing, this caused race conditions
+   * where modules would uninstall each other's installations.
+   *
+   * Fix: Process builtin modules sequentially instead of in parallel to prevent race conditions
+   * during the uninstall/reinstall cycle triggered by command/hook/cronjob updates.
+   */
+  new IntegrationTest<{
+    gameserver: GameServerOutputDTO;
+    teleportsModule: ModuleOutputDTO;
+    economyUtilsModule: ModuleOutputDTO;
+    moduleService: ModuleService;
+    mockserver: Awaited<ReturnType<typeof getMockServer>>;
+  }>({
+    group,
+    snapshot: false,
+    name: 'Builtin modules should not be uninstalled when seedBuiltinModules runs in production',
+    setup: async function () {
+      // Create a mock game server
+      if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set');
+      const identityToken = randomUUID();
+      const mockServer = await getMockServer({
+        mockserver: {
+          registrationToken: this.domainRegistrationToken,
+          identityToken,
+        },
+      });
+
+      // Find the game server
+      const gameServerRes = await this.client.gameserver.gameServerControllerSearch({
+        filters: { identityToken: [identityToken] },
+      });
+      const gameserver = gameServerRes.data.data.find((gs) => gs.identityToken === identityToken);
+      if (!gameserver) throw new Error('Game server not found');
+
+      // Get builtin modules
+      const modules = await this.client.module.moduleControllerSearch();
+      const teleportsModule = modules.data.data.find((m) => m.name === 'teleports');
+      const economyUtilsModule = modules.data.data.find((m) => m.name === 'economyUtils');
+
+      if (!teleportsModule || !economyUtilsModule) {
+        throw new Error('Required builtin modules not found');
+      }
+
+      // Install the "latest" version of both modules on the game server
+      // This simulates the production scenario where modules are already installed
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: gameserver.id,
+        versionId: teleportsModule.latestVersion.id,
+      });
+
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: gameserver.id,
+        versionId: economyUtilsModule.latestVersion.id,
+      });
+
+      // Create service instance for direct testing
+      // Use standardDomainId which is available on IntegrationTest
+      if (!this.standardDomainId) throw new Error('No standard domain ID');
+      const moduleService = new ModuleService(this.standardDomainId);
+
+      return {
+        gameserver,
+        teleportsModule,
+        economyUtilsModule,
+        moduleService,
+        mockserver: mockServer,
+      };
+    },
+    teardown: async function () {
+      if (this.setupData?.mockserver) {
+        // GameServer has a shutdown method, not stop
+        await this.setupData.mockserver.shutdown();
+      }
+    },
+    test: async function () {
+      // Set to production mode for the test
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+
+      try {
+        // Verify modules are installed before seeding
+        const installationsBefore = await this.client.module.moduleInstallationsControllerGetInstalledModules({
+          filters: {
+            gameserverId: [this.setupData.gameserver.id],
+          },
+        });
+
+        // Should have at least the two modules we installed
+        const teleportsInstallBefore = installationsBefore.data.data.find(
+          (i: any) => i.moduleId === this.setupData.teleportsModule.id,
+        );
+        const economyInstallBefore = installationsBefore.data.data.find(
+          (i: any) => i.moduleId === this.setupData.economyUtilsModule.id,
+        );
+        expect(teleportsInstallBefore).to.exist;
+        expect(economyInstallBefore).to.exist;
+
+        // Run seedBuiltinModules multiple times to simulate the periodic job
+        // With the fix (sequential processing), this should NOT cause any uninstalls
+        await this.setupData.moduleService.seedBuiltinModules();
+
+        // Run multiple times in sequence to ensure stability
+        // Previously, parallel execution would cause race conditions and uninstalls
+        // Now with sequential processing, modules should remain installed
+        for (let i = 0; i < 3; i++) {
+          await this.setupData.moduleService.seedBuiltinModules();
+        }
+
+        // Verify modules are STILL installed after seeding
+        const installationsAfter = await this.client.module.moduleInstallationsControllerGetInstalledModules({
+          filters: {
+            gameserverId: [this.setupData.gameserver.id],
+          },
+        });
+
+        const teleportsInstallAfter = installationsAfter.data.data.find(
+          (i: any) => i.moduleId === this.setupData.teleportsModule.id,
+        );
+        const economyInstallAfter = installationsAfter.data.data.find(
+          (i: any) => i.moduleId === this.setupData.economyUtilsModule.id,
+        );
+
+        // CRITICAL ASSERTIONS: Modules should still be installed
+        expect(teleportsInstallAfter).to.exist;
+        expect(economyInstallAfter).to.exist;
+        expect(teleportsInstallAfter?.moduleId).to.equal(this.setupData.teleportsModule.id);
+        expect(economyInstallAfter?.moduleId).to.equal(this.setupData.economyUtilsModule.id);
+
+        // Verify they're still using the "latest" version
+        expect(teleportsInstallAfter?.versionId).to.equal(this.setupData.teleportsModule.latestVersion.id);
+        expect(economyInstallAfter?.versionId).to.equal(this.setupData.economyUtilsModule.latestVersion.id);
+      } finally {
+        process.env.NODE_ENV = originalEnv;
+      }
     },
   }),
 ];
