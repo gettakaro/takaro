@@ -200,7 +200,16 @@ services:
     container_name: pushgateway
     ports:
       - "9091:9091"  
-
+  takaro-mcp:
+    image: ghcr.io/gettakaro/mcp:0.0.3
+    ports:
+      - "18000:3000"
+    environment:
+      - HOST=0.0.0.0
+      - TAKARO_HOST=http://takaro:3000
+    env_file:
+      - .env
+      
 networks:
   default:
     name: takaro_default

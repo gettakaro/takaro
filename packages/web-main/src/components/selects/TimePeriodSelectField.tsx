@@ -1,28 +1,29 @@
 import { SelectField } from '@takaro/lib-components';
+import { AnalyticsControllerGetShopAnalyticsPeriodEnum } from '@takaro/apiclient';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
 
 interface TimeOption {
   label: string;
-  value: string;
+  value: AnalyticsControllerGetShopAnalyticsPeriodEnum;
 }
 
 const defaultOptions: TimeOption[] = [
   {
     label: 'Last 24 hours',
-    value: 'last24Hours',
+    value: AnalyticsControllerGetShopAnalyticsPeriodEnum.Last24Hours,
   },
   {
     label: 'Last 7 days',
-    value: 'last7Days',
+    value: AnalyticsControllerGetShopAnalyticsPeriodEnum.Last7Days,
   },
   {
     label: 'Last 30 days',
-    value: 'last30Days',
+    value: AnalyticsControllerGetShopAnalyticsPeriodEnum.Last30Days,
   },
   {
     label: 'Last 90 days',
-    value: 'last90Days',
+    value: AnalyticsControllerGetShopAnalyticsPeriodEnum.Last90Days,
   },
 ];
 
