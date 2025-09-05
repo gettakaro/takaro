@@ -483,6 +483,60 @@ const tests = [
       }
     },
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Bug repro: Expired variables remain in database causing unique constraint violations',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      // Create a variable that will expire immediately
+      const variableKey = `test-variable-${randomUUID()}`;
+      const pastDate = new Date(Date.now() - 1000).toISOString(); // 1 second in the past
+
+      // Create the first variable with expiration in the past
+      const firstVariable = await this.client.variable.variableControllerCreate({
+        key: variableKey,
+        value: 'first-value',
+        gameServerId: this.setupData.gameServer1.id,
+        expiresAt: pastDate,
+      });
+
+      expect(firstVariable.data.data.key).to.equal(variableKey);
+      expect(firstVariable.data.data.value).to.equal('first-value');
+
+      // The variable should not be findable since it's expired
+      const searchResult = await this.client.variable.variableControllerSearch({
+        filters: {
+          key: [variableKey],
+          gameServerId: [this.setupData.gameServer1.id],
+        },
+      });
+
+      // Variable should not be found in search results (it's expired)
+      expect(searchResult.data.data).to.have.length(0);
+
+      // Try to delete the variable - this should fail since it's "not found" due to expiration
+      try {
+        await this.client.variable.variableControllerDelete(firstVariable.data.data.id);
+        throw new Error('Should have thrown a not found error');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.be.eq(404);
+      }
+
+      // Now try to create a new variable with the same key
+      // This SHOULD work since the old one is expired
+      const secondVariable = await this.client.variable.variableControllerCreate({
+        key: variableKey,
+        value: 'second-value',
+        gameServerId: this.setupData.gameServer1.id,
+      });
+
+      // The variable should be created successfully with the new value
+      expect(secondVariable.data.data.key).to.equal(variableKey);
+      expect(secondVariable.data.data.value).to.equal('second-value');
+    },
+  }),
   /**
    * Bug repro: Builtin modules get uninstalled in production during seedModules job
    *

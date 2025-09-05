@@ -96,6 +96,37 @@ export class VariableRepo extends ITakaroRepo<VariablesModel, VariableOutputDTO,
   async create(item: VariableCreateDTO): Promise<VariableOutputDTO> {
     const { query } = await this.getModel();
 
+    // Clean up any expired variables with the same key/scope before creating
+    // This prevents unique constraint violations from expired but not yet cleaned variables
+    const cleanupQuery = query
+      .clone()
+      .where('key', item.key)
+      .where('domain', this.domainId)
+      .whereNotNull('expiresAt')
+      .where('expiresAt', '<', new Date().toISOString());
+
+    // Add scope conditions to match the unique constraint
+    if (item.gameServerId !== undefined) {
+      cleanupQuery.where('gameServerId', item.gameServerId);
+    } else {
+      cleanupQuery.whereNull('gameServerId');
+    }
+
+    if (item.playerId !== undefined) {
+      cleanupQuery.where('playerId', item.playerId);
+    } else {
+      cleanupQuery.whereNull('playerId');
+    }
+
+    if (item.moduleId !== undefined) {
+      cleanupQuery.where('moduleId', item.moduleId);
+    } else {
+      cleanupQuery.whereNull('moduleId');
+    }
+
+    // Delete any expired variables that would conflict
+    await cleanupQuery.delete();
+
     // @ts-expect-error badly typed knex query... :(
     const currentTotal = (await query.count({ count: '*' }))[0].count;
 
