@@ -113,6 +113,14 @@ export class PlayerOnGameServerController {
       content: {
         'application/json': {
           examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['player', 'gameServer'],
+                page: 1,
+                limit: 10,
+              },
+            },
             onlinePlayers: {
               summary: 'Get online players for a specific server',
               value: { filters: { gameServerId: ['22ed5acb-8d98-4dc9-9328-11d842132e08'], online: [true] } },

@@ -46,7 +46,7 @@ class ItemSearchInputAllowedSearch extends AllowedSearch {
   code!: string[];
 }
 
-const itemExtendOptions = ['gameServer'];
+const itemExtendOptions = ['gameserver'];
 type ItemExtendOptions = (typeof itemExtendOptions)[number];
 
 class ItemSearchInputDTO extends ITakaroQuery<ItemSearchInputAllowedFilters> {
@@ -70,6 +70,25 @@ class ItemSearchInputDTO extends ITakaroQuery<ItemSearchInputAllowedFilters> {
 export class ItemController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_ITEMS]))
   @ResponseSchema(ItemOutputArrayDTOAPI)
+  @OpenAPI({
+    description: 'Search items',
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['gameserver'],
+                page: 1,
+                limit: 10,
+              },
+            },
+          },
+        },
+      },
+    },
+  })
   @Post('/items/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: ItemSearchInputDTO) {
     const service = new ItemsService(req.domainId);
