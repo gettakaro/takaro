@@ -13,21 +13,6 @@ export async function up(knex: Knex): Promise<void> {
     table.index(['playerId', 'createdAt'], 'idx_player_name_history_player_created');
     table.index('name', 'idx_player_name_history_name');
   });
-
-  // Populate initial data from existing player names
-  const players = await knex('players').select('id', 'name', 'domain', 'createdAt').whereNotNull('name');
-
-  if (players.length > 0) {
-    const nameHistoryRecords = players.map((player) => ({
-      playerId: player.id,
-      name: player.name,
-      domain: player.domain,
-      createdAt: player.createdAt,
-      updatedAt: player.createdAt,
-    }));
-
-    await knex('playerNameHistory').insert(nameHistoryRecords);
-  }
 }
 
 export async function down(knex: Knex): Promise<void> {
