@@ -1,6 +1,6 @@
 {
   "name": "@takaro/helpers",
-  "version": "0.3.5",
+  "version": "0.4.0",
   "description": "A collection of helpers, used inside Takaro Functions",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
