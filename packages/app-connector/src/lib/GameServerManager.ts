@@ -209,24 +209,50 @@ class GameServerManager {
   }
 
   /**
+   * Fetches all pages from a paginated API endpoint
+   */
+  private async fetchAllPages<T>(
+    searchFn: (params: any) => Promise<{ data: { data: T[]; meta: { total?: number } } }>,
+    searchParams: any = {},
+  ): Promise<T[]> {
+    const allResults: T[] = [];
+    let page = 0;
+    const limit = 100;
+    let total: number | undefined;
+
+    do {
+      const response = await searchFn({ ...searchParams, page, limit });
+      const results = response.data.data;
+      allResults.push(...results);
+
+      total = response.data.meta.total;
+      page++;
+
+      // Continue if we haven't fetched all records yet
+    } while (total !== undefined && allResults.length < total);
+
+    return allResults;
+  }
+
+  /**
    * For many _reasons_, it's possible that the list here is out of sync with reality
    * We periodically check the list of servers and add/remove them as necessary
    */
   private async syncServers() {
     const isFirstTimeRun = this.emitterMap.size === 0;
-    const enabledDomains = (
-      await takaro.domain.domainControllerSearch({ filters: { state: [DomainOutputDTOStateEnum.Active] } })
-    ).data.data;
+    const enabledDomains = await this.fetchAllPages((params) => takaro.domain.domainControllerSearch(params), {
+      filters: { state: [DomainOutputDTOStateEnum.Active] },
+    });
 
     const gameServers: Map<string, GameServerOutputDTO[]> = new Map();
 
     const results = await Promise.allSettled(
       enabledDomains.map(async (domain) => {
         const client = await getDomainClient(domain.id);
-        const gameServersRes = await client.gameserver.gameServerControllerSearch({
+        const servers = await this.fetchAllPages((params) => client.gameserver.gameServerControllerSearch(params), {
           filters: { enabled: [true], reachable: [true] },
         });
-        gameServers.set(domain.id, gameServersRes.data.data);
+        gameServers.set(domain.id, servers);
       }),
     );
 
