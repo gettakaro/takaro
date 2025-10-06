@@ -1,6 +1,6 @@
 import { TakaroEmitter, getGame, GenericEmitter } from '@takaro/gameserver';
 import { EventMapping, GameEvents, GameEventTypes } from '@takaro/modules';
-import { errors, logger } from '@takaro/util';
+import { CleanAxiosError, errors, logger } from '@takaro/util';
 import {
   AdminClient,
   Client,
@@ -258,7 +258,8 @@ class GameServerManager {
 
     for (const result of results) {
       if (result.status === 'rejected') {
-        this.log.error('Failed to fetch game servers', result.reason);
+        const err = isAxiosError(result.reason) ? new CleanAxiosError(result.reason) : result.reason;
+        this.log.error('Failed to fetch game servers', err);
       }
     }
     const flatGameServers = Array.from(gameServers.values()).flat();
