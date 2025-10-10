@@ -316,9 +316,15 @@ export class GameServerService extends TakaroService<
         );
       }
 
-      // When a user is trying to fix their connection info, it's important we don't cache stale/wrong connection info
       if (!reachability.connectable) {
+        // When a user is trying to fix their connection info, it's important we don't cache stale/wrong connection info
         this.refreshGameInstance(id);
+
+        this.log.warn(`Game server ${id} is not reachable`, {
+          connectable: reachability.connectable,
+          reason: reachability.reason,
+          latency: reachability.latency,
+        });
       }
 
       return reachability;

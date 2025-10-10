@@ -1,6 +1,6 @@
 import { TakaroEmitter, getGame, GenericEmitter } from '@takaro/gameserver';
 import { EventMapping, GameEvents, GameEventTypes } from '@takaro/modules';
-import { errors, logger } from '@takaro/util';
+import { CleanAxiosError, errors, logger } from '@takaro/util';
 import {
   AdminClient,
   Client,
@@ -199,11 +199,21 @@ class GameServerManager {
    */
   private async handleMessageTimeout() {
     for (const [gameServerId, lastMessage] of this.lastMessageMap) {
-      if (Date.now() - lastMessage > RECONNECT_AFTER_MS) {
-        this.log.warn(`GameServer ${gameServerId} has not sent a message in ${RECONNECT_AFTER_MS} ms, reconnecting...`);
+      const timeSinceLastMessage = Date.now() - lastMessage;
+
+      if (timeSinceLastMessage > RECONNECT_AFTER_MS) {
+        this.log.warn(
+          `GameServer ${gameServerId} has not sent a message in ${timeSinceLastMessage} ms, reconnecting...`,
+        );
         const domainId = this.gameServerDomainMap.get(gameServerId);
         if (!domainId) throw new Error(`No domainId found for gameServerId ${gameServerId}`);
         await this.update(domainId, gameServerId);
+      } else {
+        this.log.debug('Server message within timeout window', {
+          gameServerId,
+          timeSinceLastMessage,
+          threshold: RECONNECT_AFTER_MS,
+        });
       }
     }
   }
@@ -258,7 +268,8 @@ class GameServerManager {
 
     for (const result of results) {
       if (result.status === 'rejected') {
-        this.log.error('Failed to fetch game servers', result.reason);
+        const err = isAxiosError(result.reason) ? new CleanAxiosError(result.reason) : result.reason;
+        this.log.error('Failed to fetch game servers', err);
       }
     }
     const flatGameServers = Array.from(gameServers.values()).flat();
@@ -268,47 +279,80 @@ class GameServerManager {
       gameServers: flatGameServers.length,
     });
 
+    let addedCount = 0;
+    let skippedGenericCount = 0;
+    let skippedAlreadyConnectedCount = 0;
+
     // Add any new servers
     for (const [domainId, servers] of gameServers) {
       for (const server of servers) {
         try {
           if (server.type === GameServerTypesOutputDTOTypeEnum.Generic) {
+            this.log.debug('Skipping generic server in sync', { gameServerId: server.id, domainId });
+            skippedGenericCount++;
             continue;
           }
 
           if (this.emitterMap.has(server.id)) {
+            this.log.debug('Skipping already connected server in sync', { gameServerId: server.id, domainId });
+            skippedAlreadyConnectedCount++;
             continue;
           }
 
           this.gameServerDomainMap.set(server.id, domainId);
           if (!isFirstTimeRun) this.log.warn(`GameServer ${server.id} is not connected, adding`);
           await this.add(domainId, server.id);
+          addedCount++;
         } catch (error) {
           this.log.error('Failed to add game server', error);
         }
       }
     }
 
+    let removedCount = 0;
     // Remove any servers that are no longer in the list
     for (const [gameServerId] of this.emitterMap) {
       if (!flatGameServers.find((server) => server.id === gameServerId)) {
         try {
           this.log.info(`GameServer ${gameServerId} is no longer in the list, removing`);
           await this.remove(gameServerId);
+          removedCount++;
         } catch (error) {
           this.log.error('Failed to remove game server', error);
         }
       }
     }
+
+    this.log.debug('Completed sync', {
+      addedCount,
+      removedCount,
+      skippedGenericCount,
+      skippedAlreadyConnectedCount,
+      totalConnected: this.emitterMap.size,
+    });
   }
 
-  async add(domainId: string, gameServerId: string) {
+  async add(domainId: string, gameServerId: string, forcedReconnect: boolean = false) {
+    this.log.debug('Starting add() for game server', { domainId, gameServerId, forcedReconnect });
+
     this.gameServerDomainMap.set(gameServerId, domainId);
     const gameServer = await this.getGameServer(gameServerId);
 
-    if (!gameServer.reachable && gameServer.type !== GameServerTypesOutputDTOTypeEnum.Generic) {
+    this.log.debug('Fetched game server details', {
+      gameServerId,
+      type: gameServer.type,
+      reachable: gameServer.reachable,
+      enabled: gameServer.enabled,
+      name: gameServer.name,
+    });
+
+    if (!forcedReconnect && !gameServer.reachable && gameServer.type !== GameServerTypesOutputDTOTypeEnum.Generic) {
       this.log.warn(`GameServer ${gameServerId} is not reachable, skipping...`);
       return;
+    }
+
+    if (forcedReconnect && !gameServer.reachable) {
+      this.log.debug('Forcing reconnection despite unreachable status', { gameServerId });
     }
 
     if (!gameServer.enabled) {
@@ -321,33 +365,68 @@ class GameServerManager {
       await this.remove(gameServer.id);
     }
 
-    const emitter = (
-      await getGame(gameServer.type, gameServer.connectionInfo as Record<string, unknown>, {}, gameServerId)
-    ).getEventEmitter();
-    this.emitterMap.set(gameServer.id, { domainId, emitter });
+    let emitter: TakaroEmitter | GenericEmitter | undefined;
 
-    this.attachListeners(domainId, gameServer.id, emitter);
-    await emitter.start();
-    this.lastMessageMap.set(gameServer.id, Date.now());
-    this.log.info(`Added game server ${gameServer.id}`);
+    try {
+      this.log.debug('Attempting to create game connection', { gameServerId, type: gameServer.type });
+      const game = await getGame(
+        gameServer.type,
+        gameServer.connectionInfo as Record<string, unknown>,
+        {},
+        gameServerId,
+      );
+      emitter = game.getEventEmitter();
+
+      this.emitterMap.set(gameServer.id, { domainId, emitter });
+      this.attachListeners(domainId, gameServer.id, emitter);
+
+      this.log.debug('Starting emitter for game server', { gameServerId });
+      await emitter.start();
+
+      this.lastMessageMap.set(gameServer.id, Date.now());
+      this.log.info(`Added game server ${gameServer.id}`);
+    } catch (error) {
+      this.log.error(`Failed to add game server ${gameServerId}`, error);
+
+      // Clean up partial state
+      this.log.debug('Cleaning up partial state after connection failure', { gameServerId });
+      if (emitter) {
+        try {
+          await emitter.stop();
+        } catch {
+          // Ignore stop errors
+        }
+      }
+
+      this.emitterMap.delete(gameServer.id);
+      this.lastMessageMap.delete(gameServer.id);
+
+      // Don't throw - syncServers will retry on next interval
+    }
   }
 
   async remove(id: string) {
     const data = this.emitterMap.get(id);
     if (data) {
-      const { emitter } = data;
+      const { domainId, emitter } = data;
+      this.log.debug('Removing game server', { gameServerId: id, domainId });
+
       await emitter.stop();
       this.emitterMap.delete(id);
       this.lastMessageMap.delete(id);
-      this.log.info(`Removed game server ${id}`);
+      this.gameServerDomainMap.delete(id);
+
+      this.log.info('Removed game server and cleaned up all maps', { gameServerId: id, domainId });
     } else {
-      this.log.warn('Tried to remove a GameServer from manager which does not exist');
+      this.log.warn('Tried to remove a GameServer from manager which does not exist', { gameServerId: id });
     }
   }
 
   async update(domainId: string, gameServerId: string) {
+    this.log.info('Starting update (remove + forced reconnect) for game server', { domainId, gameServerId });
     await this.remove(gameServerId);
-    await this.add(domainId, gameServerId);
+    await this.add(domainId, gameServerId, true);
+    this.log.info('Completed update for game server', { gameServerId });
   }
 
   private attachListeners(domainId: string, gameServerId: string, emitter: TakaroEmitter) {
