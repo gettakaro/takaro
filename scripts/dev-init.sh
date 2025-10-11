@@ -22,6 +22,7 @@ printHeader "Setup playwright reports directory"
 mkdir -p reports
 
 printHeader "Installing node dependencies"
+rm -rf node_modules
 npm ci
 
 printHeader "Building packages"
