@@ -176,6 +176,6 @@ export class WSClient extends EventEmitter {
   }
 
   public isConnectedToServer(): boolean {
-    return this.isConnected;
+    return this.isConnected && !!this.ws && this.ws.readyState === WebSocket.OPEN;
   }
 }

@@ -3,7 +3,7 @@
 exports[`Should render <Chip/> 1`] = `
 <div>
   <div
-    style="padding: .5rem; max-width: 100%;"
+    style="padding: 0.5rem; max-width: 100%;"
   >
     <div
       style="display: flex; align-items: center; gap: .5rem;"
@@ -14,17 +14,17 @@ exports[`Should render <Chip/> 1`] = `
         Something went wrong!
       </strong>
       <button
-        style="appearance: none; font-size: .6em; border: 1px solid currentcolor; padding: .1rem .2rem; font-weight: bold; border-radius: .25rem;"
+        style="appearance: none; font-size: 0.6em; border: 1px solid currentcolor; padding: 0.1rem 0.2rem; font-weight: bold; border-radius: .25rem;"
       >
         Hide Error
       </button>
     </div>
     <div
-      style="height: .25rem;"
+      style="height: 0.25rem;"
     />
     <div>
       <pre
-        style="font-size: .7em; border: 1px solid red; border-radius: .25rem; padding: .3rem; color: red; overflow: auto;"
+        style="font-size: 0.7em; border: 1px solid red; border-radius: .25rem; padding: 0.3rem; color: red; overflow: auto;"
       >
         <code>
           Passed an incorrect argument to a color function, please pass a string representation of a color.
