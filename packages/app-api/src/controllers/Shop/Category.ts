@@ -100,6 +100,22 @@ export class ShopCategoryController {
   @ResponseSchema(ShopCategoryOutputArrayDTOAPI)
   @OpenAPI({
     description: 'Search shop categories',
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['parent', 'children'],
+                page: 1,
+                limit: 10,
+              },
+            },
+          },
+        },
+      },
+    },
   })
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: ShopCategorySearchInputDTO) {
     const service = new ShopCategoryService(req.domainId);

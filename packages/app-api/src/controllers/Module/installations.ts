@@ -61,6 +61,22 @@ export class ModuleInstallationsController {
   @ResponseSchema(ModuleInstallationOutputArrayDTOAPI)
   @OpenAPI({
     summary: 'Search module installations',
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['module', 'gameServer'],
+                page: 1,
+                limit: 10,
+              },
+            },
+          },
+        },
+      },
+    },
   })
   @Post('/installation/search')
   async getInstalledModules(

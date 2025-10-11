@@ -86,6 +86,25 @@ export class CronJobSearchInputDTO extends ITakaroQuery<CronJobSearchInputAllowe
 export class CronJobController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
   @ResponseSchema(CronJobOutputArrayDTOAPI)
+  @OpenAPI({
+    description: 'Search cronjobs',
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['module'],
+                page: 1,
+                limit: 10,
+              },
+            },
+          },
+        },
+      },
+    },
+  })
   @Post('/cronjob/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: CronJobSearchInputDTO) {
     const service = new CronJobService(req.domainId);
