@@ -298,6 +298,7 @@
     "esbuild": "0.24.0",
     "@tanstack/router-plugin": "1.102.1",
     "@tanstack/router-generator": "1.102.1",
-    "@tanstack/router-core": "1.102.0"
+    "@tanstack/router-core": "1.102.0",
+    "ws@7": "^8.17.1"
   }
 }
