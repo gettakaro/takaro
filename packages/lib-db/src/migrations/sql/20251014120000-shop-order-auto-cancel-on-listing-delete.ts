@@ -9,22 +9,34 @@ export async function up(knex: Knex): Promise<void> {
       -- Only proceed if deletedAt changed from NULL to a value (soft-delete)
       IF OLD."deletedAt" IS NULL AND NEW."deletedAt" IS NOT NULL THEN
         -- Cancel all PAID orders for this listing and refund currency
+        -- Aggregate refunds by player to handle multiple orders correctly
         WITH orders_to_cancel AS (
           SELECT
             so.id AS order_id,
             so."playerId",
             NEW."gameServerId",
+            NEW.domain AS domain,
             NEW.price * so.amount AS refund_amount
           FROM "shopOrder" so
           WHERE so."listingId" = NEW.id
             AND so.status = 'PAID'
+        ),
+        aggregated_refunds AS (
+          SELECT
+            "playerId",
+            "gameServerId",
+            domain,
+            SUM(refund_amount) AS total_refund
+          FROM orders_to_cancel
+          GROUP BY "playerId", "gameServerId", domain
         )
-        -- Update playerOnGameServer currency
+        -- Update playerOnGameServer currency with aggregated total
         UPDATE "playerOnGameServer" pogs
-        SET currency = pogs.currency + otc.refund_amount
-        FROM orders_to_cancel otc
-        WHERE pogs."playerId" = otc."playerId"
-          AND pogs."gameServerId" = otc."gameServerId";
+        SET currency = pogs.currency + ar.total_refund
+        FROM aggregated_refunds ar
+        WHERE pogs."playerId" = ar."playerId"
+          AND pogs."gameServerId" = ar."gameServerId"
+          AND pogs.domain = ar.domain;
 
         -- Update order status to CANCELED
         UPDATE "shopOrder"
