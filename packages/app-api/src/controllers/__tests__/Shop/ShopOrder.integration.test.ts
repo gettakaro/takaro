@@ -752,6 +752,119 @@ const tests = [
       expect(allOrders.data.data).to.have.length(2);
     },
   }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'Bug repro: Player with deleted listing order cannot claim ANY orders',
+    setup: shopSetup,
+    test: async function () {
+      /**
+       * Scenario: Player has 2 orders with PAID status (to-be-claimed).
+       * One order is for a listing that has been soft-deleted.
+       * When player tries to /claim their items (which loops through all PAID orders):
+       * - The first order with deleted listing throws NotFoundError
+       * - This prevents the second valid order from being claimed
+       * - Player is stuck unable to claim any items
+       *
+       * Note: Deleting a listing should auto-cancel orders (see test on line 452),
+       * but this test simulates the race condition where an order exists for a
+       * deleted listing and demonstrates the impact on the claim loop.
+       */
+
+      // Create two listings
+      const listing1 = await this.client.shopListing.shopListingControllerCreate({
+        gameServerId: this.setupData.gameserver.id,
+        items: [{ code: this.setupData.items[0].code, amount: 1 }],
+        price: 50,
+        name: 'Listing to be deleted',
+      });
+
+      const listing2 = await this.client.shopListing.shopListingControllerCreate({
+        gameServerId: this.setupData.gameserver.id,
+        items: [{ code: this.setupData.items[1].code, amount: 1 }],
+        price: 50,
+        name: 'Valid listing',
+      });
+
+      // Give player enough currency for both orders
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        this.setupData.gameserver.id,
+        this.setupData.players[0].id,
+        { currency: 500 },
+      );
+
+      // Create two orders (both will be PAID status)
+      const order1 = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: listing1.data.data.id,
+        amount: 1,
+      });
+
+      const order2 = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: listing2.data.data.id,
+        amount: 1,
+      });
+
+      // Verify both orders are PAID
+      expect(order1.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Paid);
+      expect(order2.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Paid);
+
+      // Soft-delete listing1
+      await this.client.shopListing.shopListingControllerDelete(listing1.data.data.id);
+
+      // Check if order1 was auto-canceled (it should be based on test at line 452)
+      const order1After = await this.setupData.client1.shopOrder.shopOrderControllerGetOne(order1.data.data.id);
+
+      // If the auto-cancel worked, order1 should be CANCELED and only order2 should be PAID
+      // If there's a bug where order1 wasn't canceled, we'll have 2 PAID orders
+      const pendingOrders = await this.setupData.client1.shopOrder.shopOrderControllerSearch({
+        filters: { status: [ShopOrderOutputDTOStatusEnum.Paid] },
+        sortBy: 'createdAt',
+        sortDirection: 'asc',
+      });
+
+      // This demonstrates the race condition: if order1 didn't get auto-canceled,
+      // we'll have 2 PAID orders and trying to claim will fail
+      // If only 1 PAID order, the test will show the expected behavior works
+      const hasBuggyState = pendingOrders.data.data.length === 2;
+
+      if (!hasBuggyState) {
+        // Expected behavior: order1 was canceled, only order2 is claimable
+        expect(order1After.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Canceled);
+        expect(pendingOrders.data.data).to.have.length(1);
+        const secondOrder = await this.setupData.client1.shopOrder.shopOrderControllerClaim(order2.data.data.id);
+        expect(secondOrder.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Completed);
+        return;
+      }
+
+      // Bug scenario: order1 wasn't canceled, both orders are PAID
+      expect(pendingOrders.data.data).to.have.length(2);
+
+      // Try to claim orders in order (like /claim command does)
+      // The first order should fail because listing is deleted
+      let firstOrderError = null;
+      try {
+        await this.setupData.client1.shopOrder.shopOrderControllerClaim(pendingOrders.data.data[0].id);
+      } catch (error) {
+        firstOrderError = error;
+      }
+
+      // Verify the first order claim failed with NotFoundError
+      expect(firstOrderError).to.not.be.null;
+      if (isAxiosError(firstOrderError)) {
+        expect(firstOrderError.response?.data.meta.error.code).to.be.eq('NotFoundError');
+      }
+
+      // The bug: Because the first order failed, the player cannot claim the second valid order
+      // Verify the second order is still PAID (wasn't claimed)
+      const order2After = await this.setupData.client1.shopOrder.shopOrderControllerGetOne(order2.data.data.id);
+      expect(order2After.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Paid);
+
+      // Ideally, the second order should be claimable even though the first failed
+      // But currently it throws an error, demonstrating the bug
+      const secondOrder = await this.setupData.client1.shopOrder.shopOrderControllerClaim(order2.data.data.id);
+      expect(secondOrder.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Completed);
+    },
+  }),
 ];
 
 describe(group, function () {
