@@ -122,8 +122,6 @@ export class ShopOrderOutputDTO extends TakaroModelDTO<ShopOrderOutputDTO> {
   listingId: string;
   @IsUUID()
   playerId: string;
-  @IsUUID()
-  gameServerId: string;
   @IsNumber()
   amount: number;
   @IsEnum(Object.values(ShopOrderStatus))
@@ -147,8 +145,6 @@ export class ShopOrderCreateDTO<T = void> extends TakaroDTO<T> {
 export class ShopOrderCreateInternalDTO extends ShopOrderCreateDTO<ShopOrderCreateInternalDTO> {
   @IsUUID()
   playerId: string;
-  @IsUUID()
-  gameServerId: string;
 }
 
 export class ShopOrderUpdateDTO extends TakaroDTO<ShopOrderUpdateDTO> {

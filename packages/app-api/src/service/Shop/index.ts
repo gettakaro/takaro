@@ -426,9 +426,11 @@ export class ShopListingService extends TakaroService<
       new ShopOrderUpdateDTO({ status: ShopOrderStatus.CANCELED }),
     );
 
-    // Try to get listing for refund - if listing was deleted, skip refund (trigger handled it)
+    // Try to get listing for refund and gameServerId - if listing was deleted, skip refund (DB trigger handled it)
+    let gameServerId: string | undefined;
     try {
       const listing = await this.findOne(order.listingId);
+      gameServerId = listing.gameServerId;
 
       // Refund the player (only if listing still exists)
       const pogsService = new PlayerOnGameServerService(this.domainId);
@@ -455,7 +457,7 @@ export class ShopListingService extends TakaroService<
     await this.eventService.create(
       new EventCreateDTO({
         eventName: EVENT_TYPES.SHOP_ORDER_STATUS_CHANGED,
-        gameserverId: order.gameServerId,
+        gameserverId: gameServerId,
         userId: ctx.data.user,
         playerId: order.playerId,
         meta: new TakaroEventShopOrderStatusChanged({
