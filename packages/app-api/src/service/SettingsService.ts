@@ -16,6 +16,8 @@ export enum SETTINGS_KEYS {
   domainName = 'domainName',
   discordRoleSyncEnabled = 'discordRoleSyncEnabled',
   discordRoleSyncPreferDiscord = 'discordRoleSyncPreferDiscord',
+  unknownCommandFeedbackEnabled = 'unknownCommandFeedbackEnabled',
+  unknownCommandFeedbackMessage = 'unknownCommandFeedbackMessage',
 }
 
 export interface SettingDefinition {
@@ -71,6 +73,16 @@ export const SETTINGS_DEFINITIONS: Record<SETTINGS_KEYS, SettingDefinition> = {
       'When enabled, Discord roles will override Takaro roles during synchronization. When disabled, Takaro roles will override Discord roles. Only affects roles that are linked between systems.',
     canHaveGameServerOverride: false,
   },
+  unknownCommandFeedbackEnabled: {
+    defaultValue: 'false',
+    description: 'When enabled, players receive feedback when they type an unknown or invalid command',
+    canHaveGameServerOverride: true,
+  },
+  unknownCommandFeedbackMessage: {
+    defaultValue: 'Unknown command. Type /help for available commands.',
+    description: 'The message sent to players when they type an unknown command',
+    canHaveGameServerOverride: true,
+  },
 };
 
 export const DEFAULT_SETTINGS: Record<SETTINGS_KEYS, string> = Object.entries(SETTINGS_DEFINITIONS).reduce(
@@ -99,6 +111,10 @@ export class Settings extends TakaroModelDTO<Settings> {
   discordRoleSyncEnabled: string;
   @IsString()
   discordRoleSyncPreferDiscord: string;
+  @IsString()
+  unknownCommandFeedbackEnabled: string;
+  @IsString()
+  unknownCommandFeedbackMessage: string;
 }
 
 export enum SettingsMode {
