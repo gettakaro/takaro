@@ -15,13 +15,15 @@ import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { PogParam } from '../lib/validators.js';
+import { PogParam, GameServerIdParam } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import {
   PlayerOnGameServerService,
   PlayerOnGameserverOutputDTO,
   PlayerOnGameserverOutputWithRolesDTO,
+  PogBulkDeleteInputDTO,
+  PogBulkDeleteOutputDTO,
 } from '../service/PlayerOnGameserverService.js';
 import { onlyIfEconomyEnabledMiddleware } from '../middlewares/onlyIfEconomyEnabled.js';
 import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from './shared.js';
@@ -36,6 +38,12 @@ export class PlayerOnGameserverOutputArrayDTOAPI extends APIOutput<PlayerOnGames
   @Type(() => PlayerOnGameserverOutputWithRolesDTO)
   @ValidateNested({ each: true })
   declare data: PlayerOnGameserverOutputWithRolesDTO[];
+}
+
+export class PogBulkDeleteOutputDTOAPI extends APIOutput<PogBulkDeleteOutputDTO> {
+  @Type(() => PogBulkDeleteOutputDTO)
+  @ValidateNested()
+  declare data: PogBulkDeleteOutputDTO;
 }
 
 class PlayerOnGameServerSearchInputAllowedFilters extends AllowedFilters {
@@ -216,5 +224,22 @@ export class PlayerOnGameServerController {
     const pog = await service.getPog(params.playerId, params.gameServerId);
     await service.delete(pog.id);
     return apiResponse();
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS]))
+  @Delete('/gameserver/:gameServerId/player')
+  @ResponseSchema(PogBulkDeleteOutputDTOAPI)
+  @OpenAPI({
+    description:
+      'Bulk delete POG records by player IDs for a specific gameserver. Deletes POG records only, Player records remain intact. Processes in batches of 500 for performance.',
+  })
+  async bulkDelete(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: GameServerIdParam,
+    @Body() body: PogBulkDeleteInputDTO,
+  ) {
+    const service = new PlayerOnGameServerService(req.domainId);
+    const result = await service.bulkDeleteByPlayersAndGameServer(body.playerIds, params.gameServerId);
+    return apiResponse(result);
   }
 }

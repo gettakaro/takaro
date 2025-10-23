@@ -1,7 +1,7 @@
 import { TakaroService } from '../Base.js';
 
 import { ISteamData, PlayerModel, PlayerRepo } from '../../db/player.js';
-import { errors, traceableClass } from '@takaro/util';
+import { errors, traceableClass, ctx } from '@takaro/util';
 import { Redis } from '@takaro/db';
 import { PaginatedOutput } from '../../db/base.js';
 import {
@@ -154,6 +154,66 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     );
 
     return id;
+  }
+
+  async bulkDelete(
+    playerIds: string[],
+  ): Promise<{ deleted: number; failed: number; errors: Array<{ playerId: string; reason: string }> }> {
+    if (playerIds.length === 0) {
+      return { deleted: 0, failed: 0, errors: [] };
+    }
+
+    const BATCH_SIZE = 500;
+    const allDeleted: string[] = [];
+    const allFailed: Array<{ playerId: string; reason: string }> = [];
+
+    // Process in batches
+    for (let i = 0; i < playerIds.length; i += BATCH_SIZE) {
+      const batch = playerIds.slice(i, i + BATCH_SIZE);
+
+      // Fetch player names before deletion for events
+      const playersToDelete = await this.repo.find({
+        filters: { id: batch },
+      });
+      const playerNamesMap = new Map(playersToDelete.results.map((p) => [p.id, p.name]));
+
+      const { knex } = await this.repo.getModel();
+
+      // Execute batch delete in a transaction
+      await ctx.runInTransaction(knex, async () => {
+        const { deleted, failed } = await this.repo.bulkDelete(batch);
+        allDeleted.push(...deleted);
+        allFailed.push(...failed.map((f) => ({ playerId: f.id, reason: f.error })));
+
+        // Emit events after transaction commits
+        const eventService = new EventService(this.domainId);
+        await Promise.all(
+          deleted.map((playerId) =>
+            eventService.create(
+              new EventCreateDTO({
+                eventName: TakaroEvents.PLAYER_DELETED,
+                playerId,
+                meta: new TakaroEventPlayerDeleted({
+                  playerName: playerNamesMap.get(playerId) || 'Unknown',
+                }),
+              }),
+            ),
+          ),
+        );
+      });
+    }
+
+    this.log.info('Bulk delete completed', {
+      requestedCount: playerIds.length,
+      deletedCount: allDeleted.length,
+      failedCount: allFailed.length,
+    });
+
+    return {
+      deleted: allDeleted.length,
+      failed: allFailed.length,
+      errors: allFailed,
+    };
   }
 
   async resolveFromId(

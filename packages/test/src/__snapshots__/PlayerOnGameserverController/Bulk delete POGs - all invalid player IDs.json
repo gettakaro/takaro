@@ -1,0 +1,32 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "deleted": 0,
+      "failed": 3,
+      "errors": [
+        {
+          "playerId": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+          "reason": "POG not found for player on this gameserver"
+        },
+        {
+          "playerId": "ffffffff-0000-4111-8222-333333333333",
+          "reason": "POG not found for player on this gameserver"
+        },
+        {
+          "playerId": "11111111-2222-4333-8444-555555555555",
+          "reason": "POG not found for player on this gameserver"
+        }
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "PlayerOnGameserverController",
+    "snapshot": true,
+    "name": "Bulk delete POGs - all invalid player IDs",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

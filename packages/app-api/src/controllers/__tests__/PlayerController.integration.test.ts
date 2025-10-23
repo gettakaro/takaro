@@ -533,6 +533,106 @@ const tests = [
       expect(pogsAfter.data.data.length).to.be.eq(0);
     },
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Bulk delete players - success with 10 players',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const players = this.setupData.players.slice(0, 10);
+      const playerIds = players.map((p) => p.id);
+
+      // Verify players exist before deletion
+      const playersBefore = await this.client.player.playerControllerSearch({
+        filters: { id: playerIds },
+      });
+      expect(playersBefore.data.data.length).to.be.eq(10);
+
+      // Verify POGs exist
+      const pogsBefore = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: { playerId: playerIds },
+      });
+      expect(pogsBefore.data.data.length).to.be.greaterThan(0);
+
+      // Bulk delete
+      const result = await this.client.player.playerControllerBulkDelete({
+        playerIds,
+      });
+
+      expect(result.data.data.deleted).to.be.eq(10);
+      expect(result.data.data.failed).to.be.eq(0);
+      expect(result.data.data.errors.length).to.be.eq(0);
+
+      // Verify players are deleted
+      const playersAfter = await this.client.player.playerControllerSearch({
+        filters: { id: playerIds },
+      });
+      expect(playersAfter.data.data.length).to.be.eq(0);
+
+      // Verify POGs are cascaded deleted
+      const pogsAfter = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: { playerId: playerIds },
+      });
+      expect(pogsAfter.data.data.length).to.be.eq(0);
+
+      return result;
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Bulk delete players - partial success with invalid IDs',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const players = this.setupData.players.slice(0, 5);
+      const validPlayerIds = players.map((p) => p.id);
+      // Use hardcoded valid UUIDs that don't exist in the database
+      const invalidId1 = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee';
+      const invalidId2 = 'ffffffff-0000-4111-8222-333333333333';
+      const allIds = [...validPlayerIds, invalidId1, invalidId2];
+
+      const result = await this.client.player.playerControllerBulkDelete({
+        playerIds: allIds,
+      });
+
+      expect(result.data.data.deleted).to.be.eq(5);
+      expect(result.data.data.failed).to.be.eq(2);
+      expect(result.data.data.errors.length).to.be.eq(2);
+      expect(result.data.data.errors[0].reason).to.include('not found');
+
+      // Verify valid players are deleted
+      const playersAfter = await this.client.player.playerControllerSearch({
+        filters: { id: validPlayerIds },
+      });
+      expect(playersAfter.data.data.length).to.be.eq(0);
+
+      return result;
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Bulk delete players - all invalid IDs',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      // Use hardcoded valid UUIDs that don't exist in the database
+      const invalidIds = [
+        'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+        'ffffffff-0000-4111-8222-333333333333',
+        '11111111-2222-4333-8444-555555555555',
+      ];
+
+      const result = await this.client.player.playerControllerBulkDelete({
+        playerIds: invalidIds,
+      });
+
+      expect(result.data.data.deleted).to.be.eq(0);
+      expect(result.data.data.failed).to.be.eq(3);
+      expect(result.data.data.errors.length).to.be.eq(3);
+
+      return result;
+    },
+  }),
 ];
 
 describe(group, function () {

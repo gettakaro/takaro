@@ -634,4 +634,36 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     const deletedCount = await query;
     this.log.info('Batch removed expired roles', { requestedCount: expiredRoles.length, deletedCount });
   }
+
+  async bulkDelete(playerIds: string[]): Promise<{ deleted: string[]; failed: Array<{ id: string; error: string }> }> {
+    if (playerIds.length === 0) {
+      return { deleted: [], failed: [] };
+    }
+
+    const { query } = await this.getModel();
+    const deleted: string[] = [];
+    const failed: Array<{ id: string; error: string }> = [];
+
+    const deletedRecords = await query.delete().whereIn('id', playerIds).returning('id');
+
+    deletedRecords.forEach((record) => {
+      deleted.push(record.id);
+    });
+
+    // Find which IDs failed (were not in the database)
+    const deletedIds = new Set(deleted);
+    playerIds.forEach((id) => {
+      if (!deletedIds.has(id)) {
+        failed.push({ id, error: 'Player not found' });
+      }
+    });
+
+    this.log.info('Bulk deleted players', {
+      requestedCount: playerIds.length,
+      deletedCount: deleted.length,
+      failedCount: failed.length,
+    });
+
+    return { deleted, failed };
+  }
 }
