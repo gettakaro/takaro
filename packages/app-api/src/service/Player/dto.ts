@@ -175,7 +175,6 @@ export class PlayerBulkDeleteInputDTO extends TakaroDTO<PlayerBulkDeleteInputDTO
   @IsUUID('4', { each: true })
   @ArrayMinSize(1)
   @ArrayMaxSize(1000)
-  @ApiProperty({ description: 'Array of player IDs to delete. Maximum 1000 players per request.' })
   playerIds!: string[];
 }
 

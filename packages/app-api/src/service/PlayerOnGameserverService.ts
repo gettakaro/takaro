@@ -142,7 +142,6 @@ export class PogBulkDeleteInputDTO extends TakaroDTO<PogBulkDeleteInputDTO> {
   @IsUUID('4', { each: true })
   @ArrayMinSize(1)
   @ArrayMaxSize(1000)
-  @ApiProperty({ description: 'Array of player IDs to delete POGs for. Maximum 1000 players per request.' })
   playerIds!: string[];
 }
 
