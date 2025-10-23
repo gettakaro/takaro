@@ -83,8 +83,8 @@ export const UnControlledRoleSelectQueryField: FC<UnControlledRoleSelectQueryFie
       return <div>{selectedRoleNames.join(', ')}</div>;
     }
 
-    const selectedRole = filteredRoles.find((role) => role.id === selectedItems[0]?.value)!;
-    return <div>{selectedRole.name}</div>;
+    const selectedRole = filteredRoles.find((role) => role.id === selectedItems[0]?.value);
+    return <div>{selectedRole?.name || 'Unknown role'}</div>;
   };
 
   const roleOptions = (
@@ -93,7 +93,7 @@ export const UnControlledRoleSelectQueryField: FC<UnControlledRoleSelectQueryFie
         {filteredRoles
           .filter((role) => !role.system)
           .map(({ name, id }) => (
-            <SelectQueryField.Option key={`select-${name}`} value={id} label={name}>
+            <SelectQueryField.Option key={`select-${id}`} value={id} label={name}>
               <Inner>
                 <span>{name}</span>
               </Inner>
@@ -105,7 +105,7 @@ export const UnControlledRoleSelectQueryField: FC<UnControlledRoleSelectQueryFie
         {filteredRoles
           .filter((role) => role.system)
           .map(({ name, id }) => (
-            <SelectQueryField.Option key={`select-${name}`} value={id} label={name}>
+            <SelectQueryField.Option key={`select-${id}`} value={id} label={name}>
               <Inner>
                 <span>{name}</span>
               </Inner>
