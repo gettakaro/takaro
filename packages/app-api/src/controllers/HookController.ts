@@ -84,6 +84,25 @@ class HookSearchInputDTO extends ITakaroQuery<HookSearchInputAllowedFilters> {
 export class HookController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
   @ResponseSchema(HookOutputArrayDTOAPI)
+  @OpenAPI({
+    description: 'Search hooks',
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['module'],
+                page: 1,
+                limit: 10,
+              },
+            },
+          },
+        },
+      },
+    },
+  })
   @Post('/hook/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: HookSearchInputDTO) {
     const service = new HookService(req.domainId);

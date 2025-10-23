@@ -50,7 +50,7 @@ class FunctionSearchInputAllowedSearch extends AllowedSearch {
   name: string[];
 }
 
-const functionExtendOptions = ['module', 'cronJobs', 'hooks', 'commands'];
+const functionExtendOptions = ['version', 'cronJob', 'hook', 'command'];
 type FunctionExtendOptions = (typeof functionExtendOptions)[number];
 
 class FunctionSearchInputDTO extends ITakaroQuery<FunctionOutputDTO> {
@@ -74,6 +74,25 @@ class FunctionSearchInputDTO extends ITakaroQuery<FunctionOutputDTO> {
 export class FunctionController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
   @ResponseSchema(FunctionOutputArrayDTOAPI)
+  @OpenAPI({
+    description: 'Search functions',
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['version'],
+                page: 1,
+                limit: 10,
+              },
+            },
+          },
+        },
+      },
+    },
+  })
   @Post('/function/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: FunctionSearchInputDTO) {
     const service = new FunctionService(req.domainId);
