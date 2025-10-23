@@ -113,7 +113,7 @@ function Component() {
     }),
   );
 
-  const { data: HooksExecuted, isLoading: isLoadingHooksExecuted } = useQuery(
+  const { data: hooksExecuted, isLoading: isLoadingHooksExecuted } = useQuery(
     eventsQueryOptions({
       search: { eventName: ['hook-executed'] },
       greaterThan: { createdAt: startDate },
@@ -161,7 +161,7 @@ function Component() {
           <Stats.Stat
             isLoading={isLoadingHooksExecuted}
             description="Executed"
-            value={`${HooksExecuted?.meta.total} Hooks`}
+            value={`${hooksExecuted?.meta.total} Hooks`}
           />
         </Stats>
 
