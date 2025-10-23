@@ -12,8 +12,7 @@ const baseShape = z.object({
     .min(4, {
       message: 'Server name requires a minimum length of 4 characters',
     })
-    .max(21)
-    .min(1, { message: 'Server name cannot be empty' }),
+    .max(21),
   enabled: z.boolean(),
 });
 
