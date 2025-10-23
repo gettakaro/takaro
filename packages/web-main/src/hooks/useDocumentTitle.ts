@@ -13,5 +13,11 @@ export function useDocumentTitle(title: string) {
 
 // alternative version that adds the currently selected gameServer name to the title
 export function useGameServerDocumentTitle(title: string, gameServer: GameServerOutputDTO) {
-  document.title = `${title} ${gameServer.name} - Takaro`;
+  useEffect(() => {
+    const originalTitle = document.title;
+    document.title = `${title} ${gameServer.name} - Takaro`;
+    return () => {
+      document.title = originalTitle;
+    };
+  }, [title, gameServer.name]);
 }
