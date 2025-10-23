@@ -31,7 +31,7 @@ export const validationSchema = baseShape.and(
           z
             .string()
             .regex(IPV4_AND_PORT_REGEX, 'The provided value is not of the format ipv4:port')
-            .min(1, { message: 'Host cannot not be empty' })
+            .min(1, { message: 'Host cannot be empty' })
             .optional(),
         ]),
         adminUser: z.string().min(1, { message: 'Admin user cannot be empty' }).optional(),
