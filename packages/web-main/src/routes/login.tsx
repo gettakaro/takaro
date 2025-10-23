@@ -58,10 +58,6 @@ interface IFormInputs {
   csrf_token: string;
 }
 
-async function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 function Component() {
   useDocumentTitle('Log in');
 
@@ -109,8 +105,6 @@ function Component() {
     });
     login(res.data.data);
     await router.invalidate();
-    // hack to wait for auth state to update???
-    await sleep(500);
     await navigate({ to: search.redirect ?? '/' });
   }
 
