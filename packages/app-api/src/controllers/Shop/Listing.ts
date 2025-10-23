@@ -80,7 +80,7 @@ class ShopSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
   deletedAt!: string;
 }
 
-const shopListingExtendOptions = ['gameServer', 'item', 'categories'] as const;
+const shopListingExtendOptions = ['gameServer', 'items', 'categories'] as const;
 type ShopListingExtendOptions = (typeof shopListingExtendOptions)[number];
 
 class ShopListingSearchInputDTO extends ITakaroQuery<ShopListingSearchInputAllowedFilters> {
@@ -112,6 +112,25 @@ class ShopListingSearchInputDTO extends ITakaroQuery<ShopListingSearchInputAllow
 export class ShopListingController {
   @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(ShopListingOutputArrayDTOAPI)
+  @OpenAPI({
+    description: 'Search shop listings',
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['categories', 'items'],
+                page: 1,
+                limit: 10,
+              },
+            },
+          },
+        },
+      },
+    },
+  })
   @Post('/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: ShopListingSearchInputDTO) {
     const service = new ShopListingService(req.domainId);

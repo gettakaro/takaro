@@ -3882,10 +3882,10 @@ export interface FunctionSearchInputDTO {
 }
 
 export const FunctionSearchInputDTOExtendEnum = {
-  Module: 'module',
-  CronJobs: 'cronJobs',
-  Hooks: 'hooks',
-  Commands: 'commands',
+  Version: 'version',
+  CronJob: 'cronJob',
+  Hook: 'hook',
+  Command: 'command',
 } as const;
 
 export type FunctionSearchInputDTOExtendEnum =
@@ -6403,7 +6403,7 @@ export interface ItemSearchInputDTO {
 }
 
 export const ItemSearchInputDTOExtendEnum = {
-  GameServer: 'gameServer',
+  Gameserver: 'gameserver',
 } as const;
 
 export type ItemSearchInputDTOExtendEnum =
@@ -11988,7 +11988,7 @@ export interface ShopListingSearchInputDTO {
 
 export const ShopListingSearchInputDTOExtendEnum = {
   GameServer: 'gameServer',
-  Item: 'item',
+  Items: 'items',
   Categories: 'categories',
 } as const;
 
@@ -12087,12 +12087,6 @@ export interface ShopOrderCreateInternalDTO {
    * @type {string}
    * @memberof ShopOrderCreateInternalDTO
    */
-  gameServerId: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ShopOrderCreateInternalDTO
-   */
   listingId: string;
   /**
    *
@@ -12144,12 +12138,6 @@ export interface ShopOrderOutputDTO {
    * @memberof ShopOrderOutputDTO
    */
   playerId: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ShopOrderOutputDTO
-   */
-  gameServerId: string;
   /**
    *
    * @type {number}
@@ -12350,7 +12338,6 @@ export const ShopOrderSearchInputDTOExtendEnum = {
   Listing: 'listing',
   ListingItems: 'listing.items',
   ListingItemsItem: 'listing.items.item',
-  Player: 'player',
 } as const;
 
 export type ShopOrderSearchInputDTOExtendEnum =
@@ -14903,7 +14890,7 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `CommandControllerSearch`
+     * Search commands   Required permissions: `READ_MODULES`<br> OperationId: `CommandControllerSearch`
      * @summary Search
      * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -15227,7 +15214,7 @@ export const CommandApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `CommandControllerSearch`
+     * Search commands   Required permissions: `READ_MODULES`<br> OperationId: `CommandControllerSearch`
      * @summary Search
      * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -15420,7 +15407,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
       return localVarFp.commandControllerRemoveArgument(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `CommandControllerSearch`
+     * Search commands   Required permissions: `READ_MODULES`<br> OperationId: `CommandControllerSearch`
      * @summary Search
      * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -15590,7 +15577,7 @@ export class CommandApi extends BaseAPI {
   }
 
   /**
-   *    Required permissions: `READ_MODULES`<br> OperationId: `CommandControllerSearch`
+   * Search commands   Required permissions: `READ_MODULES`<br> OperationId: `CommandControllerSearch`
    * @summary Search
    * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -15812,7 +15799,7 @@ export const CronJobApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `CronJobControllerSearch`
+     * Search cronjobs   Required permissions: `READ_MODULES`<br> OperationId: `CronJobControllerSearch`
      * @summary Search
      * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -16038,7 +16025,7 @@ export const CronJobApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `CronJobControllerSearch`
+     * Search cronjobs   Required permissions: `READ_MODULES`<br> OperationId: `CronJobControllerSearch`
      * @summary Search
      * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -16171,7 +16158,7 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
       return localVarFp.cronJobControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `CronJobControllerSearch`
+     * Search cronjobs   Required permissions: `READ_MODULES`<br> OperationId: `CronJobControllerSearch`
      * @summary Search
      * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -16291,7 +16278,7 @@ export class CronJobApi extends BaseAPI {
   }
 
   /**
-   *    Required permissions: `READ_MODULES`<br> OperationId: `CronJobControllerSearch`
+   * Search cronjobs   Required permissions: `READ_MODULES`<br> OperationId: `CronJobControllerSearch`
    * @summary Search
    * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -18145,7 +18132,7 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     *    Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerSearch`
+     * Search events   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerSearch`
      * @summary Search
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -18287,7 +18274,7 @@ export const EventApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     *    Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerSearch`
+     * Search events   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerSearch`
      * @summary Search
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -18371,7 +18358,7 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
       return localVarFp.eventControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *    Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerSearch`
+     * Search events   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerSearch`
      * @summary Search
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -18450,7 +18437,7 @@ export class EventApi extends BaseAPI {
   }
 
   /**
-   *    Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerSearch`
+   * Search events   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerSearch`
    * @summary Search
    * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -18774,7 +18761,7 @@ export const FunctionApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `FunctionControllerSearch`
+     * Search functions   Required permissions: `READ_MODULES`<br> OperationId: `FunctionControllerSearch`
      * @summary Search
      * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -18935,7 +18922,7 @@ export const FunctionApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `FunctionControllerSearch`
+     * Search functions   Required permissions: `READ_MODULES`<br> OperationId: `FunctionControllerSearch`
      * @summary Search
      * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -19035,7 +19022,7 @@ export const FunctionApiFactory = function (configuration?: Configuration, baseP
       return localVarFp.functionControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `FunctionControllerSearch`
+     * Search functions   Required permissions: `READ_MODULES`<br> OperationId: `FunctionControllerSearch`
      * @summary Search
      * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -19119,7 +19106,7 @@ export class FunctionApi extends BaseAPI {
   }
 
   /**
-   *    Required permissions: `READ_MODULES`<br> OperationId: `FunctionControllerSearch`
+   * Search functions   Required permissions: `READ_MODULES`<br> OperationId: `FunctionControllerSearch`
    * @summary Search
    * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -21833,7 +21820,7 @@ export const HookApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `HookControllerSearch`
+     * Search hooks   Required permissions: `READ_MODULES`<br> OperationId: `HookControllerSearch`
      * @summary Search
      * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -22059,7 +22046,7 @@ export const HookApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `HookControllerSearch`
+     * Search hooks   Required permissions: `READ_MODULES`<br> OperationId: `HookControllerSearch`
      * @summary Search
      * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -22192,7 +22179,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.hookControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `HookControllerSearch`
+     * Search hooks   Required permissions: `READ_MODULES`<br> OperationId: `HookControllerSearch`
      * @summary Search
      * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -22303,7 +22290,7 @@ export class HookApi extends BaseAPI {
   }
 
   /**
-   *    Required permissions: `READ_MODULES`<br> OperationId: `HookControllerSearch`
+   * Search hooks   Required permissions: `READ_MODULES`<br> OperationId: `HookControllerSearch`
    * @summary Search
    * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -22386,7 +22373,7 @@ export const ItemApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *    Required permissions: `READ_ITEMS`<br> OperationId: `ItemControllerSearch`
+     * Search items   Required permissions: `READ_ITEMS`<br> OperationId: `ItemControllerSearch`
      * @summary Search
      * @param {ItemSearchInputDTO} [itemSearchInputDTO] ItemSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -22456,7 +22443,7 @@ export const ItemApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     *    Required permissions: `READ_ITEMS`<br> OperationId: `ItemControllerSearch`
+     * Search items   Required permissions: `READ_ITEMS`<br> OperationId: `ItemControllerSearch`
      * @summary Search
      * @param {ItemSearchInputDTO} [itemSearchInputDTO] ItemSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -22499,7 +22486,7 @@ export const ItemApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.itemControllerFindOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *    Required permissions: `READ_ITEMS`<br> OperationId: `ItemControllerSearch`
+     * Search items   Required permissions: `READ_ITEMS`<br> OperationId: `ItemControllerSearch`
      * @summary Search
      * @param {ItemSearchInputDTO} [itemSearchInputDTO] ItemSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -22536,7 +22523,7 @@ export class ItemApi extends BaseAPI {
   }
 
   /**
-   *    Required permissions: `READ_ITEMS`<br> OperationId: `ItemControllerSearch`
+   * Search items   Required permissions: `READ_ITEMS`<br> OperationId: `ItemControllerSearch`
    * @summary Search
    * @param {ItemSearchInputDTO} [itemSearchInputDTO] ItemSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -28441,7 +28428,7 @@ export const ShopListingApiAxiosParamCreator = function (configuration?: Configu
       };
     },
     /**
-     * <br> OperationId: `ShopListingControllerSearch`
+     * Search shop listings<br> OperationId: `ShopListingControllerSearch`
      * @summary Search
      * @param {ShopListingSearchInputDTO} [shopListingSearchInputDTO] ShopListingSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -28626,7 +28613,7 @@ export const ShopListingApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * <br> OperationId: `ShopListingControllerSearch`
+     * Search shop listings<br> OperationId: `ShopListingControllerSearch`
      * @summary Search
      * @param {ShopListingSearchInputDTO} [shopListingSearchInputDTO] ShopListingSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -28739,7 +28726,7 @@ export const ShopListingApiFactory = function (
       return localVarFp.shopListingControllerImportListings(options).then((request) => request(axios, basePath));
     },
     /**
-     * <br> OperationId: `ShopListingControllerSearch`
+     * Search shop listings<br> OperationId: `ShopListingControllerSearch`
      * @summary Search
      * @param {ShopListingSearchInputDTO} [shopListingSearchInputDTO] ShopListingSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -28836,7 +28823,7 @@ export class ShopListingApi extends BaseAPI {
   }
 
   /**
-   * <br> OperationId: `ShopListingControllerSearch`
+   * Search shop listings<br> OperationId: `ShopListingControllerSearch`
    * @summary Search
    * @param {ShopListingSearchInputDTO} [shopListingSearchInputDTO] ShopListingSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -32343,7 +32330,7 @@ export const VariableApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *    Required permissions: `READ_VARIABLES`<br> OperationId: `VariableControllerSearch`
+     * Search variables   Required permissions: `READ_VARIABLES`<br> OperationId: `VariableControllerSearch`
      * @summary Search
      * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -32504,7 +32491,7 @@ export const VariableApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     *    Required permissions: `READ_VARIABLES`<br> OperationId: `VariableControllerSearch`
+     * Search variables   Required permissions: `READ_VARIABLES`<br> OperationId: `VariableControllerSearch`
      * @summary Search
      * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -32604,7 +32591,7 @@ export const VariableApiFactory = function (configuration?: Configuration, baseP
       return localVarFp.variableControllerFindOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *    Required permissions: `READ_VARIABLES`<br> OperationId: `VariableControllerSearch`
+     * Search variables   Required permissions: `READ_VARIABLES`<br> OperationId: `VariableControllerSearch`
      * @summary Search
      * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -32688,7 +32675,7 @@ export class VariableApi extends BaseAPI {
   }
 
   /**
-   *    Required permissions: `READ_VARIABLES`<br> OperationId: `VariableControllerSearch`
+   * Search variables   Required permissions: `READ_VARIABLES`<br> OperationId: `VariableControllerSearch`
    * @summary Search
    * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
    * @param {*} [options] Override http request option.

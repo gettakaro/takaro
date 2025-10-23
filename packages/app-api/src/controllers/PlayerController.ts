@@ -153,13 +153,17 @@ export class PlayerController {
       content: {
         'application/json': {
           examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['playerOnGameServers'],
+                page: 1,
+                limit: 10,
+              },
+            },
             recentVACbans: {
               summary: 'Recently VAC banned players',
               value: { lessThan: { steamsDaysSinceLastBan: 365 } },
-            },
-            membersOfRole: {
-              summary: 'Get all players with a specific role',
-              value: { filters: { roleId: ['1ec529af-0f8f-4d8d-b06a-7f83c64f0086'] } },
             },
           },
         },
