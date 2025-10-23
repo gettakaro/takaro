@@ -28,6 +28,7 @@ import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { UserService } from './User/index.js';
 import { ModuleService } from './Module/index.js';
 import { InstallModuleDTO } from './Module/dto.js';
+import { distance } from 'fastest-levenshtein';
 import { CommandSearchInputDTO } from '../controllers/CommandController.js';
 import { PartialDeep } from 'type-fest/index.js';
 import { EventCreateDTO, EventService, EVENT_TYPES } from './EventService.js';
@@ -642,7 +643,6 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
         // Find best match using Levenshtein distance
         let bestMatch: string | undefined;
         let bestDistance = Infinity;
-        const { distance } = await import('fastest-levenshtein');
 
         for (const trigger of allTriggers) {
           const dist = distance(commandName.toLowerCase(), trigger);
