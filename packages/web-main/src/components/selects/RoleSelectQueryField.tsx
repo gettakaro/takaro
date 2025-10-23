@@ -12,7 +12,7 @@ const Inner = styled.div`
   width: 100%;
 `;
 
-export const RoleSelectQueryField: FC<CustomSelectProps> = ({
+export const RoleSelectQueryField: FC<CustomSelectProps & { includeSpecialRoles?: boolean }> = ({
   control,
   name,
   loading,
@@ -25,6 +25,7 @@ export const RoleSelectQueryField: FC<CustomSelectProps> = ({
   readOnly,
   canClear,
   multiple,
+  includeSpecialRoles = false,
 }) => {
   const [roleName, setRoleName] = useState<string>('');
   const {
@@ -53,7 +54,9 @@ export const RoleSelectQueryField: FC<CustomSelectProps> = ({
   }
 
   const roles = data.pages.flatMap((page) => page.data);
-  const filteredRoles = roles.filter((role) => role.name !== 'User' && role.name !== 'Player');
+  const filteredRoles = includeSpecialRoles
+    ? roles
+    : roles.filter((role) => role.name !== 'User' && role.name !== 'Player');
 
   return (
     <RoleSelectView

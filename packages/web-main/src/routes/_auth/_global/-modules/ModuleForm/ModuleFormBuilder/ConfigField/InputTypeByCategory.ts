@@ -48,6 +48,11 @@ const inputTypeInfo: InputTypeInfo[] = [
     category: 'custom',
     description: 'A field where a duration can be entered with multiple units.',
   },
+  {
+    type: InputType.role,
+    category: 'custom',
+    description: 'A dropdown menu with searchable list of roles.',
+  },
 ];
 
 export const groupedByCategory = inputTypeInfo.reduce(

@@ -8,6 +8,7 @@ import { DurationProperty } from './inputTypes/Duration';
 import { CountryProperty } from './inputTypes/Country';
 import { NumberProperty } from './inputTypes/Number';
 import { TextProperty } from './inputTypes/Text';
+import { RoleProperty } from './inputTypes/Role';
 
 export function inputsToSchema(inputs: Array<AnyInput>): StrictRJSFSchema {
   const schema: StrictRJSFSchema = {
@@ -51,6 +52,8 @@ function getJsonSchemaElement(input: AnyInput) {
       return new DurationProperty(input).getProperty();
     case InputType.country:
       return new CountryProperty(input).getProperty();
+    case InputType.role:
+      return new RoleProperty(input).getProperty();
     default:
       throw new Error('Unknown input type');
   }
@@ -80,6 +83,11 @@ export function inputsToUiSchema(inputs: Array<AnyInput>): UiSchema {
     if (input.type === InputType.duration) {
       uiSchema[input.name] = {
         'ui:widget': InputType.duration,
+      };
+    }
+    if (input.type === InputType.role) {
+      uiSchema[input.name] = {
+        'ui:widget': InputType.role,
       };
     }
   }
