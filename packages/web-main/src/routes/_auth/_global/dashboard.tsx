@@ -221,7 +221,7 @@ function Component() {
                   name="Countries"
                   data={countriesStatsData}
                   xAccessor={(d) => d.country}
-                  yAccessor={(d) => parseInt(d.playerCount)}
+                  yAccessor={(d) => parseInt(d.playerCount, 10)}
                   tooltipAccessor={(d) => `${d.country}:${d.playerCount}`}
                   allowZoomAndDrag={false}
                   showZoomControls={false}
