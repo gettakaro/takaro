@@ -752,6 +752,69 @@ const tests = [
       expect(allOrders.data.data).to.have.length(2);
     },
   }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'Player with multiple orders for same listing gets full refund when listing deleted',
+    setup: shopSetup,
+    test: async function () {
+      // Create a listing
+      const listing = await this.client.shopListing.shopListingControllerCreate({
+        gameServerId: this.setupData.gameserver.id,
+        items: [{ code: this.setupData.items[0].code, amount: 1 }],
+        price: 100,
+        name: 'Test listing for multiple orders',
+      });
+
+      // Give player enough currency
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        this.setupData.gameserver.id,
+        this.setupData.players[0].id,
+        { currency: 500 },
+      );
+
+      // Create TWO PAID orders for the same listing
+      const order1 = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: listing.data.data.id,
+        amount: 1,
+      });
+
+      const order2 = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: listing.data.data.id,
+        amount: 1,
+      });
+
+      // Verify both orders are PAID
+      expect(order1.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Paid);
+      expect(order2.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Paid);
+
+      // Check currency after orders (should be 500 - 200 = 300)
+      const pogsAfterOrders = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        this.setupData.gameserver.id,
+        this.setupData.players[0].id,
+      );
+      expect(pogsAfterOrders.data.data.currency).to.be.eq(300);
+
+      // Delete the listing (trigger should cancel both orders and refund full amount)
+      await this.client.shopListing.shopListingControllerDelete(listing.data.data.id);
+
+      // Check final currency (should be back to 500 - full refund of 200)
+      const pogsAfterDelete = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        this.setupData.gameserver.id,
+        this.setupData.players[0].id,
+      );
+      expect(pogsAfterDelete.data.data.currency).to.be.eq(500);
+
+      // Verify both orders are CANCELED
+      const order1After = await this.setupData.client1.shopOrder.shopOrderControllerGetOne(order1.data.data.id);
+      const order2After = await this.setupData.client1.shopOrder.shopOrderControllerGetOne(order2.data.data.id);
+
+      expect(order1After.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Canceled);
+      expect(order2After.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Canceled);
+
+      return pogsAfterDelete;
+    },
+  }),
 ];
 
 describe(group, function () {

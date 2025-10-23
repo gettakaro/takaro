@@ -20,7 +20,6 @@ export class ShopOrderModel extends TakaroModel {
   id: string;
   listingId: string;
   playerId: string;
-  gameServerId: string;
   amount: number;
   status: ShopOrderStatus;
 
@@ -101,7 +100,6 @@ export class ShopOrderRepo extends ITakaroRepo<
       .insert({
         listingId: data.listingId,
         playerId: data.playerId,
-        gameServerId: data.gameServerId,
         amount: data.amount,
         status: ShopOrderStatus.PAID,
         domain: this.domainId,
