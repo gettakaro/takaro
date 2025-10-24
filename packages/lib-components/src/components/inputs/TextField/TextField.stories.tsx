@@ -138,7 +138,9 @@ export const OnSubmit: StoryFn<TextFieldProps> = (args) => {
           disabled={args.disabled}
           description={args.description}
         />
-        <Button type="submit" text="Submit form" size="large" />
+        <Button type="submit" size="large">
+          Submit form
+        </Button>
       </form>
       <p>result: {result}</p>
     </Wrapper>

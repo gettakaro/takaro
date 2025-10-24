@@ -10,10 +10,10 @@ export default {
   decorators: [
     (story) => (
       <div>
-        <Alert
-          variant="warning"
-          text="It is unlikely you will use THIS permissionguard directly. There should be a specific permissionguard in web-* application"
-        />
+        <Alert variant="warning">
+          It is unlikely you will use THIS permissionguard directly. There should be a specific permissionguard in web-*
+          application
+        </Alert>
         {story()}
       </div>
     ),

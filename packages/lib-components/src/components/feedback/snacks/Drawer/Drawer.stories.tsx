@@ -42,5 +42,5 @@ export const Downloads: StoryFn = () => {
     });
   };
 
-  return <Button onClick={() => showSnack()} text="Show snack" />;
+  return <Button onClick={() => showSnack()}>Show snack</Button>;
 };

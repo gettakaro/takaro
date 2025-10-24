@@ -38,7 +38,7 @@ export const Default: StoryFn<DefaultSnackProps> = (args) => {
 
   return (
     <Wrapper>
-      <Button onClick={handleOnClick} text="show snack" />
+      <Button onClick={handleOnClick}>show snack</Button>
     </Wrapper>
   );
 };
@@ -51,22 +51,23 @@ export const Buttons: StoryFn<DefaultSnackProps> = (args) => {
       title: args.title,
       type: args.type,
       key: 'software-update',
-      button1: <Button text="Update" />,
+      button1: <Button>Update</Button>,
       button2: (
         <Button
           onClick={() => {
             closeSnackbar('software-update');
           }}
-          text="Not now"
           variant="outline"
-        />
+        >
+          Not now
+        </Button>
       ),
     });
   };
 
   return (
     <Wrapper>
-      <Button onClick={handleOnClick} text="show snack" />
+      <Button onClick={handleOnClick}>show snack</Button>
     </Wrapper>
   );
 };

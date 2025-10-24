@@ -10,7 +10,11 @@ export default {
   args: {
     header: 'Earn recurring revenue',
     description: 'Subscriptions allow you to grow recurring revenue by charging subscribers on a regular basis',
-    actions: [<Button key="new-project-button " size="medium" icon={<AddIcon />} text="New project" />],
+    actions: [
+      <Button key="new-project-button " size="medium" icon={<AddIcon />}>
+        New project
+      </Button>,
+    ],
     size: 'medium',
   },
 } as Meta<EmptyProps>;

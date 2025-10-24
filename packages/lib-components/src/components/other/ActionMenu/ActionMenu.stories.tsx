@@ -49,7 +49,6 @@ export const Default: StoryFn<ActionMenuProps> = () => {
               onClick={() => {
                 console.log('action 1 fired');
               }}
-              text="action 1"
             >
               action 1
             </Action>
@@ -57,7 +56,6 @@ export const Default: StoryFn<ActionMenuProps> = () => {
               onClick={() => {
                 console.log('action 2 fired');
               }}
-              text="action 2"
             >
               action 2
             </Action>
@@ -65,7 +63,6 @@ export const Default: StoryFn<ActionMenuProps> = () => {
               onClick={() => {
                 console.log('action 3 fired');
               }}
-              text="action 3"
             >
               action 3
             </Action>
@@ -73,7 +70,6 @@ export const Default: StoryFn<ActionMenuProps> = () => {
               onClick={() => {
                 console.log('action 4 fired');
               }}
-              text="action 4"
             >
               action 4
             </Action>
