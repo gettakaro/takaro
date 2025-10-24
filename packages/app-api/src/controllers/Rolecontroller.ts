@@ -84,6 +84,24 @@ export class PaginationParamsWithGameServer extends PaginationParams {
 @JsonController()
 export class RoleController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_ROLES]))
+  @OpenAPI({
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['permissions'],
+                page: 1,
+                limit: 10,
+              },
+            },
+          },
+        },
+      },
+    },
+  })
   @Post('/role/search')
   @ResponseSchema(RoleOutputArrayDTOAPI)
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: RoleSearchInputDTO) {
