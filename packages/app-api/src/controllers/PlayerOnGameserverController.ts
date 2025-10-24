@@ -239,7 +239,7 @@ export class PlayerOnGameServerController {
   @ResponseSchema(PogBulkDeleteOutputDTOAPI)
   @OpenAPI({
     description:
-      'Bulk delete POG records by player IDs for a specific gameserver. Deletes POG records only, Player records remain intact. Processes in batches of 500 for performance.',
+      'Bulk delete POG records by player IDs for a specific gameserver. Deletes POG records only, Player records remain intact.',
   })
   async bulkDelete(
     @Req() req: AuthenticatedRequest,

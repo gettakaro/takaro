@@ -251,8 +251,7 @@ export class PlayerController {
   @Delete('/player')
   @ResponseSchema(PlayerBulkDeleteOutputDTOAPI)
   @OpenAPI({
-    description:
-      'Bulk delete players by their IDs. Deletes Player records which cascades to POG records. Processes in batches of 500 for performance.',
+    description: 'Bulk delete players by their IDs. Deletes Player records which cascades to POG records.',
   })
   async bulkDelete(@Req() req: AuthenticatedRequest, @Body() body: PlayerBulkDeleteInputDTO) {
     const service = new PlayerService(req.domainId);
