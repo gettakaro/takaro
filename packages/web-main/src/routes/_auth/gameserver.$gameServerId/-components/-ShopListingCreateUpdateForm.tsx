@@ -51,7 +51,7 @@ interface ShopListingCreateUpdateFormProps {
 
 const validationSchema = z.object({
   name: z.string().optional().nullable(),
-  price: z.number().min(0, 'Price is required.'),
+  price: z.number().min(1, 'Price must be at least 1 coin'),
   draft: z.boolean().optional(),
   categoryIds: z.array(z.string()).optional(),
   items: z
