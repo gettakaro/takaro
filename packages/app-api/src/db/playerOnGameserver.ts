@@ -399,7 +399,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     const deletedPlayerIds = new Set(deleted);
     playerIds.forEach((playerId) => {
       if (!deletedPlayerIds.has(playerId)) {
-        failed.push({ id: playerId, error: 'POG not found' });
+        failed.push({ id: playerId, error: 'POG not found for player on this gameserver' });
       }
     });
 
