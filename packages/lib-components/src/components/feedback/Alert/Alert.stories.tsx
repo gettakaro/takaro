@@ -13,6 +13,13 @@ export default {
 
 export const Default: StoryFn<AlertProps> = (args) => <Alert {...args} />;
 
+export const TitleOnly: StoryObj<AlertProps> = {
+  args: {
+    title: 'Important Notice',
+    variant: 'info',
+  },
+};
+
 export const WithList: StoryObj<AlertProps> = {
   args: {
     title: 'There were errors with your submission',
