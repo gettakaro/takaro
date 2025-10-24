@@ -31,7 +31,7 @@ function Component() {
   const loaderCurrencyName = Route.useLoaderData();
   const navigate = Route.useNavigate();
 
-  const { mutate } = useShopListingCreate();
+  const { mutate, error, isPending } = useShopListingCreate();
 
   const { data: currencyName } = useQuery({
     ...gameServerSettingQueryOptions('currencyName', gameServerId),
@@ -39,22 +39,28 @@ function Component() {
   });
 
   const onSubmit: SubmitHandler<FormValues> = ({ name, items, price, draft, categoryIds }) => {
-    mutate({
-      name: name ? name : 'Unnamed',
-      price,
-      gameServerId,
-      items,
-      draft,
-      categoryIds,
-    });
-    navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId } });
+    mutate(
+      {
+        name: name ? name : 'Unnamed',
+        price,
+        gameServerId,
+        items,
+        draft,
+        categoryIds,
+      },
+      {
+        onSuccess: () => {
+          navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId } });
+        },
+      },
+    );
   };
 
   return (
     <ShopListingCreateUpdateForm
       onSubmit={onSubmit}
-      isLoading={false}
-      error={null}
+      isLoading={isPending}
+      error={error}
       gameServerId={gameServerId}
       currencyName={currencyName.value}
     />

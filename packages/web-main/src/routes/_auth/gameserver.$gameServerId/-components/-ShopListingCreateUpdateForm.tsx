@@ -156,7 +156,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
               name="draft"
               label="Draft"
               loading={isLoading}
-              description="The shop listing cannot be bought and will not be shown to users who don't have MANAGE_SHOP_LISTINGS permissions."
+              description="The shop listing cannot be bought and will not be shown to users who don't have `MANAGE_SHOP_LISTINGS` permissions."
             />
             <CategorySelector
               selectedCategoryIds={watch('categoryIds') || []}
