@@ -16,24 +16,10 @@ import {
 import { ShopCategoryOutputDTO } from '@takaro/apiclient';
 import { useSnackbar } from 'notistack';
 
-const Header = styled.div`
-  h1 {
-    margin: 0;
-    font-size: ${({ theme }) => theme.fontSize.large};
-  }
-`;
-
-const FormContainer = styled.form`
+const ButtonContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing['2']};
-`;
-
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing['1']};
-  justify-content: flex-end;
-  margin-top: ${({ theme }) => theme.spacing['2']};
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing[2]};
 `;
 
 const EmojiSection = styled.div`
@@ -242,12 +228,11 @@ export const CategoryForm: FC<CategoryFormProps> = ({ categoryId, gameServerId }
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <Drawer.Content>
+        <Drawer.Heading>
+          <h1>{isEdit ? 'Edit Category' : 'Create Category'}</h1>
+        </Drawer.Heading>
         <Drawer.Body>
-          <Header>
-            <h1>{isEdit ? 'Edit Category' : 'Create Category'}</h1>
-          </Header>
-
-          <FormContainer id={formId} onSubmit={handleSubmit(onSubmit)}>
+          <form id={formId} onSubmit={handleSubmit(onSubmit)}>
             <CollapseList>
               <CollapseList.Item title="Category Details">
                 <TextField
@@ -297,17 +282,17 @@ export const CategoryForm: FC<CategoryFormProps> = ({ categoryId, gameServerId }
                 </SelectField>
               </CollapseList.Item>
             </CollapseList>
-          </FormContainer>
+          </form>
         </Drawer.Body>
         <Drawer.Footer>
-          <ButtonGroup>
-            <Button type="button" onClick={handleClose} variant="outline">
+          <ButtonContainer>
+            <Button type="button" color="background" onClick={handleClose}>
               Cancel
             </Button>
-            <Button type="submit" form={formId} isLoading={isCreating || isUpdating}>
-              {isEdit ? 'Update' : 'Create'} Category
+            <Button type="submit" form={formId} fullWidth isLoading={isCreating || isUpdating}>
+              Save changes
             </Button>
-          </ButtonGroup>
+          </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>
     </Drawer>
