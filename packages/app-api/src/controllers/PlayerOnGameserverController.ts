@@ -90,6 +90,10 @@ class PlayerOnGameServerSetCurrencyInputDTO {
   @IsNumber()
   @Min(0)
   currency!: number;
+
+  @IsString()
+  @IsOptional()
+  source?: string;
 }
 
 class ParamSenderReceiver {
@@ -200,7 +204,7 @@ export class PlayerOnGameServerController {
   ) {
     const service = new PlayerOnGameServerService(req.domainId);
     const pog = await service.getPog(params.playerId, params.gameServerId);
-    return apiResponse(await service.addCurrency(pog.id, body.currency));
+    return apiResponse(await service.addCurrency(pog.id, body.currency, body.source));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS]), onlyIfEconomyEnabledMiddleware)
@@ -213,7 +217,7 @@ export class PlayerOnGameServerController {
   ) {
     const service = new PlayerOnGameServerService(req.domainId);
     const pog = await service.getPog(params.playerId, params.gameServerId);
-    return apiResponse(await service.deductCurrency(pog.id, body.currency));
+    return apiResponse(await service.deductCurrency(pog.id, body.currency, body.source));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS]))

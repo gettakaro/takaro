@@ -237,7 +237,7 @@ export class ShopListingService extends TakaroService<
     if (!pog) throw new errors.BadRequestError('You have not logged in to the game server yet.');
 
     const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
-    await playerOnGameServerService.deductCurrency(pog.id, listing.price * amount);
+    await playerOnGameServerService.deductCurrency(pog.id, listing.price * amount, 'shopPurchase');
 
     const order = await this.orderRepo.create(new ShopOrderCreateInternalDTO({ listingId, playerId, amount }));
 
@@ -438,7 +438,7 @@ export class ShopListingService extends TakaroService<
         await pogsService.find({ filters: { playerId: [order.playerId], gameServerId: [listing.gameServerId] } })
       ).results[0];
       if (!pog) throw new errors.NotFoundError('Player not found');
-      await pogsService.addCurrency(pog.id, listing.price * order.amount);
+      await pogsService.addCurrency(pog.id, listing.price * order.amount, 'shopRefund');
     } catch (error) {
       if (
         error instanceof errors.NotFoundError &&

@@ -181,8 +181,6 @@ services:
       #  - 14000:1025
       # Web
       - 8025:8025
-    logging:
-      driver: none
 
   prometheus:
     image: prom/prometheus:v2.54.1

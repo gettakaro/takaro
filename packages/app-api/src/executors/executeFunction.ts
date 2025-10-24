@@ -344,7 +344,7 @@ export async function executeFunction(
             log.warn('Command execution failed, not deducting cost');
           } else {
             const playerOnGameServerService = new PlayerOnGameServerService(domainId);
-            await playerOnGameServerService.deductCurrency(data.pog.id, cost);
+            await playerOnGameServerService.deductCurrency(data.pog.id, cost, 'commandCost');
           }
         }
       }

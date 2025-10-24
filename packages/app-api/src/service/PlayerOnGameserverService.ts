@@ -292,6 +292,7 @@ export class PlayerOnGameServerService extends TakaroService<
         userId,
         meta: new TakaroEventCurrencyDeducted({
           amount,
+          source: 'playerTransfer',
         }),
       }),
     );
@@ -304,15 +305,39 @@ export class PlayerOnGameServerService extends TakaroService<
         userId,
         meta: new TakaroEventCurrencyAdded({
           amount,
+          source: 'playerTransfer',
         }),
       }),
     );
   }
 
-  async deductCurrency(id: string, amount: number) {
+  private deriveSourceFromContext(): string {
+    // Option 1: Module is acting (most common for currency operations)
+    if (ctx.data.module) {
+      // Store module UUID - analytics will batch-resolve module names
+      // Format: "module:{uuid}"
+      return `module:${ctx.data.module}`;
+    }
+
+    // Option 2: Admin user is acting (admin commands via UI/API)
+    if (ctx.data.user) {
+      // Store user UUID - analytics will batch-resolve user names
+      // Format: "user:{uuid}"
+      return `user:${ctx.data.user}`;
+    }
+
+    // Option 3: System operation (fallback - should be rare)
+    return 'system';
+  }
+
+  async deductCurrency(id: string, amount: number, source?: string) {
     if (amount <= 0) {
       throw new errors.BadRequestError('Amount must be greater than 0');
     }
+
+    // Derive source from context if not provided
+    const derivedSource = source || this.deriveSourceFromContext();
+
     const updatedPlayerOnGameServer = await this.repo.deductCurrency(id, amount);
     const eventsService = new EventService(this.domainId);
     const record = await this.findOne(id);
@@ -326,6 +351,7 @@ export class PlayerOnGameServerService extends TakaroService<
         userId,
         meta: new TakaroEventCurrencyDeducted({
           amount,
+          source: derivedSource,
         }),
       }),
     );
@@ -333,10 +359,14 @@ export class PlayerOnGameServerService extends TakaroService<
     return updatedPlayerOnGameServer;
   }
 
-  async addCurrency(id: string, amount: number): Promise<PlayerOnGameserverOutputDTO> {
+  async addCurrency(id: string, amount: number, source?: string): Promise<PlayerOnGameserverOutputDTO> {
     if (amount <= 0) {
       throw new errors.BadRequestError('Amount must be greater than 0');
     }
+
+    // Derive source from context if not provided
+    const derivedSource = source || this.deriveSourceFromContext();
+
     const updatedPlayerOnGameServer = await this.repo.addCurrency(id, amount);
     const eventsService = new EventService(this.domainId);
     const record = await this.findOne(id);
@@ -350,6 +380,7 @@ export class PlayerOnGameServerService extends TakaroService<
         userId,
         meta: new TakaroEventCurrencyAdded({
           amount,
+          source: derivedSource,
         }),
       }),
     );

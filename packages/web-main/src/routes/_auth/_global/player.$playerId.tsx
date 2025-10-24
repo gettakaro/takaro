@@ -7,8 +7,9 @@ import {
   getInitials,
   HorizontalNav,
   IconButton,
+  Dropdown,
 } from '@takaro/lib-components';
-import { Outlet, redirect, createFileRoute, Link } from '@tanstack/react-router';
+import { Outlet, redirect, createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
 import { playerQueryOptions } from '../../../queries/player';
 import { playersOnGameServersQueryOptions } from '../../../queries/pog';
@@ -17,8 +18,10 @@ import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { hasPermission, useHasPermission } from '../../../hooks/useHasPermission';
 import { userMeQueryOptions } from '../../../queries/user';
 import { useQueries } from '@tanstack/react-query';
-import { AiOutlineDelete as DeleteIcon } from 'react-icons/ai';
+import { AiOutlineDelete as DeleteIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
+import { FaBan as BanIcon } from 'react-icons/fa';
 import { PlayerDeleteDialog } from '../../../components/dialogs/PlayerDeleteDialog';
+import { PlayerBanDialog } from '../../../components/dialogs/PlayerBanDialog';
 import { useState } from 'react';
 import { PERMISSIONS } from '@takaro/apiclient';
 
@@ -59,7 +62,10 @@ function Component() {
   const { playerId } = Route.useParams();
   const loaderData = Route.useLoaderData();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openBanDialog, setOpenBanDialog] = useState(false);
   const hasManagePlayersPermission = useHasPermission([PERMISSIONS.ManagePlayers]);
+  const hasManageRolesPermission = useHasPermission([PERMISSIONS.ManageRoles]);
+  const navigate = useNavigate();
 
   const [{ data: player }, { data: pogs }] = useQueries({
     queries: [
@@ -81,8 +87,32 @@ function Component() {
         <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column', flexGrow: 1 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h1 style={{ lineHeight: 1 }}>{player.name}</h1>
-            {hasManagePlayersPermission && (
-              <IconButton icon={<DeleteIcon />} ariaLabel="Delete player" onClick={() => setOpenDeleteDialog(true)} />
+            {(hasManagePlayersPermission || hasManageRolesPermission) && (
+              <Dropdown placement="left">
+                <Dropdown.Trigger asChild>
+                  <IconButton icon={<ActionIcon />} ariaLabel="player-actions" />
+                </Dropdown.Trigger>
+                <Dropdown.Menu>
+                  <Dropdown.Menu.Item
+                    label="Edit roles"
+                    icon={<EditIcon />}
+                    onClick={() => navigate({ to: '/player/$playerId/role/assign', params: { playerId } })}
+                    disabled={!hasManageRolesPermission}
+                  />
+                  <Dropdown.Menu.Item
+                    label="Ban player"
+                    icon={<BanIcon />}
+                    onClick={() => setOpenBanDialog(true)}
+                    disabled={!hasManagePlayersPermission}
+                  />
+                  <Dropdown.Menu.Item
+                    label="Delete player"
+                    icon={<DeleteIcon />}
+                    onClick={() => setOpenDeleteDialog(true)}
+                    disabled={!hasManagePlayersPermission}
+                  />
+                </Dropdown.Menu>
+              </Dropdown>
             )}
           </div>
           <div style={{ display: 'flex', gap: theme.spacing[2] }}>
@@ -126,6 +156,7 @@ function Component() {
       <ErrorBoundary>
         <Outlet />
       </ErrorBoundary>
+      <PlayerBanDialog open={openBanDialog} onOpenChange={setOpenBanDialog} playerId={player.id} />
       <PlayerDeleteDialog
         open={openDeleteDialog}
         onOpenChange={setOpenDeleteDialog}

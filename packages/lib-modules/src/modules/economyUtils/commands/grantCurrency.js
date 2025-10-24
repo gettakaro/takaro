@@ -12,6 +12,7 @@ async function main() {
   const receiverName = (await takaro.player.playerControllerGetOne(receiver.playerId)).data.data.name;
   await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(receiver.gameServerId, receiver.playerId, {
     currency: args.amount,
+    source: 'adminGrant',
   });
 
   const messageToReceiver = takaro.gameserver.gameServerControllerSendMessage(gameServerId, {

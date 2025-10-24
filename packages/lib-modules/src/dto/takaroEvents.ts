@@ -101,6 +101,10 @@ export class TakaroEventCurrencyDeducted extends BaseEvent<TakaroEventCurrencyDe
 
   @IsNumber()
   amount: number;
+
+  @IsString()
+  @IsOptional()
+  source?: string;
 }
 
 export class TakaroEventCurrencyAdded extends BaseEvent<TakaroEventCurrencyAdded> {
@@ -109,6 +113,10 @@ export class TakaroEventCurrencyAdded extends BaseEvent<TakaroEventCurrencyAdded
 
   @IsNumber()
   amount: number;
+
+  @IsString()
+  @IsOptional()
+  source?: string;
 }
 
 export class TakaroEventCurrencyResetAll extends BaseEvent<TakaroEventCurrencyResetAll> {

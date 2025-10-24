@@ -101,6 +101,7 @@ async function main() {
   const totalReward = baseReward + bonusReward;
   await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(gameServerId, pog.playerId, {
     currency: totalReward,
+    source: 'dailyReward',
   });
 
   const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;

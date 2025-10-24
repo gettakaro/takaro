@@ -15,8 +15,9 @@ export class DailyRewards extends ModuleTransferDTO<DailyRewards> {
     this.supportedGames = ['all'];
     this.versions = [
       new ModuleTransferVersionDTO({
-        description: 'Provides daily login rewards with streak tracking',
-        tag: '0.0.2',
+        description:
+          'Provides daily login rewards with streak tracking. Updated to include source attribution for currency events.',
+        tag: '0.0.3',
         configSchema: JSON.stringify({
           $schema: 'http://json-schema.org/draft-07/schema#',
           type: 'object',

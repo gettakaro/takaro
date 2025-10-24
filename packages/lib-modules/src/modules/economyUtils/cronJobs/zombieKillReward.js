@@ -52,6 +52,7 @@ async function main() {
       const totalReward = reward * kills.length;
       return takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(gameServerId, playerId, {
         currency: totalReward,
+        source: 'zombieKill',
       });
     }),
   );
