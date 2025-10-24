@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Alert, Button, TextField, styled, Company, FormError } from '@takaro/lib-components';
 import { AiFillMail as Mail } from 'react-icons/ai';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -65,7 +65,7 @@ function Component() {
   const [loginFlow, setLoginFlow] = useState<LoginFlow>();
   const [csrfToken, setCsrfToken] = useState<string>();
   const [error, setError] = useState<string>();
-  const { oryClient } = useOry();
+  const { oryClient, oryError } = useOry();
   const apiClient = getApiClient();
   const search = useSearch({ from: '/login' });
   const { login } = useAuth();
@@ -87,6 +87,26 @@ function Component() {
     });
     return res.data;
   }
+
+  const getFlow = useCallback(
+    async (flowId: string) => {
+      try {
+        const res = await oryClient.getLoginFlow({ id: flowId });
+        setLoginFlow(res.data);
+        const csrfAttr = res.data.ui.nodes[0].attributes;
+        // @ts-expect-error Bad ory client types :(
+        setCsrfToken(csrfAttr.value);
+      } catch (error) {
+        if (isAxiosError(error)) {
+          return error;
+        }
+        throw error;
+      }
+    },
+    [oryClient],
+  );
+
+  const handleOryError = oryError(getFlow, setLoginFlow, '/login');
 
   async function logIn(flow: string, email: string, password: string, csrf_token: string): Promise<void> {
     await oryClient.updateLoginFlow({
@@ -114,14 +134,16 @@ function Component() {
       // @ts-expect-error Bad ory client types :(
       setCsrfToken(csrfAttr.value);
     } else {
-      createLoginFlow().then((flow) => {
-        setLoginFlow(flow);
-        const csrfAttr = flow.ui.nodes[0].attributes;
-        // @ts-expect-error Bad ory client types :(
-        setCsrfToken(csrfAttr.value);
-      });
+      createLoginFlow()
+        .then((flow) => {
+          setLoginFlow(flow);
+          const csrfAttr = flow.ui.nodes[0].attributes;
+          // @ts-expect-error Bad ory client types :(
+          setCsrfToken(csrfAttr.value);
+        })
+        .catch(handleOryError);
     }
-  }, [loginFlow]);
+  }, [loginFlow, handleOryError]);
 
   const { control, handleSubmit, reset } = useForm<IFormInputs>({
     mode: 'onSubmit',
@@ -144,18 +166,22 @@ function Component() {
       console.log(error);
 
       if (isAxiosError(error)) {
-        // Check if this is an error from the Ory flow (has ui.messages)
-        if (error.response?.data?.ui?.messages) {
-          setError(error.response.data.ui.messages.map((message) => message.text));
-        }
-        // Check if this is an error from our API (has meta.error.message)
-        else if (error.response?.data?.meta?.error?.message) {
-          setError(error.response.data.meta.error.message);
-        }
-        // Fallback to generic error message
-        else {
-          setError('An error occurred during login. Please try again.');
-        }
+        // Try to handle Ory-specific errors (like expired flows)
+        await handleOryError(error).catch(() => {
+          // If handleOryError rethrows (didn't handle the error), show error to user
+          // Check if this is an error from the Ory flow (has ui.messages)
+          if (error.response?.data?.ui?.messages) {
+            setError(error.response.data.ui.messages.map((message: any) => message.text));
+          }
+          // Check if this is an error from our API (has meta.error.message)
+          else if (error.response?.data?.meta?.error?.message) {
+            setError(error.response.data.meta.error.message);
+          }
+          // Fallback to generic error message
+          else {
+            setError('An error occurred during login. Please try again.');
+          }
+        });
       }
     } finally {
       setLoading(false);
