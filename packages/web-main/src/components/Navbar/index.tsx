@@ -167,7 +167,16 @@ export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
       transition={{ duration: 0.3, type: 'spring', bounce: 0.3 }}
       $isCollapsed={isCollapsed}
     >
-      <div style={{ position: 'absolute', top: theme.spacing['1'], right: theme.spacing['0_5'], zIndex: 10 }}>
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          right: 0,
+          transform: 'translate(50%, -50%)',
+          zIndex: 10,
+          backgroundColor: theme.colors.backgroundAlt,
+        }}
+      >
         <Tooltip>
           <Tooltip.Trigger asChild>
             <IconButton
