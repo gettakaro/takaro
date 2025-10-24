@@ -138,7 +138,7 @@ function Component() {
         <div style={{ width: '200px', marginLeft: 'auto' }}>
           <TimePeriodSelectField control={control} name="period" />
         </div>
-        <Stats border={false} direction="horizontal">
+        <Stats grouped={false} direction="horizontal">
           <Stats.Stat
             isLoading={isLoadingDailyActiveUsers}
             description="Daily active players"

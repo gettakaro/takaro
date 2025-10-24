@@ -1,13 +1,23 @@
-import { FC, useContext } from 'react';
+import { FC, useContext, ReactNode, cloneElement, isValidElement } from 'react';
 import { styled } from '../../../styled';
-import { StatContext, Direction } from './context';
+import { StatContext, Direction, Size } from './context';
+import { AiOutlineArrowUp, AiOutlineArrowDown } from 'react-icons/ai';
 
-const Container = styled.div<{ hasBorder: boolean; direction: Direction }>`
+const Container = styled.div<{ isGrouped: boolean; direction: Direction; size: Size }>`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  padding: ${({ theme }) => theme.spacing['2']};
+  padding: ${({ theme, size }) => {
+    switch (size) {
+      case 'small':
+        return theme.spacing['1'];
+      case 'medium':
+        return theme.spacing['2'];
+      case 'large':
+        return theme.spacing['3'];
+    }
+  }};
 
-  ${({ hasBorder, direction, theme }) => {
-    if (hasBorder) {
+  ${({ isGrouped, direction, theme }) => {
+    if (isGrouped) {
       if (direction === 'vertical') {
         return `
           &:not(:last-child) {
@@ -22,7 +32,7 @@ const Container = styled.div<{ hasBorder: boolean; direction: Direction }>`
             border-bottom-right-radius: ${theme.borderRadius.medium};
           }
         `;
-      } else if (direction === 'horizontal') {
+      } else {
         return `
           &:not(:last-child) {
             border-right: 1px solid ${theme.colors.secondary};
@@ -46,18 +56,39 @@ const Container = styled.div<{ hasBorder: boolean; direction: Direction }>`
   }};
 
   dt {
-    font-size: ${({ theme }) => theme.fontSize.medium};
-    font-color: ${({ theme }) => theme.colors.secondary};
+    font-size: ${({ theme, size }) => {
+      switch (size) {
+        case 'small':
+          return theme.fontSize.small;
+        case 'medium':
+          return theme.fontSize.medium;
+        case 'large':
+          return theme.fontSize.mediumLarge;
+      }
+    }};
+    color: ${({ theme }) => theme.colors.secondary};
     margin-bottom: ${({ theme }) => theme.spacing['0_5']};
   }
 
   dd {
     font-weight: bold;
     color: ${({ theme }) => theme.colors.white};
-    font-size: ${({ theme }) => theme.fontSize.mediumLarge};
+    font-size: ${({ theme, size }) => {
+      switch (size) {
+        case 'small':
+          return theme.fontSize.medium;
+        case 'medium':
+          return theme.fontSize.mediumLarge;
+        case 'large':
+          return theme.fontSize.large;
+      }
+    }};
     letter-spacing: 1px;
     margin: 0;
     padding: 0;
+    display: flex;
+    align-items: center;
+    gap: ${({ theme }) => theme.spacing['1']};
 
     &.placeholder {
       min-width: 80%;
@@ -66,34 +97,82 @@ const Container = styled.div<{ hasBorder: boolean; direction: Direction }>`
   }
 `;
 
-export interface StatProps {
-  description: string;
-  value: string;
-  // TODO: Add icon support when needed
-  // icon?: ReactNode
-  isLoading?: boolean;
+const TrendContainer = styled.span<{ direction: 'up' | 'down' }>`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing['0_5']};
+  font-size: ${({ theme }) => theme.fontSize.small};
+  font-weight: normal;
+  color: ${({ theme, direction }) => (direction === 'up' ? theme.colors.success : theme.colors.error)};
+`;
+
+const IconWrapper = styled.span`
+  display: inline-flex;
+  align-items: center;
+  margin-right: ${({ theme }) => theme.spacing['0_5']};
+`;
+
+export interface TrendConfig {
+  direction: 'up' | 'down';
+  value: string | number;
 }
 
-export const Stat: FC<StatProps> = ({ description, value, isLoading }) => {
-  const { border, direction } = useContext(StatContext);
+export interface StatProps {
+  description: string;
+  value: string | number | ReactNode;
+  icon?: ReactNode;
+  trend?: TrendConfig;
+  isLoading?: boolean;
+  size?: Size;
+}
+
+export const Stat: FC<StatProps> = ({ description, value, icon, trend, isLoading, size: propSize }) => {
+  const { grouped, direction, size: contextSize } = useContext(StatContext);
+  const size = propSize ?? contextSize;
+
+  const renderValue = () => {
+    if (typeof value === 'string' || typeof value === 'number') {
+      return value.toString();
+    }
+    return value;
+  };
+
+  const renderIcon = () => {
+    if (!icon) return null;
+    if (isValidElement(icon)) {
+      return <IconWrapper>{cloneElement(icon, { size: 20 } as any)}</IconWrapper>;
+    }
+    return <IconWrapper>{icon}</IconWrapper>;
+  };
+
+  const renderTrend = () => {
+    if (!trend) return null;
+    const TrendIcon = trend.direction === 'up' ? AiOutlineArrowUp : AiOutlineArrowDown;
+    return (
+      <TrendContainer direction={trend.direction}>
+        <TrendIcon size={14} />
+        {trend.value}
+      </TrendContainer>
+    );
+  };
 
   if (isLoading) {
     return (
-      <Container hasBorder={border} direction={direction}>
-        <div>
-          <dt>{description}</dt>
-          <dd className="placeholder"></dd>
-        </div>
+      <Container isGrouped={grouped} direction={direction} size={size} aria-busy="true" aria-label="Loading">
+        <dt>{description}</dt>
+        <dd className="placeholder"></dd>
       </Container>
     );
   }
 
   return (
-    <Container hasBorder={border} direction={direction}>
-      <div>
-        <dt>{description}</dt>
-        <dd>{value}</dd>
-      </div>
+    <Container isGrouped={grouped} direction={direction} size={size}>
+      <dt>{description}</dt>
+      <dd>
+        {renderIcon()}
+        {renderValue()}
+        {renderTrend()}
+      </dd>
     </Container>
   );
 };
