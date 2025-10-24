@@ -30,6 +30,7 @@ export const Target: StoryFn<ContextMenuProps> = () => {
 
   return (
     <Container ref={targetRef}>
+      The context menu has a targetRef prop, so it is only triggered on the orange box.
       <ContextMenu targetRef={targetRef}>
         <ContextMenu.Item label="Item 1" />
         <ContextMenu.Item label="Item 2" />
