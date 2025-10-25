@@ -163,6 +163,14 @@ function Component() {
       enableColumnFilter: true,
       enableSorting: true,
     }),
+    columnHelper.accessor('id', {
+      header: 'Player ID',
+      id: 'id',
+      cell: (info) => <CopyId id={info.getValue()} />,
+      enableColumnFilter: true,
+      enableSorting: true,
+      meta: { dataType: 'uuid' },
+    }),
     columnHelper.accessor('steamId', {
       header: 'Steam ID',
       id: 'steamId',
