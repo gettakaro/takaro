@@ -106,6 +106,21 @@ function Component() {
     [oryClient],
   );
 
+  useEffect(() => {
+    if (loginFlow) {
+      const csrfAttr = loginFlow.ui.nodes[0].attributes;
+      // @ts-expect-error Bad ory client types :(
+      setCsrfToken(csrfAttr.value);
+    } else {
+      createLoginFlow().then((flow) => {
+        setLoginFlow(flow);
+        const csrfAttr = flow.ui.nodes[0].attributes;
+        // @ts-expect-error Bad ory client types :(
+        setCsrfToken(csrfAttr.value);
+      });
+    }
+  }, [loginFlow]);
+
   const handleOryError = oryError(getFlow, setLoginFlow, '/login');
 
   async function logIn(flow: string, email: string, password: string, csrf_token: string): Promise<void> {
@@ -166,22 +181,21 @@ function Component() {
       console.log(error);
 
       if (isAxiosError(error)) {
-        // Try to handle Ory-specific errors (like expired flows)
-        await handleOryError(error).catch(() => {
-          // If handleOryError rethrows (didn't handle the error), show error to user
-          // Check if this is an error from the Ory flow (has ui.messages)
-          if (error.response?.data?.ui?.messages) {
-            setError(error.response.data.ui.messages.map((message: any) => message.text));
-          }
-          // Check if this is an error from our API (has meta.error.message)
-          else if (error.response?.data?.meta?.error?.message) {
-            setError(error.response.data.meta.error.message);
-          }
-          // Fallback to generic error message
-          else {
-            setError('An error occurred during login. Please try again.');
-          }
-        });
+        if (error.response?.data?.ui?.messages) {
+          setError(error.response.data.ui.messages.map((message: any) => message.text));
+        }
+
+        // Check if this is an error from our API (has meta.error.message)
+        else if (error.response?.data?.meta?.error?.message) {
+          setError(error.response.data.meta.error.message);
+        }
+
+        // Fallback to generic error message
+        else {
+          setError('An error occurred during login. Please try again.');
+        }
+
+        //await handleOryError(error);
       }
     } finally {
       setLoading(false);
