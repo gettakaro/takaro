@@ -65,7 +65,6 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
   const handleOnUninstallClick = (e: MouseEvent) => {
     e.stopPropagation();
     if (e.shiftKey) {
-      console.log(uninstallModuleDialogRef.current);
       uninstallModuleDialogRef.current?.triggerDelete();
     } else {
       setOpenDialog(true);

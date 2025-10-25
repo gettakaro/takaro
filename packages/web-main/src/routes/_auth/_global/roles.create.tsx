@@ -3,7 +3,7 @@ import { SubmitHandler } from 'react-hook-form';
 
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { permissionsQueryOptions, useRoleCreate } from '../../../queries/role';
-import { RoleForm, IFormInputs } from './-roles/RoleCreateUpdateForm';
+import { RoleForm, IFormInputs } from '../../../components/roles/RoleCreateUpdateForm';
 import { hasPermission } from '../../../hooks/useHasPermission';
 import { userMeQueryOptions } from '../../../queries/user';
 

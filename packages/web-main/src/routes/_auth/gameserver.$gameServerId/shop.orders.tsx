@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { ShopOrderTableView } from './-components/shop/shopOrderTableView';
+import { ShopOrderTableView } from '../../../components/shop/shopOrderTableView';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/orders')({
   component: Component,

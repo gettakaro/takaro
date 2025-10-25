@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ThemeProvider } from 'styled-components';
 import { ThemeProvider as OryThemeProvider, IntlProvider as OryIntlProvider } from '@ory/elements';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -28,24 +28,33 @@ function InnerApp() {
 }
 
 export function App() {
-  const [hasLoadedConfig, setHasLoadedConfig] = useState<boolean>(true);
+  const [hasLoadedConfig, setHasLoadedConfig] = useState<boolean>(false);
 
   // the config can be loaded before or after the app is loaded
   // if before window.__env__ will contain the env variables
   // if not we need to wait until the script is loaded
-  const configScriptElement = document.querySelector('#global-config') as HTMLScriptElement;
-  if (!configScriptElement) throw new Error('Forgot the public .env?');
-
-  configScriptElement.addEventListener('load', () => {
-    if (window.__env__ && !hasLoadedConfig) {
-      getConfigVar('apiUrl');
-      setHasLoadedConfig(false);
+  useEffect(() => {
+    const configScriptElement = document.querySelector('#global-config') as HTMLScriptElement;
+    if (!configScriptElement) throw new Error('Forgot the public .env?');
+    if (window.__env__) {
+      setHasLoadedConfig(true);
+      return;
     }
-  });
+    // Otherwise, wait for script to load
+    const handleLoad = () => {
+      if (window.__env__) {
+        setHasLoadedConfig(true);
+      }
+    };
 
-  if (!hasLoadedConfig && window.__env__) {
-    getConfigVar('apiUrl');
-    setHasLoadedConfig(true);
+    configScriptElement.addEventListener('load', handleLoad);
+    return () => {
+      configScriptElement.removeEventListener('load', handleLoad);
+    };
+  }, []);
+
+  if (!hasLoadedConfig) {
+    return <></>;
   }
 
   return (

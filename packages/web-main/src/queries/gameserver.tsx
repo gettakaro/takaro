@@ -30,6 +30,7 @@ import { AxiosError } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 import { useSnackbar } from 'notistack';
 import { moduleKeys } from './module';
+import { pogKeys } from './pog';
 
 export const gameServerKeys = {
   all: ['gameservers'] as const,
@@ -268,7 +269,7 @@ export const useGameServerResetCurrency = () => {
         });
         // Invalidate player queries to refresh the UI
         await queryClient.invalidateQueries({
-          queryKey: ['playerOnGameserver'],
+          queryKey: pogKeys.all,
         });
       },
     }),

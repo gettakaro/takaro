@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from '../../../hooks/useHasPermission';
-import { ShopListingCreateUpdateForm } from './-components/-ShopListingCreateUpdateForm';
+import { ShopListingCreateUpdateForm } from '../../../components/shop/ShopListingCreateUpdateForm';
 import { gameServerSettingQueryOptions } from '../../../queries/setting';
 import { shopListingQueryOptions } from '../../../queries/shopListing';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';

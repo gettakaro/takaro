@@ -88,7 +88,7 @@ export const ServerSideSubmit: StoryFn<SelectQueryFieldProps> = (args) => {
             ))}
           </SelectQueryField.OptionGroup>
         </SelectQueryField>
-        <Button type="submit" text="Submit form" />
+        <Button type="submit">Submit form</Button>
       </form>
       This is the submitted value:
       <div>{result}</div>
@@ -148,7 +148,7 @@ export const ClientSideSubmit: StoryFn<SelectQueryFieldProps> = (args) => {
             ))}
           </SelectQueryField.OptionGroup>
         </SelectQueryField>
-        <Button type="submit" text="Submit form" />
+        <Button type="submit">Submit form</Button>
       </form>
       The result returns the decade of the film:
       <div>{result}</div>
@@ -216,7 +216,7 @@ export const ClientSideMultiSelectSubmit: StoryFn<SelectQueryFieldProps> = (args
             ))}
           </SelectQueryField.OptionGroup>
         </SelectQueryField>
-        <Button type="submit" text="Submit form" />
+        <Button type="submit">Submit form</Button>
       </form>
       Selected films:
       <div>{result && result.join(',')}</div>

@@ -60,7 +60,7 @@ export const Default: StoryFn<DrawerOptions> = ({ promptCloseConfirmation }) => 
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} text="Open drawer" />
+      <Button onClick={() => setOpen(true)}>Open drawer</Button>
       <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={promptCloseConfirmation}>
         <Drawer.Content>
           <Drawer.Heading>Product Details</Drawer.Heading>
@@ -140,8 +140,12 @@ export const Default: StoryFn<DrawerOptions> = ({ promptCloseConfirmation }) => 
           </Drawer.Body>
           <Drawer.Footer>
             <ButtonContainer>
-              <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-              <Button fullWidth text="Save changes" type="submit" form="myform" />
+              <Button onClick={() => setOpen(false)} color="background">
+                Cancel
+              </Button>
+              <Button fullWidth type="submit" form="myform">
+                Save changes
+              </Button>
             </ButtonContainer>
           </Drawer.Footer>
         </Drawer.Content>

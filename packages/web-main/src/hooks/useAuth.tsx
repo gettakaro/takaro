@@ -28,13 +28,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return Promise.resolve();
   }, [oryClient, queryClient]);
 
-  const login = useCallback((session: MeOutputDTO) => {
-    Sentry.setUser({ id: session.user.id, email: session.user.email, username: session.user.name });
-    posthog.identify(session.user.idpId, {
-      email: session.user.email,
-      domain: session.domain,
-    });
-  }, []);
+  const login = useCallback(
+    (session: MeOutputDTO) => {
+      Sentry.setUser({ id: session.user.id, email: session.user.email, username: session.user.name });
+      posthog.identify(session.user.idpId, {
+        email: session.user.email,
+        domain: session.domain,
+      });
+      // Update React Query cache with fresh session data
+      queryClient.setQueryData(userKeys.me(), session);
+    },
+    [queryClient, posthog],
+  );
 
   const getSession = async function (): Promise<MeOutputDTO> {
     try {

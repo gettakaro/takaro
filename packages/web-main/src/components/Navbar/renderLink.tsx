@@ -24,7 +24,7 @@ export const renderLink = (
   );
 
   const wrappedLink = isCollapsed ? (
-    <Tooltip key={`tooltip-${linkProps.to}`}>
+    <Tooltip key={`tooltip-${linkProps.to}`} placement="right">
       <Tooltip.Trigger asChild>{linkContent}</Tooltip.Trigger>
       <Tooltip.Content>{label}</Tooltip.Content>
     </Tooltip>

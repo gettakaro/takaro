@@ -105,7 +105,7 @@ export const playerBanQueryOptions = (banId: string) => {
 
 export const playerBansQueryOptions = (queryParams: BanSearchInputDTO = {}) =>
   queryOptions<BanOutputArrayDTOAPI, AxiosError<BanOutputArrayDTOAPI>>({
-    queryKey: [...playerKeys.list(), ...queryParamsToArray(queryParams)],
+    queryKey: [...playerKeys.bans.list(), ...queryParamsToArray(queryParams)],
     queryFn: async () => (await getApiClient().player.banControllerSearch(queryParams)).data,
   });
 

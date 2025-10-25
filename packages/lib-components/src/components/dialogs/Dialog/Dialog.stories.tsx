@@ -26,7 +26,7 @@ export const Default: StoryFn = () => {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} text="Open dialog" />
+      <Button onClick={() => setOpen(true)}>Open dialog</Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <Dialog.Content>
           <Dialog.Heading>New Module</Dialog.Heading>
@@ -35,7 +35,9 @@ export const Default: StoryFn = () => {
             <p>Modules are what makes Takaro great.</p>
             <form onSubmit={handleSubmit(onSubmit)}>
               <TextField label="Module name" name="moduleName" placeholder="cute kittens" control={control} />
-              <Button text="Create module" type="submit" fullWidth />
+              <Button type="submit" fullWidth>
+                Create module
+              </Button>
             </form>
           </Dialog.Body>
         </Dialog.Content>
@@ -54,7 +56,7 @@ export const SingleActionDialog: StoryFn = () => {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} text="Open dialog" />
+      <Button onClick={() => setOpen(true)}>Open dialog</Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <Dialog.Content>
           <Dialog.Heading>New Module</Dialog.Heading>
@@ -64,7 +66,9 @@ export const SingleActionDialog: StoryFn = () => {
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
               dolore magna aliqua.
             </p>
-            <Button onClick={handleAction} size="large" fullWidth text="Go back to dashboard" />
+            <Button onClick={handleAction} size="large" fullWidth>
+              Go back to dashboard
+            </Button>
           </Dialog.Body>
         </Dialog.Content>
       </Dialog>

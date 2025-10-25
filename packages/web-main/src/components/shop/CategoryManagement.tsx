@@ -1,22 +1,11 @@
-import { FC, useState } from 'react';
-import { useNavigate, useParams } from '@tanstack/react-router';
-import {
-  styled,
-  Table,
-  Button,
-  Dialog,
-  DrawerSkeleton,
-  Empty,
-  EmptyPage,
-  useTableActions,
-  IconButton,
-  Tooltip,
-} from '@takaro/lib-components';
-import { AiOutlinePlus as AddIcon, AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon } from 'react-icons/ai';
+import { FC } from 'react';
+import { useNavigate } from '@tanstack/react-router';
+import { styled, Table, Button, DrawerSkeleton, Empty, EmptyPage, useTableActions } from '@takaro/lib-components';
+import { AiOutlinePlus as AddIcon } from 'react-icons/ai';
 import { createColumnHelper } from '@tanstack/react-table';
 import { ShopCategoryOutputDTO } from '@takaro/apiclient';
-import { useShopCategories, useShopCategoryDelete } from '../../queries/shopCategories';
-import { useSnackbar } from 'notistack';
+import { useShopCategories } from '../../queries/shopCategories';
+import { CategoryActions } from './CategoryActions';
 
 const Container = styled.div`
   padding: ${({ theme }) => theme.spacing['2']};
@@ -47,54 +36,21 @@ const EmojiDisplay = styled.span`
   margin-right: ${({ theme }) => theme.spacing['0_5']};
 `;
 
-export const CategoryManagement: FC = () => {
+interface CategoryManagementProps {
+  gameServerId: string;
+}
+
+export const CategoryManagement: FC<CategoryManagementProps> = ({ gameServerId }) => {
   const navigate = useNavigate();
-  const params = useParams({ from: '/_auth/gameserver/$gameServerId/shop/categories' });
-  const { enqueueSnackbar } = useSnackbar();
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<ShopCategoryOutputDTO | null>(null);
-
   const { data: categoriesData, isLoading, error } = useShopCategories();
-  const { mutate: deleteCategory, isPending: isDeleting } = useShopCategoryDelete();
-
   const { sorting, columnFilters, columnSearch } = useTableActions<ShopCategoryOutputDTO>();
 
   const handleBack = () => {
-    navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId: params.gameServerId } });
+    navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId: gameServerId } });
   };
 
   const handleCreate = () => {
-    navigate({ to: '/gameserver/$gameServerId/shop/categories/create', params: { gameServerId: params.gameServerId } });
-  };
-
-  const handleEdit = (category: ShopCategoryOutputDTO) => {
-    navigate({
-      to: '/gameserver/$gameServerId/shop/categories/$categoryId/update',
-      params: { gameServerId: params.gameServerId, categoryId: category.id },
-    });
-  };
-
-  const handleDeleteClick = (category: ShopCategoryOutputDTO) => {
-    setSelectedCategory(category);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!selectedCategory) return;
-
-    deleteCategory(
-      { shopCategoryId: selectedCategory.id },
-      {
-        onSuccess: () => {
-          enqueueSnackbar('Category deleted successfully', { variant: 'default', type: 'success' });
-          setDeleteDialogOpen(false);
-          setSelectedCategory(null);
-        },
-        onError: () => {
-          enqueueSnackbar('Failed to delete category', { variant: 'default', type: 'error' });
-        },
-      },
-    );
+    navigate({ to: '/gameserver/$gameServerId/shop/categories/create', params: { gameServerId: gameServerId } });
   };
 
   // Build hierarchical structure
@@ -174,25 +130,7 @@ export const CategoryManagement: FC = () => {
       maxSize: 100,
       enableColumnFilter: false,
       cell: (info) => (
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <Tooltip>
-            <Tooltip.Trigger asChild>
-              <IconButton icon={<EditIcon />} onClick={() => handleEdit(info.row.original)} ariaLabel="Edit category" />
-            </Tooltip.Trigger>
-            <Tooltip.Content>Edit category</Tooltip.Content>
-          </Tooltip>
-
-          <Tooltip>
-            <Tooltip.Trigger asChild>
-              <IconButton
-                icon={<DeleteIcon />}
-                onClick={() => handleDeleteClick(info.row.original)}
-                ariaLabel="Delete category"
-              />
-            </Tooltip.Trigger>
-            <Tooltip.Content>Delete category</Tooltip.Content>
-          </Tooltip>
-        </div>
+        <CategoryActions category={info.row.original as ShopCategoryOutputDTO} gameServerId={gameServerId} />
       ),
     }),
   ];
@@ -259,41 +197,6 @@ export const CategoryManagement: FC = () => {
         columnFiltering={columnFilters}
         columnSearch={columnSearch}
       />
-
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <Dialog.Content>
-          <Dialog.Heading>Delete Category</Dialog.Heading>
-          <Dialog.Body>
-            {selectedCategory && (
-              <>
-                <p>
-                  Are you sure you want to delete the category "{selectedCategory.emoji} {selectedCategory.name}"?
-                </p>
-                {selectedCategory.listingCount !== undefined && selectedCategory.listingCount > 0 && (
-                  <p>
-                    <strong>Warning:</strong> This category has {selectedCategory.listingCount} shop listing
-                    {selectedCategory.listingCount > 1 ? 's' : ''} associated with it.
-                  </p>
-                )}
-                {selectedCategory.children && selectedCategory.children.length > 0 && (
-                  <p>
-                    <strong>Note:</strong> This category has {selectedCategory.children.length} sub-categor
-                    {selectedCategory.children.length > 1 ? 'ies' : 'y'} that will be moved to the root level.
-                  </p>
-                )}
-              </>
-            )}
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-              <Button onClick={() => setDeleteDialogOpen(false)} variant="outline" fullWidth>
-                Cancel
-              </Button>
-              <Button onClick={handleDeleteConfirm} color="error" isLoading={isDeleting} fullWidth>
-                Delete
-              </Button>
-            </div>
-          </Dialog.Body>
-        </Dialog.Content>
-      </Dialog>
     </Container>
   );
 };

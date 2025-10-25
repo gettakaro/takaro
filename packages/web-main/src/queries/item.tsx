@@ -12,7 +12,7 @@ const itemKeys = {
 
 export const itemsQueryOptions = (queryParams: ItemSearchInputDTO) =>
   queryOptions<ItemOutputArrayDTOAPI, AxiosError<ItemOutputArrayDTOAPI>>({
-    queryKey: [...itemKeys.list(), { ...queryParams }],
+    queryKey: [...itemKeys.list(), ...queryParamsToArray(queryParams)],
     queryFn: async () => (await getApiClient().item.itemControllerSearch(queryParams)).data,
   });
 

@@ -43,7 +43,7 @@ export const OnSubmit: StoryFn<CheckBoxProps & { defaultValue: boolean }> = (arg
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CheckBox {...args} control={control} />
-        <Button type="submit" text="submit" />
+        <Button type="submit">submit</Button>
       </form>
       <pre>value: {result ? 'true' : 'false'}</pre>
       <p>NOTE: defaultValue will only be set on initial load. Limitation of react-hook-form.</p>

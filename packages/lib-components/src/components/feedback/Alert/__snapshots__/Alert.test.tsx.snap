@@ -3,15 +3,17 @@
 exports[`Should render <Alert/> 1`] = `
 <div>
   <div
-    class="sc-aXZVg eHujeX"
+    aria-atomic="true"
+    aria-live="polite"
+    class="sc-aXZVg efcfNn"
     role="status"
     style="opacity: 0; will-change: opacity;"
   >
     <div
-      class="sc-gEvEer xJHes"
+      class="sc-gEvEer ciCPPR"
     >
       <div
-        class="sc-eqUAAy cuxXJQ"
+        class="sc-eqUAAy hqcNUj"
       >
         <svg
           fill="currentColor"
@@ -34,7 +36,7 @@ exports[`Should render <Alert/> 1`] = `
         Alert text
       </p>
       <div
-        class="sc-fqkvVR JhYnd action"
+        class="sc-fqkvVR huFkoW action"
       />
     </div>
   </div>
