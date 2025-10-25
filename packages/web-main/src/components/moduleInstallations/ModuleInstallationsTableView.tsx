@@ -17,7 +17,7 @@ import {
 import { Link, useNavigate, useParams } from '@tanstack/react-router';
 import { getApiClient } from '../../util/getApiClient';
 import { useHasPermission } from '../../hooks/useHasPermission';
-import { ModuleUninstallDialog } from '../../components/dialogs';
+import { ModuleUninstallDialog } from '../../components/dialogs/ModuleUninstallDialog';
 import { useSnackbar } from 'notistack';
 import { moduleInstallationsOptions } from '../../queries/gameserver';
 import { modulesQueryOptions } from '../../queries/module';

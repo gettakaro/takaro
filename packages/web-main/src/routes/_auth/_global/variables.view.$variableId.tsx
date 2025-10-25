@@ -1,7 +1,7 @@
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { variableQueryOptions } from '../../../queries/variable';
-import { VariablesForm } from './-variables/VariablesForm';
+import { VariablesForm } from '../../../components/variables/VariablesForm';
 import { queryClient } from '../../../queryClient';
 import { hasPermission } from '../../../hooks/useHasPermission';
 import { userMeQueryOptions } from '../../../queries/user';

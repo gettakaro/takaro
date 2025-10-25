@@ -1,7 +1,7 @@
-import { AddCard, CardList, RoleCard } from '../../../../components/cards';
+import { AddCard, CardList, RoleCard } from '../../components/cards';
 import { useNavigate } from '@tanstack/react-router';
 import { InfiniteScroll, Skeleton } from '@takaro/lib-components';
-import { rolesInfiniteQueryOptions } from '../../../../queries/role';
+import { rolesInfiniteQueryOptions } from '../../queries/role';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 export const RolesCardView = () => {

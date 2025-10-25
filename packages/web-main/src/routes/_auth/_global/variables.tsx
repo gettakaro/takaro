@@ -20,7 +20,7 @@ import {
   AiOutlineRight as ActionIcon,
 } from 'react-icons/ai';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
-import { VariableValueDetail } from './-variables/VariableValueDetail';
+import { VariableValueDetail } from '../../../components/variables/VariableValueDetail';
 import { VariableDeleteDialog } from '../../../components/dialogs/VariableDeleteDialog';
 import { VariablesDeleteDialog } from '../../../components/dialogs/VariablesDeleteDialog';
 import { Outlet, createFileRoute, redirect, useNavigate } from '@tanstack/react-router';

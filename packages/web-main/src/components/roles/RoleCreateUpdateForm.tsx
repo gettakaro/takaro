@@ -17,7 +17,7 @@ import { PermissionOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
 import { useForm, SubmitHandler, Control } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { DiscordRoleSelectQueryField } from '../../../../components/selects';
+import { DiscordRoleSelectQueryField } from '../../components/selects';
 
 const ButtonContainer = styled.div`
   display: flex;
