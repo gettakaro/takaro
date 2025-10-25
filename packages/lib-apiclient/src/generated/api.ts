@@ -4457,6 +4457,8 @@ export const GetSettingsInputKeysEnum = {
   DomainName: 'domainName',
   DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
   DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
+  UnknownCommandFeedbackEnabled: 'unknownCommandFeedbackEnabled',
+  UnknownCommandFeedbackMessage: 'unknownCommandFeedbackMessage',
 } as const;
 
 export type GetSettingsInputKeysEnum = (typeof GetSettingsInputKeysEnum)[keyof typeof GetSettingsInputKeysEnum];
@@ -8306,6 +8308,8 @@ export const ParamKeyKeyEnum = {
   DomainName: 'domainName',
   DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
   DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
+  UnknownCommandFeedbackEnabled: 'unknownCommandFeedbackEnabled',
+  UnknownCommandFeedbackMessage: 'unknownCommandFeedbackMessage',
 } as const;
 
 export type ParamKeyKeyEnum = (typeof ParamKeyKeyEnum)[keyof typeof ParamKeyKeyEnum];
@@ -10883,6 +10887,18 @@ export interface Settings {
    * @type {string}
    * @memberof Settings
    */
+  unknownCommandFeedbackEnabled: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
+  unknownCommandFeedbackMessage: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
   id: string;
   /**
    *
@@ -10964,6 +10980,8 @@ export const SettingsOutputDTOKeyEnum = {
   DomainName: 'domainName',
   DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
   DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
+  UnknownCommandFeedbackEnabled: 'unknownCommandFeedbackEnabled',
+  UnknownCommandFeedbackMessage: 'unknownCommandFeedbackMessage',
 } as const;
 
 export type SettingsOutputDTOKeyEnum = (typeof SettingsOutputDTOKeyEnum)[keyof typeof SettingsOutputDTOKeyEnum];
@@ -27099,6 +27117,8 @@ export const SettingsControllerGetKeysEnum = {
   DomainName: 'domainName',
   DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
   DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
+  UnknownCommandFeedbackEnabled: 'unknownCommandFeedbackEnabled',
+  UnknownCommandFeedbackMessage: 'unknownCommandFeedbackMessage',
 } as const;
 export type SettingsControllerGetKeysEnum =
   (typeof SettingsControllerGetKeysEnum)[keyof typeof SettingsControllerGetKeysEnum];
