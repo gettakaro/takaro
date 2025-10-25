@@ -28,6 +28,7 @@ import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { UserService } from './User/index.js';
 import { ModuleService } from './Module/index.js';
 import { InstallModuleDTO } from './Module/dto.js';
+import { distance } from 'fastest-levenshtein';
 import { CommandSearchInputDTO } from '../controllers/CommandController.js';
 import { PartialDeep } from 'type-fest/index.js';
 import { EventCreateDTO, EventService, EVENT_TYPES } from './EventService.js';
@@ -619,6 +620,67 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       });
 
       await Promise.all(promises);
+    } else {
+      // No commands matched - handle unknown command
+      const settingsService = new SettingsService(this.domainId, gameServerId);
+      const feedbackEnabled = await settingsService.get(SETTINGS_KEYS.unknownCommandFeedbackEnabled);
+
+      if (feedbackEnabled.value === 'true') {
+        this.log.debug('handleChatMessage: Unknown command detected, feedback enabled', { commandName });
+
+        // Get all available commands for fuzzy matching
+        const allCommands = await this.repo.getAllForGameServer(gameServerId);
+        const allTriggers: string[] = [];
+
+        // Collect all triggers and aliases
+        for (const cmd of allCommands) {
+          allTriggers.push(cmd.trigger.toLowerCase());
+          for (const alias of cmd.aliases) {
+            allTriggers.push(alias.toLowerCase());
+          }
+        }
+
+        // Find best match using Levenshtein distance
+        let bestMatch: string | undefined;
+        let bestDistance = Infinity;
+
+        for (const trigger of allTriggers) {
+          const dist = distance(commandName.toLowerCase(), trigger);
+          if (dist < bestDistance) {
+            bestDistance = dist;
+            bestMatch = trigger;
+          }
+        }
+
+        // Only suggest if the match is reasonably close (threshold: max 3 edits or 40% of command length)
+        const threshold = Math.max(3, Math.ceil(commandName.length * 0.4));
+        const suggestion = bestDistance <= threshold ? bestMatch : undefined;
+
+        this.log.debug('handleChatMessage: Fuzzy match result', {
+          commandName,
+          suggestion,
+          distance: bestDistance,
+          threshold,
+        });
+
+        // Get the feedback message
+        let message = (await settingsService.get(SETTINGS_KEYS.unknownCommandFeedbackMessage)).value;
+
+        // Append suggestion if found
+        if (suggestion) {
+          message += ` Did you mean ${prefix.value}${suggestion}?`;
+        }
+
+        // Send feedback to player
+        const gameServerService = new GameServerService(this.domainId);
+        await gameServerService.sendMessage(
+          gameServerId,
+          message,
+          new IMessageOptsDTO({
+            recipient: chatMessage.player,
+          }),
+        );
+      }
     }
   }
 

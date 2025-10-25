@@ -4,4 +4,5 @@ export const booleanFields = [
   'developerMode',
   'discordRoleSyncEnabled',
   'discordRoleSyncPreferDiscord',
+  'unknownCommandFeedbackEnabled',
 ];

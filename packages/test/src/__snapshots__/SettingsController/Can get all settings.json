@@ -64,6 +64,20 @@
         "type": "default",
         "description": "When enabled, Discord roles will override Takaro roles during synchronization. When disabled, Takaro roles will override Discord roles. Only affects roles that are linked between systems.",
         "canHaveGameServerOverride": false
+      },
+      {
+        "key": "unknownCommandFeedbackEnabled",
+        "value": "false",
+        "type": "default",
+        "description": "When enabled, players receive feedback when they type an unknown or invalid command",
+        "canHaveGameServerOverride": true
+      },
+      {
+        "key": "unknownCommandFeedbackMessage",
+        "value": "Unknown command. Type /help for available commands.",
+        "type": "default",
+        "description": "The message sent to players when they type an unknown command",
+        "canHaveGameServerOverride": true
       }
     ]
   },
