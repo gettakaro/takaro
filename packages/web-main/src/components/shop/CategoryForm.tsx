@@ -1,20 +1,13 @@
 import { FC, useEffect, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { styled, TextField, Button, SelectField, DrawerSkeleton, Drawer, CollapseList } from '@takaro/lib-components';
+import { styled, TextField, Button, SelectField, Drawer, CollapseList } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import Picker from '@emoji-mart/react';
 import data from '@emoji-mart/data';
-// Import removed - DTOs not used directly in this component
-import {
-  useShopCategories,
-  useShopCategory,
-  useShopCategoryCreate,
-  useShopCategoryUpdate,
-} from '../../queries/shopCategories';
+import { useShopCategories } from '../../queries/shopCategories';
 import { ShopCategoryOutputDTO } from '@takaro/apiclient';
-import { useSnackbar } from 'notistack';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -79,29 +72,21 @@ const validationSchema = z.object({
   parentId: z.string().nullable(),
 });
 
-type FormFields = z.infer<typeof validationSchema>;
+export type FormFields = z.infer<typeof validationSchema>;
 
 interface CategoryFormProps {
-  categoryId?: string;
   gameServerId: string;
+  initialData?: ShopCategoryOutputDTO;
+  onSubmit: SubmitHandler<FormFields>;
+  isPending: boolean;
 }
 
-export const CategoryForm: FC<CategoryFormProps> = ({ categoryId, gameServerId }) => {
+export const CategoryForm: FC<CategoryFormProps> = ({ gameServerId, initialData, onSubmit, isPending }) => {
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
-  const isEdit = !!categoryId;
   const [open, setOpen] = useState(true);
 
+  const isEdit = Boolean(initialData);
   const { data: categoriesData } = useShopCategories();
-  const { data: categoryData, isLoading: isCategoryLoading } = useShopCategory(
-    { categoryId: categoryId! },
-    { enabled: isEdit },
-  );
-
-  // Type assertion to ensure TypeScript knows the shape
-  const typedCategoryData = categoryData as ShopCategoryOutputDTO | undefined;
-  const { mutate: createCategory, isPending: isCreating } = useShopCategoryCreate();
-  const { mutate: updateCategory, isPending: isUpdating } = useShopCategoryUpdate();
 
   const {
     control,
@@ -116,20 +101,17 @@ export const CategoryForm: FC<CategoryFormProps> = ({ categoryId, gameServerId }
       emoji: '',
       parentId: null,
     },
+    ...(initialData && {
+      values: {
+        name: initialData.name,
+        emoji: initialData.emoji,
+        parentId: initialData.parentId ?? null,
+      },
+    }),
   });
 
   // Remove manual field controllers since we'll use the control prop directly
-
   const watchedEmoji = watch('emoji');
-
-  // Load existing category data for edit mode
-  useEffect(() => {
-    if (isEdit && typedCategoryData) {
-      setValue('name', typedCategoryData.name);
-      setValue('emoji', typedCategoryData.emoji);
-      setValue('parentId', typedCategoryData.parentId ?? null);
-    }
-  }, [isEdit, typedCategoryData, setValue]);
 
   useEffect(() => {
     if (!open) {
@@ -139,49 +121,6 @@ export const CategoryForm: FC<CategoryFormProps> = ({ categoryId, gameServerId }
 
   const handleClose = () => {
     setOpen(false);
-  };
-
-  const onSubmit: SubmitHandler<FormFields> = async (data) => {
-    if (isEdit) {
-      updateCategory(
-        {
-          shopCategoryId: categoryId!,
-          shopCategoryDetails: {
-            name: data.name,
-            emoji: data.emoji,
-            parentId: data.parentId ?? undefined,
-          },
-        },
-        {
-          onSuccess: () => {
-            enqueueSnackbar('Category updated successfully', { variant: 'default', type: 'success' });
-            handleClose();
-          },
-          onError: (error: any) => {
-            const message = error?.response?.data?.meta?.error?.message || 'Failed to update category';
-            enqueueSnackbar(message, { variant: 'default', type: 'error' });
-          },
-        },
-      );
-    } else {
-      createCategory(
-        {
-          name: data.name,
-          emoji: data.emoji,
-          parentId: data.parentId ?? undefined,
-        },
-        {
-          onSuccess: () => {
-            enqueueSnackbar('Category created successfully', { variant: 'default', type: 'success' });
-            handleClose();
-          },
-          onError: (error: any) => {
-            const message = error?.response?.data?.meta?.error?.message || 'Failed to create category';
-            enqueueSnackbar(message, { variant: 'default', type: 'error' });
-          },
-        },
-      );
-    }
   };
 
   // Build parent category options
@@ -195,10 +134,10 @@ export const CategoryForm: FC<CategoryFormProps> = ({ categoryId, gameServerId }
     const filteredCategories = isEdit
       ? categories.filter((cat) => {
           // Don't allow selecting self as parent
-          if (cat.id === categoryId) return false;
+          if (cat.id === initialData!.id) return false;
 
           // Don't allow selecting descendants (simplified check - in real app would need recursive check)
-          if (cat.parentId === categoryId) return false;
+          if (cat.parentId === initialData!.id) return false;
 
           return true;
         })
@@ -218,10 +157,6 @@ export const CategoryForm: FC<CategoryFormProps> = ({ categoryId, gameServerId }
 
     return options;
   };
-
-  if (isEdit && isCategoryLoading) {
-    return <DrawerSkeleton />;
-  }
 
   const formId = 'category-form';
 
@@ -289,7 +224,7 @@ export const CategoryForm: FC<CategoryFormProps> = ({ categoryId, gameServerId }
             <Button type="button" color="background" onClick={handleClose}>
               Cancel
             </Button>
-            <Button type="submit" form={formId} fullWidth isLoading={isCreating || isUpdating}>
+            <Button type="submit" form={formId} fullWidth isLoading={isPending}>
               Save changes
             </Button>
           </ButtonContainer>

@@ -14,10 +14,14 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/categ
       throw redirect({ to: '/forbidden' });
     }
   },
-  component: () => (
-    <>
-      <CategoryManagement />
-      <Outlet />
-    </>
-  ),
+  component: () => {
+    const { gameServerId } = Route.useParams();
+
+    return (
+      <>
+        <CategoryManagement gameServerId={gameServerId} />
+        <Outlet />
+      </>
+    );
+  },
 });
