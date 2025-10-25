@@ -215,7 +215,7 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
   }
 
   async cleanupInventory(date: string) {
-    const { query } = await this.getModel();
+    const { query } = await this.getInventoryModel();
     const res = await query.where('createdAt', '<', date).delete().returning('*');
 
     this.log.info(`Deleted ${res.length} player inventory records older than ${date}`);
