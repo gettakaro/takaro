@@ -1,6 +1,6 @@
 import { moduleQueryOptions, moduleVersionsQueryOptions } from '../../../queries/module';
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
-import { InstallModuleForm } from './-InstallModuleForm';
+import { InstallModuleForm } from '../../../components/moduleInstallations/InstallModuleForm';
 import { hasPermission } from '../../../hooks/useHasPermission';
 import { userMeQueryOptions } from '../../../queries/user';
 import { DrawerSkeleton } from '@takaro/lib-components';
