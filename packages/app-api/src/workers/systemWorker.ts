@@ -161,6 +161,7 @@ async function cleanEvents(domainId: string) {
   const deleteAfter = new Date(now - domain.eventRetentionDays * 24 * 60 * 60 * 1000);
   await eventService.deleteOldEvents(deleteAfter.toISOString());
   await trackingService.repo.cleanupLocation(deleteAfter.toISOString());
+  await trackingService.repo.cleanupInventory(deleteAfter.toISOString());
 }
 
 async function cleanExpiringVariables(domainId: string) {
