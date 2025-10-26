@@ -139,11 +139,15 @@ class SocketServer {
         return next(new errors.UnauthorizedError());
       }
 
-      // Set context data for downstream handlers
-      ctx.addData({ user: authData.userId, domain: authData.domainId });
+      // Create a new AsyncLocalStorage context with auth data
+      // The context from engine middleware doesn't propagate to socket middleware
+      const wrappedHandler = ctx.wrap('socket:router', async () => {
+        ctx.addData({ user: authData.userId, domain: authData.domainId });
+        await socket.join(authData.domainId);
+        next();
+      });
 
-      await socket.join(authData.domainId);
-      next();
+      await wrappedHandler();
     } catch (error) {
       this.log.error('Unknown error when routing socket', error);
       next(new errors.UnauthorizedError());
