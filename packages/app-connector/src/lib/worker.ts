@@ -17,12 +17,13 @@ export interface IEventQueueData extends Record<string, unknown> {
 import { Job } from 'bullmq';
 import { ctx, errors, logger } from '@takaro/util';
 import { gameServerManager } from './GameServerManager.js';
+import { config } from '../config.js';
 
 const log = logger('worker:connector');
 
 export class ConnectorWorker extends TakaroWorker<IConnectorQueueData> {
   constructor() {
-    super('connector', 1, processJob);
+    super('connector', config.get('connector.queue.concurrency'), processJob);
   }
 }
 

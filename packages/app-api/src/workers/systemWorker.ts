@@ -27,7 +27,7 @@ export function getAllSystemTasks(): SystemTaskType[] {
 
 export class SystemWorker extends TakaroWorker<ISystemJobData> {
   constructor() {
-    super(config.get('queues.system.name'), 1, processJob, {
+    super(config.get('queues.system.name'), config.get('queues.system.concurrency'), processJob, {
       stalledInterval: ms('10minutes'),
     });
 
