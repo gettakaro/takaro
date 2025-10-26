@@ -873,6 +873,158 @@ const tests = [
       }
     },
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Bulk delete POGs - success with 10 players on single gameserver',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      // Use pogs1 to get the actual player IDs on gameServer1
+      const playerIds = this.setupData.pogs1.map((pog) => pog.playerId);
+      const gameServerId = this.setupData.gameServer1.id;
+
+      // Verify POGs exist before deletion
+      const pogsBefore = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: { playerId: playerIds, gameServerId: [gameServerId] },
+      });
+      expect(pogsBefore.data.data.length).to.be.eq(10);
+
+      // Verify players still exist (should not be affected)
+      const playersBefore = await this.client.player.playerControllerSearch({
+        filters: { id: playerIds },
+      });
+      expect(playersBefore.data.data.length).to.be.eq(10);
+
+      // Bulk delete POGs
+      const result = await this.client.playerOnGameserver.playerOnGameServerControllerBulkDelete(gameServerId, {
+        playerIds,
+      });
+
+      expect(result.data.data.deleted).to.be.eq(10);
+      expect(result.data.data.failed).to.be.eq(0);
+      expect(result.data.data.errors.length).to.be.eq(0);
+
+      // Verify POGs are deleted for this gameserver
+      const pogsAfter = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: { playerId: playerIds, gameServerId: [gameServerId] },
+      });
+      expect(pogsAfter.data.data.length).to.be.eq(0);
+
+      // Verify players still exist
+      const playersAfter = await this.client.player.playerControllerSearch({
+        filters: { id: playerIds },
+      });
+      expect(playersAfter.data.data.length).to.be.eq(10);
+
+      return result;
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Bulk delete POGs - only deletes specified POGs, leaves others intact',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      // Delete only 5 POGs from gameServer1, verify the other 5 remain
+      const pogsToDelete = this.setupData.pogs1.slice(0, 5);
+      const pogsToKeep = this.setupData.pogs1.slice(5, 10);
+      const playerIdsToDelete = pogsToDelete.map((pog) => pog.playerId);
+      const playerIdsToKeep = pogsToKeep.map((pog) => pog.playerId);
+      const gameServer1Id = this.setupData.gameServer1.id;
+      const gameServer2Id = this.setupData.gameServer2.id;
+
+      // Verify all POGs exist on gameServer1 before deletion
+      const pogs1Before = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: { gameServerId: [gameServer1Id] },
+      });
+      expect(pogs1Before.data.data.length).to.be.eq(10);
+
+      // Bulk delete only 5 POGs from gameServer1
+      const result = await this.client.playerOnGameserver.playerOnGameServerControllerBulkDelete(gameServer1Id, {
+        playerIds: playerIdsToDelete,
+      });
+
+      expect(result.data.data.deleted).to.be.eq(5);
+      expect(result.data.data.failed).to.be.eq(0);
+
+      // Verify deleted POGs are gone
+      const deletedPogsAfter = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: { playerId: playerIdsToDelete, gameServerId: [gameServer1Id] },
+      });
+      expect(deletedPogsAfter.data.data.length).to.be.eq(0);
+
+      // Verify the other 5 POGs on gameServer1 still exist
+      const keptPogsAfter = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: { playerId: playerIdsToKeep, gameServerId: [gameServer1Id] },
+      });
+      expect(keptPogsAfter.data.data.length).to.be.eq(5);
+
+      // Verify gameServer2 POGs are untouched
+      const pogs2After = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: { gameServerId: [gameServer2Id] },
+      });
+      expect(pogs2After.data.data.length).to.be.eq(10);
+
+      return result;
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Bulk delete POGs - partial success with players not on gameserver',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      // Use actual POGs from gameServer1, plus some hardcoded valid UUIDs that don't exist
+      const validPogs = this.setupData.pogs1.slice(0, 5);
+      const validPlayerIds = validPogs.map((pog) => pog.playerId);
+      const invalidId1 = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee';
+      const invalidId2 = 'ffffffff-0000-4111-8222-333333333333';
+      const allIds = [...validPlayerIds, invalidId1, invalidId2];
+      const gameServerId = this.setupData.gameServer1.id;
+
+      const result = await this.client.playerOnGameserver.playerOnGameServerControllerBulkDelete(gameServerId, {
+        playerIds: allIds,
+      });
+
+      expect(result.data.data.deleted).to.be.eq(5);
+      expect(result.data.data.failed).to.be.eq(2);
+      expect(result.data.data.errors.length).to.be.eq(2);
+      expect(result.data.data.errors[0].reason).to.include('not found');
+
+      // Verify valid POGs are deleted
+      const pogsAfter = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: { playerId: validPlayerIds, gameServerId: [gameServerId] },
+      });
+      expect(pogsAfter.data.data.length).to.be.eq(0);
+
+      return result;
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Bulk delete POGs - all invalid player IDs',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      // Use hardcoded valid UUIDs that don't exist in the database
+      const invalidIds = [
+        'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+        'ffffffff-0000-4111-8222-333333333333',
+        '11111111-2222-4333-8444-555555555555',
+      ];
+      const gameServerId = this.setupData.gameServer1.id;
+
+      const result = await this.client.playerOnGameserver.playerOnGameServerControllerBulkDelete(gameServerId, {
+        playerIds: invalidIds,
+      });
+
+      expect(result.data.data.deleted).to.be.eq(0);
+      expect(result.data.data.failed).to.be.eq(3);
+      expect(result.data.data.errors.length).to.be.eq(3);
+
+      return result;
+    },
+  }),
 ];
 
 describe(group, function () {

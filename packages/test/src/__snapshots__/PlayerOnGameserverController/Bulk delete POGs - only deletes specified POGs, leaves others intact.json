@@ -1,0 +1,19 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "deleted": 5,
+      "failed": 0,
+      "errors": []
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "PlayerOnGameserverController",
+    "snapshot": true,
+    "name": "Bulk delete POGs - only deletes specified POGs, leaves others intact",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}
