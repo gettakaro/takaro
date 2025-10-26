@@ -9,7 +9,7 @@ exports[`Should render <Empty /> 1`] = `
       this is the header
     </h2>
     <p
-      class="sc-eqUAAy flGMfW"
+      class="sc-eqUAAy jLRJsD"
     >
       this is the description
     </p>
