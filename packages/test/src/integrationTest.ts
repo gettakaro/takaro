@@ -185,7 +185,9 @@ export class IntegrationTest<SetupData> {
     async function executeTest(): Promise<void> {
       let response;
       let lastError: Error | null = null;
-
+      if (maxRetries <= 0) {
+        throw new Error('Max retries must be at least 1');
+      }
       for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
           if (attempt > 0) {
