@@ -23,6 +23,8 @@ export interface Margin {
   left: number;
 }
 
+export type LegendPosition = 'top' | 'right' | 'bottom' | 'left' | 'none';
+
 export const getDefaultTooltipStyles = (theme: ThemeType) => ({
   ...defaultStyles,
   background: theme.colors.background,
@@ -37,4 +39,12 @@ export const getChartColors = (theme: ThemeType) => [
   '#FFD700', // Gold for a contrasting yet harmonious color
   '#87CEEB', // Sky blue to complement the purple
   '#FF69B4', // Hot pink for a playful, vibrant look
+  '#32CD32', // Lime green for nature-inspired freshness
+  '#FF8C00', // Dark orange for warmth
+  '#9370DB', // Medium purple for variety
+  '#20B2AA', // Light sea green for coolness
+  '#FF6347', // Tomato red for emphasis
+  '#4682B4', // Steel blue for professionalism
+  '#DAA520', // Goldenrod for richness
+  '#8B4789', // Dark orchid for depth
 ];

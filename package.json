@@ -102,6 +102,7 @@
     "@visx/grid": "3.5.0",
     "@visx/group": "3.3.0",
     "@visx/heatmap": "3.3.0",
+    "@visx/legend": "^3.3.0",
     "@visx/mock-data": "3.3.0",
     "@visx/pattern": "3.3.0",
     "@visx/responsive": "3.10.2",
