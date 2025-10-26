@@ -1,29 +1,12 @@
-import { Company, Tooltip, IconButton, Card, Dropdown, useTheme, Chip, styled } from '@takaro/lib-components';
-import { PERMISSIONS, ModuleOutputDTO } from '@takaro/apiclient';
-import { FC, useState, MouseEvent, useRef } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { Company, Tooltip, Card, Chip, styled } from '@takaro/lib-components';
+import { ModuleOutputDTO } from '@takaro/apiclient';
+import { FC } from 'react';
 import { SpacedRow, ActionIconsContainer, InnerBody } from '../style';
-import { PermissionsGuard } from '../../../components/PermissionsGuard';
-import {
-  AiOutlineMenu as MenuIcon,
-  AiOutlineEdit as EditIcon,
-  AiOutlineDelete as DeleteIcon,
-  AiOutlineLink as LinkIcon,
-  AiOutlineEye as ViewIcon,
-  AiOutlineCopy as CopyIcon,
-  AiOutlineExport as ExportIcon,
-  AiOutlineTag as TagIcon,
-  AiOutlineBook as DocumentationIcon,
-} from 'react-icons/ai';
-import { ModuleTagDialog } from '../../../components/dialogs/ModuleTagDialog';
-import { ModuleCopyDialog } from '../../../components/dialogs/ModuleCopyDialog';
-import { ModuleExportDialog } from '../../../components/dialogs/ModuleExportDialog';
-import { ModuleDeleteDialog } from '../../../components/dialogs/ModuleDeleteDialog';
-import { DeleteImperativeHandle } from '../../../components/dialogs';
+import { ModuleActions } from '../../../routes/_auth/_global/-modules/ModuleActions';
+import { ModulesViewProps } from '../../../routes/_auth/_global/modules';
 
-interface IModuleCardProps {
+interface IModuleCardProps extends ModulesViewProps {
   mod: ModuleOutputDTO;
-  canCopyModule: boolean;
 }
 
 const DescriptionDiv = styled.div`
@@ -32,70 +15,12 @@ const DescriptionDiv = styled.div`
   margin-bottom: 10px;
 `;
 
-export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule }) => {
-  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
-  const [openTagDialog, setOpenTagDialog] = useState<boolean>(false);
-  const [openExportDialog, setOpenExportDialog] = useState<boolean>(false);
-  const [openCopyDialog, setOpenCopyDialog] = useState<boolean>(false);
-  const deleteDialogRef = useRef<DeleteImperativeHandle>(null);
-  const theme = useTheme();
-  const navigate = useNavigate();
-
+export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCreateModule }) => {
   // Get the latest tag from mod.versions (skip 'latest' tag)
   const newestTag =
     mod.versions && mod.versions.length > 0 ? (mod.versions.find((v) => v.tag !== 'latest')?.tag ?? null) : null;
 
   const { latestVersion } = mod;
-
-  const handleOnEditBuilderClick = (e: MouseEvent) => {
-    e.stopPropagation();
-    navigate({ to: '/modules/$moduleId/update', params: { moduleId: mod.id }, search: { view: 'builder' } });
-  };
-  const handleOnEditManualClick = (e: MouseEvent) => {
-    e.stopPropagation();
-    navigate({ to: '/modules/$moduleId/update', params: { moduleId: mod.id }, search: { view: 'manual' } });
-  };
-
-  const handleOnViewClick = (e: MouseEvent) => {
-    e.stopPropagation();
-    navigate({ to: '/modules/$moduleId/view', params: { moduleId: mod.id } });
-  };
-
-  const handleOnDeleteClick = (e: MouseEvent) => {
-    e.stopPropagation();
-    if (e.shiftKey) {
-      deleteDialogRef.current?.triggerDelete();
-    } else {
-      setOpenDeleteDialog(true);
-    }
-  };
-
-  const handleOnTagClick = (e: MouseEvent) => {
-    e.stopPropagation();
-    setOpenTagDialog(true);
-  };
-
-  const handleOnCopyClick = (e: MouseEvent) => {
-    e.stopPropagation();
-    setOpenCopyDialog(true);
-  };
-  const handleOnCopyIdClick = (e: MouseEvent) => {
-    e.stopPropagation();
-    navigator.clipboard.writeText(mod.id);
-  };
-
-  const handleOnOpenInModuleBuilderClick = (e: MouseEvent) => {
-    e.stopPropagation();
-    window.open(`/module-builder/${mod.id}`, '_blank');
-  };
-  const handleOnOpenInDocumentationClick = () => {
-    window.open('https://docs.takaro.io/advanced/modules', '_blank');
-  };
-
-  const handleOnExportClick = async (e: MouseEvent) => {
-    e.stopPropagation();
-    setOpenExportDialog(true);
-  };
 
   return (
     <>
@@ -134,77 +59,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule 
                     </Tooltip.Content>
                   </Tooltip>
                 )}
-
-                <Dropdown>
-                  <Dropdown.Trigger asChild>
-                    <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
-                  </Dropdown.Trigger>
-                  <Dropdown.Menu>
-                    {mod.builtin && (
-                      <Dropdown.Menu.Group label="Actions">
-                        <Dropdown.Menu.Item icon={<ViewIcon />} onClick={handleOnViewClick} label="View module" />
-                        <Dropdown.Menu.Item
-                          icon={<CopyIcon />}
-                          onClick={handleOnCopyClick}
-                          label="Copy module"
-                          disabled={!canCopyModule}
-                        />
-                        <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyIdClick} label="Copy module id" />
-                      </Dropdown.Menu.Group>
-                    )}
-                    {!mod.builtin && (
-                      <Dropdown.Menu.Group label="Actions">
-                        <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageModules]]}>
-                          <Dropdown.Menu.Item icon={<ViewIcon />} onClick={handleOnViewClick} label="View module" />
-                          <Dropdown.Menu.Item
-                            icon={<EditIcon />}
-                            onClick={handleOnEditBuilderClick}
-                            label="Edit module (builder)"
-                          />
-                          <Dropdown.Menu.Item
-                            icon={<EditIcon />}
-                            onClick={handleOnEditManualClick}
-                            label="Edit module (manual)"
-                          />
-                          <Dropdown.Menu.Item
-                            icon={<CopyIcon />}
-                            onClick={handleOnCopyClick}
-                            label="Copy module"
-                            disabled={!canCopyModule}
-                          />
-                          <Dropdown.Menu.Item icon={<TagIcon />} onClick={handleOnTagClick} label="Tag module" />
-                          <Dropdown.Menu.Item
-                            icon={<CopyIcon />}
-                            onClick={handleOnCopyIdClick}
-                            label="Copy module id"
-                          />
-                          <Dropdown.Menu.Item
-                            icon={<DeleteIcon fill={theme.colors.error} />}
-                            onClick={handleOnDeleteClick}
-                            label="Delete module"
-                          />
-                        </PermissionsGuard>
-                      </Dropdown.Menu.Group>
-                    )}
-                    <Dropdown.Menu.Group>
-                      <Dropdown.Menu.Item
-                        icon={<LinkIcon />}
-                        onClick={handleOnOpenInModuleBuilderClick}
-                        label="Open in Module Builder"
-                      />
-                      <Dropdown.Menu.Item
-                        icon={<DocumentationIcon />}
-                        label="View module documentation"
-                        onClick={handleOnOpenInDocumentationClick}
-                      />
-                      <Dropdown.Menu.Item
-                        icon={<ExportIcon />}
-                        onClick={handleOnExportClick}
-                        label="Export module to file"
-                      />
-                    </Dropdown.Menu.Group>
-                  </Dropdown.Menu>
-                </Dropdown>
+                <ModuleActions mod={mod} canCreateModule={canCreateModule} />
               </ActionIconsContainer>
             </SpacedRow>
             <DescriptionDiv>{latestVersion.description}</DescriptionDiv>
@@ -217,23 +72,6 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule 
           </InnerBody>
         </Card.Body>
       </Card>
-      {openTagDialog && (
-        <ModuleTagDialog moduleId={mod.id} moduleName={mod.name} open={openTagDialog} onOpenChange={setOpenTagDialog} />
-      )}
-      <ModuleDeleteDialog
-        ref={deleteDialogRef}
-        moduleId={mod.id}
-        moduleName={mod.name}
-        open={openDeleteDialog}
-        onOpenChange={setOpenDeleteDialog}
-      />
-      <ModuleCopyDialog mod={mod} open={openCopyDialog} onOpenChange={setOpenCopyDialog} />
-      <ModuleExportDialog
-        moduleId={mod.id}
-        moduleName={mod.name}
-        open={openExportDialog}
-        onOpenChange={setOpenExportDialog}
-      />
     </>
   );
 };

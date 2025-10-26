@@ -33,6 +33,11 @@ const SubText = styled.p`
   margin-bottom: ${({ theme }) => theme.spacing[2]};
 `;
 
+export interface ModulesViewProps {
+  /// A user can only create x amount of modules within a plan
+  canCreateModule: boolean;
+}
+
 export const Route = createFileRoute('/_auth/_global/modules')({
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
@@ -119,7 +124,7 @@ function Component() {
       <Divider />
       {view === 'table' && (
         <>
-          <ModulesTableView />
+          <ModulesTableView canCreateModule={canCreateModule} />
           <Outlet />
         </>
       )}
@@ -167,7 +172,7 @@ function Component() {
             </SubText>
             <CardList>
               {customModules.map((mod) => (
-                <ModuleDefinitionCard key={mod.id} mod={mod} canCopyModule={canCreateModule} />
+                <ModuleDefinitionCard key={mod.id} mod={mod} canCreateModule={canCreateModule} />
               ))}
             </CardList>
           </PermissionsGuard>
@@ -179,7 +184,7 @@ function Component() {
           </SubText>
           <CardList>
             {builtinModules.map((mod) => (
-              <ModuleDefinitionCard key={mod.id} mod={mod} canCopyModule={canCreateModule} />
+              <ModuleDefinitionCard key={mod.id} mod={mod} canCreateModule={canCreateModule} />
             ))}
             <Outlet />
           </CardList>

@@ -98,6 +98,9 @@ export const RolesTableView = () => {
       id: 'actions',
       header: 'Actions',
       maxSize: 25,
+      enableHiding: false,
+      enableColumnFilter: false,
+      enableSorting: false,
       cell: (info) => {
         return (
           <RoleActions
