@@ -62,7 +62,18 @@ class SocketServer {
 
     const authMiddleware = ctx.wrap('socket:auth', AuthService.getAuthMiddleware([]));
     this.io.engine.use((req: IncomingMessage, res: ServerResponse<IncomingMessage>, next: NextFunction) => {
-      return authMiddleware(req as AuthenticatedRequest, res as Response, next);
+      return authMiddleware(req as AuthenticatedRequest, res as Response, (err?: Error) => {
+        // Store auth data in the request for socket handshake access
+        // This ensures the data persists across the engine->socket middleware boundary
+        if (!err) {
+          const ctxData = ctx.data;
+          (req as any).takaroAuth = {
+            userId: ctxData.user,
+            domainId: ctxData.domain,
+          };
+        }
+        next(err);
+      });
     });
 
     this.io.use(
@@ -120,12 +131,18 @@ class SocketServer {
     next: (err?: Error | undefined) => void,
   ) {
     try {
-      const ctxData = ctx.data;
-      if (!ctxData.domain) {
-        this.log.error('No domain found in context');
+      // Get auth data from the handshake request (stored by engine middleware)
+      const authData = (socket.request as any).takaroAuth;
+
+      if (!authData?.domainId) {
+        this.log.error('No domain found in handshake auth data');
         return next(new errors.UnauthorizedError());
       }
-      await socket.join(ctxData.domain);
+
+      // Set context data for downstream handlers
+      ctx.addData({ user: authData.userId, domain: authData.domainId });
+
+      await socket.join(authData.domainId);
       next();
     } catch (error) {
       this.log.error('Unknown error when routing socket', error);
