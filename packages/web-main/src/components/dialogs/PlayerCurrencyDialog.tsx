@@ -6,6 +6,8 @@ import { FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { RequiredDialogOptions } from '.';
+import { useQuery } from '@tanstack/react-query';
+import { gameServerSettingQueryOptions } from '../../queries/setting';
 
 const currencySchema = z.object({
   currency: z.number().min(0, { message: 'Currency must be 0 or greater' }),
@@ -25,6 +27,8 @@ export const PlayerCurrencyDialog: FC<CurrencyDialogProps> = ({ playerId, gameSe
     error: deductCurrencyError,
   } = useDeductCurrency();
 
+  const { data, isPending } = useQuery(gameServerSettingQueryOptions('currencyName', gameServerId));
+
   const { handleSubmit, control, watch } = useForm<z.infer<typeof currencySchema>>({
     resolver: zodResolver(currencySchema),
     values: {
@@ -34,16 +38,12 @@ export const PlayerCurrencyDialog: FC<CurrencyDialogProps> = ({ playerId, gameSe
   });
 
   const submit: SubmitHandler<z.infer<typeof currencySchema>> = async ({ currency, variant }) => {
-    try {
-      if (variant === 'add') {
-        await addCurrency({ playerId, gameServerId, currency });
-      } else if (variant === 'deduct') {
-        await deductCurrency({ playerId, gameServerId, currency });
-      }
-      dialogOptions.onOpenChange(false);
-    } catch {
-      // no op
+    if (variant === 'add') {
+      await addCurrency({ playerId, gameServerId, currency });
+    } else if (variant === 'deduct') {
+      await deductCurrency({ playerId, gameServerId, currency });
     }
+    dialogOptions.onOpenChange(false);
   };
 
   return (
@@ -73,10 +73,16 @@ export const PlayerCurrencyDialog: FC<CurrencyDialogProps> = ({ playerId, gameSe
                 </SelectField.Option>
               </SelectField.OptionGroup>
             </SelectField>
-            <TextField placeholder="200" control={control} type="number" name="currency" label="Currency" />
+            <TextField
+              placeholder="200"
+              control={control}
+              type="number"
+              name="currency"
+              label="Currency"
+              suffix={isPending ? '' : data?.value}
+            />
             {addCurrencyError && <FormError error={addCurrencyError} />}
             {deductCurrencyError && <FormError error={deductCurrencyError} />}
-
             <Button fullWidth isLoading={isAddingCurrency || isDeductingCurrency} type="submit">
               {watch('variant')} currency
             </Button>
