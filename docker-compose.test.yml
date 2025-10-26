@@ -100,6 +100,31 @@ services:
       - 13000:3000
       - 12001:12001
 
+  takaro_worker:
+    image: ghcr.io/gettakaro/takaro-app-api:${DOCKER_TAG}
+    restart: always
+    deploy:
+      replicas: ${TAKARO_WORKER_REPLICAS:-3}
+    environment:
+      LOGGING_LEVEL: debug
+      REDIS_HOST: "redis"
+      JWT_SECRET: "${JWT_SECRET}"
+      FUNCTIONS_EXECUTION_MODE: "local"
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: "postgresql"
+      POSTGRES_POOL_MIN: 5
+      POSTGRES_POOL_MAX: 250
+      POSTGRES_ENCRYPTION_KEY: ${POSTGRES_ENCRYPTION_KEY}
+      ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}
+      TAKARO_HOST: http://takaro_api:3000
+      KRATOS_ADMIN_URL: http://kratos:4434
+      MOCK_GAMESERVER_HOST: http://takaro_mock_gameserver:3002
+      TRACING_ENABLED: "true"
+      CONNECTOR_HOST: http://takaro_connector:3003
+      START_WORKERS: "true"
+
   takaro_web_main:
     image: ghcr.io/gettakaro/takaro-web-main:${DOCKER_TAG}
     restart: always
