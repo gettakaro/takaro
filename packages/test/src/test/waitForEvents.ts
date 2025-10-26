@@ -25,7 +25,7 @@ export class EventsAwaiter {
   async connect(client: Client) {
     return new Promise<EventsAwaiter>((resolve, reject) => {
       this.socket = io(integrationConfig.get('host'), {
-        withCredentials: true,
+        transports: ['websocket'],
         extraHeaders: {
           Authorization: `Bearer ${client.token}`,
         },
