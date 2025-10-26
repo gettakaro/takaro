@@ -11,6 +11,7 @@ services:
       - INIT_ASSETS=0
   postgresql:
     image: postgres:15
+    command: postgres -c max_connections=300
     volumes:
       - ./_data/db:/var/lib/postgresql/data
     ports:
@@ -78,6 +79,8 @@ services:
       REDIS_HOST: redis
       POSTGRES_HOST: postgresql
       POSTGRES_PORT: 5432
+      POSTGRES_POOL_MIN: ${POSTGRES_POOL_MIN:-5}
+      POSTGRES_POOL_MAX: ${POSTGRES_POOL_MAX:-50}
 
       TAKARO_HOST: http://takaro:3000
 

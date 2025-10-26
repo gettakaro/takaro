@@ -11,6 +11,7 @@ source "$(dirname "$0")/typecheck-tests.sh"
 # Default values
 DEBUG_MODE=false
 TEST_FILE=""
+CONCURRENCY=${TEST_CONCURRENCY:-10}
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -63,8 +64,8 @@ export TAKARO_TEST_RUNNER_ATTEMPTS=0
 if [[ "$DEBUG_MODE" == "true" ]]; then
   echo "Running test in debug mode: $TEST_FILE"
   echo "Debug server will be available for connection..."
-  node --inspect-brk --test-concurrency 1 --test-force-exit --import=ts-node-maintained/register/esm --test "$TEST_FILE"
+  node --inspect-brk --test-concurrency $CONCURRENCY --test-force-exit --import=ts-node-maintained/register/esm --test "$TEST_FILE"
 else
   echo "Running test: $TEST_FILE"
-  node --test-concurrency 1 --test-force-exit --import=ts-node-maintained/register/esm --test "$TEST_FILE"
+  node --test-concurrency $CONCURRENCY --test-force-exit --import=ts-node-maintained/register/esm --test "$TEST_FILE"
 fi
