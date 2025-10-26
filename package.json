@@ -86,7 +86,7 @@
     "@tanstack/react-router": "1.102.1",
     "@tanstack/react-table": "8.20.5",
     "@tanstack/router-devtools": "1.102.1",
-    "@tanstack/router-vite-plugin": "1.102.1",
+    "@tanstack/router-plugin": "1.102.1",
     "@tanstack/zod-adapter": "1.101.2",
     "@types/basic-auth": "1.1.8",
     "@types/bcrypt": "5.0.2",
@@ -296,7 +296,6 @@
   },
   "overrides": {
     "esbuild": "0.24.0",
-    "@tanstack/router-plugin": "1.102.1",
     "@tanstack/router-generator": "1.102.1",
     "@tanstack/router-core": "1.102.0",
     "ws@7": "^8.17.1"
