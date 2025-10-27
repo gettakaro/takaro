@@ -120,6 +120,17 @@ class SocketServer {
     event: keyof ServerToClientEvents,
     data: Parameters<ServerToClientEvents[keyof ServerToClientEvents]> = [],
   ) {
+    const room = this.io.sockets.adapter.rooms.get(domainId);
+    const connectedSocketsCount = room ? room.size : 0;
+
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] Emitting event to room', {
+      domainId,
+      eventType: event,
+      connectedSocketsInRoom: connectedSocketsCount,
+      totalConnectedSockets: this.io.sockets.sockets.size,
+      eventData: event === 'event' ? (data[0] as any)?.eventName : undefined,
+    });
+
     this.io.to(domainId).emit(event, ...data);
     if (event === 'event') {
       this.io.serverSideEmit(event, data[0] as unknown as EventOutputDTO);
@@ -143,6 +154,13 @@ class SocketServer {
       // The context from engine middleware doesn't propagate to socket middleware
       const wrappedHandler = ctx.wrap('socket:router', async () => {
         ctx.addData({ user: authData.userId, domain: authData.domainId });
+        this.log.debug('[CONCURRENT_TESTS_DEBUG] Socket joining room', {
+          socketId: socket.id,
+          userId: authData.userId,
+          domainId: authData.domainId,
+          contextUser: ctx.data.user,
+          contextDomain: ctx.data.domain,
+        });
         await socket.join(authData.domainId);
         next();
       });

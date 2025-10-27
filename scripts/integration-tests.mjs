@@ -111,7 +111,7 @@ async function main() {
 
       await $`npm run --workspace=./packages/e2e test:e2e`;
     } else {
-      await run('takaro', 'npm run test:ci', { ...composeOpts, NODE_ENV: 'test', LOGGING_LEVEL: 'none', TEST_CONCURRENCY: '5' });
+      await run('takaro', 'npm run test:ci', { ...composeOpts, NODE_ENV: 'test', LOGGING_LEVEL: 'debug', TEST_CONCURRENCY: '5' });
     }
   } catch (error) {
     console.error('Tests failed');
@@ -120,7 +120,7 @@ async function main() {
 
   await $`TAKARO_HOST=http://127.0.0.1:13000 npm -w packages/lib-apiclient run generate && npm run test:style:fix`;
 
-  const logsResult = await logs(['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'kratos'], {
+  const logsResult = await logs(['takaro_api', 'takaro_worker', 'takaro_mock_gameserver', 'takaro_connector', 'kratos'], {
     ...composeOpts,
     log: false,
   });

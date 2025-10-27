@@ -220,6 +220,13 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
     const created = await this.repo.create(data);
 
     this.log.info(`Event ${created.eventName} created`, { id: created.id });
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] Event created in database', {
+      eventName: created.eventName,
+      eventId: created.id,
+      playerId: created.playerId,
+      gameserverId: created.gameserverId,
+      domainId: this.domainId,
+    });
 
     eventsMetric.inc({
       event: created.eventName,
@@ -239,7 +246,17 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
 
     try {
       const socketServer = await getSocketServer();
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] About to emit event via Socket.IO', {
+        eventName: created.eventName,
+        eventId: created.id,
+        domainId: this.domainId,
+      });
       socketServer.emit(this.domainId, 'event', [created]);
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] Event emitted via Socket.IO', {
+        eventName: created.eventName,
+        eventId: created.id,
+        domainId: this.domainId,
+      });
     } catch (error) {
       this.log.warn('Failed to emit event', error);
     }

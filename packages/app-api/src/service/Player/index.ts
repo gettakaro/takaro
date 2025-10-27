@@ -123,7 +123,18 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
   }
 
   async create(item: PlayerCreateDTO): Promise<PlayerOutputWithRolesDTO> {
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] Creating player', {
+      name: item.name,
+      steamId: item.steamId,
+      domainId: this.domainId,
+    });
+
     const created = await this.repo.create(item);
+
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] Player created, about to emit player-created event', {
+      playerId: created.id,
+      domainId: this.domainId,
+    });
 
     const eventsService = new EventService(this.domainId);
     await eventsService.create(new EventCreateDTO({ eventName: TakaroEvents.PLAYER_CREATED, playerId: created.id }));
@@ -175,6 +186,16 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     gamePlayer: IGamePlayer,
     gameServerId: string,
   ): Promise<{ player: PlayerOutputWithRolesDTO; pog: PlayerOnGameserverOutputWithRolesDTO }> {
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] resolveRef called', {
+      gameId: gamePlayer.gameId,
+      gameServerId,
+      steamId: gamePlayer.steamId,
+      epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
+      xboxLiveId: gamePlayer.xboxLiveId,
+      platformId: gamePlayer.platformId,
+      domainId: this.domainId,
+    });
+
     // Validate that at least one platform identifier is provided
     if (!gamePlayer.steamId && !gamePlayer.epicOnlineServicesId && !gamePlayer.xboxLiveId && !gamePlayer.platformId) {
       throw new errors.ValidationError(
@@ -206,9 +227,10 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     // If NO players are found, create a new one
     if (!uniquePlayers.length) {
       // Main player profile does not exist yet!
-      this.log.debug('No existing associations found, creating new global player', {
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] No existing associations found, creating new global player', {
         gameId: gamePlayer.gameId,
         gameServerId,
+        domainId: this.domainId,
       });
       player = await this.create(
         new PlayerCreateDTO({
