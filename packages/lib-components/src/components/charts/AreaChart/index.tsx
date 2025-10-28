@@ -17,7 +17,7 @@ import { Bounds } from '@visx/brush/lib/types';
 
 import { useTheme } from '../../../hooks';
 import { useGradients } from '../useGradients';
-import { Margin, ChartProps, InnerChartProps, getDefaultTooltipStyles } from '../util';
+import { ChartProps, InnerChartProps, getDefaultTooltipStyles, TooltipConfig, BrushConfig } from '../util';
 import { BrushHandle } from '../BrushHandle';
 import { PointHighlight } from '../PointHighlight';
 
@@ -25,10 +25,10 @@ export interface AreaChartProps<T> extends ChartProps {
   data: T[];
   xAccessor: (d: T) => Date;
   yAccessor: (d: T) => number;
-  tooltipAccessor?: (d: T) => string;
-  margin?: Margin;
-  showBrush?: boolean;
-  brushMargin?: Margin;
+  /** Tooltip configuration */
+  tooltip?: TooltipConfig<T>;
+  /** Brush/zoom configuration */
+  brush?: BrushConfig;
 }
 
 const formatDate = timeFormat("%b %d, '%y");
@@ -37,22 +37,18 @@ const defaultMargin = { top: 20, left: 50, bottom: 20, right: 5 };
 const defaultBrushMargin = { top: 10, bottom: 15, left: 50, right: 5 };
 const defaultShowAxisX = true;
 const defaultShowAxisY = true;
-const defaultShowGrid = true;
 
 export const AreaChart = <T,>({
   data,
   xAccessor,
   yAccessor,
-  tooltipAccessor,
-  margin = defaultMargin,
-  showGrid = defaultShowGrid,
-  showBrush = false,
-  brushMargin = defaultBrushMargin,
   name,
-  showAxisX = defaultShowAxisX,
-  showAxisY = defaultShowAxisY,
-  axisXLabel,
-  axisYLabel,
+  grid = 'none',
+  axis,
+  tooltip,
+  brush,
+  animate = true,
+  margin = defaultMargin,
 }: AreaChartProps<T>) => {
   // TODO: handle empty data
   if (!data || data.length === 0) return null;
@@ -65,18 +61,15 @@ export const AreaChart = <T,>({
           name={name}
           xAccessor={xAccessor}
           yAccessor={yAccessor}
-          tooltipAccessor={tooltipAccessor}
           data={data}
           width={parent.width}
           height={parent.height}
-          brushMargin={brushMargin}
-          showBrush={showBrush}
-          showGrid={showGrid}
+          grid={grid}
+          axis={axis}
+          tooltip={tooltip}
+          brush={brush}
+          animate={animate}
           margin={margin}
-          axisYLabel={axisYLabel}
-          axisXLabel={axisXLabel}
-          showAxisX={showAxisX}
-          showAxisY={showAxisY}
         />
       )}
     </ParentSize>
@@ -89,19 +82,28 @@ const Chart = <T,>({
   data,
   xAccessor,
   yAccessor,
-  tooltipAccessor,
   width,
   height,
   margin = defaultMargin,
-  showGrid = defaultShowGrid,
-  showBrush = false,
-  brushMargin = defaultBrushMargin,
+  grid = 'none',
+  axis,
+  tooltip,
+  brush,
+  animate = true,
   name,
-  showAxisX = defaultShowAxisX,
-  showAxisY = defaultShowAxisY,
-  axisYLabel,
-  axisXLabel,
 }: InnerAreaChartProps<T>) => {
+  const showAxisX = axis?.showX ?? defaultShowAxisX;
+  const showAxisY = axis?.showY ?? defaultShowAxisY;
+  const axisXLabel = axis?.labelX;
+  const axisYLabel = axis?.labelY;
+  const tooltipAccessor = tooltip?.accessor;
+  const _animate = animate;
+  // TODO: implement grid overlay
+  const _grid = grid;
+
+  // Extract brush configuration
+  const showBrush = brush?.enabled ?? false;
+  const brushMargin = brush?.margin ?? defaultBrushMargin;
   const PATTERN_ID = `${name}-brush_pattern`;
   const theme = useTheme();
   const gradients = useGradients(name);
@@ -221,7 +223,7 @@ const Chart = <T,>({
         {gradients.chart.gradient}
         {gradients.background.gradient}
         <rect x={0} y={0} width={width} height={height} fill={`url(#${gradients.background.id})`} rx={14} />
-        {showGrid && (
+        {
           <GridColumns
             top={margin.top}
             left={margin.left}
@@ -232,7 +234,7 @@ const Chart = <T,>({
             strokeOpacity={0.2}
             pointerEvents="none"
           />
-        )}
+        }
         <Group id="chart" top={margin.top} left={margin.left}>
           <AreaClosed<T>
             x={(d) => xScale(xAccessor(d)) ?? 0}

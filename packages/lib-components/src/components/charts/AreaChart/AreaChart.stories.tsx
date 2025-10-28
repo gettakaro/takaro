@@ -12,7 +12,6 @@ export default {
   component: AreaChart,
   args: {
     showBrush: true,
-    showGrid: true,
     axisXLabel: '',
     axisYLabel: 'Close Price',
   },
@@ -34,7 +33,6 @@ export const Default: StoryFn<AreaChartProps<AppleStock>> = (args) => {
         yAccessor={getStockValue}
         data={appleStock}
         showBrush={args.showBrush}
-        showGrid={args.showGrid}
         axisXLabel={args.axisXLabel}
         axisYLabel={args.axisYLabel}
       />
