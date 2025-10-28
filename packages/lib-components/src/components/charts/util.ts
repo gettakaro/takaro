@@ -1,21 +1,6 @@
 import { defaultStyles } from '@visx/tooltip';
 import { ThemeType } from '../../styled';
 
-export interface ChartProps {
-  /// Unique identifier for the chart
-  name: string;
-  showGrid?: boolean;
-  axisXLabel?: string;
-  axisYLabel?: string;
-  showAxisX?: boolean;
-  showAxisY?: boolean;
-}
-
-export interface InnerChartProps extends ChartProps {
-  width: number;
-  height: number;
-}
-
 export interface Margin {
   top: number;
   right: number;
@@ -23,7 +8,49 @@ export interface Margin {
   left: number;
 }
 
+export interface AxisConfig {
+  showX?: boolean;
+  showY?: boolean;
+  labelX?: string;
+  labelY?: string;
+  numTicksX?: number;
+  numTicksY?: number;
+  /** Whether to include zero in the Y-axis domain. Default: false (auto-scale from min) */
+  includeZeroY?: boolean;
+}
+
+export interface TooltipConfig<T> {
+  enabled?: boolean;
+  accessor?: (d: T, ...additionalArgs: any[]) => string;
+}
+
+export interface BrushConfig {
+  enabled?: boolean;
+  margin?: Margin;
+}
+
 export type LegendPosition = 'top' | 'right' | 'bottom' | 'left' | 'none';
+
+/** Grid display options for charts */
+export type GridDisplay = 'none' | 'x' | 'y' | 'xy';
+
+export interface ChartProps {
+  /// Unique identifier for the chart
+  name: string;
+  /** Display grid lines. Options: 'none', 'x', 'y', 'xy'. Default: 'none' */
+  grid?: GridDisplay;
+  /** Axis configuration */
+  axis?: AxisConfig;
+  /** Enable or disable animations. Default: true */
+  animate?: boolean;
+  /** Chart margins */
+  margin?: Margin;
+}
+
+export interface InnerChartProps extends ChartProps {
+  width: number;
+  height: number;
+}
 
 export const getDefaultTooltipStyles = (theme: ThemeType) => ({
   ...defaultStyles,
