@@ -113,6 +113,21 @@ class SocketServer {
     const subRedis = await Redis.getClient('socketio:sub');
 
     this.io.adapter(createAdapter(pubRedis, subRedis));
+
+    // Add debug logging for Redis adapter events
+    this.io.of('/').adapter.on('create-room', (room) => {
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] Redis adapter: room created', { room });
+    });
+
+    this.io.of('/').adapter.on('join-room', (room, id) => {
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] Redis adapter: socket joined room', { room, socketId: id });
+    });
+
+    this.io.of('/').adapter.on('leave-room', (room, id) => {
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] Redis adapter: socket left room', { room, socketId: id });
+    });
+
+    this.log.info('[CONCURRENT_TESTS_DEBUG] Redis adapter initialized and event listeners attached');
   }
 
   public emit(
@@ -131,9 +146,29 @@ class SocketServer {
       eventData: event === 'event' ? (data[0] as any)?.eventName : undefined,
     });
 
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] About to emit via Redis adapter', {
+      domainId,
+      eventType: event,
+      hasData: data.length > 0,
+    });
+
     this.io.to(domainId).emit(event, ...data);
+
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] Emitted via Redis adapter', {
+      domainId,
+      eventType: event,
+    });
+
     if (event === 'event') {
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] About to serverSideEmit', {
+        domainId,
+        eventName: (data[0] as any)?.eventName,
+      });
       this.io.serverSideEmit(event, data[0] as unknown as EventOutputDTO);
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] serverSideEmit completed', {
+        domainId,
+        eventName: (data[0] as any)?.eventName,
+      });
     }
   }
 
