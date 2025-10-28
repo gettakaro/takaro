@@ -29,6 +29,7 @@ export default {
   args: {
     showZoomControls: false,
     allowZoomAndDrag: false,
+    showCountrySidebar: true,
   },
 } as Meta<GeoMercatorProps<Shape>>;
 
@@ -62,6 +63,7 @@ export const Default: StoryFn<GeoMercatorProps<Shape>> = (args) => {
               data={alpha3}
               showZoomControls={args.showZoomControls}
               allowZoomAndDrag={args.allowZoomAndDrag}
+              showCountrySidebar={args.showCountrySidebar}
             />
           </Inner>
         </Card.Body>
