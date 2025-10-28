@@ -1,4 +1,4 @@
-import { bisector, extent, max } from '@visx/vendor/d3-array';
+import { bisector, extent, max, min } from '@visx/vendor/d3-array';
 import * as allCurves from '@visx/curve';
 import { Group } from '@visx/group';
 import { LinePath } from '@visx/shape';
@@ -7,12 +7,14 @@ import { scaleTime, scaleLinear } from '@visx/scale';
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { useTooltip, Tooltip, TooltipWithBounds } from '@visx/tooltip';
 import { timeFormat } from '@visx/vendor/d3-time-format';
+import { GridRows, GridColumns } from '@visx/grid';
 
 import { useTheme } from '../../../hooks';
 import { useCallback, useMemo } from 'react';
-import { Margin, ChartProps, InnerChartProps, getDefaultTooltipStyles } from '../util';
+import { ChartProps, InnerChartProps, getDefaultTooltipStyles, TooltipConfig } from '../util';
 import { localPoint } from '@visx/event';
 import { PointHighlight } from '../PointHighlight';
+import { motion } from 'framer-motion';
 
 const defaultMargin = { top: 10, right: 0, bottom: 25, left: 40 };
 const defaultShowAxisX = true;
@@ -21,28 +23,34 @@ const defaultShowAxisY = true;
 type CurveType = keyof typeof allCurves;
 const formatDate = timeFormat("%b %d, '%y");
 
+export interface LineConfig<T> {
+  id: string;
+  yAccessor: (d: T) => number;
+  tooltipAccessor?: (d: T) => string;
+  color?: string;
+  label?: string;
+}
+
 export interface LineChartProps<T> extends ChartProps {
   data: T[];
   xAccessor: (d: T) => Date;
-  yAccessor: (d: T) => number;
-  tooltipAccessor?: (d: T) => string;
-  margin?: Margin;
   curveType?: CurveType;
+  lines: LineConfig<T>[];
+  /** Tooltip configuration */
+  tooltip?: TooltipConfig<T>;
 }
 
 export const LineChart = <T,>({
   data,
   xAccessor,
-  yAccessor,
-  tooltipAccessor,
-  margin = defaultMargin,
   name,
-  axisYLabel,
-  axisXLabel,
-  showGrid,
-  showAxisX = defaultShowAxisX,
-  showAxisY = defaultShowAxisY,
+  grid = 'none',
   curveType = 'curveBasis',
+  lines,
+  axis,
+  tooltip,
+  animate = true,
+  margin = defaultMargin,
 }: LineChartProps<T>) => {
   if (!data || data.length === 0) return null;
 
@@ -52,18 +60,16 @@ export const LineChart = <T,>({
         <Chart<T>
           name={name}
           xAccessor={xAccessor}
-          yAccessor={yAccessor}
-          tooltipAccessor={tooltipAccessor}
           data={data}
           width={parent.width}
           height={parent.height}
-          showGrid={showGrid}
+          grid={grid}
           margin={margin}
-          axisYLabel={axisYLabel}
-          axisXLabel={axisXLabel}
-          showAxisX={showAxisX}
-          showAxisY={showAxisY}
+          axis={axis}
+          tooltip={tooltip}
+          animate={animate}
           curveType={curveType}
+          lines={lines}
         />
       )}
     </ParentSize>
@@ -79,45 +85,73 @@ const Chart = <T,>({
   curveType = 'curveBasis',
   data,
   xAccessor,
-  yAccessor,
   margin = defaultMargin,
-  tooltipAccessor,
-  showAxisX,
-  showAxisY,
-  axisYLabel,
-  axisXLabel,
+  grid = 'none',
+  axis,
+  tooltip,
+  animate = true,
+  lines,
 }: InnerLineChartProps<T>) => {
   const theme = useTheme();
 
-  const bottomAxisHeight = showAxisX ? 25 : 0;
-  const leftAxisWidth = showAxisX ? 25 : 0;
-  const innerWidth = width - margin.left - margin.right - leftAxisWidth;
-  const innerHeight = height - margin.top - margin.bottom - bottomAxisHeight;
+  const showAxisX = axis?.showX ?? defaultShowAxisX;
+  const showAxisY = axis?.showY ?? defaultShowAxisY;
+  const axisXLabel = axis?.labelX;
+  const axisYLabel = axis?.labelY;
+  const numTicksX = axis?.numTicksX ?? 5;
+  const numTicksY = axis?.numTicksY ?? 5;
+  const includeZeroY = axis?.includeZeroY ?? false;
+  const showTooltip = tooltip?.enabled ?? true;
 
-  const { hideTooltip, showTooltip, tooltipData, tooltipLeft = 0, tooltipTop = 0 } = useTooltip<T>();
+  // Calculate inner dimensions (chart area within margins)
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+
+  const {
+    hideTooltip,
+    showTooltip: showTooltipHandler,
+    tooltipData,
+    tooltipLeft = 0,
+    tooltipTop = 0,
+  } = useTooltip<{
+    data: T;
+    lineId?: string;
+  }>();
 
   const xScale = useMemo(
     () =>
       scaleTime<number>({
-        range: [margin.left, innerWidth],
+        range: [0, innerWidth],
         domain: extent(data, xAccessor) as [Date, Date],
       }),
-    [innerWidth],
+    [innerWidth, data, xAccessor],
   );
+
+  const yDomain = useMemo(() => {
+    const allValues = lines.flatMap((line) => data.map(line.yAccessor));
+    const minValue = includeZeroY ? 0 : (min(allValues) as number);
+    const maxValue = max(allValues) as number;
+    return [minValue, maxValue];
+  }, [lines, data, includeZeroY]);
 
   const yScale = useMemo(
     () =>
       scaleLinear<number>({
-        range: [innerHeight, margin.bottom],
-        domain: [0, max(data, yAccessor) as number],
+        range: [innerHeight, 0 + margin.top],
+        domain: yDomain,
+        nice: true,
       }),
-    [innerHeight],
+    [innerHeight, yDomain],
   );
 
   const handleTooltip = useCallback(
     (event: React.TouchEvent<SVGElement> | React.MouseEvent<SVGElement>) => {
       const { x } = localPoint(event) || { x: 0 };
-      const x0 = xScale.invert(x - margin.left);
+
+      // Subtract margin.left because localPoint gives coordinates relative to SVG,
+      // but xScale is 0-based (relative to the chart area)
+      const xRelativeToChart = x - margin.left;
+      const x0 = xScale.invert(xRelativeToChart);
       let index = bisector<T, Date>(xAccessor).left(data, x0);
 
       // Clamp the index to ensure it's within the range of data points
@@ -125,15 +159,17 @@ const Chart = <T,>({
 
       const d = data[index];
       const tooltipX = xScale(xAccessor(d));
-      const tooltipY = yScale(yAccessor(d));
 
-      showTooltip({
-        tooltipData: d,
+      const activeYAccessor = lines[0].yAccessor;
+      const tooltipY = yScale(activeYAccessor(d));
+
+      showTooltipHandler({
+        tooltipData: { data: d },
         tooltipLeft: tooltipX,
         tooltipTop: tooltipY,
       });
     },
-    [yScale, xScale, data, yAccessor, xAccessor, width, height],
+    [yScale, xScale, data, xAccessor, lines, margin.left],
   );
 
   return width === 10 ? null : (
@@ -141,43 +177,96 @@ const Chart = <T,>({
       <svg width={width} height={height}>
         <rect width={width} height={height} fill={theme.colors.background} rx={14} ry={14} />
         <Group top={margin.top} left={margin.left}>
+          {(grid === 'y' || grid === 'xy') && (
+            <GridRows
+              scale={yScale}
+              width={innerWidth}
+              stroke={theme.colors.backgroundAccent}
+              strokeOpacity={1}
+              strokeDasharray="2,2"
+              pointerEvents="none"
+            />
+          )}
+          {(grid === 'x' || grid === 'xy') && (
+            <GridColumns
+              scale={xScale}
+              height={innerHeight}
+              stroke={theme.colors.backgroundAccent}
+              strokeOpacity={1}
+              strokeDasharray="2,2"
+              pointerEvents="none"
+            />
+          )}
           <rect
-            x={margin.left}
-            width={innerWidth - margin.left - margin.right}
+            x={0}
+            y={0}
+            width={innerWidth}
             height={innerHeight}
             fill="transparent"
-            onTouchStart={handleTooltip}
-            onTouchMove={handleTooltip}
-            onMouseMove={handleTooltip}
-            onMouseLeave={hideTooltip}
+            onTouchStart={showTooltip ? handleTooltip : undefined}
+            onTouchMove={showTooltip ? handleTooltip : undefined}
+            onMouseMove={showTooltip ? handleTooltip : undefined}
+            onMouseLeave={showTooltip ? hideTooltip : undefined}
           />
-          <LinePath<T>
-            curve={allCurves[curveType]}
-            data={data}
-            x={(d) => xScale(xAccessor(d)) ?? 0}
-            y={(d) => yScale(yAccessor(d)) ?? 0}
-            stroke={theme.colors.primary}
-            strokeWidth={1.2}
-            strokeOpacity={0.6}
-            shapeRendering="geometricPrecision"
-          />
+          {lines.map((lineConfig, index) => (
+            <LinePath<T>
+              key={lineConfig.id}
+              curve={allCurves[curveType]}
+              data={data}
+              x={(d) => xScale(xAccessor(d)) ?? 0}
+              y={(d) => yScale(lineConfig.yAccessor(d)) ?? 0}
+              pointerEvents="none"
+            >
+              {({ path }) => {
+                const pathData = path(data) || '';
+                return (
+                  <motion.path
+                    d={pathData}
+                    stroke={lineConfig.color || theme.colors.primary}
+                    strokeWidth={2.5}
+                    strokeOpacity={0.9}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    fill="none"
+                    pointerEvents="none"
+                    initial={animate ? { pathLength: 0, opacity: 0 } : { pathLength: 1, opacity: 0.9 }}
+                    animate={{ pathLength: 1, opacity: 0.9 }}
+                    transition={
+                      animate
+                        ? {
+                            pathLength: { duration: 1, delay: index * 0.2, ease: 'easeOut' },
+                          }
+                        : { duration: 0 }
+                    }
+                  />
+                );
+              }}
+            </LinePath>
+          ))}
         </Group>
-        {tooltipData && (
+        {showTooltip && tooltipData && (
           <PointHighlight margin={margin} tooltipTop={tooltipTop} tooltipLeft={tooltipLeft} yMax={innerHeight} />
         )}
         {showAxisY && (
           <AxisLeft
             top={margin.top}
-            left={margin.left + margin.left}
-            strokeWidth={1}
-            hideZero
+            left={margin.left}
+            strokeWidth={1.5}
             stroke={theme.colors.backgroundAlt}
             labelOffset={42}
             tickStroke={theme.colors.backgroundAlt}
+            tickLength={4}
+            numTicks={numTicksY}
             tickLabelProps={{
               fill: theme.colors.text,
               fontSize: theme.fontSize.small,
               textAnchor: 'end',
+              fontWeight: 500,
+            }}
+            labelProps={{
+              fill: theme.colors.textAlt,
+              fontSize: theme.fontSize.small,
+              fontWeight: 600,
             }}
             scale={yScale}
             label={axisYLabel}
@@ -187,31 +276,60 @@ const Chart = <T,>({
           <AxisBottom
             top={innerHeight + margin.top}
             left={margin.left}
-            strokeWidth={1}
+            strokeWidth={1.5}
             stroke={theme.colors.backgroundAlt}
             hideZero
+            tickLength={4}
+            numTicks={numTicksX}
             tickLabelProps={{
               fill: theme.colors.text,
               fontSize: theme.fontSize.small,
               textAnchor: 'middle',
+              fontWeight: 500,
             }}
             labelProps={{
               fill: theme.colors.textAlt,
+              fontSize: theme.fontSize.small,
+              fontWeight: 600,
             }}
             scale={xScale}
             label={axisXLabel}
           />
         )}
       </svg>
-      {tooltipData && (
+      {showTooltip && tooltipData && (
         <div>
           <TooltipWithBounds
             key={`${name}-tooltip`}
-            top={tooltipTop - margin.top}
-            left={tooltipLeft + margin.left}
+            top={tooltipTop}
+            left={tooltipLeft + margin.left + 10}
             style={getDefaultTooltipStyles(theme)}
           >
-            {tooltipAccessor ? tooltipAccessor(tooltipData) : yAccessor(tooltipData)}
+            <div>
+              {lines.map((line) => {
+                const value = line.yAccessor(tooltipData.data);
+                const displayText = line.tooltipAccessor
+                  ? line.tooltipAccessor(tooltipData.data)
+                  : line.label
+                    ? `${line.label}: ${value}`
+                    : value;
+                return (
+                  <div key={line.id} style={{ marginBottom: '4px' }}>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        width: '10px',
+                        height: '10px',
+                        backgroundColor: line.color || theme.colors.primary,
+                        marginRight: '6px',
+                        borderRadius: '2px',
+                      }}
+                    />
+                    {displayText}
+                  </div>
+                );
+              })}
+            </div>
           </TooltipWithBounds>
           <Tooltip
             top={innerHeight + margin.top - 14}
@@ -223,7 +341,7 @@ const Chart = <T,>({
               transform: 'translateX(-50%)',
             }}
           >
-            {formatDate(xAccessor(tooltipData))}
+            {formatDate(xAccessor(tooltipData.data))}
           </Tooltip>
         </div>
       )}
