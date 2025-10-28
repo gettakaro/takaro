@@ -14,37 +14,32 @@ import { shade } from 'polished';
 
 import { useGradients } from '../useGradients';
 import { useTheme } from '../../../hooks';
-import { ChartProps, InnerChartProps, Margin } from '../util';
+import { ChartProps, InnerChartProps, BrushConfig } from '../util';
 import { BrushHandle } from '../BrushHandle';
 
 export interface BarChartProps<T> extends ChartProps {
   data: T[];
   xAccessor: (d: T) => string;
   yAccessor: (d: T) => number;
-  margin?: Margin;
-  showBrush?: boolean;
-  brushMargin?: Margin;
+  /** Brush/zoom configuration */
+  brush?: BrushConfig;
 }
 
 const defaultMargin = { top: 20, left: 50, bottom: 20, right: 20 };
 const defaultBrushMargin = { top: 10, bottom: 15, left: 50, right: 20 };
 const defaultShowAxisX = true;
 const defaultShowAxisY = true;
-const defaultShowGrid = true;
 
 export const BarChart = <T,>({
   data,
   xAccessor,
   yAccessor,
-  margin = defaultMargin,
-  showGrid = defaultShowGrid,
-  showBrush = false,
-  brushMargin = defaultBrushMargin,
   name,
-  showAxisX = defaultShowAxisX,
-  showAxisY = defaultShowAxisY,
-  axisXLabel,
-  axisYLabel,
+  grid = 'none',
+  axis,
+  brush,
+  animate = true,
+  margin = defaultMargin,
 }: BarChartProps<T>) => {
   // TODO: handle empty data
   if (!data || data.length === 0) return null;
@@ -62,14 +57,11 @@ export const BarChart = <T,>({
             data={data}
             width={parent.width}
             height={parent.height}
-            brushMargin={brushMargin}
-            showBrush={showBrush}
-            showGrid={showGrid}
+            grid={grid}
+            axis={axis}
+            brush={brush}
+            animate={animate}
             margin={margin}
-            axisYLabel={axisYLabel}
-            axisXLabel={axisXLabel}
-            showAxisX={showAxisX}
-            showAxisY={showAxisY}
           />
         )}
       </ParentSize>
@@ -86,15 +78,23 @@ const Chart = <T,>({
   width,
   height,
   margin = defaultMargin,
-  showGrid = defaultShowGrid,
-  showBrush = false,
-  brushMargin = defaultBrushMargin,
+  grid = 'none',
+  axis,
+  brush,
+  animate = true,
   name,
-  showAxisX = defaultShowAxisX,
-  showAxisY = defaultShowAxisY,
-  axisYLabel,
-  axisXLabel,
 }: InnerBarChartProps<T>) => {
+  const showAxisX = axis?.showX ?? defaultShowAxisX;
+  const showAxisY = axis?.showY ?? defaultShowAxisY;
+  const axisXLabel = axis?.labelX;
+  const axisYLabel = axis?.labelY;
+
+  const _animate = animate;
+  // TODO: impl grid overlay
+  const _grid = grid;
+
+  const showBrush = brush?.enabled ?? false;
+  const brushMargin = brush?.margin ?? defaultBrushMargin;
   const gradients = useGradients(name);
   const [filteredData, setFilteredData] = useState(data);
 
@@ -176,7 +176,7 @@ const Chart = <T,>({
       {gradients.background.gradient}
       {gradients.chart.gradient}
       <rect width={width} height={height} fill={`url(#${gradients.background.id})`} rx={14} />
-      {showGrid && (
+      {
         <GridRows
           top={margin.top}
           left={margin.left + axisWidth}
@@ -186,7 +186,7 @@ const Chart = <T,>({
           stroke={theme.colors.backgroundAccent}
           strokeOpacity={1}
         />
-      )}
+      }
       <Group top={margin.top}>
         {filteredData.map((d) => {
           const xVal = xAccessor(d);
