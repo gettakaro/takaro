@@ -9,7 +9,7 @@ import {
 } from 'react-icons/ai';
 
 interface InsightsBarProps {
-  insights?: Array<{
+  insights: Array<{
     type: string;
     title: string;
     description: string;

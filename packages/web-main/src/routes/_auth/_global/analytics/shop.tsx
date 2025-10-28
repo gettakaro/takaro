@@ -23,14 +23,12 @@ export const Route = createFileRoute('/_auth/_global/analytics/shop')({
     }
   },
   loader: async ({ context }) => {
-    // Load initial analytics data with default parameters
     const analyticsData = await context.queryClient.ensureQueryData(
       shopAnalyticsQueryOptions(undefined, AnalyticsControllerGetShopAnalyticsPeriodEnum.Last30Days),
     );
-
     return { analyticsData };
   },
-  component: ShopAnalyticsPage,
+  component: Component,
 });
 
 const Container = styled.div`
@@ -75,8 +73,9 @@ const LastUpdated = styled.div`
   margin-left: auto;
 `;
 
-function ShopAnalyticsPage() {
+function Component() {
   useDocumentTitle('Shop Analytics');
+  const { analyticsData: initialAnalyticsData } = Route.useLoaderData();
 
   const { control } = useForm({
     defaultValues: {
@@ -88,9 +87,10 @@ function ShopAnalyticsPage() {
   const selectedPeriod = useWatch({ control, name: 'period' });
   const selectedGameServers = useWatch({ control, name: 'gameServers' });
 
-  const { data: analyticsData, isFetching } = useQuery(
-    shopAnalyticsQueryOptions(selectedGameServers.length > 0 ? selectedGameServers : undefined, selectedPeriod),
-  );
+  const { data: analyticsData, isFetching } = useQuery({
+    ...shopAnalyticsQueryOptions(selectedGameServers.length > 0 ? selectedGameServers : undefined, selectedPeriod),
+    initialData: initialAnalyticsData,
+  });
 
   return (
     <Container>
@@ -107,20 +107,12 @@ function ShopAnalyticsPage() {
           </LastUpdated>
         </ControlBar>
       </Header>
-
-      {/* KPI Cards Section */}
-      <KPICards kpis={analyticsData?.kpis} isLoading={isFetching} />
-
-      {/* Chart Sections */}
+      <KPICards kpis={analyticsData.kpis} isLoading={isFetching} />
       <ChartSection>
-        <RevenueCharts revenue={analyticsData?.revenue} isLoading={isFetching} />
-
-        <ProductCharts products={analyticsData?.products} orders={analyticsData?.orders} isLoading={isFetching} />
-
-        <CustomerCharts customers={analyticsData?.customers} orders={analyticsData?.orders} isLoading={isFetching} />
+        <RevenueCharts revenue={analyticsData.revenue} isLoading={isFetching} />
+        <ProductCharts products={analyticsData.products} orders={analyticsData.orders} isLoading={isFetching} />
+        <CustomerCharts customers={analyticsData.customers} orders={analyticsData.orders} isLoading={isFetching} />
       </ChartSection>
-
-      {/* Insights Bar */}
       <InsightsBar insights={analyticsData?.insights} isLoading={isFetching} />
     </Container>
   );

@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import { styled, Card, EChartsPie, Skeleton, Chip, Avatar, IconTooltip, Dialog, Button } from '@takaro/lib-components';
+import { styled, Card, Skeleton, Avatar, IconTooltip, Dialog, Button } from '@takaro/lib-components';
 import { CustomerMetricsDTO, OrderMetricsDTO } from '@takaro/apiclient';
 import { DateTime } from 'luxon';
 import {
@@ -7,12 +7,7 @@ import {
   AiOutlineClockCircle as ClockIcon,
   AiOutlineInfoCircle as InfoIcon,
 } from 'react-icons/ai';
-
-interface CustomerChartsProps {
-  customers?: CustomerMetricsDTO;
-  orders?: OrderMetricsDTO;
-  isLoading?: boolean;
-}
+import { CustomerSegmentChart } from './CustomerSegmentChart';
 
 const ChartsContainer = styled.div`
   display: grid;
@@ -22,28 +17,6 @@ const ChartsContainer = styled.div`
   @media (min-width: 1200px) {
     grid-template-columns: 1fr 1fr;
   }
-`;
-
-const ChartCard = styled(Card)`
-  padding: ${({ theme }) => theme.spacing[4]};
-  min-height: 400px;
-  display: flex;
-  flex-direction: column;
-`;
-
-const ChartHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing[3]};
-`;
-
-const ChartTitle = styled.h3`
-  font-size: ${({ theme }) => theme.fontSize.large};
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[1]};
 `;
 
 const ChartContent = styled.div`
@@ -104,32 +77,6 @@ const OrderValue = styled.div<{ $isLarge?: boolean }>`
   font-size: ${({ theme }) => theme.fontSize.medium};
   font-weight: bold;
   color: ${({ theme, $isLarge }) => ($isLarge ? theme.colors.success : theme.colors.text)};
-`;
-
-const StatsBox = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: ${({ theme }) => theme.spacing[2]};
-  margin-top: ${({ theme }) => theme.spacing[3]};
-  padding: ${({ theme }) => theme.spacing[2]};
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
-`;
-
-const Stat = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[0.5]};
-`;
-
-const StatLabel = styled.span`
-  font-size: ${({ theme }) => theme.fontSize.tiny};
-  color: ${({ theme }) => theme.colors.textAlt};
-`;
-
-const StatValue = styled.span`
-  font-size: ${({ theme }) => theme.fontSize.medium};
-  font-weight: bold;
 `;
 
 const TopBuyersContainer = styled.div`
@@ -221,17 +168,15 @@ const DialogGrid = styled.div`
   gap: ${({ theme }) => theme.spacing[3]};
 `;
 
+interface CustomerChartsProps {
+  customers: CustomerMetricsDTO;
+  orders: OrderMetricsDTO;
+  isLoading: boolean;
+}
+
 export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isLoading }) => {
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  // Prepare customer segments data for PieChart
-  const segmentData =
-    customers?.segments?.map((segment) => ({
-      name: segment.name,
-      value: segment.count,
-      percentage: segment.percentage,
-    })) || [];
 
   // Recent orders data
   const recentOrders = orders?.recentOrders || [];
@@ -243,122 +188,72 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
 
   return (
     <ChartsContainer>
-      <ChartCard>
-        <ChartHeader>
-          <ChartTitle>
-            Customer Segments
-            <IconTooltip icon={<InfoIcon />} size="small" color="background">
-              Time-based customer segmentation. New = first-time buyers in current period with no prior history.
-              Returning = customers with purchase history who don't qualify as frequent. Frequent = customers with 3+
-              consecutive months of purchases OR 4+ total months with purchases in the last 6 months. Helps identify
-              true customer loyalty patterns over time.
-            </IconTooltip>
-          </ChartTitle>
-          <Chip label={`${customers?.totalCustomers || 0} total`} color="primary" />
-        </ChartHeader>
-        <ChartContent>
-          {isLoading ? (
-            <Skeleton variant="rectangular" width="100%" height="100%" />
-          ) : segmentData.length > 0 ? (
-            <>
-              <div style={{ height: '200px' }}>
-                <EChartsPie
-                  data={segmentData}
-                  nameAccessor={(d: any) => d.name}
-                  valueAccessor={(d: any) => d.value}
-                  seriesName="Customers"
-                  donut={true}
-                  showLegend={true}
-                  tooltipFormatter={(params: any) => {
-                    return `${params.name}<br/>Customers: ${params.value} (${params.percent}%)`;
-                  }}
-                />
-              </div>
-              <StatsBox>
-                <Stat>
-                  <StatLabel>Repeat Rate</StatLabel>
-                  <StatValue>{customers?.repeatRate?.toFixed(1) || 0}%</StatValue>
-                </Stat>
-                <Stat>
-                  <StatLabel>Avg Lifetime Value</StatLabel>
-                  <StatValue>0</StatValue>
-                </Stat>
-              </StatsBox>
-            </>
-          ) : (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-              <span style={{ color: '#9ca3af' }}>No customer data available</span>
-            </div>
-          )}
-        </ChartContent>
-      </ChartCard>
-
-      <ChartCard>
-        <ChartHeader>
-          <ChartTitle>
-            Recent Orders
-            <IconTooltip icon={<InfoIcon />} size="small" color="background">
-              Latest 10 orders showing player, item, value and time. Helps monitor real-time shop activity and quickly
-              identify any issues with orders or popular items.
-            </IconTooltip>
-          </ChartTitle>
-        </ChartHeader>
-        <ChartContent>
-          {isLoading ? (
-            <Skeleton variant="rectangular" width="100%" height="100%" />
-          ) : (
-            <OrdersList>
-              {recentOrders.length > 0 ? (
-                recentOrders.map((order) => (
-                  <OrderItem key={order.id} onClick={() => handleOrderClick(order)}>
-                    <OrderInfo>
-                      <Avatar size="tiny">
-                        <UserIcon />
-                      </Avatar>
-                      <OrderDetails>
-                        <OrderPlayer>{order.playerName}</OrderPlayer>
-                        <OrderMeta>
-                          <ClockIcon style={{ width: '12px', height: '12px' }} />
-                          {DateTime.fromISO(order.time || DateTime.now().toISO()).toRelative()}
-                        </OrderMeta>
-                      </OrderDetails>
-                    </OrderInfo>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <StatusBadge $status={order.status}>
-                        {order.status === 'COMPLETED' ? '✓' : ''} {order.status}
-                      </StatusBadge>
-                      <OrderValue $isLarge={order.value > 100}>{order.value.toFixed(0)}</OrderValue>
-                    </div>
-                  </OrderItem>
-                ))
-              ) : (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                  <span style={{ color: '#9ca3af' }}>No recent orders</span>
-                </div>
-              )}
-            </OrdersList>
-          )}
-          {customers?.topBuyers && customers.topBuyers.length > 0 && !isLoading && (
-            <TopBuyersContainer>
-              <TopBuyersHeader>
-                Top Buyers
-                <IconTooltip icon={<InfoIcon />} size="tiny" color="background">
-                  Players ranked by total amount spent. Includes order count and last purchase date to identify your
-                  most valuable customers and target them with special offers.
-                </IconTooltip>
-              </TopBuyersHeader>
-              {customers.topBuyers.slice(0, 3).map((buyer, index) => (
-                <TopBuyerItem key={buyer.id}>
-                  <TopBuyerRank>
-                    {index + 1}. {buyer.name}
-                  </TopBuyerRank>
-                  <TopBuyerAmount>{buyer.totalSpent.toFixed(0)}</TopBuyerAmount>
-                </TopBuyerItem>
-              ))}
-            </TopBuyersContainer>
-          )}
-        </ChartContent>
-      </ChartCard>
+      <CustomerSegmentChart customers={customers} />
+      <Card>
+        <Card.Title label="Recent Orders">
+          <IconTooltip icon={<InfoIcon />} size="small" color="background">
+            Latest 10 orders showing player, item, value and time. Helps monitor real-time shop activity and quickly
+            identify any issues with orders or popular items.
+          </IconTooltip>
+        </Card.Title>
+        <Card.Body>
+          <ChartContent>
+            {isLoading ? (
+              <Skeleton variant="rectangular" width="100%" height="100%" />
+            ) : (
+              <OrdersList>
+                {recentOrders.length > 0 ? (
+                  recentOrders.map((order) => (
+                    <OrderItem key={order.id} onClick={() => handleOrderClick(order)}>
+                      <OrderInfo>
+                        <Avatar size="tiny">
+                          <UserIcon />
+                        </Avatar>
+                        <OrderDetails>
+                          <OrderPlayer>{order.playerName}</OrderPlayer>
+                          <OrderMeta>
+                            <ClockIcon style={{ width: '12px', height: '12px' }} />
+                            {DateTime.fromISO(order.time || DateTime.now().toISO()).toRelative()}
+                          </OrderMeta>
+                        </OrderDetails>
+                      </OrderInfo>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <StatusBadge $status={order.status}>
+                          {order.status === 'COMPLETED' ? '✓' : ''} {order.status}
+                        </StatusBadge>
+                        <OrderValue $isLarge={order.value > 100}>{order.value.toFixed(0)}</OrderValue>
+                      </div>
+                    </OrderItem>
+                  ))
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                    <span style={{ color: '#9ca3af' }}>No recent orders</span>
+                  </div>
+                )}
+              </OrdersList>
+            )}
+            {customers?.topBuyers && customers.topBuyers.length > 0 && !isLoading && (
+              <TopBuyersContainer>
+                <TopBuyersHeader>
+                  Top Buyers
+                  <IconTooltip icon={<InfoIcon />} size="tiny" color="background">
+                    Players ranked by total amount spent. Includes order count and last purchase date to identify your
+                    most valuable customers and target them with special offers.
+                  </IconTooltip>
+                </TopBuyersHeader>
+                {customers.topBuyers.slice(0, 3).map((buyer, index) => (
+                  <TopBuyerItem key={buyer.id}>
+                    <TopBuyerRank>
+                      {index + 1}. {buyer.name}
+                    </TopBuyerRank>
+                    <TopBuyerAmount>{buyer.totalSpent.toFixed(0)}</TopBuyerAmount>
+                  </TopBuyerItem>
+                ))}
+              </TopBuyersContainer>
+            )}
+          </ChartContent>
+        </Card.Body>
+      </Card>
 
       {/* Order Details Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

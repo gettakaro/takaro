@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 import { AiOutlineInfoCircle as InfoIcon } from 'react-icons/ai';
 
 interface RevenueChartsProps {
-  revenue?: RevenueMetricsDTO;
+  revenue: RevenueMetricsDTO;
   isLoading?: boolean;
 }
 
