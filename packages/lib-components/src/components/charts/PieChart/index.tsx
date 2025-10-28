@@ -7,10 +7,19 @@ import { scaleOrdinal } from '@visx/scale';
 import { useTooltipInPortal, useTooltip } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
 import { LegendOrdinal, LegendItem, LegendLabel } from '@visx/legend';
+import { motion } from 'framer-motion';
 
 import { useTheme } from '../../../hooks';
-import { getChartColors, getDefaultTooltipStyles, InnerChartProps, Margin, LegendPosition } from '../util';
+import {
+  getChartColors,
+  getDefaultTooltipStyles,
+  InnerChartProps,
+  LegendPosition,
+  TooltipConfig,
+  ChartProps,
+} from '../util';
 import { styled } from '../../../styled';
+import { EmptyChart } from '../EmptyChart';
 
 type LabelPosition = 'inside' | 'outside';
 
@@ -64,14 +73,12 @@ const SvgContainer = styled.div`
   display: flex;
 `;
 
-export interface PieChartProps<T> {
-  name: string;
+export interface PieChartProps<T> extends ChartProps {
   data: T[];
-  margin?: Margin;
   xAccessor: (d: T) => string;
   yAccessor: (d: T) => number;
-  /** Optional tooltip accessor. If not provided, shows "name: value (percentage%)" */
-  tooltipAccessor?: (d: T) => string;
+  /** Tooltip configuration */
+  tooltip?: TooltipConfig<T>;
   /** Label accessor - receives data item, percentage, and value. If not provided, shows name if space allows */
   labelAccessor?: (d: T, percentage: number, value: number) => string;
   /** Position labels inside or outside the slices. Default: 'inside' */
@@ -99,7 +106,7 @@ export const PieChart = <T,>({
   data,
   yAccessor,
   xAccessor,
-  tooltipAccessor,
+  tooltip,
   labelAccessor,
   labelPosition = 'inside',
   name,
@@ -116,12 +123,10 @@ export const PieChart = <T,>({
   const theme = useTheme();
   const chartColors = colors || getChartColors(theme);
 
-  // Adjust margin for outside labels to prevent cutoff
   const adjustedMargin =
     margin || (labelPosition === 'outside' ? { top: 40, right: 40, bottom: 40, left: 40 } : defaultMargin);
-
-  // Calculate total for percentages
   const total = useMemo(() => data.reduce((sum, d) => sum + yAccessor(d), 0), [data, yAccessor]);
+  const legendGlyphSize = 15;
 
   const ordinalColorScale = useMemo(
     () =>
@@ -131,8 +136,6 @@ export const PieChart = <T,>({
       }),
     [data, xAccessor, chartColors],
   );
-
-  const legendGlyphSize = 15;
 
   const renderLegend = () => (
     <LegendContainer $position={legendPosition}>
@@ -168,28 +171,30 @@ export const PieChart = <T,>({
 
       <SvgContainer>
         <ParentSize>
-          {(parent) => (
-            <Chart<T>
-              name={name}
-              data={data}
-              width={parent.width}
-              height={parent.height}
-              margin={adjustedMargin}
-              yAccessor={yAccessor}
-              xAccessor={xAccessor}
-              tooltipAccessor={tooltipAccessor}
-              labelAccessor={labelAccessor}
-              labelPosition={labelPosition}
-              ordinalColorScale={ordinalColorScale}
-              total={total}
-              onSliceClick={onSliceClick}
-              animate={animate}
-              innerRadius={innerRadius}
-              padAngle={padAngle}
-              cornerRadius={cornerRadius}
-              centerContent={centerContent}
-            />
-          )}
+          {total > 0
+            ? (parent) => (
+                <Chart<T>
+                  name={name}
+                  data={data}
+                  width={parent.width}
+                  height={parent.height}
+                  margin={adjustedMargin}
+                  yAccessor={yAccessor}
+                  xAccessor={xAccessor}
+                  labelAccessor={labelAccessor}
+                  labelPosition={labelPosition}
+                  ordinalColorScale={ordinalColorScale}
+                  total={total}
+                  onSliceClick={onSliceClick}
+                  animate={animate}
+                  innerRadius={innerRadius}
+                  padAngle={padAngle}
+                  cornerRadius={cornerRadius}
+                  centerContent={centerContent}
+                  tooltip={tooltip}
+                />
+              )
+            : () => <EmptyChart />}
         </ParentSize>
       </SvgContainer>
 
@@ -211,9 +216,9 @@ const Chart = <T,>({
   data,
   name,
   height,
-  tooltipAccessor,
   labelAccessor,
   labelPosition,
+  tooltip,
   margin = defaultMargin,
   ordinalColorScale,
   total,
@@ -265,10 +270,10 @@ const Chart = <T,>({
       showTooltip({
         tooltipLeft: coords?.x,
         tooltipTop: coords?.y,
-        tooltipData: tooltipAccessor ? tooltipAccessor(datum) : defaultTooltip,
+        tooltipData: tooltip?.accessor ? tooltip.accessor(datum) : defaultTooltip,
       });
     },
-    [tooltipAccessor, xAccessor, showTooltip],
+    [tooltip?.accessor, xAccessor, showTooltip],
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -340,7 +345,7 @@ const Chart = <T,>({
                     transition: animate ? 'transform 0.2s ease-out' : 'none',
                   }}
                 >
-                  <path
+                  <motion.path
                     d={arcPath}
                     fill={arcFill}
                     stroke={theme.colors.background}
@@ -350,13 +355,27 @@ const Chart = <T,>({
                     onClick={() => handleClick(arc.data, index)}
                     style={{
                       cursor: onSliceClick ? 'pointer' : 'default',
-                      opacity: animate ? (isHovered || isSelected ? 1 : hoveredIndex !== null ? 0.6 : 0.9) : 0.9,
                       transition: animate ? 'opacity 0.2s ease-out' : 'none',
                       filter: animate && (isHovered || isSelected) ? 'brightness(1.1)' : 'none',
                     }}
+                    initial={animate ? { opacity: 0 } : { opacity: 0.9 }}
+                    animate={{
+                      opacity: isHovered || isSelected ? 1 : hoveredIndex !== null ? 0.6 : 0.9,
+                    }}
+                    transition={
+                      animate
+                        ? {
+                            opacity: {
+                              duration: 0.3,
+                              delay: (arc.startAngle / (Math.PI * 2)) * 0.6,
+                              ease: 'linear',
+                            },
+                          }
+                        : { duration: 0 }
+                    }
                   />
                   {labelText && (
-                    <text
+                    <motion.text
                       x={labelX}
                       y={labelY}
                       dy=".33em"
@@ -368,9 +387,20 @@ const Chart = <T,>({
                       style={{
                         transition: animate ? 'font-weight 0.2s ease-out' : 'none',
                       }}
+                      initial={animate ? { opacity: 0 } : { opacity: 1 }}
+                      animate={{ opacity: 1 }}
+                      transition={
+                        animate
+                          ? {
+                              duration: 0.3,
+                              delay: 1.0,
+                              ease: 'easeOut',
+                            }
+                          : { duration: 0 }
+                      }
                     >
                       {labelText}
-                    </text>
+                    </motion.text>
                   )}
                 </g>
               );
@@ -385,7 +415,7 @@ const Chart = <T,>({
             height={calculatedInnerRadius * 2}
             style={{ pointerEvents: 'none' }}
           >
-            <div
+            <motion.div
               style={{
                 width: '100%',
                 height: '100%',
@@ -395,9 +425,20 @@ const Chart = <T,>({
                 textAlign: 'center',
                 color: theme.colors.text,
               }}
+              initial={animate ? { opacity: 0, scale: 0.8 } : { opacity: 1, scale: 1 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={
+                animate
+                  ? {
+                      duration: 0.4,
+                      delay: 1.1,
+                      ease: 'easeOut',
+                    }
+                  : { duration: 0 }
+              }
             >
               {centerContent(total, data)}
-            </div>
+            </motion.div>
           </foreignObject>
         )}
       </Group>

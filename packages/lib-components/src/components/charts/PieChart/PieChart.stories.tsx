@@ -3,6 +3,7 @@ import { Meta, StoryFn } from '@storybook/react';
 import { PieChart, PieChartProps } from '.';
 import { styled } from '../../../styled';
 import letterFrequency, { LetterFrequency } from '@visx/mock-data/lib/mocks/letterFrequency';
+import { Card } from '../../visual/Card';
 
 export default {
   title: 'Charts/PieChart',
@@ -57,5 +58,94 @@ export const Default: StoryFn<PieChartProps<LetterFrequency>> = (args) => {
         />
       </Wrapper>
     </div>
+  );
+};
+
+// User Distribution Card Story
+interface UserType {
+  role: string;
+  count: number;
+}
+
+const userData: UserType[] = [
+  { role: 'Free', count: 8200 },
+  { role: 'Premium', count: 3500 },
+  { role: 'Moderator', count: 1200 },
+  { role: 'Admin', count: 150 },
+];
+
+const CardWrapper = styled.div`
+  width: 600px;
+`;
+
+const ChartContainer = styled.div`
+  height: 300px;
+  width: 600px;
+`;
+
+const CenterContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const TotalCount = styled.div`
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+`;
+
+const TotalLabel = styled.div`
+  font-size: 0.875rem;
+  color: ${({ theme }) => theme.colors.textAlt};
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+`;
+
+export const UserDistributionCard: StoryFn = () => {
+  const userColors = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b'];
+
+  const total = userData.reduce((sum, d) => sum + d.count, 0);
+
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat('en-US').format(num);
+  };
+
+  return (
+    <CardWrapper>
+      <Card>
+        <Card.Title label="User Distribution" />
+        <Card.Body>
+          <ChartContainer>
+            <PieChart<UserType>
+              name="user-distribution-pie"
+              data={userData}
+              xAccessor={(d) => d.role}
+              yAccessor={(d) => d.count}
+              innerRadius={0.6}
+              labelPosition="inside"
+              legendPosition="left"
+              colors={userColors}
+              cornerRadius={3}
+              padAngle={0.02}
+              tooltip={{
+                accessor: (d) => {
+                  const percentage = ((d.count / total) * 100).toFixed(1);
+                  return `${d.role}: ${formatNumber(d.count)} users (${percentage}%)`;
+                },
+              }}
+              centerContent={(totalValue) => (
+                <CenterContent>
+                  <TotalCount>{formatNumber(totalValue)}</TotalCount>
+                  <TotalLabel>Total Users</TotalLabel>
+                </CenterContent>
+              )}
+            />
+          </ChartContainer>
+        </Card.Body>
+      </Card>
+    </CardWrapper>
   );
 };
