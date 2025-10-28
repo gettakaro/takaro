@@ -7,14 +7,19 @@ import letterFrequency, { LetterFrequency } from '@visx/mock-data/lib/mocks/lett
 export default {
   title: 'Charts/RadarChart',
   component: RadarChart,
+  args: {
+    levels: 5,
+    items: 6,
+    animate: true,
+  },
 } as Meta<RadarChartProps<LetterFrequency>>;
 
 const Wrapper = styled.div`
-  height: 50vh;
-  width: 100%;
+  height: 200px;
+  width: 200px;
 `;
 
-export const Default: StoryFn<RadarChartProps<LetterFrequency>> = () => {
+export const Default: StoryFn<RadarChartProps<LetterFrequency>> = (args) => {
   const getLetter = (d: LetterFrequency) => d.letter;
   const getLetterFrequency = (d: LetterFrequency) => Number(d.frequency);
   const tooltipAccessor = (d: LetterFrequency) => {
@@ -22,7 +27,7 @@ export const Default: StoryFn<RadarChartProps<LetterFrequency>> = () => {
   };
 
   // only show the first few letters
-  const data = letterFrequency.slice(2, 9);
+  const data = letterFrequency.slice(0, (args as any).items);
 
   return (
     <Wrapper>
@@ -32,6 +37,8 @@ export const Default: StoryFn<RadarChartProps<LetterFrequency>> = () => {
         xAccessor={getLetter}
         tooltipAccessor={tooltipAccessor}
         data={data}
+        levels={args.levels}
+        animate={args.animate}
       />
     </Wrapper>
   );
