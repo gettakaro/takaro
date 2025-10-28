@@ -184,7 +184,12 @@ function Component() {
                     name="Players online"
                     data={playerOnlineStatsData.values}
                     xAccessor={(d) => new Date(d[0] * 1000)}
-                    yAccessor={(d) => d[1]}
+                    lines={[
+                      {
+                        id: 'players-online',
+                        yAccessor: (d) => d[1],
+                      },
+                    ]}
                     curveType="curveBasis"
                   />
                 )}

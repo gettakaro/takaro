@@ -1,18 +1,16 @@
-import { LineChart, Card, styled, Loading, IconTooltip, GeoMercator, Chip, AreaChart } from '@takaro/lib-components';
+import { LineChart, Card, styled, Loading, IconTooltip, GeoMercator, AreaChart } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
 import {
   PlayersOnlineStatsQueryOptions,
   LatencyStatsQueryOptions,
-  EventsCountQueryOptions,
   CountriesStatsQueryOptions,
   CurrencyStatsQueryOptions,
 } from '../../../queries/stats';
 import { useMemo } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { TimePeriodSelectField } from '../../../components/selects';
-import { EventsCountInputDTOEventNameEnum } from '@takaro/apiclient';
 import { AiOutlineQuestion as QuestionIcon } from 'react-icons/ai';
 
 const Container = styled.div`
@@ -74,18 +72,18 @@ function Component() {
   const { data: countryStats } = useQuery(CountriesStatsQueryOptions({ gameServerIds: [gameServerId] }));
   const { data: playersOnlineData } = useQuery(PlayersOnlineStatsQueryOptions(gameServerId, startDate, now));
   const { data: latencyData } = useQuery(LatencyStatsQueryOptions(gameServerId, startDate, now));
-  const { data: chatMessagesData } = useQuery(
-    EventsCountQueryOptions({
-      gameServerId,
-      sumBy: ['gameserver'],
-      startDate,
-      endDate: now,
-      eventName: EventsCountInputDTOEventNameEnum.ChatMessage,
-      bucketStep: '1h',
-    }),
-  );
+  // const { data: chatMessagesData } = useQuery(
+  //   EventsCountQueryOptions({
+  //     gameServerId,
+  //     sumBy: ['gameserver'],
+  //     startDate,
+  //     endDate: now,
+  //     eventName: EventsCountInputDTOEventNameEnum.ChatMessage,
+  //     bucketStep: '1h',
+  //   }),
+  // );
 
-  if (!playersOnlineData || !latencyData || !chatMessagesData || !countryStats || !currencyInRotationData) {
+  if (!playersOnlineData || !latencyData || !countryStats || !currencyInRotationData) {
     return <Loading />;
   }
   return (
@@ -105,7 +103,16 @@ function Component() {
               name="Latency"
               data={latencyData.values}
               xAccessor={(d) => new Date(d[0] * 1000)}
-              yAccessor={(d) => d[1]}
+              lines={[
+                {
+                  id: 'latency',
+                  yAccessor: (d) => d[1],
+                  tooltipAccessor: (d) => `${d[1]} ms`,
+                },
+              ]}
+              axis={{
+                numTicksY: 3,
+              }}
               curveType="curveStep"
             />
           </div>
@@ -122,7 +129,12 @@ function Component() {
               name="Players online"
               data={playersOnlineData.values}
               xAccessor={(d) => new Date(d[0] * 1000)}
-              yAccessor={(d) => d[1]}
+              lines={[
+                {
+                  id: 'Players online',
+                  yAccessor: (d) => d[1],
+                },
+              ]}
               curveType="curveStep"
             />
           </div>
@@ -145,7 +157,6 @@ function Component() {
         <Card variant="outline">
           <Card.Title label="Player Demographics">
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Chip color="warning" label="Beta" />
               <IconTooltip color="background" icon={<QuestionIcon />}>
                 Shows where your players are from
               </IconTooltip>
@@ -176,7 +187,6 @@ function Component() {
                 data={currencyInRotationData.values}
                 xAccessor={(d) => new Date(d[0] * 1000)}
                 yAccessor={(d) => d[1]}
-                showBrush={false}
               />
             </div>
           </Card.Body>
