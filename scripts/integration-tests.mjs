@@ -116,17 +116,24 @@ async function main() {
   } catch (error) {
     console.error('Tests failed');
     failed = true;
+  } finally {
+    // Always collect docker logs, even if tests failed
+    console.log('Collecting docker logs...');
+    try {
+      const logsResult = await logs(['takaro_api', 'takaro_worker', 'takaro_mock_gameserver', 'takaro_connector', 'kratos'], {
+        ...composeOpts,
+        log: false,
+      });
+
+      await writeFile('./reports/integrationTests/docker-logs.txt', logsResult.out);
+      await writeFile('./reports/integrationTests/docker-logs-err.txt', logsResult.err);
+      console.log('Docker logs collected successfully');
+    } catch (logError) {
+      console.error('Failed to collect docker logs:', logError);
+    }
   }
 
   await $`TAKARO_HOST=http://127.0.0.1:13000 npm -w packages/lib-apiclient run generate && npm run test:style:fix`;
-
-  const logsResult = await logs(['takaro_api', 'takaro_worker', 'takaro_mock_gameserver', 'takaro_connector', 'kratos'], {
-    ...composeOpts,
-    log: false,
-  });
-
-  await writeFile('./reports/integrationTests/docker-logs.txt', logsResult.out);
-  await writeFile('./reports/integrationTests/docker-logs-err.txt', logsResult.err);
 
   await cleanUp();
 
