@@ -14,6 +14,8 @@ export default {
     showBrush: true,
     axisXLabel: '',
     axisYLabel: 'Close Price',
+    grid: 'none',
+    animate: true,
   },
 } as Meta<AreaChartProps<AppleStock>>;
 
@@ -32,9 +34,12 @@ export const Default: StoryFn<AreaChartProps<AppleStock>> = (args) => {
         xAccessor={getDate}
         yAccessor={getStockValue}
         data={appleStock}
-        showBrush={args.showBrush}
-        axisXLabel={args.axisXLabel}
-        axisYLabel={args.axisYLabel}
+        axis={{
+          labelX: args.axis?.labelX,
+          labelY: args.axis?.labelY,
+        }}
+        grid={args.grid}
+        animate={args.animate}
       />
     </Wrapper>
   );
@@ -85,9 +90,10 @@ export const PingExample: StoryFn = () => {
               name="Ping"
               xAccessor={getDate}
               yAccessor={getLatency}
-              tooltipAccessor={tooltipAccessor}
+              tooltip={{
+                accessor: tooltipAccessor,
+              }}
               data={generateData()}
-              showBrush={false}
             />
           </div>
         </Card.Body>

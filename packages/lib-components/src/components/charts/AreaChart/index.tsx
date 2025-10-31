@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { ParentSize } from '@visx/responsive';
-import { GridColumns } from '@visx/grid';
+import { GridColumns, GridRows } from '@visx/grid';
 import { Group } from '@visx/group';
 import { AreaClosed, Bar } from '@visx/shape';
 import { max, extent, bisector } from '@visx/vendor/d3-array';
@@ -14,6 +14,7 @@ import { timeFormat } from '@visx/vendor/d3-time-format';
 import { PatternLines } from '@visx/pattern';
 import { Brush } from '@visx/brush';
 import { Bounds } from '@visx/brush/lib/types';
+import { motion } from 'framer-motion';
 
 import { useTheme } from '../../../hooks';
 import { useGradients } from '../useGradients';
@@ -97,9 +98,6 @@ const Chart = <T,>({
   const axisXLabel = axis?.labelX;
   const axisYLabel = axis?.labelY;
   const tooltipAccessor = tooltip?.accessor;
-  const _animate = animate;
-  // TODO: implement grid overlay
-  const _grid = grid;
 
   // Extract brush configuration
   const showBrush = brush?.enabled ?? false;
@@ -221,21 +219,27 @@ const Chart = <T,>({
     <div>
       <svg width={width} height={height}>
         {gradients.chart.gradient}
-        {gradients.background.gradient}
-        <rect x={0} y={0} width={width} height={height} fill={`url(#${gradients.background.id})`} rx={14} />
-        {
-          <GridColumns
-            top={margin.top}
-            left={margin.left}
-            scale={xScale}
-            height={yMax}
-            strokeDasharray="1,5"
-            stroke={theme.colors.backgroundAccent}
-            strokeOpacity={0.2}
-            pointerEvents="none"
-          />
-        }
         <Group id="chart" top={margin.top} left={margin.left}>
+          {(grid === 'y' || grid === 'xy') && (
+            <GridRows
+              scale={yScale}
+              width={xMax}
+              stroke={theme.colors.backgroundAccent}
+              strokeOpacity={1}
+              strokeDasharray="2,2"
+              pointerEvents="none"
+            />
+          )}
+          {(grid === 'x' || grid === 'xy') && (
+            <GridColumns
+              scale={xScale}
+              height={yMax}
+              stroke={theme.colors.backgroundAccent}
+              strokeOpacity={1}
+              strokeDasharray="2,2"
+              pointerEvents="none"
+            />
+          )}
           <AreaClosed<T>
             x={(d) => xScale(xAccessor(d)) ?? 0}
             y={(d) => yScale(yAccessor(d)) ?? 0}
@@ -245,7 +249,29 @@ const Chart = <T,>({
             stroke={theme.colors.primary}
             fill={`url(#${gradients.chart.id})`}
             curve={curveMonotoneX}
-          />
+          >
+            {({ path }) => {
+              const pathData = path(filteredData) || '';
+              return (
+                <motion.path
+                  d={pathData}
+                  stroke={theme.colors.primary}
+                  strokeWidth={1}
+                  fill={`url(#${gradients.chart.id})`}
+                  initial={animate ? { pathLength: 0, opacity: 0 } : { pathLength: 1, opacity: 1 }}
+                  animate={{ pathLength: 1, opacity: 1 }}
+                  transition={
+                    animate
+                      ? {
+                          pathLength: { duration: 1, ease: 'easeInOut' },
+                          opacity: { duration: 0.8, ease: 'easeInOut' },
+                        }
+                      : { duration: 0 }
+                  }
+                />
+              );
+            }}
+          </AreaClosed>
         </Group>
         <Bar
           x={margin.left}
@@ -275,7 +301,29 @@ const Chart = <T,>({
               stroke={`url(#${gradients.chart.id})`}
               fill={`url(#${gradients.chart.id})`}
               curve={curveMonotoneX}
-            />
+            >
+              {({ path }) => {
+                const pathData = path(data) || '';
+                return (
+                  <motion.path
+                    d={pathData}
+                    stroke={`url(#${gradients.chart.id})`}
+                    strokeWidth={1}
+                    fill={`url(#${gradients.chart.id})`}
+                    initial={animate ? { pathLength: 0, opacity: 0 } : { pathLength: 1, opacity: 1 }}
+                    animate={{ pathLength: 1, opacity: 1 }}
+                    transition={
+                      animate
+                        ? {
+                            pathLength: { duration: 0.5, ease: 'easeInOut' },
+                            opacity: { duration: 0.4, ease: 'easeInOut' },
+                          }
+                        : { duration: 0 }
+                    }
+                  />
+                );
+              }}
+            </AreaClosed>
             <PatternLines
               id={PATTERN_ID}
               height={8}
