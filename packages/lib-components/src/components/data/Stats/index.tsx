@@ -1,6 +1,7 @@
 import { FC, PropsWithChildren, Children, isValidElement } from 'react';
 import { styled } from '../../../styled';
 import { Stat } from './Stat';
+import { Sparkline } from './Sparkline';
 import { StatContext, Direction, Size } from './context';
 
 export const Container = styled.dl<{ direction: Direction; grouped: boolean; count: number }>`
@@ -26,6 +27,7 @@ export interface StatsProps {
 
 interface SubComponents {
   Stat: typeof Stat;
+  Sparkline: typeof Sparkline;
 }
 
 export const Stats: FC<PropsWithChildren<StatsProps>> & SubComponents = ({
@@ -52,6 +54,8 @@ export const Stats: FC<PropsWithChildren<StatsProps>> & SubComponents = ({
 };
 
 Stats.Stat = Stat;
+Stats.Sparkline = Sparkline;
 
 export type { Direction, Size } from './context';
 export type { TrendConfig } from './Stat';
+export type { SparklineProps } from './Sparkline';
