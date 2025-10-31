@@ -67,6 +67,59 @@ describe('TakaroEmitter', () => {
     expect(spy).to.have.been.calledOnce;
   });
 
+  it('Can have multiple listeners for the same event', async () => {
+    const emitter = new ExtendedTakaroEmitter();
+    const spy1 = sandbox.spy();
+    const spy2 = sandbox.spy();
+    const spy3 = sandbox.spy();
+
+    emitter.on(GameEvents.LOG_LINE, spy1);
+    emitter.on(GameEvents.LOG_LINE, spy2);
+    emitter.on(GameEvents.LOG_LINE, spy3);
+
+    await emitter.emit(
+      GameEvents.LOG_LINE,
+      new EventLogLine({
+        msg: 'test',
+      }),
+    );
+
+    expect(spy1).to.have.been.calledOnce;
+    expect(spy2).to.have.been.calledOnce;
+    expect(spy3).to.have.been.calledOnce;
+  });
+
+  it('Can remove one listener without affecting others', async () => {
+    const emitter = new ExtendedTakaroEmitter();
+    const spy1 = sandbox.spy();
+    const spy2 = sandbox.spy();
+
+    emitter.on(GameEvents.LOG_LINE, spy1);
+    emitter.on(GameEvents.LOG_LINE, spy2);
+
+    await emitter.emit(
+      GameEvents.LOG_LINE,
+      new EventLogLine({
+        msg: 'test',
+      }),
+    );
+
+    expect(spy1).to.have.been.calledOnce;
+    expect(spy2).to.have.been.calledOnce;
+
+    emitter.off(GameEvents.LOG_LINE, spy1);
+
+    await emitter.emit(
+      GameEvents.LOG_LINE,
+      new EventLogLine({
+        msg: 'test',
+      }),
+    );
+
+    expect(spy1).to.have.been.calledOnce;
+    expect(spy2).to.have.been.calledTwice;
+  });
+
   it('Errors happening inside extended class do not interrupt flow of events', async () => {
     const emitter = new ExtendedTakaroEmitter();
     const spy = sandbox.spy();

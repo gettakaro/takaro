@@ -59,6 +59,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   private checkInterval: NodeJS.Timeout;
   private lastMessageTimestamp = Date.now();
   private keepAliveTimeout = ms('5minutes');
+  private boundListener = (data: MessageEvent) => this.listener(data);
 
   constructor(private config: SdtdConnectionInfo) {
     super();
@@ -93,7 +94,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
           },
         });
 
-        this.eventSource.addEventListener('logLine', (data) => this.listener(data));
+        this.eventSource.addEventListener('logLine', this.boundListener);
 
         this.eventSource.onerror = (e) => {
           this.logger.error('Event source error', e);
@@ -116,7 +117,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     if (this.checkInterval) {
       clearInterval(this.checkInterval);
     }
-    this.eventSource.removeEventListener('logLine', this.listener);
+    this.eventSource.removeEventListener('logLine', this.boundListener);
     this.eventSource.close();
   }
 
