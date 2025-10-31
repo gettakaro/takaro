@@ -3,6 +3,7 @@ import { upMany, logs, upAll, down, run, pullAll, buildOne } from 'docker-compos
 import { $ } from 'zx';
 import { writeFile, mkdir } from 'fs/promises';
 import { createWriteStream } from 'fs';
+import { spawn } from 'child_process';
 
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -128,29 +129,35 @@ async function main() {
       const outStream = createWriteStream('./reports/integrationTests/docker-logs.txt');
       const errStream = createWriteStream('./reports/integrationTests/docker-logs-err.txt');
 
-      // Stream logs directly to files to avoid memory limits
-      await logs(['takaro_api', 'takaro_worker', 'takaro_mock_gameserver', 'takaro_connector', 'kratos'], {
-        ...composeOpts,
-        log: false,
-        callback: (chunk, streamSource) => {
-          // Stream chunks directly to file instead of accumulating in memory
-          if (streamSource === 'stdout') {
-            outStream.write(chunk);
-          } else if (streamSource === 'stderr') {
-            errStream.write(chunk);
-          }
-        }
-      }).catch((err) => {
-        // Ignore errors from logs function accumulating too much data
-        // Our streams have already written the data we need
-        console.log('Logs function completed (may have errored due to size, but files were written via streaming)');
+      // Call docker compose logs directly to avoid library's memory accumulation
+      const dockerCompose = spawn('docker', [
+        'compose',
+        '-f', 'docker-compose.test.yml',
+        'logs',
+        '--no-color',
+        'takaro_api', 'takaro_worker', 'takaro_mock_gameserver', 'takaro_connector', 'kratos'
+      ], {
+        cwd: process.cwd(),
+        env: composeOpts.env
       });
 
-      // Close streams
-      outStream.end();
-      errStream.end();
+      // Stream directly to files
+      dockerCompose.stdout.pipe(outStream);
+      dockerCompose.stderr.pipe(errStream);
 
-      console.log('Docker logs collected successfully via streaming');
+      // Wait for completion
+      await new Promise((resolve, reject) => {
+        dockerCompose.on('close', (code) => {
+          console.log(`Docker logs collection completed with code ${code}`);
+          resolve();
+        });
+        dockerCompose.on('error', (err) => {
+          console.error('Error collecting docker logs:', err);
+          reject(err);
+        });
+      });
+
+      console.log('Docker logs collected successfully via direct streaming');
     } catch (logError) {
       console.error('Failed to collect docker logs:', logError);
     }
