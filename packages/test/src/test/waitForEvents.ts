@@ -21,6 +21,8 @@ export const sorter = (a: IDetectedEvent, b: IDetectedEvent) => {
 
 export class EventsAwaiter {
   socket: Socket;
+  private eventBuffer: any[] = [];
+  private activeWaiters: Set<(event: any) => void> = new Set();
 
   async connect(client: Client) {
     return new Promise<EventsAwaiter>((resolve, reject) => {
@@ -29,6 +31,15 @@ export class EventsAwaiter {
         extraHeaders: {
           Authorization: `Bearer ${client.token}`,
         },
+      });
+
+      // Attach event listener immediately to capture all events from connection time
+      // This prevents race conditions where events are emitted before waitForEvents() is called
+      this.socket.on('event', (event) => {
+        this.eventBuffer.push(event);
+
+        // Notify all active waiters about the new event
+        this.activeWaiters.forEach((waiter) => waiter(event));
       });
 
       this.socket.on('connect', async () => {
@@ -42,6 +53,7 @@ export class EventsAwaiter {
   }
 
   async disconnect() {
+    this.activeWaiters.clear();
     this.socket.removeAllListeners();
     this.socket.disconnect();
   }
@@ -49,24 +61,35 @@ export class EventsAwaiter {
   async waitForEvents(expectedEvent: EventTypes | string, amount = 1) {
     if (!this.socket.connected) throw new Error('Socket not connected');
     const events: IDetectedEvent[] = [];
-    const discardedEvents: IDetectedEvent[] = [];
     let hasFinished = false;
 
+    // First check buffer for events that already arrived
+    const bufferedMatches = this.eventBuffer.filter((e) => e.eventName === expectedEvent);
+    events.push(...bufferedMatches.map((data) => ({ event: data.eventName, data })));
+
+    // If we already have enough events from buffer, return immediately
+    if (events.length >= amount) {
+      return events.slice(0, amount);
+    }
+
+    // Need to wait for more events
     return Promise.race([
       new Promise<IDetectedEvent[]>((resolve) => {
-        this.socket.on('event', (event) => {
+        const waiter = (event: any) => {
           if (event.eventName === expectedEvent) {
-            events.push({ event, data: event });
-          } else {
-            discardedEvents.push({ event, data: event });
-          }
+            events.push({ event: event.eventName, data: event });
 
-          if (events.length === amount) {
-            hasFinished = true;
-            this.disconnect();
-            resolve(events);
+            if (events.length >= amount) {
+              hasFinished = true;
+              this.activeWaiters.delete(waiter);
+              this.disconnect();
+              resolve(events.slice(0, amount));
+            }
           }
-        });
+        };
+
+        // Register this waiter to be notified of new events
+        this.activeWaiters.add(waiter);
       }),
       new Promise<IDetectedEvent[]>((_, reject) => {
         setTimeout(() => {
