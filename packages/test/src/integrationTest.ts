@@ -86,6 +86,15 @@ export class IntegrationTest<SetupData> {
   }
 
   private async setupStandardEnvironment() {
+    // Clear any stale domain IDs from previous attempts to ensure clean state
+    const oldDomainId = this.standardDomainId;
+    this.standardDomainId = null;
+    this.domainRegistrationToken = null;
+
+    if (oldDomainId) {
+      console.log(`Creating fresh domain for retry (previous domain: ${oldDomainId})`);
+    }
+
     const createdDomain = await this.adminClient.domain.domainControllerCreate({
       name: `${testDomainPrefix}-${randomUUID()}`.slice(0, 49),
       maxGameservers: 100,
@@ -93,6 +102,10 @@ export class IntegrationTest<SetupData> {
     });
     this.standardDomainId = createdDomain.data.data.createdDomain.id;
     this.domainRegistrationToken = createdDomain.data.data.createdDomain.serverRegistrationToken!;
+
+    if (oldDomainId) {
+      console.log(`Created new domain ${this.standardDomainId} for retry`);
+    }
 
     this.client.username = createdDomain.data.data.rootUser.email;
     this.client.password = createdDomain.data.data.password;
@@ -150,6 +163,8 @@ export class IntegrationTest<SetupData> {
       }
 
       if (integrationTestContext.standardDomainId) {
+        const oldDomainId = integrationTestContext.standardDomainId;
+
         try {
           const failedFunctionsRes = await integrationTestContext.client.event.eventControllerGetFailedFunctions();
 
@@ -179,7 +194,15 @@ export class IntegrationTest<SetupData> {
             throw error;
           }
         }
+
+        // Clear the domain ID to force fresh domain creation on next attempt
+        console.log(`Cleaned up domain ${oldDomainId}, clearing domain IDs for next attempt`);
+        integrationTestContext.standardDomainId = null;
+        integrationTestContext.domainRegistrationToken = null;
       }
+
+      // Add small delay to ensure database operations complete
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
     async function executeTest(): Promise<void> {
@@ -192,7 +215,10 @@ export class IntegrationTest<SetupData> {
         try {
           if (attempt > 0) {
             console.log(
-              `Retry attempt ${attempt}/${maxRetries} for test: ${integrationTestContext.test.name} (Domain ID: ${integrationTestContext.standardDomainId || 'not yet created'})`,
+              `\n=== Retry attempt ${attempt}/${maxRetries} for test: ${integrationTestContext.test.name} ===`,
+            );
+            console.log(
+              `Previous domain: ${integrationTestContext.standardDomainId || 'none'} (will be cleared and recreated)`,
             );
           }
 
