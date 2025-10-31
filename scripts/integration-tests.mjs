@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto';
 import { upMany, logs, upAll, down, run, pullAll, buildOne } from 'docker-compose/dist/v2.js';
 import { $ } from 'zx';
 import { writeFile, mkdir } from 'fs/promises';
+import { createWriteStream } from 'fs';
 
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -120,14 +121,36 @@ async function main() {
     // Always collect docker logs, even if tests failed
     console.log('Collecting docker logs...');
     try {
-      const logsResult = await logs(['takaro_api', 'takaro_worker', 'takaro_mock_gameserver', 'takaro_connector', 'kratos'], {
+      // Ensure directory exists
+      await mkdir('./reports/integrationTests', { recursive: true });
+
+      // Create write streams for output
+      const outStream = createWriteStream('./reports/integrationTests/docker-logs.txt');
+      const errStream = createWriteStream('./reports/integrationTests/docker-logs-err.txt');
+
+      // Stream logs directly to files to avoid memory limits
+      await logs(['takaro_api', 'takaro_worker', 'takaro_mock_gameserver', 'takaro_connector', 'kratos'], {
         ...composeOpts,
         log: false,
+        callback: (chunk, streamSource) => {
+          // Stream chunks directly to file instead of accumulating in memory
+          if (streamSource === 'stdout') {
+            outStream.write(chunk);
+          } else if (streamSource === 'stderr') {
+            errStream.write(chunk);
+          }
+        }
+      }).catch((err) => {
+        // Ignore errors from logs function accumulating too much data
+        // Our streams have already written the data we need
+        console.log('Logs function completed (may have errored due to size, but files were written via streaming)');
       });
 
-      await writeFile('./reports/integrationTests/docker-logs.txt', logsResult.out);
-      await writeFile('./reports/integrationTests/docker-logs-err.txt', logsResult.err);
-      console.log('Docker logs collected successfully');
+      // Close streams
+      outStream.end();
+      errStream.end();
+
+      console.log('Docker logs collected successfully via streaming');
     } catch (logError) {
       console.error('Failed to collect docker logs:', logError);
     }
