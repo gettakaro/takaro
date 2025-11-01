@@ -11,17 +11,12 @@ import {
   Button,
 } from '@takaro/lib-components';
 import { ProductMetricsDTO, OrderMetricsDTO } from '@takaro/apiclient';
-import {
-  AiOutlineShoppingCart as CartIcon,
-  AiOutlineCheckCircle as CheckIcon,
-  AiOutlineCloseCircle as CancelIcon,
-  AiOutlineClockCircle as PendingIcon,
-  AiOutlineInfoCircle as InfoIcon,
-} from 'react-icons/ai';
+import { AiOutlineShoppingCart as CartIcon, AiOutlineInfoCircle as InfoIcon } from 'react-icons/ai';
+import { OrderStatusDistribution } from './OrderStatusDistribution';
 
 interface ProductChartsProps {
   products?: ProductMetricsDTO;
-  orders?: OrderMetricsDTO;
+  orders: OrderMetricsDTO;
   isLoading?: boolean;
 }
 
@@ -62,60 +57,6 @@ const ChartContent = styled.div`
   height: 300px;
 `;
 
-const StatusFlow = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[1_5]};
-  padding: ${({ theme }) => theme.spacing[2]};
-`;
-
-const StatusItem = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: ${({ theme }) => theme.spacing[2]};
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
-`;
-
-const StatusInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[2]};
-`;
-
-const StatusIcon = styled.div<{ $color: string }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: ${({ $color }) => `${$color}20`};
-  color: ${({ $color }) => $color};
-`;
-
-const StatusLabel = styled.span`
-  font-size: ${({ theme }) => theme.fontSize.medium};
-`;
-
-const StatusValue = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing['0_5']};
-`;
-
-const StatusCount = styled.span`
-  font-size: ${({ theme }) => theme.fontSize.large};
-  font-weight: bold;
-`;
-
-const StatusPercent = styled.span`
-  font-size: ${({ theme }) => theme.fontSize.small};
-  color: ${({ theme }) => theme.colors.textAlt};
-`;
-
 const DeadStockWarning = styled.div`
   display: flex;
   align-items: center;
@@ -131,30 +72,6 @@ const DeadStockWarning = styled.div`
     background: rgba(239, 68, 68, 0.15);
     transform: translateY(-1px);
   }
-`;
-
-const CompletionRateContainer = styled.div`
-  margin-top: auto;
-  padding: ${({ theme }) => theme.spacing[2]};
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
-`;
-
-const CompletionRateContent = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const CompletionRateLabel = styled.span`
-  font-size: ${({ theme }) => theme.fontSize.small};
-  color: ${({ theme }) => theme.colors.textAlt};
-`;
-
-const CompletionRateValue = styled.span<{ $isGood: boolean }>`
-  font-size: ${({ theme }) => theme.fontSize.large};
-  font-weight: bold;
-  color: ${({ $isGood, theme }) => ($isGood ? theme.colors.success : theme.colors.warning)};
 `;
 
 const DeadStockList = styled.div`
@@ -207,22 +124,6 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
       value: cat.revenue,
       percentage: cat.percentage,
     })) || [];
-
-  // Order status data
-  const statusData = orders?.statusBreakdown || [];
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'COMPLETED':
-        return { icon: <CheckIcon />, color: '#10b981' };
-      case 'CANCELED':
-        return { icon: <CancelIcon />, color: '#ef4444' };
-      case 'PAID':
-        return { icon: <PendingIcon />, color: '#f59e0b' };
-      default:
-        return { icon: <CartIcon />, color: '#6b7280' };
-    }
-  };
 
   return (
     <ChartsContainer>
@@ -309,57 +210,7 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
         </ChartContent>
       </ChartCard>
 
-      <ChartCard>
-        <ChartHeader>
-          <ChartTitle>
-            Order Status Distribution
-            <IconTooltip icon={<InfoIcon />} size="small" color="background">
-              Breakdown of orders by status (Paid, Completed, Canceled). Helps monitor order fulfillment rates and
-              identify potential issues with order completion.
-            </IconTooltip>
-          </ChartTitle>
-          <Chip label={`${orders?.totalOrders || 0} total`} color="primary" />
-        </ChartHeader>
-        <ChartContent>
-          {isLoading ? (
-            <Skeleton variant="rectangular" width="100%" height="100%" />
-          ) : (
-            <StatusFlow>
-              {statusData.length > 0 ? (
-                statusData.map((status) => {
-                  const { icon, color } = getStatusIcon(status.status);
-                  return (
-                    <StatusItem key={status.status}>
-                      <StatusInfo>
-                        <StatusIcon $color={color}>{icon}</StatusIcon>
-                        <StatusLabel>{status.status}</StatusLabel>
-                      </StatusInfo>
-                      <StatusValue>
-                        <StatusCount>{status.count}</StatusCount>
-                        <StatusPercent>({status.percentage.toFixed(1)}%)</StatusPercent>
-                      </StatusValue>
-                    </StatusItem>
-                  );
-                })
-              ) : (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                  <span style={{ color: '#9ca3af' }}>No order data available</span>
-                </div>
-              )}
-            </StatusFlow>
-          )}
-          {orders?.completionRate !== undefined && !isLoading && (
-            <CompletionRateContainer>
-              <CompletionRateContent>
-                <CompletionRateLabel>Completion Rate</CompletionRateLabel>
-                <CompletionRateValue $isGood={orders.completionRate > 80}>
-                  {orders.completionRate.toFixed(1)}%
-                </CompletionRateValue>
-              </CompletionRateContent>
-            </CompletionRateContainer>
-          )}
-        </ChartContent>
-      </ChartCard>
+      <OrderStatusDistribution orders={orders} />
 
       {/* Dead Stock Dialog */}
       <Dialog open={deadStockDialogOpen} onOpenChange={setDeadStockDialogOpen}>

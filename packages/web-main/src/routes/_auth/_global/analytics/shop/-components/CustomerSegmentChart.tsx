@@ -1,7 +1,7 @@
 import { CustomerMetricsDTO } from '@takaro/apiclient';
-import { Card, Chip, IconTooltip, PieChart, styled } from '@takaro/lib-components';
+import { Card, Chip, IconTooltip, PieChart, Stats, styled } from '@takaro/lib-components';
 import { FC } from 'react';
-import { AiOutlineInfoCircle as InfoIcon } from 'react-icons/ai';
+import { AiOutlineInfoCircle as InfoIcon, AiOutlineReload, AiOutlineDollar } from 'react-icons/ai';
 
 const ChartContent = styled.div`
   position: relative;
@@ -11,32 +11,6 @@ const ChartContent = styled.div`
 interface CustomerSegmentChartProps {
   customers: CustomerMetricsDTO;
 }
-
-const StatsBox = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: ${({ theme }) => theme.spacing[2]};
-  margin-top: ${({ theme }) => theme.spacing[3]};
-  padding: ${({ theme }) => theme.spacing[2]};
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
-`;
-
-const Stat = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[0.5]};
-`;
-
-const StatLabel = styled.span`
-  font-size: ${({ theme }) => theme.fontSize.tiny};
-  color: ${({ theme }) => theme.colors.textAlt};
-`;
-
-const StatValue = styled.span`
-  font-size: ${({ theme }) => theme.fontSize.medium};
-  font-weight: bold;
-`;
 
 export const CustomerSegmentChart: FC<CustomerSegmentChartProps> = ({ customers }) => {
   const segmentData =
@@ -74,16 +48,14 @@ export const CustomerSegmentChart: FC<CustomerSegmentChartProps> = ({ customers 
             }}
           />
         </ChartContent>
-        <StatsBox>
-          <Stat>
-            <StatLabel>Repeat Rate</StatLabel>
-            <StatValue>{customers?.repeatRate?.toFixed(1) || 0}%</StatValue>
-          </Stat>
-          <Stat>
-            <StatLabel>Avg Lifetime Value</StatLabel>
-            <StatValue>0</StatValue>
-          </Stat>
-        </StatsBox>
+        <Stats direction="horizontal" grouped size="small">
+          <Stats.Stat
+            description="Repeat Rate"
+            value={`${customers?.repeatRate?.toFixed(1) || 0}%`}
+            icon={<AiOutlineReload />}
+          />
+          <Stats.Stat description="Avg Lifetime Value" value={0} icon={<AiOutlineDollar />} />
+        </Stats>
       </Card.Body>
     </Card>
   );

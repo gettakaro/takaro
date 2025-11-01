@@ -1,7 +1,6 @@
 import { FC } from 'react';
-import { styled, Card, EChartsArea, EChartsHeatmap, Skeleton, IconTooltip } from '@takaro/lib-components';
+import { styled, Card, EChartsHeatmap, Skeleton, IconTooltip, AreaChart } from '@takaro/lib-components';
 import { RevenueMetricsDTO } from '@takaro/apiclient';
-import { DateTime } from 'luxon';
 import { AiOutlineInfoCircle as InfoIcon } from 'react-icons/ai';
 
 interface RevenueChartsProps {
@@ -74,8 +73,8 @@ const MetricValue = styled.span`
 export const RevenueCharts: FC<RevenueChartsProps> = ({ revenue, isLoading }) => {
   // Prepare data for AreaChart
   const chartData =
-    revenue?.timeSeries?.map((point) => ({
-      date: DateTime.fromISO(point.date).toFormat('MMM dd'),
+    revenue.timeSeries.map((point) => ({
+      date: point.date,
       revenue: point.value,
       comparison: point.comparison || 0,
     })) || [];
@@ -95,34 +94,21 @@ export const RevenueCharts: FC<RevenueChartsProps> = ({ revenue, isLoading }) =>
 
   return (
     <ChartsContainer>
-      <ChartCard>
-        <ChartHeader>
-          <ChartTitle>
-            Revenue Over Time
-            <IconTooltip icon={<InfoIcon />} size="small" color="background">
-              Shows daily revenue trends over time. The area under the line represents total revenue volume.
-            </IconTooltip>
-          </ChartTitle>
-        </ChartHeader>
+      <Card>
+        <Card.Title label="Revenue Over time">
+          <IconTooltip icon={<InfoIcon />} size="small" color="background">
+            Shows daily revenue trends over time. The area under the line represents total revenue volume.
+          </IconTooltip>
+        </Card.Title>
         <ChartContent>
           {isLoading ? (
             <Skeleton variant="rectangular" width="100%" height="100%" />
           ) : chartData.length > 0 ? (
-            <EChartsArea
+            <AreaChart
               data={chartData}
-              xAccessor={(d: any) => d.date}
-              yAccessor={(d: any) => d.revenue}
-              seriesName="Revenue"
-              smooth={true}
-              gradient={true}
-              showGrid={true}
-              tooltipFormatter={(params: any) => {
-                if (Array.isArray(params) && params.length > 0) {
-                  const value = params[0].value;
-                  return `${params[0].name}<br/>Revenue: ${value.toLocaleString()}`;
-                }
-                return '';
-              }}
+              xAccessor={(d) => new Date(d.date)}
+              yAccessor={(d) => d.revenue}
+              name="Revenue"
             />
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
@@ -138,7 +124,7 @@ export const RevenueCharts: FC<RevenueChartsProps> = ({ revenue, isLoading }) =>
             </MetricValue>
           </MetricRow>
         </MetricInfo>
-      </ChartCard>
+      </Card>
 
       <ChartCard>
         <ChartHeader>
