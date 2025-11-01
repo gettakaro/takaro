@@ -28,15 +28,13 @@ export const CustomerSegmentChart: FC<CustomerSegmentChartProps> = ({ customers 
   return (
     <StyledCard>
       <Card.Title label="Customer Segments">
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Chip label={`Total customers: ${customers?.totalCustomers || 0}`} color="primary" variant="outline" />
-          <IconTooltip icon={<InfoIcon />} color="background">
-            Time-based customer segmentation. New = first-time buyers in current period with no prior history. Returning
-            = customers with purchase history who don't qualify as frequent. Frequent = customers with 3+ consecutive
-            months of purchases OR 4+ total months with purchases in the last 6 months. Helps identify true customer
-            loyalty patterns over time.
-          </IconTooltip>
-        </div>
+        <Chip label={`${customers.totalCustomers} customers`} color="primary" variant="outline" />
+        <IconTooltip icon={<InfoIcon />} color="background">
+          Time-based customer segmentation. New = first-time buyers in current period with no prior history. Returning =
+          customers with purchase history who don't qualify as frequent. Frequent = customers with 3+ consecutive months
+          of purchases OR 4+ total months with purchases in the last 6 months. Helps identify true customer loyalty
+          patterns over time.
+        </IconTooltip>
       </Card.Title>
       <Card.Body>
         <ChartContent>
