@@ -3,6 +3,11 @@ import { Card, Chip, IconTooltip, PieChart, Stats, styled } from '@takaro/lib-co
 import { FC } from 'react';
 import { AiOutlineInfoCircle as InfoIcon, AiOutlineReload, AiOutlineDollar } from 'react-icons/ai';
 
+const StyledCard = styled(Card)`
+  display: flex;
+  flex-direction: column;
+`;
+
 const ChartContent = styled.div`
   position: relative;
   height: 300px;
@@ -21,16 +26,16 @@ export const CustomerSegmentChart: FC<CustomerSegmentChartProps> = ({ customers 
     })) || [];
 
   return (
-    <Card>
+    <StyledCard>
       <Card.Title label="Customer Segments">
         <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Chip label={`Total customers: ${customers?.totalCustomers || 0}`} color="primary" variant="outline" />
           <IconTooltip icon={<InfoIcon />} color="background">
             Time-based customer segmentation. New = first-time buyers in current period with no prior history. Returning
             = customers with purchase history who don't qualify as frequent. Frequent = customers with 3+ consecutive
             months of purchases OR 4+ total months with purchases in the last 6 months. Helps identify true customer
             loyalty patterns over time.
           </IconTooltip>
-          <Chip label={`${customers?.totalCustomers || 0} total`} color="primary" variant="outline" />
         </div>
       </Card.Title>
       <Card.Body>
@@ -39,7 +44,7 @@ export const CustomerSegmentChart: FC<CustomerSegmentChartProps> = ({ customers 
             name="Customers"
             data={segmentData}
             xAccessor={(d) => d.name}
-            yAccessor={(d) => d.value + 5}
+            yAccessor={(d) => d.value}
             innerRadius={0.6}
             labelPosition="inside"
             legendPosition="left"
@@ -57,6 +62,6 @@ export const CustomerSegmentChart: FC<CustomerSegmentChartProps> = ({ customers 
           <Stats.Stat description="Avg Lifetime Value" value={0} icon={<AiOutlineDollar />} />
         </Stats>
       </Card.Body>
-    </Card>
+    </StyledCard>
   );
 };

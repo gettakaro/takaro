@@ -6,14 +6,14 @@ import { shopAnalyticsQueryOptions } from '../../../../queries/analytics';
 import { useDocumentTitle } from '../../../../hooks/useDocumentTitle';
 import { useQuery } from '@tanstack/react-query';
 import { DateTime } from 'luxon';
-import { styled } from '@takaro/lib-components';
+import { styled, InsightsBar } from '@takaro/lib-components';
 import { useForm, useWatch } from 'react-hook-form';
 import { TimePeriodSelectField, GameServerSelectQueryField } from '../../../../components/selects';
 import { KPICards } from './shop/-components/KPICards';
 import { RevenueCharts } from './shop/-components/RevenueCharts';
 import { ProductCharts } from './shop/-components/ProductCharts';
-import { CustomerCharts } from './shop/-components/CustomerCharts';
-import { InsightsBar } from './shop/-components/InsightsBar';
+import { CustomerSegmentChart } from './shop/-components/CustomerSegmentChart';
+import { RecentOrdersList } from './shop/-components/RecentOrdersList';
 
 export const Route = createFileRoute('/_auth/_global/analytics/shop')({
   beforeLoad: async ({ context }) => {
@@ -67,6 +67,13 @@ const ChartSection = styled.div`
   margin-top: ${({ theme }) => theme.spacing[2]};
 `;
 
+const TwoColumnRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${({ theme }) => theme.spacing[4]};
+  align-items: stretch;
+`;
+
 const LastUpdated = styled.div`
   font-size: ${({ theme }) => theme.fontSize.small};
   color: ${({ theme }) => theme.colors.textAlt};
@@ -111,7 +118,10 @@ function Component() {
       <ChartSection>
         <RevenueCharts revenue={analyticsData.revenue} isLoading={isFetching} />
         <ProductCharts products={analyticsData.products} orders={analyticsData.orders} isLoading={isFetching} />
-        <CustomerCharts customers={analyticsData.customers} orders={analyticsData.orders} isLoading={isFetching} />
+        <TwoColumnRow>
+          <CustomerSegmentChart customers={analyticsData.customers} />
+          <RecentOrdersList orders={analyticsData.orders.recentOrders} />
+        </TwoColumnRow>
       </ChartSection>
       <InsightsBar insights={analyticsData?.insights} isLoading={isFetching} />
     </Container>
