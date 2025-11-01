@@ -13,7 +13,7 @@ import { getDefaultTooltipStyles, InnerChartProps, TooltipConfig, ChartProps } f
 import { genAngles, genPoints, genPolygonPoints } from './generators';
 import { useTheme } from '../../../hooks';
 
-export interface RadarChartProps<T> extends ChartProps {
+export interface RadarChartProps<T> extends Exclude<ChartProps, 'grid'> {
   data: T[];
   xAccessor: (d: T) => string;
   yAccessor: (d: T) => number;
