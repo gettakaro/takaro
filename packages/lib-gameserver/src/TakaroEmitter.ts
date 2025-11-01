@@ -67,7 +67,8 @@ export abstract class TakaroEmitter {
   }
 
   on<E extends keyof IEventMap>(event: E, listener: IEventMap[E]): this {
-    this.listenerMap.set(event, [listener]);
+    const existing = this.listenerMap.get(event) || [];
+    this.listenerMap.set(event, [...existing, listener]);
     return this;
   }
 

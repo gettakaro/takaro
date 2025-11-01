@@ -27,12 +27,16 @@ export interface AlertProps {
 }
 
 export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  { variant, title, text, dismiss = false, elevation = 4, action },
+  { variant, title, text, dismiss = false, elevation = 2, action },
   ref,
 ) {
   const [visible, setVisible] = useState(true);
-
-  const hasTitle = title ? true : false;
+  const hasTitle = !!title;
+  const hasText = !!text;
+  const hasContent = hasTitle || hasText;
+  // Use center alignment when we have only one content line (title OR text, not both)
+  // Use start alignment when we have multiple lines (title AND text, or text as an array)
+  const useStartAlignment = (hasTitle && hasText) || Array.isArray(text);
 
   const handleExecute = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -66,9 +70,18 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
     if (typeof text === 'string') {
       return <p>{text}</p>;
     } else if (Array.isArray(text)) {
-      return <ul>{text?.map((message) => <li key={'message-' + message}>{message}</li>)}</ul>;
+      return <ul>{text?.map((message, index) => <li key={index}>{message}</li>)}</ul>;
     }
   }
+
+  // Determine ARIA role based on variant
+  const getAriaRole = () => {
+    return variant === 'error' || variant === 'warning' ? 'alert' : 'status';
+  };
+
+  const getAriaLive = () => {
+    return variant === 'error' || variant === 'warning' ? 'assertive' : 'polite';
+  };
 
   return (
     <AnimatePresence>
@@ -82,25 +95,22 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
           $elevation={elevation}
           transition={{ duration: 0.2 }}
           ref={ref}
-          role="status"
+          role={getAriaRole()}
+          aria-live={getAriaLive()}
+          aria-atomic="true"
         >
-          <Grid>
+          <Grid $useStartAlignment={useStartAlignment}>
             <IconContainer variant={variant}>{getIcon()}</IconContainer>
             {title && <h2>{title}</h2>}
             {renderText()}
-            <ButtonContainer
-              hasTitle={hasTitle}
-              show={dismiss || action ? true : false}
-              variant={variant}
-              className="action"
-            >
+            <ButtonContainer hasContent={hasContent} show={!!(dismiss || action)} variant={variant} className="action">
               {action && (
-                <Button size="tiny" variant="outline" onClick={handleExecute} color={variant}>
+                <Button size="small" variant="outline" onClick={handleExecute} color={variant}>
                   {action.text}
                 </Button>
               )}
               {dismiss && (
-                <Button size="tiny" color="white" variant="outline" onClick={handleDismiss}>
+                <Button size="small" color="white" variant="outline" onClick={handleDismiss}>
                   Dismiss
                 </Button>
               )}

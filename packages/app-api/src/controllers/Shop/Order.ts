@@ -50,7 +50,7 @@ class ShopOrderSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdate
   amount: number;
 }
 
-const shopOrderExtendOptions = ['listing', 'listing.items', 'listing.items.item', 'player'];
+const shopOrderExtendOptions = ['listing', 'listing.items', 'listing.items.item'];
 type ShopOrderExtendOptions = (typeof shopOrderExtendOptions)[number];
 
 class ShopOrderSearchInputDTO extends ITakaroQuery<ShopOrderSearchInputAllowedFilters> {
@@ -105,6 +105,22 @@ export class ShopOrderController {
     summary: 'Search orders',
     description:
       'Search for orders. By default, this endpoint only returns your own orders. When the caller has permission to view all orders, they can search for all orders.',
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['listing'],
+                page: 1,
+                limit: 10,
+              },
+            },
+          },
+        },
+      },
+    },
   })
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: ShopOrderSearchInputDTO) {
     const service = new ShopListingService(req.domainId);

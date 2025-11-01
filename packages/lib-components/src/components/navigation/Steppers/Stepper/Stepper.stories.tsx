@@ -36,20 +36,20 @@ export const Numbers: StoryFn = () => {
         <Stepper.Step id="first" name="step 1">
           <StepBody>
             <p>Step 1</p>
-            <Button onClick={incrementCurrentStep} text="Next step" />
+            <Button onClick={incrementCurrentStep}>Next step</Button>
           </StepBody>
         </Stepper.Step>
         <Stepper.Step id="second" name="step 2">
           <StepBody>
             <p>Step 2</p>
-            <Button onClick={decrementCurrentStep} text="previous step" />
-            <Button onClick={incrementCurrentStep} text="Next step" />
+            <Button onClick={decrementCurrentStep}>previous step</Button>
+            <Button onClick={incrementCurrentStep}>Next step</Button>
           </StepBody>
         </Stepper.Step>
         <Stepper.Step id="third" name="step 3">
           <StepBody>
             <p>Step 3</p>
-            <Button onClick={decrementCurrentStep} text="Previous step" />
+            <Button onClick={decrementCurrentStep}>Previous step</Button>
           </StepBody>
         </Stepper.Step>
       </Stepper.Steps>
@@ -66,20 +66,20 @@ export const Icons: StoryFn = () => {
         <Stepper.Step icon={<Bell size="24" />} id="first" name="Shopping">
           <StepBody>
             <p>Step 1</p>
-            <Button onClick={incrementCurrentStep} text="Next step" />
+            <Button onClick={incrementCurrentStep}>Next step</Button>
           </StepBody>
         </Stepper.Step>
         <Stepper.Step icon={<Shipping size="24" />} id="second" name="Shipping">
           <StepBody>
             <p>Step 2</p>
-            <Button onClick={decrementCurrentStep} text="previous step" />
-            <Button onClick={incrementCurrentStep} text="Next step" />
+            <Button onClick={decrementCurrentStep}>previous step</Button>
+            <Button onClick={incrementCurrentStep}>Next step</Button>
           </StepBody>
         </Stepper.Step>
         <Stepper.Step icon={<Safety size="24" />} id="third" name="Payment">
           <StepBody>
             <p>Step 3</p>
-            <Button onClick={decrementCurrentStep} text="Previous step" />
+            <Button onClick={decrementCurrentStep}>Previous step</Button>
           </StepBody>
         </Stepper.Step>
       </Stepper.Steps>

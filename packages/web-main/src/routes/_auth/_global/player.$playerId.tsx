@@ -86,7 +86,7 @@ function Component() {
             )}
           </div>
           <div style={{ display: 'flex', gap: theme.spacing[2] }}>
-            <Stats border={false} direction="horizontal">
+            <Stats grouped={false} direction="horizontal">
               <Stats.Stat
                 description="Member since"
                 value={DateTime.fromISO(player.createdAt).toLocaleString({

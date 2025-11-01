@@ -56,10 +56,9 @@ export const OnSubmit: StoryFn<FileFieldProps> = (args) => {
 
   return (
     <>
-      <Alert
-        variant="warning"
-        text="Although the upload could be limited to a single file, the returned type will always be a FileList."
-      />
+      <Alert variant="warning">
+        Although the upload could be limited to a single file, the returned type will always be a FileList.
+      </Alert>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FileField
           name="profileImage"

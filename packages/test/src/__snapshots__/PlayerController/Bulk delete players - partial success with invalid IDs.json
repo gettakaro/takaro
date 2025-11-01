@@ -1,0 +1,28 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "deleted": 5,
+      "failed": 2,
+      "errors": [
+        {
+          "playerId": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+          "reason": "Player not found"
+        },
+        {
+          "playerId": "ffffffff-0000-4111-8222-333333333333",
+          "reason": "Player not found"
+        }
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "PlayerController",
+    "snapshot": true,
+    "name": "Bulk delete players - partial success with invalid IDs",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

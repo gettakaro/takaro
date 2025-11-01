@@ -55,7 +55,7 @@ export const OnSubmit: StoryFn<CodeFieldProps> = (args) => {
           label={args.label}
           size={args.size}
         />
-        <Button type="submit" text="Submit form" />
+        <Button type="submit">Submit form</Button>
       </form>
       <div>{result}</div>
     </>

@@ -95,7 +95,8 @@ export const ContextMenu: FC<ContextMenuProps> & SubComponentTypes = ({ children
     let timeout: number;
 
     function onContextMenu(e: MouseEvent) {
-      if (targetRef?.current && targetRef?.current.contains(e.target as Node)) {
+      const shouldShowMenu = !targetRef?.current || targetRef.current.contains(e.target as Node);
+      if (shouldShowMenu) {
         e.preventDefault();
         refs.setPositionReference({
           getBoundingClientRect() {
@@ -146,7 +147,7 @@ export const ContextMenu: FC<ContextMenuProps> & SubComponentTypes = ({ children
       }
       clearTimeout(timeout);
     };
-  }, [refs]);
+  }, [refs, targetRef]);
 
   return (
     <FloatingPortal>

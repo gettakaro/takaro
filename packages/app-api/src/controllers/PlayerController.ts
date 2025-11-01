@@ -13,7 +13,12 @@ import { UserService } from '../service/User/index.js';
 import { PlayerOnGameserverOutputArrayDTOAPI } from './PlayerOnGameserverController.js';
 import { ParamId, ParamIdAndRoleId } from '../lib/validators.js';
 import { AllowedFilters, AllowedSearch, RangeFilterCreatedAndUpdatedAt } from './shared.js';
-import { PlayerOutputDTO, PlayerOutputWithRolesDTO } from '../service/Player/dto.js';
+import {
+  PlayerOutputDTO,
+  PlayerOutputWithRolesDTO,
+  PlayerBulkDeleteInputDTO,
+  PlayerBulkDeleteOutputDTO,
+} from '../service/Player/dto.js';
 
 export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputWithRolesDTO> {
   @Type(() => PlayerOutputWithRolesDTO)
@@ -31,6 +36,12 @@ export class PlayerOutputWithRolesDTOAPI extends APIOutput<PlayerOutputWithRoles
   @Type(() => PlayerOutputWithRolesDTO)
   @ValidateNested()
   declare data: PlayerOutputWithRolesDTO;
+}
+
+export class PlayerBulkDeleteOutputDTOAPI extends APIOutput<PlayerBulkDeleteOutputDTO> {
+  @Type(() => PlayerBulkDeleteOutputDTO)
+  @ValidateNested()
+  declare data: PlayerBulkDeleteOutputDTO;
 }
 
 class PlayerSearchInputAllowedFilters extends AllowedFilters {
@@ -142,13 +153,17 @@ export class PlayerController {
       content: {
         'application/json': {
           examples: {
+            withRelations: {
+              summary: 'Search with related data',
+              value: {
+                extend: ['playerOnGameServers'],
+                page: 1,
+                limit: 10,
+              },
+            },
             recentVACbans: {
               summary: 'Recently VAC banned players',
               value: { lessThan: { steamsDaysSinceLastBan: 365 } },
-            },
-            membersOfRole: {
-              summary: 'Get all players with a specific role',
-              value: { filters: { roleId: ['1ec529af-0f8f-4d8d-b06a-7f83c64f0086'] } },
             },
           },
         },
@@ -230,5 +245,17 @@ export class PlayerController {
     const service = new PlayerService(req.domainId);
     await service.delete(params.id);
     return apiResponse();
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS]))
+  @Delete('/player')
+  @ResponseSchema(PlayerBulkDeleteOutputDTOAPI)
+  @OpenAPI({
+    description: 'Bulk delete players by their IDs. Deletes Player records which cascades to POG records.',
+  })
+  async bulkDelete(@Req() req: AuthenticatedRequest, @Body() body: PlayerBulkDeleteInputDTO) {
+    const service = new PlayerService(req.domainId);
+    const result = await service.bulkDelete(body.playerIds);
+    return apiResponse(result);
   }
 }

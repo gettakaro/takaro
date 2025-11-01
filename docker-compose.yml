@@ -110,6 +110,12 @@ services:
       - 12003:12003
       # Docs
       - 13005:13005
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/readyz"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
   takaro-migrator:
     build:
       context: .
@@ -209,6 +215,9 @@ services:
       - TAKARO_HOST=http://takaro:3000
     env_file:
       - .env
+    depends_on:
+      takaro:
+        condition: service_healthy
       
 networks:
   default:

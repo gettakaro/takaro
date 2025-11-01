@@ -162,10 +162,6 @@ export class ShopListingService extends TakaroService<
   }
 
   async delete(id: string): Promise<string> {
-    // Find all related orders and cancel them
-    const orders = await this.orderRepo.find({ filters: { listingId: [id], status: [ShopOrderStatus.PAID] } });
-    await Promise.allSettled(orders.results.map((order) => this.cancelOrder(order.id)));
-
     await this.repo.delete(id);
 
     await this.eventService.create(
@@ -281,7 +277,31 @@ export class ShopListingService extends TakaroService<
     await this.checkIfOrderBelongsToUser(initialOrder);
 
     // Pre-transaction checks: Get listing and verify player is online
-    const listing = await this.findOne(initialOrder.listingId);
+
+    let listing;
+    try {
+      listing = await this.findOne(initialOrder.listingId);
+    } catch (error) {
+      if (error instanceof errors.NotFoundError) {
+        // Listing was deleted - check if order is already canceled by trigger
+        const currentOrder = await this.orderRepo.findOne(orderId);
+
+        if (currentOrder.status !== ShopOrderStatus.PAID) {
+          // Order already canceled by trigger, return it
+          this.log.info(`Order ${orderId} already canceled by trigger for deleted listing ${initialOrder.listingId}`);
+          return currentOrder;
+        }
+
+        // Order still PAID but listing deleted - cancel it (refund will be skipped since listing is gone)
+        this.log.warn(`Order ${orderId} references deleted listing ${initialOrder.listingId}, canceling order`, {
+          orderId,
+          listingId: initialOrder.listingId,
+        });
+        return await this.cancelOrder(orderId);
+      }
+      throw error;
+    }
+
     const gameServerId = listing.gameServerId;
 
     const playerService = new PlayerService(this.domainId);
@@ -400,21 +420,40 @@ export class ShopListingService extends TakaroService<
       throw new errors.BadRequestError(
         `Can only cancel paid orders that weren't claimed yet. Current status: ${order.status}`,
       );
+
     const updatedOrder = await this.orderRepo.update(
       orderId,
       new ShopOrderUpdateDTO({ status: ShopOrderStatus.CANCELED }),
     );
 
-    const listing = await this.findOne(order.listingId);
-    const gameServerId = listing.gameServerId;
+    // Try to get listing for refund and gameServerId - if listing was deleted, skip refund (DB trigger handled it)
+    let gameServerId: string | undefined;
+    try {
+      const listing = await this.findOne(order.listingId);
+      gameServerId = listing.gameServerId;
 
-    // Refund the player
-    const pogsService = new PlayerOnGameServerService(this.domainId);
-    const pog = (await pogsService.find({ filters: { playerId: [order.playerId], gameServerId: [gameServerId] } }))
-      .results[0];
-    if (!pog) throw new errors.NotFoundError('Player not found');
-    await pogsService.addCurrency(pog.id, listing.price * order.amount);
+      // Refund the player (only if listing still exists)
+      const pogsService = new PlayerOnGameServerService(this.domainId);
+      const pog = (
+        await pogsService.find({ filters: { playerId: [order.playerId], gameServerId: [listing.gameServerId] } })
+      ).results[0];
+      if (!pog) throw new errors.NotFoundError('Player not found');
+      await pogsService.addCurrency(pog.id, listing.price * order.amount);
+    } catch (error) {
+      if (
+        error instanceof errors.NotFoundError &&
+        (error.message.includes('listing') || error.message.includes('Shop listing'))
+      ) {
+        // Listing was deleted - database trigger already handled refund
+        this.log.info(
+          `Listing ${order.listingId} not found during cancellation, skipping manual refund (trigger handled it)`,
+        );
+      } else {
+        throw error;
+      }
+    }
 
+    // Emit cancellation event
     await this.eventService.create(
       new EventCreateDTO({
         eventName: EVENT_TYPES.SHOP_ORDER_STATUS_CHANGED,

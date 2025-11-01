@@ -1,5 +1,5 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import { IFormInputs, VariablesForm } from './-variables/VariablesForm';
+import { IFormInputs, VariablesForm } from '../../../components/variables/VariablesForm';
 import { useVariableCreate } from '../../../queries/variable';
 import { hasPermission } from '../../../hooks/useHasPermission';
 import { VariableCreateDTO } from '@takaro/apiclient';

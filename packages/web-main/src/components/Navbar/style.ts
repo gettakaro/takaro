@@ -15,7 +15,7 @@ export const Container = styled(motion.div)<{ $isCollapsed?: boolean }>`
       ? `${theme.spacing[2]} ${theme.spacing['0_5']} ${theme.spacing['1_5']} ${theme.spacing['0_5']}`
       : `${theme.spacing[2]} ${theme.spacing[1]} ${theme.spacing['1_5']} ${theme.spacing[1]}`};
   gap: ${({ theme }) => theme.spacing[2]};
-  overflow: hidden;
+  overflow: visible;
 
   .company-icon {
     margin: 0 auto;

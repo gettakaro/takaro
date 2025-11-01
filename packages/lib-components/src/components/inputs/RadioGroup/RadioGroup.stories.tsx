@@ -74,7 +74,7 @@ export const OnSubmit: StoryFn<RadioGroupProps> = (args) => {
             </div>
           ))}
         </RadioGroup>
-        <Button text="submit" type="submit" />
+        <Button type="submit">submit</Button>
       </form>
       <div>Result: {result}</div>
     </>

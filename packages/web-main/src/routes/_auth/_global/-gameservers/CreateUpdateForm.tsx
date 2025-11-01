@@ -82,7 +82,7 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
     if (!open) {
       navigate({ to: '/gameservers' });
     }
-  }, [open]);
+  }, [open, navigate]);
 
   const formId = 'gameserver-form';
 

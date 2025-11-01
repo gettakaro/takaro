@@ -107,7 +107,7 @@ export function PlayerStats() {
           </Card.Body>
         </Card>
 
-        <Stats border={false} direction="vertical">
+        <Stats grouped={false} direction="vertical">
           <Stats.Stat
             isLoading={isLoadingNewPlayerData}
             description="New players"

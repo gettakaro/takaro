@@ -1318,6 +1318,405 @@ const tests = [
       }
     },
   }),
+
+  // Cleanup tests
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Cleanup location data removes old records',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      const repo = new TrackingRepo(this.standardDomainId);
+      const knex = await repo.getKnex();
+
+      if (this.setupData.pogs1.length === 0) {
+        throw new Error('Test setup failed: No players found in setupData.pogs1');
+      }
+
+      const pogId = this.setupData.pogs1[0].id;
+
+      // Define time periods
+      const now = new Date('2024-06-01T00:00:00Z');
+      const oldDate = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000); // 60 days ago
+      const mediumDate = new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000); // 20 days ago
+      const recentDate = new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000); // 5 days ago
+      const cutoffDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
+
+      // Ensure partitions exist for all dates
+      await repo.ensureLocationPartition(oldDate.toISOString());
+      await repo.ensureLocationPartition(mediumDate.toISOString());
+      await repo.ensureLocationPartition(recentDate.toISOString());
+
+      // Insert test data
+      const testData = [
+        // Old data (should be deleted)
+        { playerId: pogId, x: 100, y: 100, z: 100, createdAt: oldDate.toISOString(), domain: this.standardDomainId },
+        {
+          playerId: pogId,
+          x: 101,
+          y: 101,
+          z: 101,
+          createdAt: new Date(oldDate.getTime() + 3600000).toISOString(),
+          domain: this.standardDomainId,
+        },
+        // Medium age data (should be kept)
+        {
+          playerId: pogId,
+          x: 200,
+          y: 200,
+          z: 200,
+          createdAt: mediumDate.toISOString(),
+          domain: this.standardDomainId,
+        },
+        {
+          playerId: pogId,
+          x: 201,
+          y: 201,
+          z: 201,
+          createdAt: new Date(mediumDate.getTime() + 3600000).toISOString(),
+          domain: this.standardDomainId,
+        },
+        // Recent data (should be kept)
+        {
+          playerId: pogId,
+          x: 300,
+          y: 300,
+          z: 300,
+          createdAt: recentDate.toISOString(),
+          domain: this.standardDomainId,
+        },
+        {
+          playerId: pogId,
+          x: 301,
+          y: 301,
+          z: 301,
+          createdAt: new Date(recentDate.getTime() + 3600000).toISOString(),
+          domain: this.standardDomainId,
+        },
+      ];
+
+      await knex.batchInsert('playerLocation', testData);
+
+      // Count initial records - only count our test data within our date range (with buffer)
+      const initialCount = await knex('playerLocation')
+        .where('domain', this.standardDomainId)
+        .where('playerId', pogId)
+        .where('createdAt', '>=', oldDate.toISOString())
+        .where('createdAt', '<=', new Date(recentDate.getTime() + 2 * 3600000).toISOString())
+        .count('* as count')
+        .first();
+
+      expect(Number((initialCount as any)?.count || 0)).to.equal(6);
+
+      // Perform cleanup
+      await repo.cleanupLocation(cutoffDate.toISOString());
+
+      // Count remaining records - only count our test data within our date range (with buffer)
+      const finalCount = await knex('playerLocation')
+        .where('domain', this.standardDomainId)
+        .where('playerId', pogId)
+        .where('createdAt', '>=', oldDate.toISOString())
+        .where('createdAt', '<=', new Date(recentDate.getTime() + 2 * 3600000).toISOString())
+        .count('* as count')
+        .first();
+
+      // Should have deleted 2 old records, keeping 4
+      expect(Number((finalCount as any)?.count || 0)).to.equal(4);
+
+      // Verify no old data remains in our test range
+      const oldRecords = await knex('playerLocation')
+        .where('domain', this.standardDomainId)
+        .where('playerId', pogId)
+        .whereBetween('createdAt', [oldDate.toISOString(), cutoffDate.toISOString()])
+        .where('createdAt', '<', cutoffDate.toISOString());
+
+      expect(oldRecords.length).to.equal(0);
+    },
+  }),
+
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Cleanup inventory data removes old records',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      const repo = new TrackingRepo(this.standardDomainId);
+      const knex = await repo.getKnex();
+
+      if (this.setupData.pogs1.length === 0) {
+        throw new Error('Test setup failed: No players found in setupData.pogs1');
+      }
+
+      // Get items
+      const itemsRes = await this.client.item.itemControllerSearch({
+        sortBy: 'name',
+        filters: { gameserverId: [this.setupData.gameServer1.id] },
+      });
+      const items: ItemsOutputDTO[] = itemsRes.data.data;
+
+      if (items.length === 0) {
+        throw new Error('No items found for game server');
+      }
+
+      const pogId = this.setupData.pogs1[0].id;
+      const itemId = items[0].id;
+
+      // Define time periods
+      const now = new Date('2024-06-01T00:00:00Z');
+      const oldDate = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000); // 60 days ago
+      const mediumDate = new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000); // 20 days ago
+      const recentDate = new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000); // 5 days ago
+      const cutoffDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
+
+      // Ensure partitions exist for all dates
+      await repo.ensureInventoryPartition(oldDate.toISOString());
+      await repo.ensureInventoryPartition(mediumDate.toISOString());
+      await repo.ensureInventoryPartition(recentDate.toISOString());
+
+      // Insert test data
+      const testData = [
+        // Old data (should be deleted)
+        {
+          playerId: pogId,
+          itemId: itemId,
+          quantity: 10,
+          createdAt: oldDate.toISOString(),
+          domain: this.standardDomainId,
+        },
+        {
+          playerId: pogId,
+          itemId: itemId,
+          quantity: 11,
+          createdAt: new Date(oldDate.getTime() + 3600000).toISOString(),
+          domain: this.standardDomainId,
+        },
+        // Medium age data (should be kept)
+        {
+          playerId: pogId,
+          itemId: itemId,
+          quantity: 20,
+          createdAt: mediumDate.toISOString(),
+          domain: this.standardDomainId,
+        },
+        {
+          playerId: pogId,
+          itemId: itemId,
+          quantity: 21,
+          createdAt: new Date(mediumDate.getTime() + 3600000).toISOString(),
+          domain: this.standardDomainId,
+        },
+        // Recent data (should be kept)
+        {
+          playerId: pogId,
+          itemId: itemId,
+          quantity: 30,
+          createdAt: recentDate.toISOString(),
+          domain: this.standardDomainId,
+        },
+        {
+          playerId: pogId,
+          itemId: itemId,
+          quantity: 31,
+          createdAt: new Date(recentDate.getTime() + 3600000).toISOString(),
+          domain: this.standardDomainId,
+        },
+      ];
+
+      await knex.batchInsert('playerInventoryHistory', testData);
+
+      // Count initial records
+      const initialCount = await knex('playerInventoryHistory')
+        .where('domain', this.standardDomainId)
+        .where('playerId', pogId)
+        .count('* as count')
+        .first();
+
+      expect(Number((initialCount as any)?.count || 0)).to.equal(6);
+
+      // Perform cleanup
+      await repo.cleanupInventory(cutoffDate.toISOString());
+
+      // Count remaining records
+      const finalCount = await knex('playerInventoryHistory')
+        .where('domain', this.standardDomainId)
+        .where('playerId', pogId)
+        .count('* as count')
+        .first();
+
+      // Should have deleted 2 old records, keeping 4
+      expect(Number((finalCount as any)?.count || 0)).to.equal(4);
+
+      // Verify no old data remains
+      const oldRecords = await knex('playerInventoryHistory')
+        .where('domain', this.standardDomainId)
+        .where('playerId', pogId)
+        .where('createdAt', '<', cutoffDate.toISOString());
+
+      expect(oldRecords.length).to.equal(0);
+    },
+  }),
+
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Cleanup location with no old data is no-op',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      const repo = new TrackingRepo(this.standardDomainId);
+      const knex = await repo.getKnex();
+
+      if (this.setupData.pogs1.length === 0) {
+        throw new Error('Test setup failed: No players found in setupData.pogs1');
+      }
+
+      const pogId = this.setupData.pogs1[0].id;
+
+      // Define time periods - all recent
+      const now = new Date('2024-06-01T00:00:00Z');
+      const recentDate1 = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000); // 10 days ago
+      const recentDate2 = new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000); // 5 days ago
+      const cutoffDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
+
+      // Ensure partitions exist
+      await repo.ensureLocationPartition(recentDate1.toISOString());
+      await repo.ensureLocationPartition(recentDate2.toISOString());
+
+      // Insert only recent data
+      const testData = [
+        {
+          playerId: pogId,
+          x: 100,
+          y: 100,
+          z: 100,
+          createdAt: recentDate1.toISOString(),
+          domain: this.standardDomainId,
+        },
+        {
+          playerId: pogId,
+          x: 200,
+          y: 200,
+          z: 200,
+          createdAt: recentDate2.toISOString(),
+          domain: this.standardDomainId,
+        },
+      ];
+
+      await knex.batchInsert('playerLocation', testData);
+
+      // Count initial records - only count our test data within our date range
+      const initialCount = await knex('playerLocation')
+        .where('domain', this.standardDomainId)
+        .where('playerId', pogId)
+        .whereBetween('createdAt', [recentDate1.toISOString(), recentDate2.toISOString()])
+        .count('* as count')
+        .first();
+
+      expect(Number((initialCount as any)?.count || 0)).to.equal(2);
+
+      // Perform cleanup (should not delete anything)
+      await repo.cleanupLocation(cutoffDate.toISOString());
+
+      // Count remaining records - only count our test data within our date range
+      const finalCount = await knex('playerLocation')
+        .where('domain', this.standardDomainId)
+        .where('playerId', pogId)
+        .whereBetween('createdAt', [recentDate1.toISOString(), recentDate2.toISOString()])
+        .count('* as count')
+        .first();
+
+      // All records should remain
+      expect(Number((finalCount as any)?.count || 0)).to.equal(2);
+    },
+  }),
+
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Cleanup inventory with no old data is no-op',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      const repo = new TrackingRepo(this.standardDomainId);
+      const knex = await repo.getKnex();
+
+      if (this.setupData.pogs1.length === 0) {
+        throw new Error('Test setup failed: No players found in setupData.pogs1');
+      }
+
+      // Get items
+      const itemsRes = await this.client.item.itemControllerSearch({
+        sortBy: 'name',
+        filters: { gameserverId: [this.setupData.gameServer1.id] },
+      });
+      const items: ItemsOutputDTO[] = itemsRes.data.data;
+
+      if (items.length === 0) {
+        throw new Error('No items found for game server');
+      }
+
+      const pogId = this.setupData.pogs1[0].id;
+      const itemId = items[0].id;
+
+      // Define time periods - all recent
+      const now = new Date('2024-06-01T00:00:00Z');
+      const recentDate1 = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000); // 10 days ago
+      const recentDate2 = new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000); // 5 days ago
+      const cutoffDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
+
+      // Ensure partitions exist
+      await repo.ensureInventoryPartition(recentDate1.toISOString());
+      await repo.ensureInventoryPartition(recentDate2.toISOString());
+
+      // Insert only recent data
+      const testData = [
+        {
+          playerId: pogId,
+          itemId: itemId,
+          quantity: 10,
+          createdAt: recentDate1.toISOString(),
+          domain: this.standardDomainId,
+        },
+        {
+          playerId: pogId,
+          itemId: itemId,
+          quantity: 20,
+          createdAt: recentDate2.toISOString(),
+          domain: this.standardDomainId,
+        },
+      ];
+
+      await knex.batchInsert('playerInventoryHistory', testData);
+
+      // Count initial records
+      const initialCount = await knex('playerInventoryHistory')
+        .where('domain', this.standardDomainId)
+        .where('playerId', pogId)
+        .count('* as count')
+        .first();
+
+      expect(Number((initialCount as any)?.count || 0)).to.equal(2);
+
+      // Perform cleanup (should not delete anything)
+      await repo.cleanupInventory(cutoffDate.toISOString());
+
+      // Count remaining records
+      const finalCount = await knex('playerInventoryHistory')
+        .where('domain', this.standardDomainId)
+        .where('playerId', pogId)
+        .count('* as count')
+        .first();
+
+      // All records should remain
+      expect(Number((finalCount as any)?.count || 0)).to.equal(2);
+    },
+  }),
 ];
 
 describe(group, function () {

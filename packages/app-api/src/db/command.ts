@@ -209,6 +209,43 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
     return Promise.all(commandIds.map((commandId) => this.findOne(commandId)));
   }
 
+  async getAllForGameServer(gameServerId: string): Promise<Array<{ trigger: string; aliases: string[] }>> {
+    const { query } = await this.getModel();
+    const knex = await this.getKnex();
+
+    const rawResults: Array<{ trigger: string; aliases: string }> = (await query
+      .select(
+        'commands.trigger',
+        knex.raw(`
+          COALESCE(
+            (SELECT jsonb_agg(alias)
+             FROM jsonb_array_elements_text(
+               COALESCE(
+                 ("moduleInstallations"."systemConfig" -> 'commands' -> "commands"."name" -> 'aliases')::jsonb,
+                 '[]'::jsonb
+               )
+             ) AS alias),
+            '[]'::jsonb
+          ) as aliases
+        `),
+      )
+      .innerJoin('functions', 'commands.functionId', 'functions.id')
+      .innerJoin('moduleVersions', 'commands.versionId', 'moduleVersions.id')
+      .innerJoin('moduleInstallations', 'moduleInstallations.versionId', 'moduleVersions.id')
+      .innerJoin('gameservers', 'moduleInstallations.gameserverId', 'gameservers.id')
+      .where('gameservers.id', gameServerId)) as any;
+
+    return rawResults.map((row) => ({
+      trigger: row.trigger,
+      aliases:
+        typeof row.aliases === 'string' && row.aliases.trim() !== ''
+          ? JSON.parse(row.aliases)
+          : Array.isArray(row.aliases)
+            ? row.aliases
+            : [],
+    }));
+  }
+
   async getArgument(argumentId: string) {
     const { argumentQuery } = await this.getModel();
     const item = await argumentQuery.findById(argumentId);

@@ -48,7 +48,7 @@ export const OnSubmit: StoryFn<TagFieldProps> = (args) => {
       <pre>paste tester: apple,banana,jeroen</pre>
       <form onSubmit={handleSubmit(onSubmit)}>
         <TagField {...args} tagValidationSchema={beforeAddValidationSchema} control={control} name="tags" />
-        <Button type="submit" text="Submit" />
+        <Button type="submit">Submit</Button>
       </form>
       <pre>result: {result.join(', ')}</pre>
     </div>

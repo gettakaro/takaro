@@ -1,11 +1,18 @@
 import { createContext } from 'react';
 
 export type Direction = 'horizontal' | 'vertical';
+export type Size = 'small' | 'medium' | 'large';
 
 interface StatsContextValue {
-  border: boolean;
+  grouped: boolean;
   direction: Direction;
-  // TODO: size?: Size;
+  size: Size;
 }
 
-export const StatContext = createContext<StatsContextValue>(null as any);
+const defaultValue: StatsContextValue = {
+  grouped: false,
+  direction: 'vertical',
+  size: 'medium',
+};
+
+export const StatContext = createContext<StatsContextValue>(defaultValue);

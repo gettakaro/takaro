@@ -6,6 +6,7 @@ import { Generic } from '@takaro/gameserver';
 import { IGamePlayer, EventChatMessage, HookEvents, ChatChannel, IPosition } from '@takaro/modules';
 import Sinon from 'sinon';
 import { EventService } from '../EventService.js';
+import { GameServerService } from '../GameServerService.js';
 import { faker } from '@faker-js/faker';
 import { describe } from 'node:test';
 import { randomUUID } from 'crypto';
@@ -370,6 +371,125 @@ const tests = [
       );
 
       expect(addStub).to.have.been.calledOnce;
+    },
+  }),
+  new IntegrationTest<IStandardSetupData>({
+    group,
+    snapshot: false,
+    name: 'Unknown command feedback - disabled by default',
+    setup,
+    test: async function () {
+      const mockPlayer = await getMockPlayer();
+      const chatMessage = new EventChatMessage({
+        msg: '/unknowncommand',
+        player: mockPlayer,
+        timestamp: new Date().toISOString(),
+        channel: ChatChannel.GLOBAL,
+      });
+
+      const sendMessageStub = sandbox.stub(GameServerService.prototype, 'sendMessage').resolves();
+
+      await this.setupData.service.handleChatMessage(chatMessage, this.setupData.gameserver.id);
+
+      // Should NOT send any feedback message since the feature is disabled by default
+      expect(sendMessageStub).to.not.have.been.called;
+    },
+  }),
+  new IntegrationTest<IStandardSetupData>({
+    group,
+    snapshot: false,
+    name: 'Unknown command feedback - enabled with suggestion',
+    setup,
+    test: async function () {
+      // Enable unknown command feedback
+      await this.client.settings.settingsControllerSet('unknownCommandFeedbackEnabled', {
+        gameServerId: this.setupData.gameserver.id,
+        value: 'true',
+      });
+
+      const mockPlayer = await getMockPlayer();
+      const chatMessage = new EventChatMessage({
+        msg: '/tset', // Typo of 'test' command
+        player: mockPlayer,
+        timestamp: new Date().toISOString(),
+        channel: ChatChannel.GLOBAL,
+      });
+
+      const sendMessageStub = sandbox.stub(GameServerService.prototype, 'sendMessage').resolves();
+
+      await this.setupData.service.handleChatMessage(chatMessage, this.setupData.gameserver.id);
+
+      // Should send a feedback message with suggestion
+      expect(sendMessageStub).to.have.been.calledOnce;
+      const messageSent = sendMessageStub.firstCall.args[1];
+      expect(messageSent).to.include('Unknown command');
+      expect(messageSent).to.include('Did you mean');
+      expect(messageSent).to.include('test');
+    },
+  }),
+  new IntegrationTest<IStandardSetupData>({
+    group,
+    snapshot: false,
+    name: 'Unknown command feedback - enabled without suggestion',
+    setup,
+    test: async function () {
+      // Enable unknown command feedback
+      await this.client.settings.settingsControllerSet('unknownCommandFeedbackEnabled', {
+        gameServerId: this.setupData.gameserver.id,
+        value: 'true',
+      });
+
+      const mockPlayer = await getMockPlayer();
+      const chatMessage = new EventChatMessage({
+        msg: '/completelydifferent', // Very different from 'test'
+        player: mockPlayer,
+        timestamp: new Date().toISOString(),
+        channel: ChatChannel.GLOBAL,
+      });
+
+      const sendMessageStub = sandbox.stub(GameServerService.prototype, 'sendMessage').resolves();
+
+      await this.setupData.service.handleChatMessage(chatMessage, this.setupData.gameserver.id);
+
+      // Should send a feedback message without suggestion
+      expect(sendMessageStub).to.have.been.calledOnce;
+      const messageSent = sendMessageStub.firstCall.args[1];
+      expect(messageSent).to.include('Unknown command');
+      expect(messageSent).to.not.include('Did you mean');
+    },
+  }),
+  new IntegrationTest<IStandardSetupData>({
+    group,
+    snapshot: false,
+    name: 'Unknown command feedback - custom message',
+    setup,
+    test: async function () {
+      // Enable unknown command feedback and set custom message
+      await this.client.settings.settingsControllerSet('unknownCommandFeedbackEnabled', {
+        gameServerId: this.setupData.gameserver.id,
+        value: 'true',
+      });
+      await this.client.settings.settingsControllerSet('unknownCommandFeedbackMessage', {
+        gameServerId: this.setupData.gameserver.id,
+        value: 'Command not found. Use /help to see available commands.',
+      });
+
+      const mockPlayer = await getMockPlayer();
+      const chatMessage = new EventChatMessage({
+        msg: '/xyz',
+        player: mockPlayer,
+        timestamp: new Date().toISOString(),
+        channel: ChatChannel.GLOBAL,
+      });
+
+      const sendMessageStub = sandbox.stub(GameServerService.prototype, 'sendMessage').resolves();
+
+      await this.setupData.service.handleChatMessage(chatMessage, this.setupData.gameserver.id);
+
+      // Should send the custom feedback message
+      expect(sendMessageStub).to.have.been.calledOnce;
+      const messageSent = sendMessageStub.firstCall.args[1];
+      expect(messageSent).to.include('Command not found. Use /help to see available commands.');
     },
   }),
 ];

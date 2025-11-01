@@ -134,7 +134,7 @@ export const OnSubmit: StoryFn<SelectFieldProps> = (args) => {
             ))}
           </SelectField.OptionGroup>
         </SelectField>
-        <Button type="submit" text="Submit" />
+        <Button type="submit">Submit</Button>
       </form>
       <pre>result: {result}</pre>
     </>
@@ -200,7 +200,7 @@ export const MultiSelect: StoryFn<SelectFieldProps> = (args) => {
             ))}
           </SelectField.OptionGroup>
         </SelectField>
-        <Button type="submit" text="Submit" />
+        <Button type="submit">Submit</Button>
       </form>
       <pre>result: {result}</pre>
     </>

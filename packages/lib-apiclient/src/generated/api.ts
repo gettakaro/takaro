@@ -3882,10 +3882,10 @@ export interface FunctionSearchInputDTO {
 }
 
 export const FunctionSearchInputDTOExtendEnum = {
-  Module: 'module',
-  CronJobs: 'cronJobs',
-  Hooks: 'hooks',
-  Commands: 'commands',
+  Version: 'version',
+  CronJob: 'cronJob',
+  Hook: 'hook',
+  Command: 'command',
 } as const;
 
 export type FunctionSearchInputDTOExtendEnum =
@@ -3965,6 +3965,19 @@ export const GameServerCreateDTOTypeEnum = {
 export type GameServerCreateDTOTypeEnum =
   (typeof GameServerCreateDTOTypeEnum)[keyof typeof GameServerCreateDTOTypeEnum];
 
+/**
+ *
+ * @export
+ * @interface GameServerIdParam
+ */
+export interface GameServerIdParam {
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerIdParam
+   */
+  gameServerId: string;
+}
 /**
  *
  * @export
@@ -4457,6 +4470,8 @@ export const GetSettingsInputKeysEnum = {
   DomainName: 'domainName',
   DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
   DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
+  UnknownCommandFeedbackEnabled: 'unknownCommandFeedbackEnabled',
+  UnknownCommandFeedbackMessage: 'unknownCommandFeedbackMessage',
 } as const;
 
 export type GetSettingsInputKeysEnum = (typeof GetSettingsInputKeysEnum)[keyof typeof GetSettingsInputKeysEnum];
@@ -6390,7 +6405,7 @@ export interface ItemSearchInputDTO {
 }
 
 export const ItemSearchInputDTOExtendEnum = {
-  GameServer: 'gameServer',
+  Gameserver: 'gameserver',
 } as const;
 
 export type ItemSearchInputDTOExtendEnum =
@@ -8306,6 +8321,8 @@ export const ParamKeyKeyEnum = {
   DomainName: 'domainName',
   DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
   DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
+  UnknownCommandFeedbackEnabled: 'unknownCommandFeedbackEnabled',
+  UnknownCommandFeedbackMessage: 'unknownCommandFeedbackMessage',
 } as const;
 
 export type ParamKeyKeyEnum = (typeof ParamKeyKeyEnum)[keyof typeof ParamKeyKeyEnum];
@@ -8551,6 +8568,82 @@ export interface PermissionVersionDTO {
    * @memberof PermissionVersionDTO
    */
   tag: string;
+}
+/**
+ *
+ * @export
+ * @interface PlayerBulkDeleteErrorDTO
+ */
+export interface PlayerBulkDeleteErrorDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerBulkDeleteErrorDTO
+   */
+  playerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerBulkDeleteErrorDTO
+   */
+  reason: string;
+}
+/**
+ *
+ * @export
+ * @interface PlayerBulkDeleteInputDTO
+ */
+export interface PlayerBulkDeleteInputDTO {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof PlayerBulkDeleteInputDTO
+   */
+  playerIds: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface PlayerBulkDeleteOutputDTO
+ */
+export interface PlayerBulkDeleteOutputDTO {
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerBulkDeleteOutputDTO
+   */
+  deleted: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerBulkDeleteOutputDTO
+   */
+  failed: number;
+  /**
+   *
+   * @type {Array<PlayerBulkDeleteErrorDTO>}
+   * @memberof PlayerBulkDeleteOutputDTO
+   */
+  errors: Array<PlayerBulkDeleteErrorDTO>;
+}
+/**
+ *
+ * @export
+ * @interface PlayerBulkDeleteOutputDTOAPI
+ */
+export interface PlayerBulkDeleteOutputDTOAPI {
+  /**
+   *
+   * @type {PlayerBulkDeleteOutputDTO}
+   * @memberof PlayerBulkDeleteOutputDTOAPI
+   */
+  data: PlayerBulkDeleteOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof PlayerBulkDeleteOutputDTOAPI
+   */
+  meta: MetadataOutput;
 }
 /**
  *
@@ -10093,6 +10186,82 @@ export interface PlayersOnlineInputDTO {
 /**
  *
  * @export
+ * @interface PogBulkDeleteErrorDTO
+ */
+export interface PogBulkDeleteErrorDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PogBulkDeleteErrorDTO
+   */
+  playerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PogBulkDeleteErrorDTO
+   */
+  reason: string;
+}
+/**
+ *
+ * @export
+ * @interface PogBulkDeleteInputDTO
+ */
+export interface PogBulkDeleteInputDTO {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof PogBulkDeleteInputDTO
+   */
+  playerIds: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface PogBulkDeleteOutputDTO
+ */
+export interface PogBulkDeleteOutputDTO {
+  /**
+   *
+   * @type {number}
+   * @memberof PogBulkDeleteOutputDTO
+   */
+  deleted: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PogBulkDeleteOutputDTO
+   */
+  failed: number;
+  /**
+   *
+   * @type {Array<PogBulkDeleteErrorDTO>}
+   * @memberof PogBulkDeleteOutputDTO
+   */
+  errors: Array<PogBulkDeleteErrorDTO>;
+}
+/**
+ *
+ * @export
+ * @interface PogBulkDeleteOutputDTOAPI
+ */
+export interface PogBulkDeleteOutputDTOAPI {
+  /**
+   *
+   * @type {PogBulkDeleteOutputDTO}
+   * @memberof PogBulkDeleteOutputDTOAPI
+   */
+  data: PogBulkDeleteOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof PogBulkDeleteOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
  * @interface PogParam
  */
 export interface PogParam {
@@ -10883,6 +11052,18 @@ export interface Settings {
    * @type {string}
    * @memberof Settings
    */
+  unknownCommandFeedbackEnabled: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
+  unknownCommandFeedbackMessage: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
   id: string;
   /**
    *
@@ -10964,6 +11145,8 @@ export const SettingsOutputDTOKeyEnum = {
   DomainName: 'domainName',
   DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
   DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
+  UnknownCommandFeedbackEnabled: 'unknownCommandFeedbackEnabled',
+  UnknownCommandFeedbackMessage: 'unknownCommandFeedbackMessage',
 } as const;
 
 export type SettingsOutputDTOKeyEnum = (typeof SettingsOutputDTOKeyEnum)[keyof typeof SettingsOutputDTOKeyEnum];
@@ -11823,7 +12006,7 @@ export interface ShopListingSearchInputDTO {
 
 export const ShopListingSearchInputDTOExtendEnum = {
   GameServer: 'gameServer',
-  Item: 'item',
+  Items: 'items',
   Categories: 'categories',
 } as const;
 
@@ -11922,12 +12105,6 @@ export interface ShopOrderCreateInternalDTO {
    * @type {string}
    * @memberof ShopOrderCreateInternalDTO
    */
-  gameServerId: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ShopOrderCreateInternalDTO
-   */
   listingId: string;
   /**
    *
@@ -11979,12 +12156,6 @@ export interface ShopOrderOutputDTO {
    * @memberof ShopOrderOutputDTO
    */
   playerId: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ShopOrderOutputDTO
-   */
-  gameServerId: string;
   /**
    *
    * @type {number}
@@ -12185,7 +12356,6 @@ export const ShopOrderSearchInputDTOExtendEnum = {
   Listing: 'listing',
   ListingItems: 'listing.items',
   ListingItemsItem: 'listing.items.item',
-  Player: 'player',
 } as const;
 
 export type ShopOrderSearchInputDTOExtendEnum =
@@ -14738,7 +14908,7 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `CommandControllerSearch`
+     * Search commands   Required permissions: `READ_MODULES`<br> OperationId: `CommandControllerSearch`
      * @summary Search
      * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -15062,7 +15232,7 @@ export const CommandApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `CommandControllerSearch`
+     * Search commands   Required permissions: `READ_MODULES`<br> OperationId: `CommandControllerSearch`
      * @summary Search
      * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -15255,7 +15425,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
       return localVarFp.commandControllerRemoveArgument(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `CommandControllerSearch`
+     * Search commands   Required permissions: `READ_MODULES`<br> OperationId: `CommandControllerSearch`
      * @summary Search
      * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -15425,7 +15595,7 @@ export class CommandApi extends BaseAPI {
   }
 
   /**
-   *    Required permissions: `READ_MODULES`<br> OperationId: `CommandControllerSearch`
+   * Search commands   Required permissions: `READ_MODULES`<br> OperationId: `CommandControllerSearch`
    * @summary Search
    * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -15647,7 +15817,7 @@ export const CronJobApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `CronJobControllerSearch`
+     * Search cronjobs   Required permissions: `READ_MODULES`<br> OperationId: `CronJobControllerSearch`
      * @summary Search
      * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -15873,7 +16043,7 @@ export const CronJobApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `CronJobControllerSearch`
+     * Search cronjobs   Required permissions: `READ_MODULES`<br> OperationId: `CronJobControllerSearch`
      * @summary Search
      * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -16006,7 +16176,7 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
       return localVarFp.cronJobControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `CronJobControllerSearch`
+     * Search cronjobs   Required permissions: `READ_MODULES`<br> OperationId: `CronJobControllerSearch`
      * @summary Search
      * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -16126,7 +16296,7 @@ export class CronJobApi extends BaseAPI {
   }
 
   /**
-   *    Required permissions: `READ_MODULES`<br> OperationId: `CronJobControllerSearch`
+   * Search cronjobs   Required permissions: `READ_MODULES`<br> OperationId: `CronJobControllerSearch`
    * @summary Search
    * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -17980,7 +18150,7 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     *    Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerSearch`
+     * Search events   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerSearch`
      * @summary Search
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -18122,7 +18292,7 @@ export const EventApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     *    Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerSearch`
+     * Search events   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerSearch`
      * @summary Search
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -18206,7 +18376,7 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
       return localVarFp.eventControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *    Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerSearch`
+     * Search events   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerSearch`
      * @summary Search
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -18285,7 +18455,7 @@ export class EventApi extends BaseAPI {
   }
 
   /**
-   *    Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerSearch`
+   * Search events   Required permissions: `READ_EVENTS`<br> OperationId: `EventControllerSearch`
    * @summary Search
    * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -18609,7 +18779,7 @@ export const FunctionApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `FunctionControllerSearch`
+     * Search functions   Required permissions: `READ_MODULES`<br> OperationId: `FunctionControllerSearch`
      * @summary Search
      * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -18770,7 +18940,7 @@ export const FunctionApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `FunctionControllerSearch`
+     * Search functions   Required permissions: `READ_MODULES`<br> OperationId: `FunctionControllerSearch`
      * @summary Search
      * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -18870,7 +19040,7 @@ export const FunctionApiFactory = function (configuration?: Configuration, baseP
       return localVarFp.functionControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `FunctionControllerSearch`
+     * Search functions   Required permissions: `READ_MODULES`<br> OperationId: `FunctionControllerSearch`
      * @summary Search
      * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -18954,7 +19124,7 @@ export class FunctionApi extends BaseAPI {
   }
 
   /**
-   *    Required permissions: `READ_MODULES`<br> OperationId: `FunctionControllerSearch`
+   * Search functions   Required permissions: `READ_MODULES`<br> OperationId: `FunctionControllerSearch`
    * @summary Search
    * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -21668,7 +21838,7 @@ export const HookApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `HookControllerSearch`
+     * Search hooks   Required permissions: `READ_MODULES`<br> OperationId: `HookControllerSearch`
      * @summary Search
      * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -21894,7 +22064,7 @@ export const HookApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `HookControllerSearch`
+     * Search hooks   Required permissions: `READ_MODULES`<br> OperationId: `HookControllerSearch`
      * @summary Search
      * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -22027,7 +22197,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.hookControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *    Required permissions: `READ_MODULES`<br> OperationId: `HookControllerSearch`
+     * Search hooks   Required permissions: `READ_MODULES`<br> OperationId: `HookControllerSearch`
      * @summary Search
      * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -22138,7 +22308,7 @@ export class HookApi extends BaseAPI {
   }
 
   /**
-   *    Required permissions: `READ_MODULES`<br> OperationId: `HookControllerSearch`
+   * Search hooks   Required permissions: `READ_MODULES`<br> OperationId: `HookControllerSearch`
    * @summary Search
    * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -22221,7 +22391,7 @@ export const ItemApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *    Required permissions: `READ_ITEMS`<br> OperationId: `ItemControllerSearch`
+     * Search items   Required permissions: `READ_ITEMS`<br> OperationId: `ItemControllerSearch`
      * @summary Search
      * @param {ItemSearchInputDTO} [itemSearchInputDTO] ItemSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -22291,7 +22461,7 @@ export const ItemApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     *    Required permissions: `READ_ITEMS`<br> OperationId: `ItemControllerSearch`
+     * Search items   Required permissions: `READ_ITEMS`<br> OperationId: `ItemControllerSearch`
      * @summary Search
      * @param {ItemSearchInputDTO} [itemSearchInputDTO] ItemSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -22334,7 +22504,7 @@ export const ItemApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.itemControllerFindOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *    Required permissions: `READ_ITEMS`<br> OperationId: `ItemControllerSearch`
+     * Search items   Required permissions: `READ_ITEMS`<br> OperationId: `ItemControllerSearch`
      * @summary Search
      * @param {ItemSearchInputDTO} [itemSearchInputDTO] ItemSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -22371,7 +22541,7 @@ export class ItemApi extends BaseAPI {
   }
 
   /**
-   *    Required permissions: `READ_ITEMS`<br> OperationId: `ItemControllerSearch`
+   * Search items   Required permissions: `READ_ITEMS`<br> OperationId: `ItemControllerSearch`
    * @summary Search
    * @param {ItemSearchInputDTO} [itemSearchInputDTO] ItemSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -24447,6 +24617,47 @@ export const PlayerApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
+     * Bulk delete players by their IDs. Deletes Player records which cascades to POG records.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerBulkDelete`
+     * @summary Bulk delete
+     * @param {PlayerBulkDeleteInputDTO} [playerBulkDeleteInputDTO] PlayerBulkDeleteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerBulkDelete: async (
+      playerBulkDeleteInputDTO?: PlayerBulkDeleteInputDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/player`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        playerBulkDeleteInputDTO,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerDelete`
      * @summary Delete
      * @param {string} id
@@ -24790,6 +25001,32 @@ export const PlayerApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
+     * Bulk delete players by their IDs. Deletes Player records which cascades to POG records.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerBulkDelete`
+     * @summary Bulk delete
+     * @param {PlayerBulkDeleteInputDTO} [playerBulkDeleteInputDTO] PlayerBulkDeleteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerControllerBulkDelete(
+      playerBulkDeleteInputDTO?: PlayerBulkDeleteInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerBulkDeleteOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerBulkDelete(
+        playerBulkDeleteInputDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PlayerApi.playerControllerBulkDelete']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
      *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerDelete`
      * @summary Delete
      * @param {string} id
@@ -24999,6 +25236,21 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
         .then((request) => request(axios, basePath));
     },
     /**
+     * Bulk delete players by their IDs. Deletes Player records which cascades to POG records.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerBulkDelete`
+     * @summary Bulk delete
+     * @param {PlayerBulkDeleteInputDTO} [playerBulkDeleteInputDTO] PlayerBulkDeleteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerBulkDelete(
+      playerBulkDeleteInputDTO?: PlayerBulkDeleteInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PlayerBulkDeleteOutputDTOAPI> {
+      return localVarFp
+        .playerControllerBulkDelete(playerBulkDeleteInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerDelete`
      * @summary Delete
      * @param {string} id
@@ -25164,6 +25416,23 @@ export class PlayerApi extends BaseAPI {
   }
 
   /**
+   * Bulk delete players by their IDs. Deletes Player records which cascades to POG records.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerBulkDelete`
+   * @summary Bulk delete
+   * @param {PlayerBulkDeleteInputDTO} [playerBulkDeleteInputDTO] PlayerBulkDeleteInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerApi
+   */
+  public playerControllerBulkDelete(
+    playerBulkDeleteInputDTO?: PlayerBulkDeleteInputDTO,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return PlayerApiFp(this.configuration)
+      .playerControllerBulkDelete(playerBulkDeleteInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
    *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerDelete`
    * @summary Delete
    * @param {string} id
@@ -25291,6 +25560,50 @@ export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: 
         localVarRequestOptions,
         configuration,
       );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Bulk delete POG records by player IDs for a specific gameserver. Deletes POG records only, Player records remain intact.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerBulkDelete`
+     * @summary Bulk delete
+     * @param {string} gameServerId
+     * @param {PogBulkDeleteInputDTO} [pogBulkDeleteInputDTO] PogBulkDeleteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerBulkDelete: async (
+      gameServerId: string,
+      pogBulkDeleteInputDTO?: PogBulkDeleteInputDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('playerOnGameServerControllerBulkDelete', 'gameServerId', gameServerId);
+      const localVarPath = `/gameserver/{gameServerId}/player`.replace(
+        `{${'gameServerId'}}`,
+        encodeURIComponent(String(gameServerId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(pogBulkDeleteInputDTO, localVarRequestOptions, configuration);
 
       return {
         url: toPathString(localVarUrlObj),
@@ -25625,6 +25938,37 @@ export const PlayerOnGameServerApiFp = function (configuration?: Configuration) 
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
+     * Bulk delete POG records by player IDs for a specific gameserver. Deletes POG records only, Player records remain intact.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerBulkDelete`
+     * @summary Bulk delete
+     * @param {string} gameServerId
+     * @param {PogBulkDeleteInputDTO} [pogBulkDeleteInputDTO] PogBulkDeleteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerOnGameServerControllerBulkDelete(
+      gameServerId: string,
+      pogBulkDeleteInputDTO?: PogBulkDeleteInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PogBulkDeleteOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerBulkDelete(
+        gameServerId,
+        pogBulkDeleteInputDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PlayerOnGameServerApi.playerOnGameServerControllerBulkDelete']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
      *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerDeductCurrency`
      * @summary Deduct currency
      * @param {string} gameServerId
@@ -25850,6 +26194,23 @@ export const PlayerOnGameServerApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
+     * Bulk delete POG records by player IDs for a specific gameserver. Deletes POG records only, Player records remain intact.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerBulkDelete`
+     * @summary Bulk delete
+     * @param {string} gameServerId
+     * @param {PogBulkDeleteInputDTO} [pogBulkDeleteInputDTO] PogBulkDeleteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerBulkDelete(
+      gameServerId: string,
+      pogBulkDeleteInputDTO?: PogBulkDeleteInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PogBulkDeleteOutputDTOAPI> {
+      return localVarFp
+        .playerOnGameServerControllerBulkDelete(gameServerId, pogBulkDeleteInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerDeductCurrency`
      * @summary Deduct currency
      * @param {string} gameServerId
@@ -25996,6 +26357,25 @@ export class PlayerOnGameServerApi extends BaseAPI {
   ) {
     return PlayerOnGameServerApiFp(this.configuration)
       .playerOnGameServerControllerAddCurrency(gameServerId, playerId, playerOnGameServerSetCurrencyInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Bulk delete POG records by player IDs for a specific gameserver. Deletes POG records only, Player records remain intact.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerBulkDelete`
+   * @summary Bulk delete
+   * @param {string} gameServerId
+   * @param {PogBulkDeleteInputDTO} [pogBulkDeleteInputDTO] PogBulkDeleteInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerOnGameServerApi
+   */
+  public playerOnGameServerControllerBulkDelete(
+    gameServerId: string,
+    pogBulkDeleteInputDTO?: PogBulkDeleteInputDTO,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return PlayerOnGameServerApiFp(this.configuration)
+      .playerOnGameServerControllerBulkDelete(gameServerId, pogBulkDeleteInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -27112,6 +27492,8 @@ export const SettingsControllerGetKeysEnum = {
   DomainName: 'domainName',
   DiscordRoleSyncEnabled: 'discordRoleSyncEnabled',
   DiscordRoleSyncPreferDiscord: 'discordRoleSyncPreferDiscord',
+  UnknownCommandFeedbackEnabled: 'unknownCommandFeedbackEnabled',
+  UnknownCommandFeedbackMessage: 'unknownCommandFeedbackMessage',
 } as const;
 export type SettingsControllerGetKeysEnum =
   (typeof SettingsControllerGetKeysEnum)[keyof typeof SettingsControllerGetKeysEnum];
@@ -28066,7 +28448,7 @@ export const ShopListingApiAxiosParamCreator = function (configuration?: Configu
       };
     },
     /**
-     * <br> OperationId: `ShopListingControllerSearch`
+     * Search shop listings<br> OperationId: `ShopListingControllerSearch`
      * @summary Search
      * @param {ShopListingSearchInputDTO} [shopListingSearchInputDTO] ShopListingSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -28251,7 +28633,7 @@ export const ShopListingApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * <br> OperationId: `ShopListingControllerSearch`
+     * Search shop listings<br> OperationId: `ShopListingControllerSearch`
      * @summary Search
      * @param {ShopListingSearchInputDTO} [shopListingSearchInputDTO] ShopListingSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -28364,7 +28746,7 @@ export const ShopListingApiFactory = function (
       return localVarFp.shopListingControllerImportListings(options).then((request) => request(axios, basePath));
     },
     /**
-     * <br> OperationId: `ShopListingControllerSearch`
+     * Search shop listings<br> OperationId: `ShopListingControllerSearch`
      * @summary Search
      * @param {ShopListingSearchInputDTO} [shopListingSearchInputDTO] ShopListingSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -28461,7 +28843,7 @@ export class ShopListingApi extends BaseAPI {
   }
 
   /**
-   * <br> OperationId: `ShopListingControllerSearch`
+   * Search shop listings<br> OperationId: `ShopListingControllerSearch`
    * @summary Search
    * @param {ShopListingSearchInputDTO} [shopListingSearchInputDTO] ShopListingSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -31968,7 +32350,7 @@ export const VariableApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *    Required permissions: `READ_VARIABLES`<br> OperationId: `VariableControllerSearch`
+     * Search variables   Required permissions: `READ_VARIABLES`<br> OperationId: `VariableControllerSearch`
      * @summary Search
      * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -32129,7 +32511,7 @@ export const VariableApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     *    Required permissions: `READ_VARIABLES`<br> OperationId: `VariableControllerSearch`
+     * Search variables   Required permissions: `READ_VARIABLES`<br> OperationId: `VariableControllerSearch`
      * @summary Search
      * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -32229,7 +32611,7 @@ export const VariableApiFactory = function (configuration?: Configuration, baseP
       return localVarFp.variableControllerFindOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *    Required permissions: `READ_VARIABLES`<br> OperationId: `VariableControllerSearch`
+     * Search variables   Required permissions: `READ_VARIABLES`<br> OperationId: `VariableControllerSearch`
      * @summary Search
      * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -32313,7 +32695,7 @@ export class VariableApi extends BaseAPI {
   }
 
   /**
-   *    Required permissions: `READ_VARIABLES`<br> OperationId: `VariableControllerSearch`
+   * Search variables   Required permissions: `READ_VARIABLES`<br> OperationId: `VariableControllerSearch`
    * @summary Search
    * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
    * @param {*} [options] Override http request option.

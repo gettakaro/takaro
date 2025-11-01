@@ -1,6 +1,18 @@
 import { TakaroService } from './Base.js';
 
-import { IsBoolean, IsIP, IsISO8601, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsIP,
+  IsISO8601,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+  ValidateNested,
+  IsUUID,
+  ArrayMinSize,
+  ArrayMaxSize,
+} from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, ctx, errors, traceableClass } from '@takaro/util';
 import { ITakaroQuery, SortDirection } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
@@ -126,6 +138,33 @@ export class PlayerOnGameServerUpdateDTO extends TakaroDTO<PlayerOnGameServerUpd
   playtimeSeconds?: number;
 }
 
+export class PogBulkDeleteInputDTO extends TakaroDTO<PogBulkDeleteInputDTO> {
+  @IsUUID('4', { each: true })
+  @ArrayMinSize(1)
+  @ArrayMaxSize(1000)
+  playerIds!: string[];
+}
+
+export class PogBulkDeleteOutputDTO extends TakaroDTO<PogBulkDeleteOutputDTO> {
+  @IsNumber()
+  deleted!: number;
+
+  @IsNumber()
+  failed!: number;
+
+  @ValidateNested({ each: true })
+  @Type(() => PogBulkDeleteErrorDTO)
+  errors!: PogBulkDeleteErrorDTO[];
+}
+
+export class PogBulkDeleteErrorDTO extends TakaroDTO<PogBulkDeleteErrorDTO> {
+  @IsUUID('4')
+  playerId!: string;
+
+  @IsString()
+  reason!: string;
+}
+
 @traceableClass('service:playerOnGameserver')
 export class PlayerOnGameServerService extends TakaroService<
   PlayerOnGameServerModel,
@@ -222,6 +261,76 @@ export class PlayerOnGameServerService extends TakaroService<
     );
 
     return id;
+  }
+
+  async bulkDeleteByPlayersAndGameServer(
+    playerIds: string[],
+    gameServerId: string,
+  ): Promise<{ deleted: number; failed: number; errors: Array<{ playerId: string; reason: string }> }> {
+    if (playerIds.length === 0) {
+      return { deleted: 0, failed: 0, errors: [] };
+    }
+
+    const BATCH_SIZE = 500;
+    const allDeleted: string[] = [];
+    const allFailed: Array<{ playerId: string; reason: string }> = [];
+
+    // Process in batches
+    for (let i = 0; i < playerIds.length; i += BATCH_SIZE) {
+      const batch = playerIds.slice(i, i + BATCH_SIZE);
+
+      // Fetch POGs and player names before deletion for events
+      const pogsToDelete = await this.repo.find({
+        filters: { playerId: batch, gameServerId: [gameServerId] },
+      });
+      const pogPlayerIds = pogsToDelete.results.map((p) => p.playerId);
+
+      // Fetch player names for events
+      const playerService = new PlayerService(this.domainId);
+      const players = await playerService.repo.find({
+        filters: { id: pogPlayerIds },
+      });
+      const playerNamesMap = new Map(players.results.map((p) => [p.id, p.name]));
+
+      const { knex } = await this.repo.getModel();
+
+      // Execute batch delete in a transaction
+      await ctx.runInTransaction(knex, async () => {
+        const { deleted, failed } = await this.repo.bulkDeleteByPlayersAndGameServer(batch, gameServerId);
+        allDeleted.push(...deleted);
+        allFailed.push(...failed.map((f) => ({ playerId: f.id, reason: f.error })));
+
+        // Emit events after transaction commits
+        const eventService = new EventService(this.domainId);
+        await Promise.all(
+          deleted.map((playerId) =>
+            eventService.create(
+              new EventCreateDTO({
+                eventName: TakaroEvents.PLAYER_DELETED,
+                playerId,
+                gameserverId: gameServerId,
+                meta: new TakaroEventPlayerDeleted({
+                  playerName: playerNamesMap.get(playerId) || 'Unknown',
+                }),
+              }),
+            ),
+          ),
+        );
+      });
+    }
+
+    this.log.info('Bulk delete POGs completed', {
+      gameServerId,
+      requestedCount: playerIds.length,
+      deletedCount: allDeleted.length,
+      failedCount: allFailed.length,
+    });
+
+    return {
+      deleted: allDeleted.length,
+      failed: allFailed.length,
+      errors: allFailed,
+    };
   }
 
   async getPog(playerId: string, gameserverId: string): Promise<PlayerOnGameserverOutputDTO> {

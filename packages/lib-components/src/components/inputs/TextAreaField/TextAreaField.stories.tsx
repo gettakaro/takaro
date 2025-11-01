@@ -89,7 +89,9 @@ export const OnSubmit: StoryFn<TextAreaFieldProps> = (args) => {
           required={args.required}
           hint={args.hint}
         />
-        <Button type="submit" text="Submit form" size="large" />
+        <Button type="submit" size="large">
+          Submit form
+        </Button>
       </form>
       <pre>result: {result}</pre>
     </Wrapper>

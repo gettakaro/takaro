@@ -21,8 +21,9 @@ import { useSnackbar } from 'notistack';
 import { userKeys } from './user';
 
 export const shopOrderKeys = {
-  list: () => ['shopOrder'],
-  detail: (shopOrderId: string) => ['shopOrder', shopOrderId],
+  all: ['shopOrder'] as const,
+  list: () => [...shopOrderKeys.all, 'list'] as const,
+  detail: (shopOrderId: string) => [...shopOrderKeys.all, 'detail', shopOrderId] as const,
 };
 
 export const shopOrderQueryOptions = (shopOrderId: string) =>

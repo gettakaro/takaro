@@ -202,7 +202,7 @@ export const useTagModule = () => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.versions.all });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.versions.list(moduleId) });
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.versions.detail(moduleId) });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.versions.detail(newVersion.id) });
       },
     }),
     {},
@@ -738,7 +738,7 @@ export const useCronJobRemove = () => {
     useMutation<APIOutput, AxiosError<APIOutput>, CronJobRemove>({
       mutationFn: async ({ cronJobId }: { cronJobId: string }) =>
         (await apiClient.cronjob.cronJobControllerRemove(cronJobId)).data,
-      onSuccess: async (_, { cronJobId, versionId }) => {
+      onSuccess: async (_, { cronJobId, versionId, moduleId }) => {
         enqueueSnackbar('Cronjob successfully deleted!', { variant: 'default', type: 'success' });
 
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
@@ -747,7 +747,7 @@ export const useCronJobRemove = () => {
 
         queryClient.removeQueries({ queryKey: moduleKeys.cronJobs.detail(cronJobId) });
 
-        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(versionId), (prev) =>
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) =>
           prev
             ? {
                 ...prev,

@@ -3,7 +3,7 @@ import { Outlet, redirect, createFileRoute } from '@tanstack/react-router';
 import { useQueries } from '@tanstack/react-query';
 import { ModuleInstallCard, CardList } from '../../../components/cards';
 import { TableListToggleButton } from '../../../components/TableListToggleButton';
-import { ModuleInstallationsTableView } from './-components/ModuleInstallationsTableView';
+import { ModuleInstallationsTableView } from '../../../components/moduleInstallations/ModuleInstallationsTableView';
 import { moduleInstallationsOptions } from '../../../queries/gameserver';
 import { modulesQueryOptions } from '../../../queries/module';
 import { hasPermission } from '../../../hooks/useHasPermission';

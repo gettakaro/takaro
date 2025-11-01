@@ -1,4 +1,15 @@
-import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested, Matches } from 'class-validator';
+import {
+  IsBoolean,
+  IsISO8601,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+  Matches,
+  IsUUID,
+  ArrayMinSize,
+  ArrayMaxSize,
+} from 'class-validator';
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { PlayerOnGameserverOutputDTO } from '../PlayerOnGameserverService.js';
 import { Type, Exclude } from 'class-transformer';
@@ -158,4 +169,31 @@ export class PlayerUpdateDTO extends TakaroDTO<PlayerUpdateDTO> {
   @IsNumber()
   @IsOptional()
   playtimeSeconds?: number;
+}
+
+export class PlayerBulkDeleteInputDTO extends TakaroDTO<PlayerBulkDeleteInputDTO> {
+  @IsUUID('4', { each: true })
+  @ArrayMinSize(1)
+  @ArrayMaxSize(1000)
+  playerIds!: string[];
+}
+
+export class PlayerBulkDeleteOutputDTO extends TakaroDTO<PlayerBulkDeleteOutputDTO> {
+  @IsNumber()
+  deleted!: number;
+
+  @IsNumber()
+  failed!: number;
+
+  @ValidateNested({ each: true })
+  @Type(() => PlayerBulkDeleteErrorDTO)
+  errors!: PlayerBulkDeleteErrorDTO[];
+}
+
+export class PlayerBulkDeleteErrorDTO extends TakaroDTO<PlayerBulkDeleteErrorDTO> {
+  @IsUUID('4')
+  playerId!: string;
+
+  @IsString()
+  reason!: string;
 }

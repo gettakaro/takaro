@@ -373,6 +373,46 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     return result.rowCount ?? 0;
   }
 
+  async bulkDeleteByPlayersAndGameServer(
+    playerIds: string[],
+    gameServerId: string,
+  ): Promise<{ deleted: string[]; failed: Array<{ id: string; error: string }> }> {
+    if (playerIds.length === 0) {
+      return { deleted: [], failed: [] };
+    }
+
+    const { query } = await this.getModel();
+    const deleted: string[] = [];
+    const failed: Array<{ id: string; error: string }> = [];
+
+    const deletedRecords = await query
+      .delete()
+      .where({ gameServerId })
+      .whereIn('playerId', playerIds)
+      .returning(['id', 'playerId']);
+
+    deletedRecords.forEach((record) => {
+      deleted.push(record.playerId);
+    });
+
+    // Find which player IDs failed (had no POG on this gameserver)
+    const deletedPlayerIds = new Set(deleted);
+    playerIds.forEach((playerId) => {
+      if (!deletedPlayerIds.has(playerId)) {
+        failed.push({ id: playerId, error: 'POG not found for player on this gameserver' });
+      }
+    });
+
+    this.log.info('Bulk deleted POGs', {
+      gameServerId,
+      requestedCount: playerIds.length,
+      deletedCount: deleted.length,
+      failedCount: failed.length,
+    });
+
+    return { deleted, failed };
+  }
+
   async getInventory(pogId: string): Promise<IItemDTO[]> {
     const redis = await Redis.getClient('inventory');
     const cacheKey = `inventory:${this.domainId}:${pogId}`;

@@ -1,7 +1,7 @@
 import { Card, styled } from '@takaro/lib-components';
 import { gameServerQueryOptions } from '../../../queries/gameserver';
 import { useGameServerDocumentTitle } from '../../../hooks/useDocumentTitle';
-import { OnlinePlayersCard } from './-components/OnlinePlayers';
+import { OnlinePlayersCard } from '../../../components/OnlinePlayers';
 import { ChatMessagesCard } from './-components/ChatMessages';
 import { Scrollable } from './-components/style';
 import { EventFeedWidget } from '../../../components/events/EventFeedWidget';

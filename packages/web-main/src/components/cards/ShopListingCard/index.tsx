@@ -3,9 +3,9 @@ import { FC } from 'react';
 import { Header, CardBody } from './style';
 import { GameServerOutputDTOTypeEnum, ShopListingOutputDTO } from '@takaro/apiclient';
 import { useHasPermission } from '../../../hooks/useHasPermission';
-import { ShopListingActions } from '../../../routes/_auth/gameserver.$gameServerId/-components/shop/ShopListingActions';
-import { ShopListingBuyForm } from '../../../routes/_auth/gameserver.$gameServerId/-components/shop/ShopListingBuyForm';
 import { CategoryBadge } from '../../shop/CategoryBadge';
+import { ShopListingBuyForm } from '../../../components/shop/ShopListingBuyForm';
+import { ShopListingActions } from '../../../components/shop/ShopListingActions';
 
 const gameServerTypeToIconFolderMap = {
   [GameServerOutputDTOTypeEnum.Mock]: 'rust',
