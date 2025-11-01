@@ -384,7 +384,7 @@ const Chart = <T,>({
             tickLabelProps={{
               fill: theme.colors.textAlt,
               fontSize: theme.fontSize.small,
-              textAnchor: 'end',
+              textAnchor: 'middle',
             }}
             tickFormat={tickFormatDate}
             labelProps={{
