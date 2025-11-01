@@ -15,8 +15,8 @@ export default {
 } as Meta<RadarChartProps<LetterFrequency>>;
 
 const Wrapper = styled.div`
-  height: 200px;
-  width: 200px;
+  height: 400px;
+  width: 400px;
 `;
 
 export const Default: StoryFn<RadarChartProps<LetterFrequency>> = (args) => {
@@ -35,7 +35,9 @@ export const Default: StoryFn<RadarChartProps<LetterFrequency>> = (args) => {
         name="letterFrequency"
         yAccessor={getLetterFrequency}
         xAccessor={getLetter}
-        tooltipAccessor={tooltipAccessor}
+        tooltip={{
+          accessor: tooltipAccessor,
+        }}
         data={data}
         levels={args.levels}
         animate={args.animate}
