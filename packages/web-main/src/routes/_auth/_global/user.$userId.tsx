@@ -2,10 +2,15 @@ import { UserAssignmentOutputDTO, UserOutputWithRolesDTO } from '@takaro/apiclie
 import { Button, Divider, Dropdown, IconButton, Skeleton, Table, useTableActions } from '@takaro/lib-components';
 import { useUserRemoveRole, userMeQueryOptions, userQueryOptions } from '../../../queries/user';
 import { createColumnHelper } from '@tanstack/react-table';
-import { FC } from 'react';
+import { FC, MouseEvent } from 'react';
 import { Outlet, redirect, useNavigate, createFileRoute, Link } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
-import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon, AiOutlineEye as ViewIcon } from 'react-icons/ai';
+import {
+  AiOutlineDelete as DeleteIcon,
+  AiOutlineRight as ActionIcon,
+  AiOutlineEye as ViewIcon,
+  AiOutlineEdit as EditIcon,
+} from 'react-icons/ai';
 import { hasPermission } from '../../../hooks/useHasPermission';
 import { useQuery } from '@tanstack/react-query';
 
@@ -66,6 +71,11 @@ const UserRolesTable: FC<IUserRolesTableProps> = ({ roles, userId }) => {
   const { mutate } = useUserRemoveRole({ userId });
   const navigate = useNavigate();
 
+  const handleOnEditRoleClick = (e: MouseEvent, roleId: string) => {
+    e.stopPropagation();
+    navigate({ to: '/roles/update/$roleId', params: { roleId } });
+  };
+
   const columnHelper = createColumnHelper<UserAssignmentOutputDTO>();
 
   const columnDefs = [
@@ -119,7 +129,11 @@ const UserRolesTable: FC<IUserRolesTableProps> = ({ roles, userId }) => {
                 })
               }
             />
-
+            <Dropdown.Menu.Item
+              label="Edit role"
+              icon={<EditIcon />}
+              onClick={(e) => handleOnEditRoleClick(e, info.row.original.roleId)}
+            />
             <Dropdown.Menu.Item
               label="Remove role"
               icon={<DeleteIcon />}
