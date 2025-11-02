@@ -6,7 +6,6 @@ import { AdminClient, Client, AxiosResponse, isAxiosError, TakaroEventCommandExe
 import { randomUUID } from 'crypto';
 import { before, it } from 'node:test';
 import { getMockServer } from '@takaro/mock-gameserver';
-import { EventsAwaiter } from './test/waitForEvents.js';
 
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
@@ -77,9 +76,6 @@ export class IntegrationTest<SetupData> {
   // Track mock servers created by this test instance for automatic cleanup
   private createdMockServers: Awaited<ReturnType<typeof getMockServer>>[] = [];
 
-  // Track EventsAwaiters created by this test instance for automatic cleanup
-  private createdEventsAwaiters: EventsAwaiter[] = [];
-
   constructor(public test: IIntegrationTest<SetupData>) {
     if (test.snapshot) {
       this.test.expectedStatus ??= 200;
@@ -136,17 +132,6 @@ export class IntegrationTest<SetupData> {
     return server;
   }
 
-  /**
-   * Create an EventsAwaiter and track it for automatic cleanup in teardown.
-   * This ensures Socket.IO connections are properly closed even if tests timeout or fail.
-   */
-  async createEventsAwaiter(client: Client) {
-    const awaiter = new EventsAwaiter();
-    await awaiter.connect(client);
-    this.createdEventsAwaiters.push(awaiter);
-    return awaiter;
-  }
-
   async run() {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const integrationTestContext = this;
@@ -185,24 +170,12 @@ export class IntegrationTest<SetupData> {
       for (const mockserver of integrationTestContext.createdMockServers) {
         try {
           await mockserver.shutdown();
-        } catch {
+        } catch (error) {
           // Ignore shutdown errors - server may already be down
-          console.warn('Failed to shutdown mock server during cleanup');
+          console.warn('Failed to shutdown mock server during cleanup:', error);
         }
       }
       integrationTestContext.createdMockServers = [];
-
-      // Clean up ALL tracked EventsAwaiters (disconnect Socket.IO connections)
-      // This prevents socket leaks across retry attempts
-      for (const awaiter of integrationTestContext.createdEventsAwaiters) {
-        try {
-          await awaiter.disconnect();
-        } catch (error) {
-          // Ignore disconnect errors - socket may already be disconnected
-          console.warn('Failed to disconnect EventsAwaiter during cleanup:', error);
-        }
-      }
-      integrationTestContext.createdEventsAwaiters = [];
 
       // Also clean up mock servers in setupData (for backwards compatibility)
       if (

@@ -42,10 +42,7 @@ export class EventsAwaiter {
         this.activeWaiters.forEach((waiter) => waiter(event));
       });
 
-      // Wait for 'ready' event from server instead of just 'connect'
-      // This ensures server-side socket.join() has completed with Redis adapter
-      // before we proceed with test execution (fixes race condition)
-      this.socket.on('ready', async () => {
+      this.socket.on('connect', async () => {
         return resolve(this);
       });
 
@@ -85,8 +82,7 @@ export class EventsAwaiter {
             if (events.length >= amount) {
               hasFinished = true;
               this.activeWaiters.delete(waiter);
-              // Don't auto-disconnect on success - allow EventsAwaiter reuse
-              // Cleanup will be handled by test infrastructure teardown
+              this.disconnect();
               resolve(events.slice(0, amount));
             }
           }
