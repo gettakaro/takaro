@@ -1,5 +1,5 @@
 import { CustomerMetricsDTO } from '@takaro/apiclient';
-import { Card, Chip, IconTooltip, PieChart, Stats, styled } from '@takaro/lib-components';
+import { Card, IconTooltip, PieChart, Stats, styled } from '@takaro/lib-components';
 import { FC } from 'react';
 import { AiOutlineInfoCircle as InfoIcon, AiOutlineReload, AiOutlineDollar } from 'react-icons/ai';
 
@@ -17,6 +17,27 @@ interface CustomerSegmentChartProps {
   customers: CustomerMetricsDTO;
 }
 
+const CenterContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const TotalCount = styled.div`
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+`;
+
+const TotalLabel = styled.div`
+  font-size: 0.875rem;
+  color: ${({ theme }) => theme.colors.textAlt};
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+`;
+
 export const CustomerSegmentChart: FC<CustomerSegmentChartProps> = ({ customers }) => {
   const segmentData =
     customers.segments.map((segment) => ({
@@ -25,11 +46,14 @@ export const CustomerSegmentChart: FC<CustomerSegmentChartProps> = ({ customers 
       percentage: segment.percentage,
     })) || [];
 
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat('en-US').format(num);
+  };
+
   return (
     <StyledCard>
       <Card.Title label="Customer Segments">
-        <Chip label={`${customers.totalCustomers} customers`} color="primary" variant="outline" />
-        <IconTooltip icon={<InfoIcon />} color="background">
+        <IconTooltip icon={<InfoIcon />} color="white">
           Time-based customer segmentation. New = first-time buyers in current period with no prior history. Returning =
           customers with purchase history who don't qualify as frequent. Frequent = customers with 3+ consecutive months
           of purchases OR 4+ total months with purchases in the last 6 months. Helps identify true customer loyalty
@@ -46,9 +70,16 @@ export const CustomerSegmentChart: FC<CustomerSegmentChartProps> = ({ customers 
             innerRadius={0.6}
             labelPosition="inside"
             legendPosition="left"
+            cornerRadius={3}
             tooltip={{
               accessor: (d) => `${d.name}: ${d.value} (${d.percentage.toFixed(1)}%)`,
             }}
+            centerContent={(totalValue) => (
+              <CenterContent>
+                <TotalCount>{formatNumber(totalValue)}</TotalCount>
+                <TotalLabel>Total Customers</TotalLabel>
+              </CenterContent>
+            )}
           />
         </ChartContent>
         <Stats direction="horizontal" grouped size="small">

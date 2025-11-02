@@ -109,7 +109,7 @@ export const KPICards: FC<KPICardsProps> = ({ kpis, isLoading }) => {
           <StatWrapper key={card.title}>
             <StatHeader>
               {card.title}
-              <IconTooltip icon={<InfoIcon />} size="tiny" color="background">
+              <IconTooltip icon={<InfoIcon />} size="tiny" color="white">
                 {card.tooltip}
               </IconTooltip>
             </StatHeader>

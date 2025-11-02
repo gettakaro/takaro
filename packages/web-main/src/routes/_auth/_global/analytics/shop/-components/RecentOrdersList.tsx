@@ -28,6 +28,7 @@ const OrdersList = styled.div`
   gap: ${({ theme }) => theme.spacing['1']};
   overflow-y: auto;
   flex: 1;
+  max-height: 380px;
 `;
 
 const OrderItem = styled.div`
@@ -95,8 +96,8 @@ export const RecentOrdersList: FC<RecentOrdersListProps> = ({ orders }) => {
         />
       )}
       <StyledCard>
-        <Card.Title label="Recent Orders">
-          <IconTooltip icon={<InfoIcon />} size="small" color="background">
+        <Card.Title label="10 Most Recent Orders">
+          <IconTooltip icon={<InfoIcon />} size="small" color="white">
             Latest 10 orders showing player, item, value and time. Helps monitor real-time shop activity and quickly
             identify any issues with orders or popular items.
           </IconTooltip>

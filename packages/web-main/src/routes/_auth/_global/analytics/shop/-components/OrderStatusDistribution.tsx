@@ -1,5 +1,5 @@
 import { OrderMetricsDTO } from '@takaro/apiclient';
-import { Card, Chip, IconTooltip, Stats, styled, useTheme } from '@takaro/lib-components';
+import { Card, IconTooltip, Stats, styled, useTheme } from '@takaro/lib-components';
 import { FC } from 'react';
 
 import {
@@ -94,48 +94,50 @@ export const OrderStatusDistribution: FC<OrderStatusDistributionProps> = ({ orde
     <Card>
       <Card.Title label="Order Status Distribution">
         <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing['0_5'] }}>
-          <IconTooltip icon={<InfoIcon />} size="small" color="background">
+          <IconTooltip icon={<InfoIcon />} size="small" color="white">
             Breakdown of orders by status (Paid, Completed, Canceled). Helps monitor order fulfillment rates and
             identify potential issues with order completion.
           </IconTooltip>
-          <Chip label={`${orders?.totalOrders || 0} total`} color="primary" variant="outline" />
         </div>
       </Card.Title>
       <Card.Body>
-        {statusData.length > 0 ? (
-          <StatusList>
-            {statusData.map((status) => {
-              const { icon, color } = getStatusIcon(status.status);
-              return (
-                <StatusItem key={status.status}>
-                  <StatusLeft>
-                    <StatusIconCircle $color={color}>{icon}</StatusIconCircle>
-                    <StatusLabel>{status.status}</StatusLabel>
-                  </StatusLeft>
-                  <StatusRight>
-                    <StatusCount>{status.count}</StatusCount>
-                    <StatusPercent>({status.percentage.toFixed(1)}%)</StatusPercent>
-                  </StatusRight>
-                </StatusItem>
-              );
-            })}
-          </StatusList>
-        ) : (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-            <span style={{ color: theme.colors.textAlt }}>No order data available</span>
-          </div>
-        )}
-        <Stats direction="horizontal" grouped={false}>
-          <Stats.Stat
-            description="Completion Rate"
-            value={`${orders.completionRate.toFixed(1)}%`}
-            icon={
-              <ColoredIconWrapper $color={orders.completionRate > 80 ? theme.colors.success : theme.colors.warning}>
-                <CheckIcon />
-              </ColoredIconWrapper>
-            }
-          />
-        </Stats>
+        <div style={{ minHeight: '350px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          {statusData.length > 0 ? (
+            <StatusList>
+              {statusData.map((status) => {
+                const { icon, color } = getStatusIcon(status.status);
+                return (
+                  <StatusItem key={status.status}>
+                    <StatusLeft>
+                      <StatusIconCircle $color={color}>{icon}</StatusIconCircle>
+                      <StatusLabel>{status.status}</StatusLabel>
+                    </StatusLeft>
+                    <StatusRight>
+                      <StatusCount>{status.count}</StatusCount>
+                      <StatusPercent>({status.percentage.toFixed(1)}%)</StatusPercent>
+                    </StatusRight>
+                  </StatusItem>
+                );
+              })}
+            </StatusList>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+              <span style={{ color: theme.colors.textAlt }}>No order data available</span>
+            </div>
+          )}
+          <Stats direction="horizontal" grouped={true} size="small">
+            <Stats.Stat
+              description="Completion Rate"
+              value={`${orders.completionRate.toFixed(1)}%`}
+              icon={
+                <ColoredIconWrapper $color={orders.completionRate > 80 ? theme.colors.success : theme.colors.warning}>
+                  <CheckIcon />
+                </ColoredIconWrapper>
+              }
+            />
+            <Stats.Stat description="Total order count" value={orders.totalOrders} icon={<CartIcon />} />
+          </Stats>
+        </div>
       </Card.Body>
     </Card>
   );
