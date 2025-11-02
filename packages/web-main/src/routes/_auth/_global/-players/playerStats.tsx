@@ -95,7 +95,7 @@ export function PlayerStats() {
             </IconTooltip>
           </Card.Title>
           <Card.Body>
-            <div style={{ height: '200px' }}>
+            <div style={{ position: 'relative', height: '200px' }}>
               <LineChart
                 name="Daily active players"
                 data={dailyActiveUsers.values}
