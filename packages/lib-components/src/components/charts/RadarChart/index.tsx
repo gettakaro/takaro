@@ -12,6 +12,7 @@ import { motion } from 'framer-motion';
 import { getDefaultTooltipStyles, InnerChartProps, TooltipConfig, ChartProps } from '../util';
 import { genAngles, genPoints, genPolygonPoints } from './generators';
 import { useTheme } from '../../../hooks';
+import { EmptyChart } from '../EmptyChart';
 
 export interface RadarChartProps<T> extends Exclude<ChartProps, 'grid'> {
   data: T[];
@@ -33,23 +34,27 @@ export const RadarChart = <T,>({
   animate = true,
   tooltip,
 }: RadarChartProps<T>) => {
+  const hasData = data && data.length > 0;
+
   return (
     <>
       <ParentSize>
-        {(parent) => (
-          <Chart<T>
-            name={name}
-            data={data}
-            width={parent.width}
-            height={parent.height}
-            margin={margin}
-            xAccessor={xAccessor}
-            yAccessor={yAccessor}
-            levels={levels}
-            tooltip={tooltip}
-            animate={animate}
-          />
-        )}
+        {hasData
+          ? (parent) => (
+              <Chart<T>
+                name={name}
+                data={data}
+                width={parent.width}
+                height={parent.height}
+                margin={margin}
+                xAccessor={xAccessor}
+                yAccessor={yAccessor}
+                levels={levels}
+                tooltip={tooltip}
+                animate={animate}
+              />
+            )
+          : () => <EmptyChart />}
       </ParentSize>
     </>
   );

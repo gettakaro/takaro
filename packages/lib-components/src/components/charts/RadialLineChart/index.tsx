@@ -15,6 +15,7 @@ import { localPoint } from '@visx/event';
 import { InnerChartProps, getDefaultTooltipStyles, TooltipConfig, ChartProps } from '../util';
 import { useTheme } from '../../../hooks';
 import { useGradients } from '../useGradients';
+import { EmptyChart } from '../EmptyChart';
 
 const formatTicks = (val: NumberLike) => String(val);
 
@@ -36,22 +37,26 @@ export const RadialLineChart = <T,>({
   animate = true,
   tooltip,
 }: RadialLineChartProps<T>) => {
+  const hasData = data && data.length > 0;
+
   return (
     <>
       <ParentSize>
-        {(parent) => (
-          <Chart<T>
-            name={name}
-            data={data}
-            width={parent.width}
-            height={parent.height}
-            margin={margin}
-            yAccessor={yAccessor}
-            xAccessor={xAccessor}
-            tooltip={tooltip}
-            animate={animate}
-          />
-        )}
+        {hasData
+          ? (parent) => (
+              <Chart<T>
+                name={name}
+                data={data}
+                width={parent.width}
+                height={parent.height}
+                margin={margin}
+                yAccessor={yAccessor}
+                xAccessor={xAccessor}
+                tooltip={tooltip}
+                animate={animate}
+              />
+            )
+          : () => <EmptyChart />}
       </ParentSize>
     </>
   );

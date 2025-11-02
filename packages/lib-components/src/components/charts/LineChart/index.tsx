@@ -15,6 +15,7 @@ import { ChartProps, InnerChartProps, getDefaultTooltipStyles, TooltipConfig } f
 import { localPoint } from '@visx/event';
 import { PointHighlight } from '../PointHighlight';
 import { motion } from 'framer-motion';
+import { EmptyChart } from '../EmptyChart';
 
 const defaultMargin = { top: 10, right: 0, bottom: 25, left: 40 };
 const defaultShowAxisX = true;
@@ -52,26 +53,28 @@ export const LineChart = <T,>({
   animate = true,
   margin = defaultMargin,
 }: LineChartProps<T>) => {
-  if (!data || data.length === 0) return null;
+  const hasData = data && data.length > 0;
 
   return (
     <ParentSize>
-      {(parent) => (
-        <Chart<T>
-          name={name}
-          xAccessor={xAccessor}
-          data={data}
-          width={parent.width}
-          height={parent.height}
-          grid={grid}
-          margin={margin}
-          axis={axis}
-          tooltip={tooltip}
-          animate={animate}
-          curveType={curveType}
-          lines={lines}
-        />
-      )}
+      {hasData
+        ? (parent) => (
+            <Chart<T>
+              name={name}
+              xAccessor={xAccessor}
+              data={data}
+              width={parent.width}
+              height={parent.height}
+              grid={grid}
+              margin={margin}
+              axis={axis}
+              tooltip={tooltip}
+              animate={animate}
+              curveType={curveType}
+              lines={lines}
+            />
+          )
+        : () => <EmptyChart />}
     </ParentSize>
   );
 };

@@ -21,6 +21,7 @@ import { useGradients } from '../useGradients';
 import { ChartProps, InnerChartProps, getDefaultTooltipStyles, TooltipConfig, BrushConfig } from '../util';
 import { BrushHandle } from '../BrushHandle';
 import { PointHighlight } from '../PointHighlight';
+import { EmptyChart } from '../EmptyChart';
 
 export interface AreaChartProps<T> extends ChartProps {
   data: T[];
@@ -51,28 +52,28 @@ export const AreaChart = <T,>({
   animate = true,
   margin = defaultMargin,
 }: AreaChartProps<T>) => {
-  // TODO: handle empty data
-  if (!data || data.length === 0) return null;
+  const hasData = data && data.length > 0;
 
-  // TODO: handle loading state
   return (
     <ParentSize>
-      {(parent) => (
-        <Chart<T>
-          name={name}
-          xAccessor={xAccessor}
-          yAccessor={yAccessor}
-          data={data}
-          width={parent.width}
-          height={parent.height}
-          grid={grid}
-          axis={axis}
-          tooltip={tooltip}
-          brush={brush}
-          animate={animate}
-          margin={margin}
-        />
-      )}
+      {hasData
+        ? (parent) => (
+            <Chart<T>
+              name={name}
+              xAccessor={xAccessor}
+              yAccessor={yAccessor}
+              data={data}
+              width={parent.width}
+              height={parent.height}
+              grid={grid}
+              axis={axis}
+              tooltip={tooltip}
+              brush={brush}
+              animate={animate}
+              margin={margin}
+            />
+          )
+        : () => <EmptyChart />}
     </ParentSize>
   );
 };
