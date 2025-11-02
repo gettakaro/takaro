@@ -1,8 +1,8 @@
 import { FC, PropsWithChildren, Children, isValidElement } from 'react';
-import { styled } from '../../../styled';
+import { styled, Size } from '../../../styled';
 import { Stat } from './Stat';
 import { Sparkline } from './Sparkline';
-import { StatContext, Direction, Size } from './context';
+import { StatContext, Direction } from './context';
 
 export const Container = styled.dl<{ direction: Direction; grouped: boolean; count: number }>`
   display: grid;
@@ -56,6 +56,7 @@ export const Stats: FC<PropsWithChildren<StatsProps>> & SubComponents = ({
 Stats.Stat = Stat;
 Stats.Sparkline = Sparkline;
 
-export type { Direction, Size } from './context';
+export type { Direction } from './context';
+export type { Size } from '../../../styled';
 export type { TrendConfig } from './Stat';
 export type { SparklineProps } from './Sparkline';
