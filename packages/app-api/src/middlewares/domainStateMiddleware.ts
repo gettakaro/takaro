@@ -22,6 +22,8 @@ export async function domainStateMiddleware(
   switch (domain.state) {
     case DOMAIN_STATES.ACTIVE:
       return next();
+    case DOMAIN_STATES.DELETED:
+      return next(new errors.NotFoundError('Domain not found'));
     case DOMAIN_STATES.DISABLED:
       return next(new errors.BadRequestError('Domain is disabled. Please contact support.'));
     case DOMAIN_STATES.MAINTENANCE:
