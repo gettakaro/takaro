@@ -1,4 +1,13 @@
-import { LineChart, Card, styled, Loading, IconTooltip, GeoMercator, AreaChart } from '@takaro/lib-components';
+import {
+  LineChart,
+  Card,
+  styled,
+  Loading,
+  IconTooltip,
+  GeoMercator,
+  AreaChart,
+  CountryList,
+} from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
@@ -162,8 +171,8 @@ function Component() {
               </IconTooltip>
             </div>
           </Card.Title>
-          <Card.Body>
-            <div style={{ width: '100%', height: '700px' }}>
+          <div style={{ width: '100%', height: '700px', display: 'flex', gap: '1rem' }}>
+            <div style={{ flex: 1 }}>
               <GeoMercator
                 name="Player countries"
                 xAccessor={(d) => d.country}
@@ -172,10 +181,10 @@ function Component() {
                 data={countryStats}
                 allowZoomAndDrag={false}
                 showZoomControls={false}
-                showCountrySidebar={true}
               />
             </div>
-          </Card.Body>
+            <CountryList data={countryStats} xAccessor={(d) => d.country} yAccessor={(d) => parseInt(d.playerCount)} />
+          </div>
         </Card>
 
         <Card variant="outline">

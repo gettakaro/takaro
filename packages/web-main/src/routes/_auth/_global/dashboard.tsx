@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useMemo } from 'react';
-import { Stats, styled, LineChart, Card, GeoMercator, IconTooltip, Chip } from '@takaro/lib-components';
+import { Stats, styled, LineChart, Card, GeoMercator, IconTooltip, Chip, CountryList } from '@takaro/lib-components';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { eventsFailedFunctionsQueryOptions, eventsQueryOptions } from '../../../queries/event';
 import { DateTime } from 'luxon';
@@ -177,24 +177,22 @@ function Component() {
         >
           <Card variant="outline">
             <Card.Title label="Players online" />
-            <Card.Body>
-              <div style={{ height: '400px', width: '100%', position: 'relative' }}>
-                {!isPendingPlayerOnlineStats && (
-                  <LineChart
-                    name="Players online"
-                    data={playerOnlineStatsData.values}
-                    xAccessor={(d) => new Date(d[0] * 1000)}
-                    lines={[
-                      {
-                        id: 'players-online',
-                        yAccessor: (d) => d[1],
-                      },
-                    ]}
-                    curveType="curveBasis"
-                  />
-                )}
-              </div>
-            </Card.Body>
+            <div style={{ height: '400px', width: '100%', position: 'relative' }}>
+              {!isPendingPlayerOnlineStats && (
+                <LineChart
+                  name="Players online"
+                  data={playerOnlineStatsData.values}
+                  xAccessor={(d) => new Date(d[0] * 1000)}
+                  lines={[
+                    {
+                      id: 'players-online',
+                      yAccessor: (d) => d[1],
+                    },
+                  ]}
+                  curveType="curveBasis"
+                />
+              )}
+            </div>
           </Card>
           <Card>
             <Card.Title label="Module errors" />
@@ -219,22 +217,28 @@ function Component() {
               </IconTooltip>
             </div>
           </Card.Title>
-          <Card.Body>
-            <div style={{ height: '600px', width: '100%', position: 'relative' }}>
-              {!isPendingCountriesStats && (
-                <GeoMercator
-                  name="Countries"
+          <div style={{ height: '600px', width: '100%', position: 'relative', display: 'flex', gap: '1rem' }}>
+            {!isPendingCountriesStats && (
+              <>
+                <div style={{ flex: 1 }}>
+                  <GeoMercator
+                    name="Countries"
+                    data={countriesStatsData}
+                    xAccessor={(d) => d.country}
+                    yAccessor={(d) => parseInt(d.playerCount, 10)}
+                    tooltipAccessor={(d) => `${d.country}:${d.playerCount}`}
+                    allowZoomAndDrag={false}
+                    showZoomControls={false}
+                  />
+                </div>
+                <CountryList
                   data={countriesStatsData}
                   xAccessor={(d) => d.country}
                   yAccessor={(d) => parseInt(d.playerCount, 10)}
-                  tooltipAccessor={(d) => `${d.country}:${d.playerCount}`}
-                  allowZoomAndDrag={false}
-                  showZoomControls={false}
-                  showCountrySidebar={true}
                 />
-              )}
-            </div>
-          </Card.Body>
+              </>
+            )}
+          </div>
         </Card>
       </Container>
     </>
