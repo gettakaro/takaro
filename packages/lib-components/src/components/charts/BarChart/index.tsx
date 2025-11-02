@@ -15,7 +15,6 @@ import { useTooltip, TooltipWithBounds } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
 import { motion } from 'framer-motion';
 
-import { useGradients } from '../useGradients';
 import { useTheme } from '../../../hooks';
 import { ChartProps, InnerChartProps, BrushConfig, TooltipConfig, getDefaultTooltipStyles } from '../util';
 import { BrushHandle } from '../BrushHandle';
@@ -31,8 +30,8 @@ export interface BarChartProps<T> extends ChartProps {
   brush?: BrushConfig;
 }
 
-const defaultMargin = { top: 20, left: 50, bottom: 20, right: 20 };
-const defaultBrushMargin = { top: 10, bottom: 15, left: 50, right: 20 };
+const defaultMargin = { top: 20, left: 60, bottom: 60, right: 20 };
+const defaultBrushMargin = { top: 10, bottom: 15, left: 60, right: 20 };
 const defaultShowAxisX = true;
 const defaultShowAxisY = true;
 
@@ -99,13 +98,13 @@ const Chart = <T,>({
   const showAxisY = axis?.showY ?? defaultShowAxisY;
   const axisXLabel = axis?.labelX;
   const axisYLabel = axis?.labelY;
+  const numTicksY = axis?.numTicksY ?? 5;
 
   const tooltipAccessor = tooltip?.accessor;
   const showTooltipEnabled = tooltip?.enabled ?? true;
 
   const showBrush = brush?.enabled ?? false;
   const brushMargin = brush?.margin ?? defaultBrushMargin;
-  const gradients = useGradients(name);
   const [filteredData, setFilteredData] = useState(data);
 
   const brushRef = useRef(null);
@@ -218,9 +217,6 @@ const Chart = <T,>({
     <div>
       <svg width={width} height={height} role="img" aria-label={`Bar chart: ${name}`}>
         <desc id={`${name}-desc`}>Bar chart showing {filteredData.length} data points</desc>
-        {gradients.background.gradient}
-        {gradients.chart.gradient}
-        <rect width={width} height={height} fill={`url(#${gradients.background.id})`} rx={14} />
         {(grid === 'y' || grid === 'xy') && (
           <GridRows
             top={margin.top}
@@ -320,6 +316,7 @@ const Chart = <T,>({
           <AxisLeft
             top={margin.top}
             left={margin.left}
+            numTicks={numTicksY}
             tickStroke={theme.colors.textAlt}
             tickLabelProps={{
               fill: theme.colors.textAlt,
@@ -339,7 +336,14 @@ const Chart = <T,>({
             tickLabelProps={{
               fill: theme.colors.textAlt,
               fontSize: theme.fontSize.small,
-              textAnchor: 'middle',
+              textAnchor: 'end',
+              angle: -45,
+              dy: '0.25em',
+            }}
+            tickFormat={(value) => {
+              const maxLength = 15;
+              const str = String(value);
+              return str.length > maxLength ? `${str.substring(0, maxLength)}...` : str;
             }}
             scale={xScale}
             label={axisXLabel}
@@ -361,7 +365,7 @@ const Chart = <T,>({
                     y={yBrushMax - barHeight}
                     width={barWidth}
                     height={barHeight}
-                    fill={`url(#${gradients.chart.id})`}
+                    fill={shade(0.5, theme.colors.primary)}
                   />
                 );
               })}
