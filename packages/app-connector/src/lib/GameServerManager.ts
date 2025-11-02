@@ -411,6 +411,10 @@ class GameServerManager {
       const { domainId, emitter } = data;
       this.log.debug('Removing game server', { gameServerId: id, domainId });
 
+      // Remove all listeners FIRST to prevent in-flight events from being processed
+      // This fixes duplicate events bug where old emitters continue processing events
+      emitter.removeAllListeners();
+
       await emitter.stop();
       this.emitterMap.delete(id);
       this.lastMessageMap.delete(id);
