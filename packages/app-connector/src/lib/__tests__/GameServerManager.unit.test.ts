@@ -26,6 +26,7 @@ describe('GameServerManager', () => {
       off: sandboxInstance.stub(),
       emit: sandboxInstance.stub().resolves(),
       listener: sandboxInstance.stub(),
+      removeAllListeners: sandboxInstance.stub(),
     };
 
     // Create full mock game server
@@ -413,6 +414,7 @@ describe('GameServerManager', () => {
           off: sandboxInstance.stub(),
           emit: sandboxInstance.stub().resolves(),
           listener: sandboxInstance.stub(),
+          removeAllListeners: sandboxInstance.stub(),
         };
 
         const secondMockGameServer = {
@@ -541,6 +543,7 @@ describe('GameServerManager', () => {
           off: sandboxInstance.stub(),
           emit: sandboxInstance.stub().resolves(),
           listener: sandboxInstance.stub(),
+          removeAllListeners: sandboxInstance.stub(),
         };
 
         const newMockGameServer = {
@@ -921,6 +924,7 @@ describe('GameServerManager', () => {
           off: sandboxInstance.stub(),
           emit: sandboxInstance.stub().resolves(),
           listener: sandboxInstance.stub(),
+          removeAllListeners: sandboxInstance.stub(),
         };
 
         getGameStub.resolves({
