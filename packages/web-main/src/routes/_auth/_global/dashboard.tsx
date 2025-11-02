@@ -113,7 +113,7 @@ function Component() {
     }),
   );
 
-  const { data: HooksExecuted, isLoading: isLoadingHooksExecuted } = useQuery(
+  const { data: hooksExecuted, isLoading: isLoadingHooksExecuted } = useQuery(
     eventsQueryOptions({
       search: { eventName: ['hook-executed'] },
       greaterThan: { createdAt: startDate },
@@ -138,7 +138,7 @@ function Component() {
         <div style={{ width: '200px', marginLeft: 'auto' }}>
           <TimePeriodSelectField control={control} name="period" />
         </div>
-        <Stats border={false} direction="horizontal">
+        <Stats grouped={false} direction="horizontal">
           <Stats.Stat
             isLoading={isLoadingDailyActiveUsers}
             description="Daily active players"
@@ -161,7 +161,7 @@ function Component() {
           <Stats.Stat
             isLoading={isLoadingHooksExecuted}
             description="Executed"
-            value={`${HooksExecuted?.meta.total} Hooks`}
+            value={`${hooksExecuted?.meta.total} Hooks`}
           />
         </Stats>
 
@@ -221,7 +221,7 @@ function Component() {
                   name="Countries"
                   data={countriesStatsData}
                   xAccessor={(d) => d.country}
-                  yAccessor={(d) => parseInt(d.playerCount)}
+                  yAccessor={(d) => parseInt(d.playerCount, 10)}
                   tooltipAccessor={(d) => `${d.country}:${d.playerCount}`}
                   allowZoomAndDrag={false}
                   showZoomControls={false}

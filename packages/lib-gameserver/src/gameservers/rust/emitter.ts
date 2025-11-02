@@ -38,6 +38,7 @@ enum RustTypesType {
 export class RustEmitter extends TakaroEmitter {
   private ws: WebSocket | null = null;
   private log = logger('rust:ws');
+  private boundListener = (m: Buffer) => this.listener(m.toString());
 
   constructor(private config: RustConnectionInfo) {
     super();
@@ -84,12 +85,11 @@ export class RustEmitter extends TakaroEmitter {
   async start(): Promise<void> {
     this.ws = await RustEmitter.getClient(this.config);
 
-    this.ws?.on('message', (m: Buffer) => {
-      this.listener(m.toString());
-    });
+    this.ws?.on('message', this.boundListener);
   }
 
   async stop(): Promise<void> {
+    this.ws?.off('message', this.boundListener);
     this.ws?.close();
     this.log.debug('Websocket connection has been closed');
     return;

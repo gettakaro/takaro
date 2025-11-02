@@ -25,7 +25,7 @@ export default {
   decorators: [(story) => <Wrapper>{story()}</Wrapper>],
   args: {
     size: 'medium',
-    text: 'basic button',
+    children: 'basic button',
     variant: 'default',
     type: 'button',
     disabled: false,
@@ -44,127 +44,143 @@ export const Examples = () => (
       onClick={() => {
         /* */
       }}
-      text="Default Button"
-    />
+    >
+      Default Button
+    </Button>
     <Button
       icon={<Icon size={20} />}
       onClick={() => {
         /* */
       }}
-      text="Icon Button"
-    />
+    >
+      Icon Button
+    </Button>
     <Button
       disabled
       onClick={() => {
         /* */
       }}
-      text="Disabled Button"
-    />
+    >
+      Disabled Button
+    </Button>
     <Button
       isLoading
       onClick={() => {
         /* */
       }}
-      text="Loading Button"
-    />
+    >
+      Loading Button
+    </Button>
 
     {/* Outline */}
     <Button
       onClick={() => {
         /* */
       }}
-      text="Outlined Button"
       variant="outline"
-    />
+    >
+      Outlined Button
+    </Button>
     <Button
       icon={<Icon size={20} />}
       onClick={() => {
         /* */
       }}
-      text="Icon Button"
       variant="outline"
-    />
+    >
+      Icon Button
+    </Button>
     <Button
       disabled
       onClick={() => {
         /* */
       }}
-      text="Disabled Button"
       variant="outline"
-    />
+    >
+      Disabled Button
+    </Button>
     <Button
       isLoading
       onClick={() => {
         /* */
       }}
-      text="Loading Button"
       variant="outline"
-    />
+    >
+      Loading Button
+    </Button>
 
     {/* Clear */}
     <Button
       onClick={() => {
         /* */
       }}
-      text="Clear Button"
       variant="clear"
-    />
+    >
+      Clear Button
+    </Button>
     <Button
       icon={<Icon size={20} />}
       onClick={() => {
         /* */
       }}
-      text="Icon Button"
       variant="clear"
-    />
+    >
+      Icon Button
+    </Button>
     <Button
       disabled
       onClick={() => {
         /* */
       }}
-      text="Disabled Button"
       variant="clear"
-    />
+    >
+      Disabled Button
+    </Button>
     <Button
       isLoading
       onClick={() => {
         /* */
       }}
-      text="Loading Button"
       variant="clear"
-    />
+    >
+      Loading Button
+    </Button>
 
     {/* white */}
     <Button
       onClick={() => {
         /* */
       }}
-      text="White Button"
       variant="white"
-    />
+    >
+      White Button
+    </Button>
     <Button
       icon={<Icon size={20} />}
       onClick={() => {
         /* */
       }}
-      text="Icon Button"
       variant="white"
-    />
+    >
+      Icon Button
+    </Button>
     <Button
       disabled
       onClick={() => {
         /* */
       }}
-      text="Disabled Button"
       variant="white"
-    />
+    >
+      Disabled Button
+    </Button>
     <Button
       isLoading
       onClick={() => {
         /* */
       }}
-      text="Loading Button"
       variant="white"
-    />
+    >
+      Loading Button
+    </Button>
   </>
 );

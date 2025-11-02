@@ -18,12 +18,10 @@ import {
 import { Link, useNavigate } from '@tanstack/react-router';
 import { getApiClient } from '../../../../util/getApiClient';
 import { useHasPermission } from '../../../../hooks/useHasPermission';
-import {
-  ModuleCopyDialog,
-  ModuleDeleteDialog,
-  ModuleExportDialog,
-  ModuleTagDialog,
-} from '../../../../components/dialogs';
+import { ModuleCopyDialog } from '../../../../components/dialogs/ModuleCopyDialog';
+import { ModuleDeleteDialog } from '../../../../components/dialogs/ModuleDeleteDialog';
+import { ModuleExportDialog } from '../../../../components/dialogs/ModuleExportDialog';
+import { ModuleTagDialog } from '../../../../components/dialogs/ModuleTagDialog';
 
 const ActionsContainer = styled.div`
   display: flex;

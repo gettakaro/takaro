@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from '../../../hooks/useHasPermission';
-import { ShopListingCreateUpdateForm, FormValues } from './-components/-ShopListingCreateUpdateForm';
+import { ShopListingCreateUpdateForm, FormValues } from '../../../components/shop/ShopListingCreateUpdateForm';
 import { gameServerSettingQueryOptions } from '../../../queries/setting';
 import { shopListingQueryOptions, useShopListingUpdate } from '../../../queries/shopListing';
 import { SubmitHandler } from 'react-hook-form';
@@ -36,7 +36,7 @@ function Component() {
   const loaderData = Route.useLoaderData();
   const { gameServerId, shopListingId } = Route.useParams();
   const navigate = Route.useNavigate();
-  const { mutate, error } = useShopListingUpdate();
+  const { mutate, error, isPending } = useShopListingUpdate();
 
   const [{ data: currencyName }, { data: shopListing }] = useQueries({
     queries: [
@@ -46,25 +46,30 @@ function Component() {
   });
 
   const onSubmit: SubmitHandler<FormValues> = ({ items, price, name, draft, categoryIds }) => {
-    mutate({
-      shopListingId,
-      shopListingDetails: {
-        items,
-        price,
-        gameServerId,
-        name: name ? name : undefined,
-        draft: draft !== undefined ? draft : undefined,
-        categoryIds: categoryIds !== undefined ? categoryIds : undefined,
+    mutate(
+      {
+        shopListingId,
+        shopListingDetails: {
+          items,
+          price,
+          gameServerId,
+          name: name ? name : undefined,
+          draft: draft !== undefined ? draft : undefined,
+          categoryIds: categoryIds !== undefined ? categoryIds : undefined,
+        },
       },
-    });
-
-    navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId } });
+      {
+        onSuccess: () => {
+          navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId } });
+        },
+      },
+    );
   };
 
   return (
     <ShopListingCreateUpdateForm
       onSubmit={onSubmit}
-      isLoading={false}
+      isLoading={isPending}
       error={error}
       initialData={shopListing}
       gameServerId={gameServerId}

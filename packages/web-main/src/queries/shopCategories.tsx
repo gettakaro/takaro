@@ -20,6 +20,7 @@ import { AxiosError } from 'axios';
 import { getApiClient } from '../util/getApiClient';
 import { getNextPage, mutationWrapper, queryParamsToArray } from './util';
 import { useSnackbar } from 'notistack';
+import { shopListingKeys } from './shopListing';
 
 export const shopCategoryKeys = {
   all: ['shopCategory'] as const,
@@ -179,7 +180,7 @@ export const useShopCategoryBulkAssign = () => {
       onSuccess: async () => {
         enqueueSnackbar('Categories assigned successfully!', { variant: 'default', type: 'success' });
         // Invalidate shop listings as their categories have changed
-        await queryClient.invalidateQueries({ queryKey: ['shopListing'] });
+        await queryClient.invalidateQueries({ queryKey: shopListingKeys.all });
         // Also invalidate categories in case counts have changed
         await queryClient.invalidateQueries({ queryKey: shopCategoryKeys.list() });
       },

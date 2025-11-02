@@ -25,7 +25,7 @@ export const OnChange: StoryFn<ValueConfirmationFieldProps> = (args) => {
             <strong>{args.value}</strong> to confirm
           </p>
           <ValueConfirmationField id={args.id} onValidChange={(valid) => setValid(valid)} value={args.value} />
-          <Button disabled={valid} text="Confirm" />
+          <Button disabled={valid}>Confirm</Button>
         </Dialog.Body>
       </Dialog.Content>
     </Dialog>

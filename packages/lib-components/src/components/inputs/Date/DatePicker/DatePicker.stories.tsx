@@ -74,7 +74,7 @@ export const OnDateSubmit: StoryFn<DatePickerProps> = (args) => {
           allowFutureDates={args.allowFutureDates}
           allowPastDates={args.allowPastDates}
         />
-        <Button type="submit" text="Submit form" />
+        <Button type="submit">Submit form</Button>
       </form>
       <p>result: {result}</p>
     </Wrapper>
@@ -110,7 +110,7 @@ export const CustomDateFilter: StoryFn<DatePickerProps> = (args) => {
           popOverPlacement={args.popOverPlacement}
           customDateFilter={(date) => date.weekday == 6 || date.weekday == 7}
         />
-        <Button type="submit" text="Submit form" />
+        <Button type="submit">Submit form</Button>
       </form>
       <p>result: {result}</p>
     </Wrapper>
@@ -148,7 +148,7 @@ export const OnDateAndTimeSubmit: StoryFn<DatePickerProps> = (args) => {
           allowPastDates={args.allowPastDates}
           allowFutureDates={args.allowFutureDates}
         />
-        <Button type="submit" text="Submit form" />
+        <Button type="submit">Submit form</Button>
       </form>
       <p>result: {result}</p>
     </Wrapper>
@@ -186,7 +186,7 @@ export const OnTimeSubmit: StoryFn<DatePickerProps> = (args) => {
           allowPastDates={args.allowPastDates}
           allowFutureDates={args.allowFutureDates}
         />
-        <Button type="submit" text="Submit form" />
+        <Button type="submit">Submit form</Button>
       </form>
       <p>result: {result}</p>
     </Wrapper>
@@ -225,7 +225,7 @@ export const RelativeSubmit: StoryFn<DatePickerProps> = (args) => {
           allowPastDates={args.allowPastDates}
           allowFutureDates={args.allowFutureDates}
         />
-        <Button type="submit" text="Submit form" />
+        <Button type="submit">Submit form</Button>
       </form>
       <p>result: {result}</p>
     </Wrapper>
@@ -259,7 +259,7 @@ export const AbsoluteSubmit = () => {
           allowPastDates={false}
           format={DateTime.TIME_SIMPLE}
         />
-        <Button type="submit" text="Submit form" />
+        <Button type="submit">Submit form</Button>
       </form>
       <p>result: {result}</p>
     </StrictMode>

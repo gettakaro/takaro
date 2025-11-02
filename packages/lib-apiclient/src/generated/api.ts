@@ -3968,6 +3968,19 @@ export type GameServerCreateDTOTypeEnum =
 /**
  *
  * @export
+ * @interface GameServerIdParam
+ */
+export interface GameServerIdParam {
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerIdParam
+   */
+  gameServerId: string;
+}
+/**
+ *
+ * @export
  * @interface GameServerIdQueryParam
  */
 export interface GameServerIdQueryParam {
@@ -8559,6 +8572,82 @@ export interface PermissionVersionDTO {
 /**
  *
  * @export
+ * @interface PlayerBulkDeleteErrorDTO
+ */
+export interface PlayerBulkDeleteErrorDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerBulkDeleteErrorDTO
+   */
+  playerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerBulkDeleteErrorDTO
+   */
+  reason: string;
+}
+/**
+ *
+ * @export
+ * @interface PlayerBulkDeleteInputDTO
+ */
+export interface PlayerBulkDeleteInputDTO {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof PlayerBulkDeleteInputDTO
+   */
+  playerIds: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface PlayerBulkDeleteOutputDTO
+ */
+export interface PlayerBulkDeleteOutputDTO {
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerBulkDeleteOutputDTO
+   */
+  deleted: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerBulkDeleteOutputDTO
+   */
+  failed: number;
+  /**
+   *
+   * @type {Array<PlayerBulkDeleteErrorDTO>}
+   * @memberof PlayerBulkDeleteOutputDTO
+   */
+  errors: Array<PlayerBulkDeleteErrorDTO>;
+}
+/**
+ *
+ * @export
+ * @interface PlayerBulkDeleteOutputDTOAPI
+ */
+export interface PlayerBulkDeleteOutputDTOAPI {
+  /**
+   *
+   * @type {PlayerBulkDeleteOutputDTO}
+   * @memberof PlayerBulkDeleteOutputDTOAPI
+   */
+  data: PlayerBulkDeleteOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof PlayerBulkDeleteOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
  * @interface PlayerCreateDTO
  */
 export interface PlayerCreateDTO {
@@ -10093,6 +10182,82 @@ export interface PlayersOnlineInputDTO {
    * @memberof PlayersOnlineInputDTO
    */
   endDate?: string;
+}
+/**
+ *
+ * @export
+ * @interface PogBulkDeleteErrorDTO
+ */
+export interface PogBulkDeleteErrorDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PogBulkDeleteErrorDTO
+   */
+  playerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PogBulkDeleteErrorDTO
+   */
+  reason: string;
+}
+/**
+ *
+ * @export
+ * @interface PogBulkDeleteInputDTO
+ */
+export interface PogBulkDeleteInputDTO {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof PogBulkDeleteInputDTO
+   */
+  playerIds: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface PogBulkDeleteOutputDTO
+ */
+export interface PogBulkDeleteOutputDTO {
+  /**
+   *
+   * @type {number}
+   * @memberof PogBulkDeleteOutputDTO
+   */
+  deleted: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PogBulkDeleteOutputDTO
+   */
+  failed: number;
+  /**
+   *
+   * @type {Array<PogBulkDeleteErrorDTO>}
+   * @memberof PogBulkDeleteOutputDTO
+   */
+  errors: Array<PogBulkDeleteErrorDTO>;
+}
+/**
+ *
+ * @export
+ * @interface PogBulkDeleteOutputDTOAPI
+ */
+export interface PogBulkDeleteOutputDTOAPI {
+  /**
+   *
+   * @type {PogBulkDeleteOutputDTO}
+   * @memberof PogBulkDeleteOutputDTOAPI
+   */
+  data: PogBulkDeleteOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof PogBulkDeleteOutputDTOAPI
+   */
+  meta: MetadataOutput;
 }
 /**
  *
@@ -24452,6 +24617,47 @@ export const PlayerApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
+     * Bulk delete players by their IDs. Deletes Player records which cascades to POG records.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerBulkDelete`
+     * @summary Bulk delete
+     * @param {PlayerBulkDeleteInputDTO} [playerBulkDeleteInputDTO] PlayerBulkDeleteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerBulkDelete: async (
+      playerBulkDeleteInputDTO?: PlayerBulkDeleteInputDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/player`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        playerBulkDeleteInputDTO,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerDelete`
      * @summary Delete
      * @param {string} id
@@ -24795,6 +25001,32 @@ export const PlayerApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
+     * Bulk delete players by their IDs. Deletes Player records which cascades to POG records.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerBulkDelete`
+     * @summary Bulk delete
+     * @param {PlayerBulkDeleteInputDTO} [playerBulkDeleteInputDTO] PlayerBulkDeleteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerControllerBulkDelete(
+      playerBulkDeleteInputDTO?: PlayerBulkDeleteInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerBulkDeleteOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerBulkDelete(
+        playerBulkDeleteInputDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PlayerApi.playerControllerBulkDelete']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
      *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerDelete`
      * @summary Delete
      * @param {string} id
@@ -25004,6 +25236,21 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
         .then((request) => request(axios, basePath));
     },
     /**
+     * Bulk delete players by their IDs. Deletes Player records which cascades to POG records.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerBulkDelete`
+     * @summary Bulk delete
+     * @param {PlayerBulkDeleteInputDTO} [playerBulkDeleteInputDTO] PlayerBulkDeleteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerBulkDelete(
+      playerBulkDeleteInputDTO?: PlayerBulkDeleteInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PlayerBulkDeleteOutputDTOAPI> {
+      return localVarFp
+        .playerControllerBulkDelete(playerBulkDeleteInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerDelete`
      * @summary Delete
      * @param {string} id
@@ -25169,6 +25416,23 @@ export class PlayerApi extends BaseAPI {
   }
 
   /**
+   * Bulk delete players by their IDs. Deletes Player records which cascades to POG records.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerBulkDelete`
+   * @summary Bulk delete
+   * @param {PlayerBulkDeleteInputDTO} [playerBulkDeleteInputDTO] PlayerBulkDeleteInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerApi
+   */
+  public playerControllerBulkDelete(
+    playerBulkDeleteInputDTO?: PlayerBulkDeleteInputDTO,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return PlayerApiFp(this.configuration)
+      .playerControllerBulkDelete(playerBulkDeleteInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
    *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerControllerDelete`
    * @summary Delete
    * @param {string} id
@@ -25296,6 +25560,50 @@ export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: 
         localVarRequestOptions,
         configuration,
       );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Bulk delete POG records by player IDs for a specific gameserver. Deletes POG records only, Player records remain intact.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerBulkDelete`
+     * @summary Bulk delete
+     * @param {string} gameServerId
+     * @param {PogBulkDeleteInputDTO} [pogBulkDeleteInputDTO] PogBulkDeleteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerBulkDelete: async (
+      gameServerId: string,
+      pogBulkDeleteInputDTO?: PogBulkDeleteInputDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('playerOnGameServerControllerBulkDelete', 'gameServerId', gameServerId);
+      const localVarPath = `/gameserver/{gameServerId}/player`.replace(
+        `{${'gameServerId'}}`,
+        encodeURIComponent(String(gameServerId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(pogBulkDeleteInputDTO, localVarRequestOptions, configuration);
 
       return {
         url: toPathString(localVarUrlObj),
@@ -25630,6 +25938,37 @@ export const PlayerOnGameServerApiFp = function (configuration?: Configuration) 
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
+     * Bulk delete POG records by player IDs for a specific gameserver. Deletes POG records only, Player records remain intact.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerBulkDelete`
+     * @summary Bulk delete
+     * @param {string} gameServerId
+     * @param {PogBulkDeleteInputDTO} [pogBulkDeleteInputDTO] PogBulkDeleteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerOnGameServerControllerBulkDelete(
+      gameServerId: string,
+      pogBulkDeleteInputDTO?: PogBulkDeleteInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PogBulkDeleteOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerBulkDelete(
+        gameServerId,
+        pogBulkDeleteInputDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['PlayerOnGameServerApi.playerOnGameServerControllerBulkDelete']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
      *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerDeductCurrency`
      * @summary Deduct currency
      * @param {string} gameServerId
@@ -25855,6 +26194,23 @@ export const PlayerOnGameServerApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
+     * Bulk delete POG records by player IDs for a specific gameserver. Deletes POG records only, Player records remain intact.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerBulkDelete`
+     * @summary Bulk delete
+     * @param {string} gameServerId
+     * @param {PogBulkDeleteInputDTO} [pogBulkDeleteInputDTO] PogBulkDeleteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerBulkDelete(
+      gameServerId: string,
+      pogBulkDeleteInputDTO?: PogBulkDeleteInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<PogBulkDeleteOutputDTOAPI> {
+      return localVarFp
+        .playerOnGameServerControllerBulkDelete(gameServerId, pogBulkDeleteInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      *    Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerDeductCurrency`
      * @summary Deduct currency
      * @param {string} gameServerId
@@ -26001,6 +26357,25 @@ export class PlayerOnGameServerApi extends BaseAPI {
   ) {
     return PlayerOnGameServerApiFp(this.configuration)
       .playerOnGameServerControllerAddCurrency(gameServerId, playerId, playerOnGameServerSetCurrencyInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Bulk delete POG records by player IDs for a specific gameserver. Deletes POG records only, Player records remain intact.   Required permissions: `MANAGE_PLAYERS`<br> OperationId: `PlayerOnGameServerControllerBulkDelete`
+   * @summary Bulk delete
+   * @param {string} gameServerId
+   * @param {PogBulkDeleteInputDTO} [pogBulkDeleteInputDTO] PogBulkDeleteInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerOnGameServerApi
+   */
+  public playerOnGameServerControllerBulkDelete(
+    gameServerId: string,
+    pogBulkDeleteInputDTO?: PogBulkDeleteInputDTO,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return PlayerOnGameServerApiFp(this.configuration)
+      .playerOnGameServerControllerBulkDelete(gameServerId, pogBulkDeleteInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

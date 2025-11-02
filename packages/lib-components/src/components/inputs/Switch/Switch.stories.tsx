@@ -59,7 +59,7 @@ export const OnSubmit: StoryFn<SwitchProps> = (args) => {
           required={args.required}
           readOnly={args.readOnly}
         />
-        <Button type="submit" text="submit" />
+        <Button type="submit">submit</Button>
       </form>
       submitted value: {value ? 'true' : 'false'}
     </>

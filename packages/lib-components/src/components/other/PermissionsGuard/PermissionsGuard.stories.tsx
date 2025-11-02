@@ -12,8 +12,9 @@ export default {
       <div>
         <Alert
           variant="warning"
-          text="It is unlikely you will use THIS permissionguard directly. There should be a specific permissionguard in web-* application"
-        />
+          text="It is unlikely you will use THIS permissionguard directly. There should be a specific permissionguard in web-*
+          application"
+        ></Alert>
         {story()}
       </div>
     ),

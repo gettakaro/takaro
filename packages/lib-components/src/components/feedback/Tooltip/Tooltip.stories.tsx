@@ -63,7 +63,7 @@ export const Controlled: StoryFn<TooltipProps & ExtraTooltipStoryProps> = () => 
         <Tooltip.Trigger asChild>I am the trigger</Tooltip.Trigger>
         <Tooltip.Content>controlled tooltip</Tooltip.Content>
       </Tooltip>
-      <Button onClick={() => setOpen(true)} text="open tooltip on, I am the trigger" />
+      <Button onClick={() => setOpen(true)}>open tooltip on, I am the trigger</Button>
     </>
   );
 };

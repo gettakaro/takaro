@@ -1,24 +1,27 @@
 import { FC, PropsWithChildren, Children, isValidElement } from 'react';
 import { styled } from '../../../styled';
 import { Stat } from './Stat';
-import { StatContext, Direction } from './context';
+import { StatContext, Direction, Size } from './context';
 
-export const Container = styled.dl<{ direction: Direction; border: boolean; count: number }>`
+export const Container = styled.dl<{ direction: Direction; grouped: boolean; count: number }>`
   display: grid;
   ${({ direction, count }) => {
     return direction === 'horizontal'
       ? `grid-template-columns: repeat(${count},1fr)`
       : `grid-template-rows: repeat(${count},1fr)`;
   }};
-  border: ${({ border, theme }) => (border ? `1px solid ${theme.colors.secondary}` : 'none')};
+  border: ${({ grouped, theme }) => (grouped ? `1px solid ${theme.colors.secondary}` : 'none')};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
-  gap: ${({ theme, direction }) => (direction === 'vertical' ? theme.spacing['2'] : 0)}
-    ${({ theme, direction }) => (direction === 'horizontal' ? theme.spacing['2'] : 0)};
+  gap: ${({ theme, direction, grouped }) => {
+    if (grouped) return 0;
+    return direction === 'vertical' ? `${theme.spacing['2']} 0` : `0 ${theme.spacing['2']}`;
+  }};
 `;
 
 export interface StatsProps {
   direction?: Direction;
-  border: boolean;
+  grouped: boolean;
+  size?: Size;
 }
 
 interface SubComponents {
@@ -27,7 +30,8 @@ interface SubComponents {
 
 export const Stats: FC<PropsWithChildren<StatsProps>> & SubComponents = ({
   direction = 'vertical',
-  border,
+  grouped,
+  size = 'medium',
   children,
 }) => {
   // throw error if child is not a Stat component
@@ -41,10 +45,13 @@ export const Stats: FC<PropsWithChildren<StatsProps>> & SubComponents = ({
   });
 
   return (
-    <Container direction={direction} border={border} count={Children.count(children)}>
-      <StatContext.Provider value={{ border, direction }}>{children}</StatContext.Provider>
+    <Container direction={direction} grouped={grouped} count={Children.count(children)}>
+      <StatContext.Provider value={{ grouped, direction, size }}>{children}</StatContext.Provider>
     </Container>
   );
 };
 
 Stats.Stat = Stat;
+
+export type { Direction, Size } from './context';
+export type { TrendConfig } from './Stat';

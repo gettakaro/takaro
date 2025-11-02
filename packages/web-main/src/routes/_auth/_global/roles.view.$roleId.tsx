@@ -1,6 +1,6 @@
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { permissionsQueryOptions, roleQueryOptions } from '../../../queries/role';
-import { RoleForm } from './-roles/RoleCreateUpdateForm';
+import { RoleForm } from '../../../components/roles/RoleCreateUpdateForm';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from '../../../hooks/useHasPermission';
 import { userMeQueryOptions } from '../../../queries/user';
