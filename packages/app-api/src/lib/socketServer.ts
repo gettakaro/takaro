@@ -197,6 +197,12 @@ class SocketServer {
           contextDomain: ctx.data.domain,
         });
         await socket.join(authData.domainId);
+
+        // Emit 'ready' event to client after room join completes
+        // This ensures client knows the socket is truly in the domain room
+        // and ready to receive events (fixes race condition with Redis adapter)
+        socket.emit('ready', { domainId: authData.domainId });
+
         next();
       });
 
