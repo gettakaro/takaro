@@ -6,41 +6,64 @@ import { localPoint } from '@visx/event';
 import { InnerChartProps, getDefaultTooltipStyles, ChartProps, TooltipConfig } from '../util';
 import { useTheme } from '../../../hooks';
 import { useMemo, useCallback } from 'react';
+import { EmptyChart } from '../EmptyChart';
 
-const DAY_LABELS = ['', 'Mon', '', 'Wed', '', 'Fri', ''] as const; // Sunday to Saturday
+const DAY_LABELS = ['', 'Mon', '', 'Wed', '', 'Fri', ''] as const;
 const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const;
 
-interface CellData {
-  date: Date;
+interface NormalizedCell<T = any> {
+  x: number;
+  y: number;
   value: number;
-  weekIndex: number;
-  dayIndex: number;
+  displayValue: any;
+  xLabel?: string;
+  yLabel?: string;
+  originalData?: T;
 }
 
-interface MonthLabel {
-  label: string;
-  weekIndex: number;
+interface ProcessedData<T = any> {
+  cells: NormalizedCell<T>[];
+  xLabels: { label: string; index: number }[];
+  yLabels: { label: string; index: number }[];
+  maxValue: number;
+  gridWidth: number;
+  gridHeight: number;
 }
 
-export interface HeatmapProps<T> extends ChartProps {
+// Calendar mode props
+type CalendarModeProps<T> = {
   data: T[];
-  /** Accessor to get the date from data item */
   dateAccessor: (d: T) => Date;
-  /** Accessor to get the value/count from data item */
   valueAccessor: (d: T) => number;
-  /** Start date. Default: 52 weeks ago from today */
   startDate?: Date;
-  /** End date. Default: today */
   endDate?: Date;
-  /** Custom 5-level color scale. Default: theme-based scale */
-  colors?: [string, string, string, string, string];
-  /** Show month labels. Default: true */
   showMonthLabels?: boolean;
-  /** Show day labels. Default: true */
+  xAccessor?: never;
+  yAccessor?: never;
+  xCategories?: never;
+  yCategories?: never;
+};
+
+type CategoricalModeProps<T> = {
+  data: T[];
+  xAccessor: (d: T) => number | string;
+  yAccessor: (d: T) => number | string;
+  valueAccessor?: (d: T) => number;
+  xCategories?: string[];
+  yCategories?: string[];
+  dateAccessor?: never;
+  startDate?: never;
+  endDate?: never;
+  showMonthLabels?: never;
+};
+
+type SharedHeatmapProps<T> = {
+  colors?: [string, string, string, string, string];
   showDayLabels?: boolean;
-  /** Tooltip configuration. Note: accessor receives (d: T, date: Date, value: number) */
   tooltip?: TooltipConfig<T>;
-}
+};
+
+export type HeatmapProps<T> = ChartProps & SharedHeatmapProps<T> & (CalendarModeProps<T> | CategoricalModeProps<T>);
 
 const defaultMargin = { top: 30, right: 10, bottom: 10, left: 40 };
 
@@ -54,141 +77,264 @@ const getDefaultStartDate = () => {
 
 const getDefaultEndDate = () => new Date();
 
-export const HeatMap = <T,>({
-  data,
-  dateAccessor,
-  valueAccessor,
-  name,
-  startDate = getDefaultStartDate(),
-  endDate = getDefaultEndDate(),
-  colors,
-  showMonthLabels = true,
-  showDayLabels = true,
-  margin = defaultMargin,
-  animate = true,
-  tooltip,
-}: HeatmapProps<T>) => {
+const processCalendarData = <T,>(
+  data: T[],
+  dateAccessor: (d: T) => Date,
+  valueAccessor: (d: T) => number,
+  startDate: Date,
+  endDate: Date,
+): ProcessedData<T> => {
+  const dateValueMap = new Map<string, number>();
+  const dateDataMap = new Map<string, T>();
+  data.forEach((d) => {
+    const date = dateAccessor(d);
+    const dateStr = date.toISOString().split('T')[0];
+    const value = valueAccessor(d);
+    dateValueMap.set(dateStr, (dateValueMap.get(dateStr) || 0) + value);
+    // Store the first data item for this date for tooltip purposes
+    if (!dateDataMap.has(dateStr)) {
+      dateDataMap.set(dateStr, d);
+    }
+  });
+
+  const cellsData: NormalizedCell<T>[] = [];
+  const monthLabelsData: { label: string; index: number }[] = [];
+  const currentDate = new Date(startDate);
+  let weekIndex = 0;
+  let lastMonth = -1;
+
+  while (currentDate <= endDate) {
+    const dayIndex = currentDate.getDay(); // 0 (Sunday) to 6 (Saturday)
+    const dateStr = currentDate.toISOString().split('T')[0];
+    const value = dateValueMap.get(dateStr) || 0;
+
+    cellsData.push({
+      x: weekIndex,
+      y: dayIndex,
+      value,
+      displayValue: new Date(currentDate),
+      originalData: dateDataMap.get(dateStr),
+    });
+
+    // Track month changes for labels
+    if (dayIndex === 0 && currentDate.getMonth() !== lastMonth) {
+      lastMonth = currentDate.getMonth();
+      if (weekIndex >= 2 || currentDate.getDate() <= 7) {
+        monthLabelsData.push({
+          label: MONTH_LABELS[lastMonth],
+          index: weekIndex,
+        });
+      }
+    }
+
+    currentDate.setDate(currentDate.getDate() + 1);
+
+    // If we completed a week (Saturday), move to next week column
+    if (dayIndex === 6) {
+      weekIndex++;
+    }
+  }
+
+  const maxValue = Math.max(...cellsData.map((c) => c.value), 1);
+
+  const dayLabels = DAY_LABELS.map((label, index) => ({ label, index })).filter((l) => l.label);
+
+  return {
+    cells: cellsData,
+    xLabels: monthLabelsData,
+    yLabels: dayLabels,
+    maxValue,
+    gridWidth: weekIndex + 1,
+    gridHeight: 7,
+  };
+};
+
+const processCategoricalData = <T,>(
+  data: T[],
+  xAccessor: (d: T) => number | string,
+  yAccessor: (d: T) => number | string,
+  valueAccessor: (d: T) => number = (d: any) => d.value || 0,
+  xCategories?: string[],
+  yCategories?: string[],
+): ProcessedData<T> => {
+  const rawXValues = Array.from(new Set(data.map(xAccessor)));
+  const rawYValues = Array.from(new Set(data.map(yAccessor)));
+
+  const useCustomXCategories = xCategories && xCategories.length > 0;
+  const useCustomYCategories = yCategories && yCategories.length > 0;
+
+  // Build value map and data map using RAW data values as keys
+  const valueMap = new Map<string, number>();
+  const dataMap = new Map<string, T>();
+  data.forEach((d) => {
+    const x = xAccessor(d);
+    const y = yAccessor(d);
+    const key = `${x}-${y}`;
+    const value = valueAccessor(d);
+    valueMap.set(key, (valueMap.get(key) || 0) + value);
+    if (!dataMap.has(key)) {
+      dataMap.set(key, d);
+    }
+  });
+
+  const xValueToLabel = useCustomXCategories
+    ? new Map(rawXValues.map((val, _idx) => [val, xCategories![Number(val)] || String(val)]))
+    : new Map(rawXValues.map((val) => [val, String(val)]));
+
+  const yValueToLabel = useCustomYCategories
+    ? new Map(rawYValues.map((val, _idx) => [val, yCategories![Number(val)] || String(val)]))
+    : new Map(rawYValues.map((val) => [val, String(val)]));
+
+  const cells: NormalizedCell<T>[] = [];
+  const sortedRawYValues = rawYValues.sort((a, b) => {
+    const aNum = Number(a);
+    const bNum = Number(b);
+    if (!isNaN(aNum) && !isNaN(bNum)) return aNum - bNum;
+    return String(a).localeCompare(String(b));
+  });
+  const sortedRawXValues = rawXValues.sort((a, b) => {
+    const aNum = Number(a);
+    const bNum = Number(b);
+    if (!isNaN(aNum) && !isNaN(bNum)) return aNum - bNum;
+    return String(a).localeCompare(String(b));
+  });
+
+  sortedRawYValues.forEach((yVal, yIdx) => {
+    sortedRawXValues.forEach((xVal, xIdx) => {
+      const key = `${xVal}-${yVal}`;
+      cells.push({
+        x: xIdx,
+        y: yIdx,
+        value: valueMap.get(key) || 0,
+        displayValue: { x: xVal, y: yVal },
+        xLabel: xValueToLabel.get(xVal) || String(xVal),
+        yLabel: yValueToLabel.get(yVal) || String(yVal),
+        originalData: dataMap.get(key),
+      });
+    });
+  });
+
+  const maxValue = Math.max(...cells.map((c) => c.value), 1);
+
+  const xLabels = sortedRawXValues.map((val, index) => ({
+    label: xValueToLabel.get(val) || String(val),
+    index,
+  }));
+
+  const yLabels = sortedRawYValues.map((val, index) => ({
+    label: yValueToLabel.get(val) || String(val),
+    index,
+  }));
+
+  return {
+    cells,
+    xLabels,
+    yLabels,
+    maxValue,
+    gridWidth: sortedRawXValues.length,
+    gridHeight: sortedRawYValues.length,
+  };
+};
+
+export const HeatMap = <T,>(props: HeatmapProps<T>) => {
+  const { data, name, colors, showDayLabels = true, margin = defaultMargin, animate = true, tooltip } = props;
+  const isCategorical = 'xAccessor' in props && props.xAccessor !== undefined;
+  const hasData = data && data.length > 0;
+
   return (
     <ParentSize>
-      {(parent) => (
-        <Chart<T>
-          name={name}
-          data={data}
-          width={parent.width}
-          height={parent.height}
-          margin={margin}
-          dateAccessor={dateAccessor}
-          valueAccessor={valueAccessor}
-          tooltip={tooltip}
-          startDate={startDate}
-          endDate={endDate}
-          colors={colors}
-          showMonthLabels={showMonthLabels}
-          showDayLabels={showDayLabels}
-          animate={animate}
-        />
-      )}
+      {hasData
+        ? (parent) => (
+            <Chart<T>
+              {...props}
+              name={name}
+              data={data}
+              width={parent.width}
+              height={parent.height}
+              margin={margin}
+              tooltip={tooltip}
+              colors={colors}
+              showDayLabels={showDayLabels}
+              animate={animate}
+              isCategorical={isCategorical}
+            />
+          )
+        : () => <EmptyChart />}
     </ParentSize>
   );
 };
 
-type InnerHeatmapProps<T> = InnerChartProps & HeatmapProps<T>;
+type InnerHeatmapProps<T> = InnerChartProps & HeatmapProps<T> & { isCategorical: boolean };
 
-const Chart = <T,>({
-  data,
-  width,
-  height,
-  margin = defaultMargin,
-  dateAccessor,
-  valueAccessor,
-  tooltip,
-  name,
-  startDate = getDefaultStartDate(),
-  endDate = getDefaultEndDate(),
-  colors,
-  showMonthLabels = true,
-  showDayLabels = true,
-  animate = true,
-}: InnerHeatmapProps<T>) => {
+const Chart = <T,>(props: InnerHeatmapProps<T>) => {
+  const {
+    data,
+    width,
+    height,
+    margin = defaultMargin,
+    tooltip,
+    name,
+    colors,
+    showDayLabels = true,
+    animate = true,
+    isCategorical,
+  } = props;
+
   const tooltipAccessor = tooltip?.accessor;
   const theme = useTheme();
 
   const _animate = animate;
-  const { hideTooltip, showTooltip, tooltipData, tooltipLeft = 0, tooltipTop = 0 } = useTooltip<CellData>();
+  const { hideTooltip, showTooltip, tooltipData, tooltipLeft = 0, tooltipTop = 0 } = useTooltip<NormalizedCell<T>>();
 
   const defaultColors: [string, string, string, string, string] = [
-    theme.colors.backgroundAlt, // No activity
-    `${theme.colors.primary}33`, // Low activity (20% opacity)
-    `${theme.colors.primary}66`, // Medium-low (40% opacity)
-    `${theme.colors.primary}99`, // Medium-high (60% opacity)
-    theme.colors.primary, // High activity (100%)
+    `${theme.colors.backgroundAccent}33`,
+    `${theme.colors.primary}33`,
+    `${theme.colors.primary}66`,
+    `${theme.colors.primary}99`,
+    theme.colors.primary,
   ];
 
   const colorScale = colors || defaultColors;
 
-  const { cells, monthLabels, maxValue } = useMemo(() => {
-    const dateValueMap = new Map<string, number>();
-    data.forEach((d) => {
-      const date = dateAccessor(d);
-      const dateStr = date.toISOString().split('T')[0];
-      const value = valueAccessor(d);
-      dateValueMap.set(dateStr, (dateValueMap.get(dateStr) || 0) + value);
-    });
-
-    // Generate all dates in range
-    const cellsData: CellData[] = [];
-    const monthLabelsData: MonthLabel[] = [];
-    const currentDate = new Date(startDate);
-    let weekIndex = 0;
-    let lastMonth = -1;
-
-    while (currentDate <= endDate) {
-      const dayIndex = currentDate.getDay(); // 0 (Sunday) to 6 (Saturday)
-      const dateStr = currentDate.toISOString().split('T')[0];
-      const value = dateValueMap.get(dateStr) || 0;
-
-      cellsData.push({
-        date: new Date(currentDate),
-        value,
-        weekIndex,
-        dayIndex,
-      });
-
-      // Track month changes for labels
-      // Only add month label if it's on a Sunday AND we have at least 2 weeks of space from the start
-      if (dayIndex === 0 && currentDate.getMonth() !== lastMonth) {
-        lastMonth = currentDate.getMonth();
-        // Skip the first month if we're not starting at the beginning of it (GitHub behavior)
-        if (weekIndex >= 2 || currentDate.getDate() <= 7) {
-          monthLabelsData.push({
-            label: MONTH_LABELS[lastMonth],
-            weekIndex,
-          });
-        }
-      }
-
-      currentDate.setDate(currentDate.getDate() + 1);
-
-      // If we completed a week (Saturday), move to next week column
-      if (dayIndex === 6) {
-        weekIndex++;
-      }
+  const processedData = useMemo(() => {
+    if (isCategorical) {
+      const catProps = props as InnerHeatmapProps<T> & CategoricalModeProps<T>;
+      return processCategoricalData(
+        data,
+        catProps.xAccessor,
+        catProps.yAccessor,
+        catProps.valueAccessor,
+        catProps.xCategories,
+        catProps.yCategories,
+      );
+    } else {
+      const calProps = props as InnerHeatmapProps<T> & CalendarModeProps<T>;
+      return processCalendarData(
+        data,
+        calProps.dateAccessor,
+        calProps.valueAccessor,
+        calProps.startDate || getDefaultStartDate(),
+        calProps.endDate || getDefaultEndDate(),
+      );
     }
+  }, [data, isCategorical, props]);
 
-    const maxValue = Math.max(...cellsData.map((c) => c.value), 1);
+  const dayLabelWidth = showDayLabels ? (isCategorical ? 40 : 30) : 0;
+  const showXLabels = isCategorical || (props as any).showMonthLabels !== false;
+  const xLabelHeight = showXLabels ? 20 : 0;
 
-    return { cells: cellsData, monthLabels: monthLabelsData, maxValue };
-  }, [data, dateAccessor, valueAccessor, startDate, endDate]);
+  // Calculate dynamic cell size based on available space
+  const availableWidth = width - margin.left - margin.right - dayLabelWidth;
+  const availableHeight = height - margin.top - margin.bottom - xLabelHeight;
 
-  // Calculate dimensions
-  const cellSize = 12;
   const cellGap = 3;
-  const dayLabelWidth = showDayLabels ? 30 : 0;
-  const monthLabelHeight = showMonthLabels ? 20 : 0;
+  const maxCellWidth = (availableWidth - cellGap * (processedData.gridWidth - 1)) / processedData.gridWidth;
+  const maxCellHeight = (availableHeight - cellGap * (processedData.gridHeight - 1)) / processedData.gridHeight;
+  const cellSize = Math.min(maxCellWidth, maxCellHeight, 20);
 
   const mapValueToColor = (value: number): string => {
     if (value === 0) return colorScale[0];
-    const level = Math.min(4, Math.ceil((value / maxValue) * 4));
+    const level = Math.min(4, Math.ceil((value / processedData.maxValue) * 4));
     return colorScale[level];
   };
 
@@ -199,7 +345,7 @@ const Chart = <T,>({
   };
 
   const handleMouseOver = useCallback(
-    (event: React.MouseEvent<SVGRectElement>, cell: CellData) => {
+    (event: React.MouseEvent<SVGRectElement>, cell: NormalizedCell<T>) => {
       const coords = localPoint(event) || { x: 0, y: 0 };
       showTooltip({
         tooltipData: cell,
@@ -213,48 +359,52 @@ const Chart = <T,>({
   return width < 10 ? null : (
     <>
       <svg width={width} height={height}>
-        <rect width={width} height={height} fill={theme.colors.background} rx={14} ry={14} />
-        <Group top={margin.top + monthLabelHeight} left={margin.left + dayLabelWidth}>
-          {/* Month labels */}
-          {showMonthLabels &&
-            monthLabels.map((m) => (
+        <Group top={margin.top + xLabelHeight} left={margin.left + dayLabelWidth}>
+          {/* X-axis labels (month labels for calendar, category labels for categorical) */}
+          {showXLabels &&
+            processedData.xLabels
+              .filter((label) => {
+                // For categorical mode with many labels, show every nth label to prevent overlap
+                if (isCategorical && processedData.xLabels.length > 12) {
+                  // Show every 3rd label for better spacing
+                  return label.index % 3 === 0;
+                }
+                return true;
+              })
+              .map((label) => (
+                <text
+                  key={`x-${label.index}`}
+                  x={label.index * (cellSize + cellGap) + (isCategorical ? cellSize / 2 : 0)}
+                  y={-8}
+                  fill={theme.colors.text}
+                  fontSize={theme.fontSize.tiny}
+                  fontWeight={500}
+                  textAnchor={isCategorical ? 'middle' : 'start'}
+                >
+                  {label.label}
+                </text>
+              ))}
+
+          {showDayLabels &&
+            processedData.yLabels.map((label) => (
               <text
-                key={`month-${m.weekIndex}`}
-                x={m.weekIndex * (cellSize + cellGap)}
-                y={-8}
-                fill={theme.colors.text}
-                fontSize={theme.fontSize.small}
-                fontWeight={500}
+                key={`y-${label.index}`}
+                x={-8}
+                y={label.index * (cellSize + cellGap) + cellSize / 2}
+                fill={theme.colors.textAlt}
+                fontSize={theme.fontSize.tiny}
+                textAnchor="end"
+                alignmentBaseline="middle"
               >
-                {m.label}
+                {label.label}
               </text>
             ))}
 
-          {/* Day labels */}
-          {showDayLabels &&
-            DAY_LABELS.map((label, i) => {
-              if (!label) return null;
-              return (
-                <text
-                  key={`day-${i}`}
-                  x={-8}
-                  y={i * (cellSize + cellGap) + cellSize / 2}
-                  fill={theme.colors.textAlt}
-                  fontSize={theme.fontSize.tiny}
-                  textAnchor="end"
-                  alignmentBaseline="middle"
-                >
-                  {label}
-                </text>
-              );
-            })}
-
-          {/* Heat map cells */}
-          {cells.map((cell, i) => (
+          {processedData.cells.map((cell, i) => (
             <rect
               key={`cell-${i}`}
-              x={cell.weekIndex * (cellSize + cellGap)}
-              y={cell.dayIndex * (cellSize + cellGap)}
+              x={cell.x * (cellSize + cellGap)}
+              y={cell.y * (cellSize + cellGap)}
               width={cellSize}
               height={cellSize}
               rx={2}
@@ -281,16 +431,16 @@ const Chart = <T,>({
       </svg>
       {tooltipData && (
         <TooltipWithBounds key={name} top={tooltipTop} left={tooltipLeft} style={getDefaultTooltipStyles(theme)}>
-          {tooltipAccessor ? (
-            tooltipAccessor(
-              data.find((d) => dateAccessor(d).toDateString() === tooltipData.date.toDateString())!,
-              tooltipData.date,
-              tooltipData.value,
-            )
+          {tooltipAccessor && tooltipData.originalData ? (
+            tooltipAccessor(tooltipData.originalData, tooltipData.displayValue, tooltipData.value)
+          ) : isCategorical ? (
+            <>
+              {tooltipData.xLabel} - {tooltipData.yLabel}: {tooltipData.value}
+            </>
           ) : (
             <>
               <strong>{tooltipData.value}</strong> contribution{tooltipData.value !== 1 ? 's' : ''} on{' '}
-              {formatDate(tooltipData.date)}
+              {formatDate(tooltipData.displayValue as Date)}
             </>
           )}
         </TooltipWithBounds>
