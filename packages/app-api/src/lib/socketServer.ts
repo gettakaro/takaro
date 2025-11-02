@@ -15,6 +15,7 @@ interface ServerToClientEvents {
   gameEvent: (gameserverId: string, type: EventTypes, data: EventPayload) => void;
   event: (event: EventOutputDTO) => void;
   pong: () => void;
+  ready: (data: { domainId: string }) => void;
 }
 
 interface ClientToServerEvents {
