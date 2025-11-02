@@ -2,7 +2,6 @@ import { IntegrationTest, expect } from '@takaro/test';
 import { GameServerOutputDTO, SettingsOutputDTOKeyEnum, SettingsOutputDTOTypeEnum } from '@takaro/apiclient';
 import { describe } from 'node:test';
 import { randomUUID } from 'node:crypto';
-import { getMockServer } from '@takaro/mock-gameserver';
 
 const group = 'SettingsController';
 
@@ -11,7 +10,7 @@ async function setupGameServer(this: IntegrationTest<any>): Promise<GameServerOu
 
   const gameServerIdentityToken = randomUUID();
 
-  await getMockServer({
+  await this.createMockServer({
     mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServerIdentityToken },
   });
 

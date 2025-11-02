@@ -2,7 +2,6 @@ import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, Event
 import { IHookEventTypeEnum } from '@takaro/apiclient';
 import { describe } from 'node:test';
 import { randomUUID } from 'crypto';
-import { getMockServer } from '@takaro/mock-gameserver';
 
 const group = 'Module permissions role assignments';
 
@@ -76,7 +75,7 @@ const tests = [
     test: async function () {
       if (!this.domainRegistrationToken) throw new Error('Domain registration token not set');
       const identityToken = randomUUID();
-      const mockserver = await getMockServer({
+      const mockserver = await this.createMockServer({
         mockserver: { registrationToken: this.domainRegistrationToken, identityToken },
       });
       this.setupData.mockservers.push(mockserver);

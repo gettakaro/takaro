@@ -1,6 +1,5 @@
 import { expect, integrationConfig, IntegrationTest } from '@takaro/test';
 import { describe } from 'node:test';
-import { getMockServer } from '@takaro/mock-gameserver';
 import { randomUUID } from 'crypto';
 import { AdminClient, Client } from '@takaro/apiclient';
 
@@ -23,7 +22,7 @@ const tests = [
       if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
       const gameServerIdentityToken = randomUUID();
 
-      const mockServer = await getMockServer({
+      const mockServer = await this.createMockServer({
         mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServerIdentityToken },
       });
 
@@ -49,7 +48,7 @@ const tests = [
       const gameServerIdentityToken = randomUUID();
 
       try {
-        await getMockServer({
+        await this.createMockServer({
           mockserver: { registrationToken: 'invalid registration token', identityToken: gameServerIdentityToken },
         });
         throw new Error('Should have thrown an error');
@@ -68,11 +67,11 @@ const tests = [
       if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
       const gameServerIdentityToken = randomUUID();
 
-      const mockServer1 = await getMockServer({
+      const mockServer1 = await this.createMockServer({
         mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServerIdentityToken },
       });
 
-      const mockServer2 = await getMockServer({
+      const mockServer2 = await this.createMockServer({
         mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServerIdentityToken },
       });
 
@@ -98,7 +97,7 @@ const tests = [
       if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
 
       try {
-        await getMockServer({
+        await this.createMockServer({
           mockserver: { registrationToken: this.domainRegistrationToken, identityToken: '' },
         });
         throw new Error('Should have thrown an error');
@@ -164,7 +163,7 @@ const tests = [
       await Promise.all(
         this.setupData.map(async (domain) => {
           const gameServerIdentityToken = randomUUID();
-          const mockServer = await getMockServer({
+          const mockServer = await this.createMockServer({
             mockserver: {
               registrationToken: domain.registrationToken,
               identityToken: gameServerIdentityToken,

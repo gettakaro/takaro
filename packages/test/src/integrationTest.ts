@@ -5,6 +5,7 @@ import { expect } from './test/expect.js';
 import { AdminClient, Client, AxiosResponse, isAxiosError, TakaroEventCommandExecuted } from '@takaro/apiclient';
 import { randomUUID } from 'crypto';
 import { before, it } from 'node:test';
+import { getMockServer } from '@takaro/mock-gameserver';
 
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
@@ -72,6 +73,9 @@ export class IntegrationTest<SetupData> {
     password: '',
   };
 
+  // Track mock servers created by this test instance for automatic cleanup
+  private createdMockServers: Awaited<ReturnType<typeof getMockServer>>[] = [];
+
   constructor(public test: IIntegrationTest<SetupData>) {
     if (test.snapshot) {
       this.test.expectedStatus ??= 200;
@@ -118,6 +122,16 @@ export class IntegrationTest<SetupData> {
     await this.client.login();
   }
 
+  /**
+   * Create a mock server and track it for automatic cleanup in teardown.
+   * This prevents orphaned mock servers when setup times out or throws.
+   */
+  async createMockServer(config: Parameters<typeof getMockServer>[0]) {
+    const server = await getMockServer(config);
+    this.createdMockServers.push(server);
+    return server;
+  }
+
   async run() {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const integrationTestContext = this;
@@ -151,6 +165,19 @@ export class IntegrationTest<SetupData> {
         await integrationTestContext.test.teardown.bind(integrationTestContext)();
       }
 
+      // Clean up ALL tracked mock servers (even if setupData is undefined due to timeout)
+      // This prevents orphaned servers from accumulating across retry attempts
+      for (const mockserver of integrationTestContext.createdMockServers) {
+        try {
+          await mockserver.shutdown();
+        } catch (error) {
+          // Ignore shutdown errors - server may already be down
+          console.warn('Failed to shutdown mock server during cleanup:', error);
+        }
+      }
+      integrationTestContext.createdMockServers = [];
+
+      // Also clean up mock servers in setupData (for backwards compatibility)
       if (
         integrationTestContext.setupData &&
         typeof integrationTestContext.setupData === 'object' &&
@@ -158,7 +185,11 @@ export class IntegrationTest<SetupData> {
       ) {
         const servers = integrationTestContext.setupData.mockservers as any[];
         for (const mockserver of servers) {
-          await mockserver.shutdown();
+          try {
+            await mockserver.shutdown();
+          } catch {
+            // May have already been cleaned up above
+          }
         }
       }
 
