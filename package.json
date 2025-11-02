@@ -131,8 +131,6 @@
     "deep-equal-in-any-order": "2.0.6",
     "discord-api-types": "0.37.101",
     "discord.js": "14.16.3",
-    "echarts": "5.6.0",
-    "echarts-for-react": "3.0.2",
     "ejs": "3.1.10",
     "eventsource": "2.0.2",
     "express": "4.21.2",
