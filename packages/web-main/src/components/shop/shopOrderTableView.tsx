@@ -14,7 +14,7 @@ import {
   useTheme,
   useTableActions,
 } from '@takaro/lib-components';
-import { Link, useParams } from '@tanstack/react-router';
+import { Link, useNavigate, useParams } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useQuery } from '@tanstack/react-query';
 import { shopOrdersQueryOptions, useShopOrderCancel, useShopOrderClaim } from '../../queries/shopOrder';
@@ -23,6 +23,7 @@ import {
   AiOutlineRight as ActionIcon,
   AiOutlineClose as CancelOrderIcon,
   AiOutlineCheck as ClaimOrderIcon,
+  AiOutlineProfile as ProfileIcon,
 } from 'react-icons/ai';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { userMeQueryOptions } from '../../queries/user';
@@ -51,6 +52,7 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
         listingId: columnFilters.columnFiltersState.find((filter) => filter.id === 'listingId')?.value,
         status: columnFilters.columnFiltersState.find((filter) => filter.id === 'status')?.value,
         gameServerId: [gameServerId],
+        amount: columnFilters.columnFiltersState.find((filter) => filter.id === 'amount')?.value as unknown as number[],
       },
       search: {
         // playerId: columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value,
@@ -85,6 +87,7 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
       cell: (info) => info.getValue(),
       enableColumnFilter: true,
       enableSorting: true,
+      meta: { dataType: 'number' },
     }),
     columnHelper.accessor('status', {
       header: 'Status',
@@ -101,6 +104,7 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
       },
       enableColumnFilter: true,
       enableSorting: true,
+      meta: { dataType: 'string' },
     }),
     columnHelper.accessor('createdAt', {
       header: 'Created At',
@@ -120,6 +124,7 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
         dataType: 'datetime',
       },
     }),
+
     columnHelper.accessor('playerId', {
       header: 'Player',
       id: 'playerId',
@@ -127,6 +132,14 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
       cell: (info) => <PlayerContainer playerId={info.getValue()} />,
       meta: { dataType: 'string' },
     }),
+    columnHelper.accessor('listing.price', {
+      header: 'Price',
+      id: 'price',
+      enableSorting: true,
+      cell: (info) => info.getValue(),
+      meta: { dataType: 'number' },
+    }),
+
     columnHelper.display({
       header: 'Actions',
       id: 'actions',
@@ -200,17 +213,26 @@ const ShopOrderActions: FC<ShopOrderActionsProps> = ({ shopOrder, gameServerId, 
   const { data: pog } = useQuery(playerOnGameServerQueryOptions(gameServerId, playerId));
   const { mutateAsync: claimShopOrder } = useShopOrderClaim();
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const orderOfCurrentUser = shopOrder.playerId === currentPlayerId;
   const handleCancelOrderClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
+    e.stopPropagation();
     setOpenCancelOrderDialog(true);
   };
 
   const handleClaimShopOrderClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
+    e.stopPropagation();
     claimShopOrder({
       shopOrderId: shopOrder.id,
+    });
+  };
+
+  const handleViewProfileClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
+    navigate({
+      to: '/player/$playerId/info',
+      params: { playerId: playerId },
     });
   };
 
@@ -236,6 +258,7 @@ const ShopOrderActions: FC<ShopOrderActionsProps> = ({ shopOrder, gameServerId, 
                 disabled={pog?.online === undefined || pog?.online === false}
               />
             )}
+            <Dropdown.Menu.Item label="View player profile" icon={<ProfileIcon />} onClick={handleViewProfileClick} />
             <Dropdown.Menu.Item
               disabled={shopOrder.status !== ShopOrderOutputDTOStatusEnum.Paid}
               label="Cancel order"
