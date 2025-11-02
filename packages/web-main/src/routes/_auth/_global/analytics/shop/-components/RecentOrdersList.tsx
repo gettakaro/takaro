@@ -1,11 +1,8 @@
 import { RecentOrderDTO } from '@takaro/apiclient';
-import { Card, Chip, IconTooltip, styled, formatCurrency } from '@takaro/lib-components';
-import {
-  RecentOrderDetailDialog,
-  RecentOrderStatusColorMap,
-} from '../../../../../../components/dialogs/RecentOrderDetailDialog';
+import { Card, Chip, IconTooltip, styled, formatCurrency, CopyId } from '@takaro/lib-components';
+import { RecentOrderStatusColorMap } from '../../../../../../components/dialogs/RecentOrderDetailDialog';
 import { DateTime } from 'luxon';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { AiOutlineClockCircle as ClockIcon, AiOutlineInfoCircle as InfoIcon } from 'react-icons/ai';
 
 const StyledCard = styled(Card)`
@@ -38,7 +35,6 @@ const OrderItem = styled.div`
   padding: ${({ theme }) => theme.spacing['1']};
   background: ${({ theme }) => theme.colors.backgroundAlt};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
-  cursor: pointer;
   border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
 `;
 
@@ -84,17 +80,8 @@ interface RecentOrdersListProps {
 }
 
 export const RecentOrdersList: FC<RecentOrdersListProps> = ({ orders }) => {
-  const [selectedOrder, setSelectedOrder] = useState<RecentOrderDTO | null>(null);
-
   return (
     <>
-      {selectedOrder && (
-        <RecentOrderDetailDialog
-          order={selectedOrder}
-          open={!!selectedOrder}
-          onOpenChange={(open) => !open && setSelectedOrder(null)}
-        />
-      )}
       <StyledCard>
         <Card.Title label="10 Most Recent Orders">
           <IconTooltip icon={<InfoIcon />} size="small" color="white">
@@ -106,7 +93,7 @@ export const RecentOrdersList: FC<RecentOrdersListProps> = ({ orders }) => {
           <OrdersList>
             {orders.length > 0 ? (
               orders.map((order) => (
-                <OrderItem key={order.id} onClick={() => setSelectedOrder(order)}>
+                <OrderItem key={order.id}>
                   <OrderItemRow>
                     <OrderInfo>
                       {/* TODO: replace this with PlayerLink */}
@@ -120,6 +107,8 @@ export const RecentOrdersList: FC<RecentOrdersListProps> = ({ orders }) => {
                     <OrderMeta>
                       <ClockIcon size={12} />
                       {DateTime.fromISO(order.time || DateTime.now().toISO()).toRelative()}
+                      <div style={{ marginLeft: '10px' }} />
+                      <CopyId id={order.id} placeholder="Order Id" />
                     </OrderMeta>
                     <Chip label={order.status} color={RecentOrderStatusColorMap[order.status]} variant="outline" />
                   </OrderItemRow>
