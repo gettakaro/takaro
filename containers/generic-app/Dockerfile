@@ -23,9 +23,6 @@ RUN find packages -type d -name 'lib-*' -exec sh -c 'npm run -w {} build && mkdi
 
 FROM node:24.11.0-alpine AS runner
 
-# Version 9+ is required to run npm scripts as root
-RUN npm install -g npm@9
-
 ARG PACKAGE
 ENV PACKAGE=${PACKAGE}
 ENV NODE_ENV=production
