@@ -45,7 +45,7 @@ export const TopSellingItemsChart: FC<TopSellingItemsChartProps> = ({ products }
         <Alert
           variant="info"
           text={`${products.deadStock} items with no sales in the last 30 days`}
-          // action={{ execute: () => setShowDeadStockDialog(true), text: 'View Details' }}
+          action={{ execute: () => setShowDeadStockDialog(true), text: 'View Details' }}
         />
       </Card.Body>
 
