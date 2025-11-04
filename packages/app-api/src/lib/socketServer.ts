@@ -197,6 +197,9 @@ class SocketServer {
           contextDomain: ctx.data.domain,
         });
         await socket.join(authData.domainId);
+        // Force Redis synchronization - ensures join has propagated before proceeding
+        // Workaround for Socket.IO Redis adapter race condition (issue #4734)
+        await this.io.in(authData.domainId).fetchSockets();
         next();
       });
 
