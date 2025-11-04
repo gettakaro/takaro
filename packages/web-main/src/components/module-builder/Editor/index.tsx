@@ -118,8 +118,6 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
 
             // this is ran everytime the file changes
             monacoRef.current = monaco;
-            console.log(theme);
-            console.log(getMonacoTheme(theme));
             monaco.editor.defineTheme('takaro-dark', getMonacoTheme(theme));
             monaco.editor.setTheme(`takaro-${theme}`);
             monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
