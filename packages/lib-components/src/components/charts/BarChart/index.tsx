@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, useCallback } from 'react';
+import { useMemo, useRef, useState, useCallback, useEffect } from 'react';
 
 import { Bar } from '@visx/shape';
 import { Group } from '@visx/group';
@@ -128,6 +128,10 @@ const Chart = <T,>({
 
   const xBrushMax = Math.max(width - brushMargin.left - brushMargin.right, 0);
   const yBrushMax = Math.max(bottomChartHeight - brushMargin.top - brushMargin.bottom, 0);
+
+  useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
 
   const xScale = useMemo(
     () =>
