@@ -144,3 +144,29 @@ export const EmptyTable: StoryFn<TableProps<User>> = (args) => {
   return <Users {...args} data={[]} />;
 };
 export const DataTable: StoryFn<TableProps<User>> = (args) => <Users {...args} />;
+
+const ClientSidePaginatedUsers: FC<TableProps<User>> = (args) => {
+  const { pagination, sorting, columnSearch, columnFilters, rowSelection } = useTableActions<User>({
+    pageIndex: 0,
+    pageSize: 3,
+  });
+
+  return (
+    <Table
+      id="client-side-story-table"
+      data={args.data}
+      columns={columns}
+      pagination={{
+        ...pagination,
+        manualPagination: false, // Enable client-side pagination - no pageOptions needed!
+      }}
+      isLoading={args.isLoading}
+      columnFiltering={columnFilters}
+      columnSearch={columnSearch}
+      rowSelection={rowSelection}
+      sorting={sorting}
+    />
+  );
+};
+
+export const ClientSidePagination: StoryFn<TableProps<User>> = (args) => <ClientSidePaginatedUsers {...args} />;

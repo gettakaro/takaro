@@ -19,6 +19,7 @@ import {
   RowSelectionState,
   ExpandedState,
   getExpandedRowModel,
+  getPaginationRowModel,
   Row,
 } from '@tanstack/react-table';
 import { Wrapper, StyledTable, Toolbar, Flex, TableWrapper } from './style';
@@ -78,7 +79,8 @@ export interface TableProps<DataType extends object> {
   pagination?: {
     paginationState: PaginationState;
     setPaginationState: OnChangeFn<PaginationState>;
-    pageOptions: PageOptions;
+    pageOptions?: PageOptions;
+    manualPagination?: boolean;
   };
   columnFiltering: {
     columnFiltersState: ColumnFilter[];
@@ -194,8 +196,9 @@ export function Table<DataType extends object>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
-    pageCount: pagination?.pageOptions.pageCount ?? -1,
-    manualPagination: true,
+    getPaginationRowModel: pagination?.manualPagination ? undefined : getPaginationRowModel(),
+    pageCount: pagination?.pageOptions?.pageCount ?? -1,
+    manualPagination: pagination?.manualPagination ?? true,
     paginateExpandedRows: true, // Expanded rows will be paginated this means that rows that take up more space will be shown on next page.
     manualFiltering: true,
     manualSorting: true,
@@ -249,6 +252,15 @@ export function Table<DataType extends object>({
 
   const tableHasNoData = isLoading === false && table.getRowModel().rows.length === 0;
   const tableHasData = isLoading === false && table.getRowModel().rows.length !== 0;
+
+  // Calculate total items for pagination display
+  // For client-side pagination, use data.length; for server-side, use pageOptions.total
+  const totalItems = useMemo(() => {
+    if (pagination?.manualPagination === false) {
+      return data.length;
+    }
+    return pagination?.pageOptions?.total ?? 0;
+  }, [pagination?.manualPagination, pagination?.pageOptions?.total, data.length]);
 
   // rowSelection.rowSelectionState has the following shape: { [rowId: string]: boolean }
   const hasRowSelection = useMemo(() => {
@@ -459,7 +471,7 @@ export function Table<DataType extends object>({
                           showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-
                           {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
                             table.getRowModel().rows.length}{' '}
-                          of {pagination.pageOptions.total} entries
+                          of {totalItems} entries
                         </span>
                       </td>
                       <td colSpan={1}>
