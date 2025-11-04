@@ -1,12 +1,8 @@
 import { FC } from 'react';
 import { Tooltip, styled, Skeleton } from '@takaro/lib-components';
 import { gameServerQueryOptions } from '../../../../queries/gameserver';
-import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, PlayerOnGameserverOutputDTO } from '@takaro/apiclient';
+import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, PlayerInventoryOutputDTO } from '@takaro/apiclient';
 import { useQuery } from '@tanstack/react-query';
-
-interface IPlayerInventoryProps {
-  pog: PlayerOnGameserverOutputDTO;
-}
 
 const Grid = styled.div`
   display: grid;
@@ -29,11 +25,16 @@ const ItemIcon = styled.img`
   margin-bottom: ${(props) => props.theme.spacing[1]};
 `;
 
-export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pog }) => {
-  const { data: gameServer, isLoading } = useQuery(gameServerQueryOptions(pog.gameServerId));
+interface PlayerInventoryListViewProps {
+  inventory: PlayerInventoryOutputDTO[];
+  gameServerId: string;
+}
+
+export const PlayerInventoryListView: FC<PlayerInventoryListViewProps> = ({ inventory, gameServerId }) => {
+  const { data: gameServer, isLoading } = useQuery(gameServerQueryOptions(gameServerId));
   if (isLoading) return <Skeleton variant="rectangular" width="100%" height="100%" />;
 
-  if (pog.inventory.length === 0) return <p>No inventory data</p>;
+  if (inventory.length === 0) return <p>No inventory data</p>;
 
   function getServerType(server: GameServerOutputDTO | undefined) {
     if (!server) return null;
@@ -53,19 +54,19 @@ export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pog }) => {
 
   return (
     <Grid>
-      {pog.inventory.map((item, index) => (
-        <Tooltip key={'tooltip' + item.name} placement="top">
+      {inventory.map((item, index) => (
+        <Tooltip key={'tooltip' + item.itemName} placement="top">
           <Tooltip.Trigger asChild>
             <GridItem key={index}>
               <ItemIcon
-                src={serverType ? `/icons/${serverType}/${item.code}.png` : placeholderIcon}
-                alt={item.name}
+                src={serverType ? `/icons/${serverType}/${item.itemCode}.png` : placeholderIcon}
+                alt={item.itemName}
                 onError={(e) => (e.currentTarget.src = placeholderIcon)}
               />
-              <p>{item.amount}</p>
+              <p>{item.quantity}</p>
             </GridItem>
           </Tooltip.Trigger>
-          <Tooltip.Content>{item.name}</Tooltip.Content>
+          <Tooltip.Content>{item.itemName}</Tooltip.Content>
         </Tooltip>
       ))}
     </Grid>
