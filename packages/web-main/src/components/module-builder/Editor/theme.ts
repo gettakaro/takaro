@@ -6,10 +6,10 @@ import {
 } from '@takaro/lib-components';
 import type { editor } from 'monaco-editor';
 
-const darkTheme = getThemeWithouHashTagPrefix(darkThemeWithPrefix);
-const lightTheme = getThemeWithouHashTagPrefix(LightThemeWithPrefix);
+const darkTheme = stripHashFromTheme(darkThemeWithPrefix);
+const lightTheme = stripHashFromTheme(LightThemeWithPrefix);
 
-function getThemeWithouHashTagPrefix(theme: ThemeType): ThemeType {
+function stripHashFromTheme(theme: ThemeType): ThemeType {
   const t: Record<string, string> = {};
   for (const [key, value] of Object.entries(theme.colors)) {
     t[key] = value.substring(1);
