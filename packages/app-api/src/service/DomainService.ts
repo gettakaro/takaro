@@ -176,7 +176,9 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       await deleteLambda({ domainId: existing.id });
     }
 
-    await this.repo.delete(id);
+    // Soft-delete: update state to DELETED instead of hard-deleting
+    // This avoids CASCADE deadlocks and allows domain recovery
+    await this.repo.update(id, new DomainUpdateInputDTO({ state: DOMAIN_STATES.DELETED }));
 
     return id;
   }
@@ -301,6 +303,13 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
   async resolveByRegistrationToken(registrationToken: string): Promise<DomainOutputDTO> {
     const result = await this.repo.find({ filters: { serverRegistrationToken: [registrationToken] } });
     if (!result.total) throw new errors.NotFoundError();
-    return result.results[0];
+
+    // Filter out deleted domains - they should not be resolvable
+    const domain = result.results[0];
+    if (domain.state === DOMAIN_STATES.DELETED) {
+      throw new errors.NotFoundError();
+    }
+
+    return domain;
   }
 }
