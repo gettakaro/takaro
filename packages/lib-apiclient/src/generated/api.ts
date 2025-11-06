@@ -2033,6 +2033,7 @@ export const DomainCreateInputDTOStateEnum = {
   Active: 'ACTIVE',
   Disabled: 'DISABLED',
   Maintenance: 'MAINTENANCE',
+  Deleted: 'DELETED',
 } as const;
 
 export type DomainCreateInputDTOStateEnum =
@@ -2209,6 +2210,7 @@ export const DomainOutputDTOStateEnum = {
   Active: 'ACTIVE',
   Disabled: 'DISABLED',
   Maintenance: 'MAINTENANCE',
+  Deleted: 'DELETED',
 } as const;
 
 export type DomainOutputDTOStateEnum = (typeof DomainOutputDTOStateEnum)[keyof typeof DomainOutputDTOStateEnum];
@@ -2268,6 +2270,7 @@ export const DomainSearchInputAllowedFiltersStateEnum = {
   Active: 'ACTIVE',
   Disabled: 'DISABLED',
   Maintenance: 'MAINTENANCE',
+  Deleted: 'DELETED',
 } as const;
 
 export type DomainSearchInputAllowedFiltersStateEnum =
@@ -2422,6 +2425,7 @@ export const DomainUpdateInputDTOStateEnum = {
   Active: 'ACTIVE',
   Disabled: 'DISABLED',
   Maintenance: 'MAINTENANCE',
+  Deleted: 'DELETED',
 } as const;
 
 export type DomainUpdateInputDTOStateEnum =
