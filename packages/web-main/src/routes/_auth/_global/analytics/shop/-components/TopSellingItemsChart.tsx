@@ -19,7 +19,7 @@ export const TopSellingItemsChart: FC<TopSellingItemsChartProps> = ({ products }
           your best-performing products and inventory needs.
         </IconTooltip>
 
-        <Chip label={`${products.totalProducts} items`} color="primary" variant="outline" />
+        <Chip label={`${products.totalProducts} items`} color="primary" />
       </Card.Title>
       <Card.Body>
         <div style={{ position: 'relative', height: '350px' }}>

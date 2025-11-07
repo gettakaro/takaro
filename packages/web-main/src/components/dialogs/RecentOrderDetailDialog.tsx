@@ -70,7 +70,7 @@ export const RecentOrderDetailDialog: FC<RecentOrderDetailDialogProps> = ({ orde
 
             <DetailItem>
               <DetailLabel>Status</DetailLabel>
-              <Chip color={RecentOrderStatusColorMap[order.status]} label={order.status} variant="outline" />
+              <Chip color={RecentOrderStatusColorMap[order.status]} label={order.status} />
             </DetailItem>
 
             <DetailItem>

@@ -19,7 +19,7 @@ export const RevenueDistributionChart: FC<RevenueDistributionChartProps> = ({ pr
           Revenue distribution across product categories. Shows which categories drive the most sales and helps identify
           opportunities for category expansion or optimization.
         </IconTooltip>
-        <Chip label={`${products.categories.length} categories`} color="primary" variant="outline" />
+        <Chip label={`${products.categories.length} categories`} color="primary" />
       </Card.Title>
       <Card.Body>
         <div style={{ position: 'relative', height: '350px' }}>

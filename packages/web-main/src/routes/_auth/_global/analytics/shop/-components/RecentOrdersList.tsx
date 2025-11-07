@@ -110,7 +110,7 @@ export const RecentOrdersList: FC<RecentOrdersListProps> = ({ orders }) => {
                       <div style={{ marginLeft: '10px' }} />
                       <CopyId id={order.id} placeholder="Order Id" />
                     </OrderMeta>
-                    <Chip label={order.status} color={RecentOrderStatusColorMap[order.status]} variant="outline" />
+                    <Chip label={order.status} color={RecentOrderStatusColorMap[order.status]} />
                   </OrderItemRow>
                 </OrderItem>
               ))
