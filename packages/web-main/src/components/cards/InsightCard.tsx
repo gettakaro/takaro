@@ -106,7 +106,7 @@ export const InsightCard: FC<InsightCardProps> = ({ type, title, description, va
       <InsightHeader>
         <InsightIcon $type={type}>{typeConfig.icon}</InsightIcon>
         <InsightTitle>{title}</InsightTitle>
-        {value && <InsightValue>{value}</InsightValue>}
+        {value !== undefined && value !== null && <InsightValue>{value}</InsightValue>}
       </InsightHeader>
       <InsightDescription>{description}</InsightDescription>
     </StyledCard>
