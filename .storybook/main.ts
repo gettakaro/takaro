@@ -9,7 +9,7 @@ const config: StorybookConfig = {
     { directory: '../packages/lib-components/src', files: '**/*.stories.@(mdx)', titlePrefix: 'Design System' },
   ],
   framework: { name: '@storybook/react-vite', options: {} },
-  addons: ['@storybook/addon-essentials', '@storybook/addon-links', '@storybook/addon-a11y'],
+  addons: ['@storybook/addon-essentials', '@storybook/addon-links', '@storybook/addon-a11y', '@storybook/addon-themes'],
   staticDirs: ['../packages/lib-components/public', '../packages/web-main/public'],
   viteFinal: async (config) => {
     const buildSourceMap = config.build ? true : false;
