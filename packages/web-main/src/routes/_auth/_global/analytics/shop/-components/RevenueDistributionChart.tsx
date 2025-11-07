@@ -8,9 +8,9 @@ interface RevenueDistributionChartProps {
 }
 
 export const RevenueDistributionChart: FC<RevenueDistributionChartProps> = ({ products }) => {
-  const mostPopularCategory = products.categories.reduce((prev, current) =>
-    prev.revenue > current.revenue ? prev : current,
-  );
+  const mostPopularCategory = products.categories.length
+    ? products.categories.reduce((prev, current) => (prev.revenue > current.revenue ? prev : current))
+    : undefined;
 
   return (
     <Card>
@@ -33,12 +33,15 @@ export const RevenueDistributionChart: FC<RevenueDistributionChartProps> = ({ pr
             }}
           />
         </div>
-        <Stats grouped={true} size="small" direction="horizontal">
-          <Stats.Stat
-            description="Top category"
-            value={`${mostPopularCategory.name} ${mostPopularCategory.revenue.toLocaleString()}`}
-          />
-        </Stats>
+
+        {mostPopularCategory && (
+          <Stats grouped={true} size="small" direction="horizontal">
+            <Stats.Stat
+              description="Top category"
+              value={`${mostPopularCategory.name} ${mostPopularCategory.revenue.toLocaleString()}`}
+            />
+          </Stats>
+        )}
       </Card.Body>
     </Card>
   );
