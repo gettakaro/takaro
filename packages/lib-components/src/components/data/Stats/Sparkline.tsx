@@ -27,7 +27,8 @@ export const Sparkline: FC<SparklineProps> = ({
 
   const points = data
     .map((value, index) => {
-      const x = (index / (data.length - 1)) * 100;
+      const divisor = Math.max(data.length - 1, 1); // in case of single data point
+      const x = (index / divisor) * 100;
       const y = 100 - ((value - min) / range) * 100;
       return `${x},${y}`;
     })
