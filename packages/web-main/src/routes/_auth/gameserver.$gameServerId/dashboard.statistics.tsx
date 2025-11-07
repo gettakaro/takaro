@@ -81,16 +81,6 @@ function Component() {
   const { data: countryStats } = useQuery(CountriesStatsQueryOptions({ gameServerIds: [gameServerId] }));
   const { data: playersOnlineData } = useQuery(PlayersOnlineStatsQueryOptions(gameServerId, startDate, now));
   const { data: latencyData } = useQuery(LatencyStatsQueryOptions(gameServerId, startDate, now));
-  // const { data: chatMessagesData } = useQuery(
-  //   EventsCountQueryOptions({
-  //     gameServerId,
-  //     sumBy: ['gameserver'],
-  //     startDate,
-  //     endDate: now,
-  //     eventName: EventsCountInputDTOEventNameEnum.ChatMessage,
-  //     bucketStep: '1h',
-  //   }),
-  // );
 
   if (!playersOnlineData || !latencyData || !countryStats || !currencyInRotationData) {
     return <Loading />;
