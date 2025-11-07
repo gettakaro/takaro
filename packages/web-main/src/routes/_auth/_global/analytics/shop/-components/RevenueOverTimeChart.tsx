@@ -26,12 +26,7 @@ export const RevenueOverTimeChart: FC<RevenueOverTimeChartProps> = ({ revenue })
           />
         </div>
         <Stats grouped={false} size="small">
-          <Stats.Stat
-            description="Growth rate"
-            value={`${revenue.growth.toFixed(1)}%`}
-            size="tiny"
-            icon={<GrowthRateIcon />}
-          />
+          <Stats.Stat description="Growth rate" value={`${revenue.growth.toFixed(1)}%`} icon={<GrowthRateIcon />} />
         </Stats>
       </Card.Body>
     </Card>

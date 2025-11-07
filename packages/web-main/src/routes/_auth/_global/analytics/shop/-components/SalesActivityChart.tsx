@@ -55,8 +55,8 @@ export const SalesActivityChart: FC<SalesActivityChartProps> = ({ revenue }) => 
           />
         </div>
         <Stats grouped={true} size="small" direction="horizontal">
-          <Stats.Stat description="Peak hour" value={revenue.peakHour} size="small" />
-          <Stats.Stat description="Peak day" value={revenue.peakDay} size="small" />
+          <Stats.Stat description="Peak hour" value={revenue.peakHour} />
+          <Stats.Stat description="Peak day" value={revenue.peakDay} />
         </Stats>
       </Card.Body>
     </Card>
