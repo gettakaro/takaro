@@ -51,6 +51,11 @@ export async function processJob(job: Job<ISystemJobData>) {
     const domains = [];
 
     for await (const domain of domainService.getIterator()) {
+      log.info('[CONCURRENT_TESTS_DEBUG] systemWorker discovered domain', {
+        domainId: domain.id,
+        domainName: domain.name,
+        domainState: domain.state,
+      });
       domains.push(domain);
     }
 

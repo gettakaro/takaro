@@ -245,6 +245,27 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
     });
 
     try {
+      // Check if domain is still active before emitting
+      const { DomainService } = await import('./DomainService.js');
+      const domainService = new DomainService();
+      const domain = await domainService.findOne(this.domainId);
+
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] Domain state check before event emission', {
+        domainId: this.domainId,
+        domainState: domain?.state,
+        domainExists: !!domain,
+        eventName: created.eventName,
+      });
+
+      if (!domain || domain.state === 'DELETED') {
+        this.log.warn('[CONCURRENT_TESTS_DEBUG] Skipping event emission for DELETED/missing domain', {
+          domainId: this.domainId,
+          domainState: domain?.state,
+          eventName: created.eventName,
+        });
+        return created;
+      }
+
       const socketServer = await getSocketServer();
       this.log.debug('[CONCURRENT_TESTS_DEBUG] About to emit event via Socket.IO', {
         eventName: created.eventName,

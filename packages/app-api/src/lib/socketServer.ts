@@ -196,6 +196,17 @@ class SocketServer {
           contextUser: ctx.data.user,
           contextDomain: ctx.data.domain,
         });
+
+        // Check domain state before joining
+        const { DomainService } = await import('../service/DomainService.js');
+        const domainService = new DomainService();
+        const domain = await domainService.findOne(authData.domainId);
+        this.log.debug('[CONCURRENT_TESTS_DEBUG] Domain state during socket join', {
+          domainId: authData.domainId,
+          domainState: domain?.state,
+          domainExists: !!domain,
+        });
+
         await socket.join(authData.domainId);
         // Force Redis synchronization - ensures join has propagated before proceeding
         // Workaround for Socket.IO Redis adapter race condition (issue #4734)

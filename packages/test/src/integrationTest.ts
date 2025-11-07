@@ -214,8 +214,14 @@ export class IntegrationTest<SetupData> {
         }
 
         try {
+          console.log(
+            `[CONCURRENT_TESTS_DEBUG] Attempting to delete domain ${integrationTestContext.standardDomainId}`,
+          );
           await integrationTestContext.adminClient.domain.domainControllerRemove(
             integrationTestContext.standardDomainId,
+          );
+          console.log(
+            `[CONCURRENT_TESTS_DEBUG] Successfully deleted domain ${integrationTestContext.standardDomainId}`,
           );
         } catch (error) {
           if (!isAxiosError(error)) {

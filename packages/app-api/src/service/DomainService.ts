@@ -137,6 +137,10 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
   }
 
   find(filters: ITakaroQuery<DomainOutputDTO>): Promise<PaginatedOutput<DomainOutputDTO>> {
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] DomainService.find called', {
+      filters,
+      includesStateFilter: !!(filters.filters && 'state' in filters.filters),
+    });
     return this.repo.find(filters);
   }
 
@@ -161,6 +165,10 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
   }
 
   async delete(id: string) {
+    this.log.info('[CONCURRENT_TESTS_DEBUG] Domain deletion starting', {
+      domainId: id,
+    });
+
     const existing = await this.findOne(id);
 
     if (!existing) {
@@ -179,6 +187,11 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     // Soft-delete: update state to DELETED instead of hard-deleting
     // This avoids CASCADE deadlocks and allows domain recovery
     await this.repo.update(id, new DomainUpdateInputDTO({ state: DOMAIN_STATES.DELETED }));
+
+    this.log.info('[CONCURRENT_TESTS_DEBUG] Domain soft-deleted (state=DELETED)', {
+      domainId: id,
+      domainName: existing.name,
+    });
 
     return id;
   }
