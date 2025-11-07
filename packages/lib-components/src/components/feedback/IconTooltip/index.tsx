@@ -39,7 +39,7 @@ export const IconTooltip: FC<IconTooltipProps> = ({
   return (
     <Tooltip initialOpen={initialOpen} open={open}>
       <Tooltip.Trigger asChild>
-        <TriggerContainer color={color}>
+        <TriggerContainer>
           {cloneElement(icon, { size: getIconSize(size), fill: theme.colors[color] })}
         </TriggerContainer>
       </Tooltip.Trigger>
