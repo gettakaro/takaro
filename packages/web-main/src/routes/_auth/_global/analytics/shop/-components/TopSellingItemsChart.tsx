@@ -52,7 +52,7 @@ export const TopSellingItemsChart: FC<TopSellingItemsChartProps> = ({ products }
       <DeadStockDialog
         open={showDeadStockDialog}
         onOpenChange={setShowDeadStockDialog}
-        deadStockItems={products.deadStockItems!}
+        deadStockItems={products.deadStockItems ?? []}
         totalDeadStock={products.deadStock}
       />
     </Card>
