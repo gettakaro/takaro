@@ -140,7 +140,7 @@ const Chart = <T,>({
   const yScale = useMemo(
     () =>
       scaleLinear<number>({
-        range: [innerHeight, 0 + margin.top],
+        range: [innerHeight, 0],
         domain: yDomain,
         nice: true,
       }),
