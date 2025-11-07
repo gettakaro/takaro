@@ -13,7 +13,7 @@ const Container = styled.div`
     height: 100%;
   }
   path {
-    stroke: ${({ theme }) => theme.colors.primaryShade};
+    stroke: ${({ theme }) => theme.colors.primary};
     stroke-width: 1;
     fill: none;
     opacity: 0.2;
