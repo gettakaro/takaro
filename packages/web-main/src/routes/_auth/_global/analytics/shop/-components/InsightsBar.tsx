@@ -4,7 +4,7 @@ import { InsightCard, InsightType } from '../../../../../../components/cards/Ins
 
 interface InsightsBarProps {
   insights: Array<{
-    type: string;
+    type: InsightType;
     title: string;
     description: string;
     value?: string | number;
