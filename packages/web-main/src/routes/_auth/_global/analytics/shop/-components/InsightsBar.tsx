@@ -1,15 +1,10 @@
 import { FC } from 'react';
 import { styled } from '@takaro/lib-components';
 import { InsightCard, InsightType } from '../../../../../../components/cards/InsightCard';
+import { InsightDTO } from '@takaro/apiclient';
 
 interface InsightsBarProps {
-  insights: Array<{
-    type: InsightType;
-    title: string;
-    description: string;
-    value?: string | number;
-    action?: string;
-  }>;
+  insights: InsightDTO[];
 }
 
 const InsightsContainer = styled.div`
