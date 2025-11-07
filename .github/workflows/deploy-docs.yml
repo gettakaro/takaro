@@ -2,16 +2,15 @@ name: Deploy docs to Pages
 
 on:
   push:
-    branches: ['**']  # Run on all branches
+    branches: ['**'] # Run on all branches
   pull_request:
-    branches: ['**']  # Run on all pull requests
+    branches: ['**'] # Run on all pull requests
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
-
 
 jobs:
   # Build job that runs on all branches
@@ -24,7 +23,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.21.0
+          node-version: 24.11.0
 
       - run: ./scripts/dev-init.sh
 
@@ -47,7 +46,7 @@ jobs:
   deploy:
     # Only run this job on the main branch
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: build  # This job depends on the build job
+    needs: build # This job depends on the build job
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

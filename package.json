@@ -1,6 +1,6 @@
 {
   "name": "takaro",
-  "version": "0.4.4",
+  "version": "0.4.6",
   "description": "",
   "keywords": [],
   "homepage": "https://takaro.app",
@@ -291,8 +291,8 @@
     "utf-8-validate": "6.0.5"
   },
   "engines": {
-    "node": "22.11.0",
-    "npm": "10.9.3"
+    "node": "24.11.0",
+    "npm": "11.6.1"
   },
   "overrides": {
     "esbuild": "0.24.0",

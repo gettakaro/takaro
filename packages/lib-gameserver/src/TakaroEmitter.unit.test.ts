@@ -177,4 +177,25 @@ describe('TakaroEmitter', () => {
     await expect(emitter.foo()).to.eventually.be.rejectedWith('testing error');
     expect(errorSpy).to.have.been.calledOnce;
   });
+
+  it('Should not process events after stop() is called', async () => {
+    const emitter = new ExtendedTakaroEmitter();
+    const spy = sandbox.spy();
+
+    emitter.on(GameEvents.LOG_LINE, spy);
+
+    // Event before stop - should be processed
+    await emitter.emit(GameEvents.LOG_LINE, new EventLogLine({ msg: 'before stop' }));
+    expect(spy).to.have.been.calledOnce;
+
+    // Remove all listeners then call stop (like GameServerManager.remove() does during reconnection)
+    emitter.removeAllListeners();
+    await emitter.stop();
+
+    // Event after stop - should NOT be processed
+    await emitter.emit(GameEvents.LOG_LINE, new EventLogLine({ msg: 'after stop' }));
+
+    // Now it should pass - listeners were removed so spy still called once
+    expect(spy).to.have.been.calledOnce; // Should still be 1, not 2
+  });
 });

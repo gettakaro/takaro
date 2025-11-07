@@ -95,7 +95,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        node-version: [22]
+        node-version: [24]
 
     steps:
       - name: Generate token
@@ -164,7 +164,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.21.0
+          node-version: 24.11.0
       - run: ./scripts/dev-init.sh
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps

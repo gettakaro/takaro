@@ -85,6 +85,11 @@ export abstract class TakaroEmitter {
     return this;
   }
 
+  removeAllListeners(): this {
+    this.listenerMap.clear();
+    return this;
+  }
+
   hasErrorListener() {
     return this.listenerMap.has('error');
   }
