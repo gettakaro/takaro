@@ -69,6 +69,18 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<
       throw new errors.NotFoundError();
     }
 
+    // Force console.log to bypass test mode logging suppression
+    console.log('[CONCURRENT_TESTS_DEBUG] RAW DATABASE RESULT IN DOMAIN REPO:', {
+      domainId: id,
+      rawState: data.state,
+      stateType: typeof data.state,
+      stateIsNull: data.state === null,
+      stateIsUndefined: data.state === undefined,
+      stateString: String(data.state),
+      allFields: Object.keys(data),
+      name: data.name,
+    });
+
     return new DomainOutputDTO(data);
   }
 
@@ -90,8 +102,24 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<
     const existing = await this.findOne(id);
     if (!existing) throw new errors.NotFoundError();
 
+    console.log('[CONCURRENT_TESTS_DEBUG] DOMAIN REPO UPDATE STARTING:', {
+      domainId: id,
+      existingState: existing.state,
+      updateData: data.toJSON(),
+      targetState: data.toJSON().state,
+    });
+
     const { query } = await this.getModel();
     const res = await query.updateAndFetchById(id, data.toJSON()).returning('*');
+
+    console.log('[CONCURRENT_TESTS_DEBUG] DOMAIN REPO UPDATE DATABASE RESULT:', {
+      domainId: id,
+      resultState: res.state,
+      resultStateType: typeof res.state,
+      targetState: data.toJSON().state,
+      statesMatch: res.state === data.toJSON().state,
+    });
+
     return new DomainOutputDTO(res);
   }
 

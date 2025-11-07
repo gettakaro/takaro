@@ -30,6 +30,19 @@ export async function domainStateMiddleware(
     path: req.path,
   });
 
+  // Force console.log to bypass test mode logging suppression
+  console.log('[CONCURRENT_TESTS_DEBUG] RAW DOMAIN STATE IN MIDDLEWARE:', {
+    domainId: domain.id,
+    domainName: domain.name,
+    stateValue: domain.state,
+    stateType: typeof domain.state,
+    stateIsNull: domain.state === null,
+    stateIsUndefined: domain.state === undefined,
+    stateString: String(domain.state),
+    allDomainFields: Object.keys(domain),
+    path: req.path,
+  });
+
   switch (domain.state) {
     case DOMAIN_STATES.ACTIVE:
       return next();
