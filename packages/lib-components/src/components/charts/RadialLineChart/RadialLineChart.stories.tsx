@@ -36,7 +36,7 @@ export const Default: StoryFn<RadialLineChartProps<AppleStock>> = (args) => {
         xAccessor={getDate}
         yAccessor={getStockValue}
         data={appleStock}
-        tooltipAccessor={tooltipAccessor}
+        tooltip={{ accessor: tooltipAccessor }}
       />
     </Wrapper>
   );
