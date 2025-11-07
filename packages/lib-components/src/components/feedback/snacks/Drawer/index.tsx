@@ -5,7 +5,6 @@ import { AiOutlineClose as CloseIcon, AiOutlineDown as ArrowDownIcon } from 'rea
 import { Tooltip } from '../../../../components';
 
 const Wrapper = styled.div`
-  box-shadow: ${({ theme }) => theme.elevation[4]};
   border-radius: ${({ theme }) => theme.borderRadius.large};
   width: 300px;
   border: 1px solid ${({ theme }) => theme.colors.backgroundAlt};

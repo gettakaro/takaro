@@ -139,7 +139,6 @@ export const EChartsBase: FC<EChartsBaseProps> = ({
         textStyle: {
           color: theme.colors.text,
         },
-        extraCssText: `box-shadow: ${theme.elevation[200]};`,
       },
       grid: {
         left: '3%',

@@ -7,7 +7,6 @@ import {
   AiFillInfoCircle as Info,
 } from 'react-icons/ai';
 import { AnimatePresence } from 'framer-motion';
-import { Elevation } from '../../../styled/';
 import { Button } from '../../../components';
 
 export type AlertVariants = 'success' | 'error' | 'warning' | 'info';
@@ -21,13 +20,12 @@ export interface AlertProps {
   variant: AlertVariants;
   title?: string;
   text?: string | string[] | ReactElement;
-  elevation?: Elevation;
   dismiss?: boolean;
   action?: Action;
 }
 
 export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  { variant, title, text, dismiss = false, elevation = 2, action },
+  { variant, title, text, dismiss = false, action },
   ref,
 ) {
   const [visible, setVisible] = useState(true);
@@ -92,7 +90,6 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
           $hasTitle={hasTitle}
           initial={{ opacity: 0 }}
           $variant={variant}
-          $elevation={elevation}
           transition={{ duration: 0.2 }}
           ref={ref}
           role={getAriaRole()}

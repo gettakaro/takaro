@@ -64,17 +64,9 @@ export const ModuleTagDialog: FC<ModuleTagDialogProps> = ({ moduleId, moduleName
             tagged, any further changes will not affect the tagged version."
           />
           <p>
-            <Chip
-              variant="outline"
-              color="error"
-              label={currentVersion == 'latest' ? 'None' : (currentVersion ?? 'undefined')}
-            />
+            <Chip color="error" label={currentVersion == 'latest' ? 'None' : (currentVersion ?? 'undefined')} />
             {' -> '}
-            <Chip
-              variant="outline"
-              color="success"
-              label={nextVersion(currentVersion, watch('versionLevel')) ?? 'undefined'}
-            />
+            <Chip color="success" label={nextVersion(currentVersion, watch('versionLevel')) ?? 'undefined'} />
           </p>
           <form onSubmit={handleSubmit(onSubmit)}>
             <SelectField

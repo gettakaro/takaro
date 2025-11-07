@@ -145,42 +145,5 @@ export const Examples = () => (
     >
       Loading Button
     </Button>
-
-    {/* white */}
-    <Button
-      onClick={() => {
-        /* */
-      }}
-      variant="white"
-    >
-      White Button
-    </Button>
-    <Button
-      icon={<Icon size={20} />}
-      onClick={() => {
-        /* */
-      }}
-      variant="white"
-    >
-      Icon Button
-    </Button>
-    <Button
-      disabled
-      onClick={() => {
-        /* */
-      }}
-      variant="white"
-    >
-      Disabled Button
-    </Button>
-    <Button
-      isLoading
-      onClick={() => {
-        /* */
-      }}
-      variant="white"
-    >
-      Loading Button
-    </Button>
   </>
 );

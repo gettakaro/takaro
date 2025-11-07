@@ -169,7 +169,6 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
                 <Alert
                   variant="info"
                   text="Uploading a custom image is not supported yet. For now, the icon of the first item will be used."
-                  elevation={3}
                 />
                 {fields.length > 0 &&
                   fields.map((field, index) => (

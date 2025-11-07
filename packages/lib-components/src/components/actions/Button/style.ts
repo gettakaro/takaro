@@ -140,10 +140,3 @@ export const Clear = styled(Outline)`
     color: ${({ theme, color }): string => theme.colors[color]};
   }
 `;
-
-export const White = styled(Clear)`
-  background: ${({ theme }): string => theme.colors.white};
-  &:disabled {
-    background-color: white;
-  }
-`;

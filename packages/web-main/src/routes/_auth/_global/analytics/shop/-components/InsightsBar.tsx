@@ -61,7 +61,6 @@ const InsightCard = styled(Card)<{ $type: string }>`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: ${({ theme }) => theme.elevation[300]};
   }
 `;
 

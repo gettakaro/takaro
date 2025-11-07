@@ -42,7 +42,7 @@ export const Container = styled.div<{ size: Size; variant?: AvatarVariant }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: ${({ theme }) => theme.colors.text};
   font-weight: 700;
 
   img {

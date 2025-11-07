@@ -67,6 +67,7 @@ const Container = styled.div<{ isGrouped: boolean; direction: Direction; size: S
       }
     }};
     color: ${({ theme }) => theme.colors.secondary};
+    font-size: ${({ theme }) => theme.fontSize.medium};
     margin-bottom: ${({ theme }) => theme.spacing['0_5']};
   }
 
@@ -83,6 +84,8 @@ const Container = styled.div<{ isGrouped: boolean; direction: Direction; size: S
           return theme.fontSize.large;
       }
     }};
+    color: ${({ theme }) => theme.colors.text};
+    font-size: ${({ theme }) => theme.fontSize.mediumLarge};
     letter-spacing: 1px;
     margin: 0;
     padding: 0;

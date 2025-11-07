@@ -172,7 +172,6 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
                           <Tooltip disabled={!multipleVersionsOfSameModuleInstalled(groupedModulePermissions, key)}>
                             <Tooltip.Trigger>
                               <Chip
-                                variant="outline"
                                 color={
                                   multipleVersionsOfSameModuleInstalled(groupedModulePermissions, key)
                                     ? 'warning'
