@@ -333,9 +333,15 @@ const Chart = <T,>(props: InnerHeatmapProps<T>) => {
   const availableHeight = height - margin.top - margin.bottom - xLabelHeight;
 
   const cellGap = 3;
-  const maxCellWidth = (availableWidth - cellGap * (processedData.gridWidth - 1)) / processedData.gridWidth;
-  const maxCellHeight = (availableHeight - cellGap * (processedData.gridHeight - 1)) / processedData.gridHeight;
-  const cellSize = Math.min(maxCellWidth, maxCellHeight, 20);
+  const maxCellWidth = Math.max(
+    (availableWidth - cellGap * (processedData.gridWidth - 1)) / processedData.gridWidth,
+    0,
+  );
+  const maxCellHeight = Math.max(
+    (availableHeight - cellGap * (processedData.gridHeight - 1)) / processedData.gridHeight,
+    0,
+  );
+  const cellSize = Math.max(Math.min(maxCellWidth, maxCellHeight, 20), 1);
 
   const mapValueToColor = (value: number): string => {
     if (value === 0) return colorScale[0];
