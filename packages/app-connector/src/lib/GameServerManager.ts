@@ -14,6 +14,7 @@ import { config } from '../config.js';
 import { TakaroQueue } from '@takaro/queues';
 import { WebSocketMessage } from './websocket.js';
 import { IEventQueueData } from '../lib/worker.js';
+import { Mutex } from 'async-mutex';
 
 const RECONNECT_AFTER_MS = config.get('gameServerManager.reconnectAfterMs');
 const SYNC_INTERVAL_MS = config.get('gameServerManager.syncIntervalMs');
@@ -48,6 +49,7 @@ class GameServerManager {
   private gameServerDomainMap = new Map<string, string>();
   private syncInterval: NodeJS.Timeout;
   private messageTimeoutInterval: NodeJS.Timeout;
+  private serverMutexes = new Map<string, Mutex>();
 
   async init() {
     await takaro.waitUntilHealthy(60000);
@@ -60,6 +62,16 @@ class GameServerManager {
       }
     }, SYNC_INTERVAL_MS);
     this.messageTimeoutInterval = setInterval(() => this.handleMessageTimeout(), 5000);
+  }
+
+  /**
+   * Get or create a mutex for a specific game server to prevent concurrent operations
+   */
+  private getServerMutex(gameServerId: string): Mutex {
+    if (!this.serverMutexes.has(gameServerId)) {
+      this.serverMutexes.set(gameServerId, new Mutex());
+    }
+    return this.serverMutexes.get(gameServerId)!;
   }
 
   /**
@@ -333,6 +345,13 @@ class GameServerManager {
   }
 
   async add(domainId: string, gameServerId: string, forcedReconnect: boolean = false) {
+    const mutex = this.getServerMutex(gameServerId);
+    return await mutex.runExclusive(async () => {
+      return await this._addInternal(domainId, gameServerId, forcedReconnect);
+    });
+  }
+
+  private async _addInternal(domainId: string, gameServerId: string, forcedReconnect: boolean = false) {
     this.log.debug('Starting add() for game server', { domainId, gameServerId, forcedReconnect });
 
     this.gameServerDomainMap.set(gameServerId, domainId);
@@ -362,7 +381,7 @@ class GameServerManager {
 
     if (this.emitterMap.has(gameServer.id)) {
       this.log.warn(`GameServer ${gameServerId} already connected, stopping the existing one...`);
-      await this.remove(gameServer.id);
+      await this._removeInternal(gameServer.id);
     }
 
     let emitter: TakaroEmitter | GenericEmitter | undefined;
@@ -406,6 +425,20 @@ class GameServerManager {
   }
 
   async remove(id: string) {
+    const mutex = this.getServerMutex(id);
+    try {
+      await mutex.runExclusive(async () => {
+        await this._removeInternal(id);
+      });
+    } finally {
+      // Clean up the mutex after the critical section completes
+      // This happens AFTER runExclusive releases the lock, preventing race conditions
+      // where new operations create a different mutex while the old one is still active
+      this.serverMutexes.delete(id);
+    }
+  }
+
+  private async _removeInternal(id: string) {
     const data = this.emitterMap.get(id);
     if (data) {
       const { domainId, emitter } = data;
@@ -427,9 +460,16 @@ class GameServerManager {
   }
 
   async update(domainId: string, gameServerId: string) {
+    const mutex = this.getServerMutex(gameServerId);
+    return await mutex.runExclusive(async () => {
+      return await this._updateInternal(domainId, gameServerId);
+    });
+  }
+
+  private async _updateInternal(domainId: string, gameServerId: string) {
     this.log.info('Starting update (remove + forced reconnect) for game server', { domainId, gameServerId });
-    await this.remove(gameServerId);
-    await this.add(domainId, gameServerId, true);
+    await this._removeInternal(gameServerId);
+    await this._addInternal(domainId, gameServerId, true);
     this.log.info('Completed update for game server', { gameServerId });
   }
 
