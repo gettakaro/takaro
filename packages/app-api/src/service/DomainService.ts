@@ -197,10 +197,12 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
   }
 
   async initDomain(input: DomainCreateInputDTO): Promise<DomainCreateOutputDTO> {
-    const id = humanId({
-      separator: '-',
-      capitalize: false,
-    });
+    const id =
+      input.id ||
+      humanId({
+        separator: '-',
+        capitalize: false,
+      });
 
     const domain = await this.repo.create(
       new DomainCreateInputDTO({
