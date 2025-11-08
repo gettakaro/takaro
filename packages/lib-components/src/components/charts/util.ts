@@ -59,6 +59,7 @@ export const getDefaultTooltipStyles = (theme: ThemeType) => ({
   borderRadius: theme.borderRadius.small,
   color: theme.colors.text,
   fontSize: theme.fontSize.small,
+  whiteSpace: 'pre-wrap' as const,
 });
 
 export const getChartColors = (theme: ThemeType) => [
