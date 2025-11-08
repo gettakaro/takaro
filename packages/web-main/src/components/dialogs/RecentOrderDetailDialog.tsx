@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Avatar, Chip, CopyId, Dialog, styled, formatCurrency } from '@takaro/lib-components';
+import { Avatar, Chip, CopyId, Dialog, styled, formatNumber } from '@takaro/lib-components';
 import { RequiredDialogOptions } from '.';
 import { RecentOrderDTO, RecentOrderDTOStatusEnum } from '@takaro/apiclient';
 import { AiOutlineUser as UserIcon } from 'react-icons/ai';
@@ -80,7 +80,7 @@ export const RecentOrderDetailDialog: FC<RecentOrderDetailDialogProps> = ({ orde
 
             <DetailItem>
               <DetailLabel>Value</DetailLabel>
-              <ValueAmount>{formatCurrency(order.value, 2)}</ValueAmount>
+              <ValueAmount>{formatNumber(order.value, 2)}</ValueAmount>
             </DetailItem>
 
             <DetailItem>

@@ -1,5 +1,5 @@
 import { RecentOrderDTO } from '@takaro/apiclient';
-import { Card, Chip, IconTooltip, styled, formatCurrency, CopyId } from '@takaro/lib-components';
+import { Card, Chip, IconTooltip, styled, formatNumber, CopyId } from '@takaro/lib-components';
 import { RecentOrderStatusColorMap } from '../../../../../../components/dialogs/RecentOrderDetailDialog';
 import { DateTime } from 'luxon';
 import { FC } from 'react';
@@ -101,7 +101,7 @@ export const RecentOrdersList: FC<RecentOrdersListProps> = ({ orders }) => {
                       <OrderSeparator>·</OrderSeparator>
                       <OrderItemName>{order.itemName}</OrderItemName>
                     </OrderInfo>
-                    <OrderValue>{formatCurrency(order.value)}</OrderValue>
+                    <OrderValue>{formatNumber(order.value)}</OrderValue>
                   </OrderItemRow>
                   <OrderItemRow>
                     <OrderMeta>
