@@ -3,12 +3,10 @@ import { Tooltip, TooltipProps } from '../Tooltip';
 import { Size, styled } from '../../../styled';
 import { getIconSize } from '../../actions/IconButton/getIconSize';
 import { ButtonColor } from '../../actions/Button/style';
-import { shade } from 'polished';
 
 type TooltipIconColor = Exclude<ButtonColor, 'white'>;
 
 const TriggerContainer = styled.div<{ color: TooltipIconColor }>`
-  background: ${({ theme, color }) => shade(0.5, theme.colors[color])};
   border: 1px solid ${({ theme, color }) => theme.colors[color]};
   border-radius: ${({ theme }) => theme.borderRadius.small};
   display: flex;

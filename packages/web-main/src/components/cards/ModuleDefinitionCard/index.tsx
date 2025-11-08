@@ -107,11 +107,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule 
               <ActionIconsContainer>
                 <Tooltip>
                   <Tooltip.Trigger>
-                    <Chip
-                      variant="outline"
-                      color={newestTag ? 'primary' : 'secondary'}
-                      label={newestTag ?? 'no tags'}
-                    />
+                    <Chip color={newestTag ? 'primary' : 'secondary'} label={newestTag ?? 'no tags'} />
                   </Tooltip.Trigger>
                   <Tooltip.Content>Latest tag</Tooltip.Content>
                 </Tooltip>

@@ -1,9 +1,11 @@
-import { Dropdown, styled, getInitials } from '@takaro/lib-components';
+import { Dropdown, styled, getInitials, useThemeSwitcher } from '@takaro/lib-components';
 import { useAuth } from '../../hooks/useAuth';
 import {
   AiOutlineUser as ProfileIcon,
   AiOutlineLogout as LogoutIcon,
   AiOutlineDown as ArrowDownIcon,
+  AiOutlineSun as LightThemeIcon,
+  AiOutlineMoon as DarkThemeIcon,
 } from 'react-icons/ai';
 import { IoSwapHorizontal as SwitchDomainIcon } from 'react-icons/io5';
 import { useNavigate } from '@tanstack/react-router';
@@ -34,10 +36,11 @@ const InitialsBlock = styled.div`
   width: 4.5rem;
   height: 4.5rem;
   margin-right: 0.5rem;
-  border: 1px solid ${({ theme }) => theme.colors.background};
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
+  border-top-left-radius: ${({ theme }) => theme.borderRadius.medium};
+  border-bottom-left-radius: ${({ theme }) => theme.borderRadius.medium};
   background-color: ${({ theme }) => theme.colors.background};
-  color: white;
+  color: ${({ theme }) => theme.colors.text};
   font-weight: 800;
   text-transform: uppercase;
 `;
@@ -59,6 +62,7 @@ export const UserDropdown = () => {
   const { logOut } = useAuth();
   const navigate = useNavigate();
   const { data, isPending } = useQuery(userMeQueryOptions());
+  const { setTheme, theme } = useThemeSwitcher();
 
   const hasMultipleDomains = isPending === false && data && data.domains && data.domains.length > 1 ? true : false;
 
@@ -94,6 +98,13 @@ export const UserDropdown = () => {
           label="Switch domain"
           disabled={!hasMultipleDomains}
           icon={<SwitchDomainIcon />}
+        />
+        <Dropdown.Menu.Item
+          icon={theme === 'dark' ? <LightThemeIcon /> : <DarkThemeIcon />}
+          onClick={() => {
+            setTheme(theme === 'dark' ? 'light' : 'dark');
+          }}
+          label={`Toggle ${theme === 'dark' ? 'light' : 'dark'} mode`}
         />
         <Dropdown.Menu.Item onClick={async () => await logOut()} label="Logout" icon={<LogoutIcon />} />
       </Dropdown.Menu>

@@ -203,7 +203,7 @@ export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
             style={{ display: 'flex', justifyContent: 'center', marginTop: theme.spacing['1'], alignItems: 'center' }}
           >
             <span style={{ marginRight: theme.spacing['0_5'] }}>Domain: </span>
-            <Chip showIcon="hover" color="secondary" variant="outline" label={currentDomain?.name || 'Unknown'} />
+            <Chip showIcon="hover" color="secondary" label={currentDomain?.name || 'Unknown'} />
           </div>
           <div
             style={{
@@ -213,7 +213,7 @@ export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
               marginTop: theme.spacing['0_75'],
             }}
           >
-            Version: <Chip showIcon="hover" color="secondary" variant="outline" label={version} />
+            Version: <Chip showIcon="hover" color="secondary" label={version} />
           </div>
           <IconNav>
             <Tooltip>

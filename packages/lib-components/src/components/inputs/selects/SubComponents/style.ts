@@ -27,9 +27,7 @@ export const OptionContainer = styled.li<{
 
   &:hover {
     border-color: ${({ theme, disabled }) => (disabled ? theme.colors.backgroundAlt : theme.colors.backgroundAccent)};
-    span {
-      color: white;
-    }
+    background-color: ${({ theme, disabled }) => (disabled ? theme.colors.backgroundAlt : theme.colors.backgroundAccent)};
   }
 
   & > div {

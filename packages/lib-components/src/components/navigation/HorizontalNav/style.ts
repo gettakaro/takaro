@@ -62,7 +62,7 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
     font-size: ${({ theme }) => theme.fontSize.medium};
 
     &.active {
-      color: ${({ theme }) => theme.colors.text};
+      color: ${({ theme }) => theme.colors.primary};
 
       ${({ variant, theme }) => {
         switch (variant) {

@@ -218,7 +218,7 @@ export class EventGenerator {
     // Different strategies for generating new names
     const strategies = [
       // Generate completely new username
-      () => faker.internet.userName(),
+      () => faker.internet.username(),
       // Display name style
       () => faker.internet.displayName(),
       // Adjective_Noun combination

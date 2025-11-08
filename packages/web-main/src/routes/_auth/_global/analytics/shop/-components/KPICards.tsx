@@ -43,7 +43,6 @@ const KPICard = styled(Card)<{ $trend?: 'positive' | 'negative' | 'neutral' }>`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: ${({ theme }) => theme.elevation[400]};
   }
 
   transition: all 0.2s ease;

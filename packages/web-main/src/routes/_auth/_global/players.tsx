@@ -216,7 +216,7 @@ function Component() {
     columnHelper.accessor('steamCommunityBanned', {
       header: 'Community Banned',
       id: 'steamCommunityBanned',
-      cell: (info) => (info.getValue() ? <Chip variant="outline" color="error" label="yes" /> : 'no'),
+      cell: (info) => (info.getValue() ? <Chip color="error" label="yes" /> : 'no'),
       enableColumnFilter: true,
     }),
     columnHelper.accessor('steamEconomyBan', {
@@ -224,7 +224,7 @@ function Component() {
       id: 'steamEconomyBan',
       cell: (info) =>
         info.getValue() && info.getValue() !== 'none' ? (
-          <Chip variant="outline" color="error" label={info.getValue() as string} />
+          <Chip color="error" label={info.getValue() as string} />
         ) : (
           'none'
         ),
@@ -233,7 +233,7 @@ function Component() {
     columnHelper.accessor('steamVacBanned', {
       header: 'VAC Banned',
       id: 'steamVacBanned',
-      cell: (info) => (info.getValue() ? <Chip variant="outline" color="error" label="yes" /> : 'no'),
+      cell: (info) => (info.getValue() ? <Chip color="error" label="yes" /> : 'no'),
       enableColumnFilter: true,
     }),
     columnHelper.accessor('steamNumberOfVACBans', {

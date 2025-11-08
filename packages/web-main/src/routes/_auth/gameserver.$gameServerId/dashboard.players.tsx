@@ -274,11 +274,7 @@ function Component() {
       header: 'Status',
       id: 'online',
       cell: (info) =>
-        info.getValue() ? (
-          <Chip variant="outline" color="success" label="Online" />
-        ) : (
-          <Chip variant="outline" color="secondary" label="Offline" />
-        ),
+        info.getValue() ? <Chip color="success" label="Online" /> : <Chip color="secondary" label="Offline" />,
       enableColumnFilter: true,
       enableSorting: true,
     }),

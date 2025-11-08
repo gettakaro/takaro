@@ -267,7 +267,7 @@ export class GameServer implements IGameServer {
       const gameId = (existingPlayers.length + i).toString();
       const player = new IGamePlayer({
         gameId,
-        name: faker.internet.userName(),
+        name: faker.internet.username(),
         epicOnlineServicesId: faker.string.alphanumeric(16),
         steamId: faker.string.alphanumeric(16),
         xboxLiveId: faker.string.alphanumeric(16),
@@ -577,7 +577,7 @@ export class GameServer implements IGameServer {
                 // Create new player with provided data
                 const player = new IGamePlayer({
                   gameId,
-                  name: data.name || faker.internet.userName(),
+                  name: data.name || faker.internet.username(),
                   steamId: data.steamId || faker.string.alphanumeric(16),
                   epicOnlineServicesId: data.epicOnlineServicesId || faker.string.alphanumeric(16),
                   xboxLiveId: data.xboxLiveId || faker.string.alphanumeric(16),

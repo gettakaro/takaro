@@ -12,6 +12,7 @@ import { useEffect } from 'react';
 const Container = styled.div`
   padding: ${({ theme }) => theme.spacing[4]};
   min-height: 100vh;
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 const DomainCardList = styled.div`
@@ -128,20 +129,20 @@ function DomainCard({ domain, isCurrentDomain }: DomainCardProps) {
         return (
           <Tooltip>
             <Tooltip.Trigger>
-              <Chip variant="outline" color="error" label="Disabled" />
+              <Chip color="error" label="Disabled" />
             </Tooltip.Trigger>
             <Tooltip.Content>Domain disabled - this is likely due to an expired plan.</Tooltip.Content>
           </Tooltip>
         );
       }
       case DomainOutputDTOStateEnum.Active: {
-        return <Chip variant="outline" color="success" label="Active" />;
+        return <Chip color="success" label="Active" />;
       }
       case DomainOutputDTOStateEnum.Maintenance: {
         return (
           <Tooltip>
             <Tooltip.Trigger>
-              <Chip variant="outline" color="warning" label="Disabled" />
+              <Chip color="warning" label="Disabled" />
             </Tooltip.Trigger>
             <Tooltip.Content>
               Domain in maintenance mode - We're likely upgrading our system, and everything should be back up shortly.
@@ -163,13 +164,13 @@ function DomainCard({ domain, isCurrentDomain }: DomainCardProps) {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <DomainIcon size={30} />
             <div style={{ display: 'flex', gap: '10px' }}>
-              {isCurrentDomain && <Chip variant="outline" color="primary" label="current domain" />}
+              {isCurrentDomain && <Chip color="primary" label="current domain" />}
               {getDomainChip()}
             </div>
           </div>
           <h2 style={{ display: 'flex', alignItems: 'center' }}>
             <div style={{ marginRight: '10px' }}>{domain.name}</div>
-            <Chip variant="outline" color="primary" label={domain.id} />
+            <Chip color="primary" label={domain.id} />
             <ArrowRightIcon size={18} style={{ marginLeft: '10px' }} />
           </h2>
         </InnerBody>
