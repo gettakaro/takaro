@@ -51,7 +51,14 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(function Chip(
   }
 
   return (
-    <Container ref={ref} clickable={onClick !== undefined} color={color} disabled={disabled} showIcon={showIcon}>
+    <Container
+      ref={ref}
+      clickable={onClick !== undefined}
+      color={color}
+      disabled={disabled}
+      onClick={onClick ? onClick : undefined}
+      showIcon={showIcon}
+    >
       <span>{label}</span>
       {!onDelete && icon && cloneElement(icon, { size: 12, className: 'icon' })}
       {onDelete && !readOnly && !disabled && <Icon onClick={onDelete} size={12} />}
