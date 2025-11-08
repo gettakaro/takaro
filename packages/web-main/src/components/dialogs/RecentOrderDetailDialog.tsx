@@ -86,7 +86,7 @@ export const RecentOrderDetailDialog: FC<RecentOrderDetailDialogProps> = ({ orde
             <DetailItem>
               <DetailLabel>Order Time</DetailLabel>
               <DetailValue>
-                {DateTime.fromISO(order.time || DateTime.now().toISO()).toLocaleString(DateTime.DATETIME_MED)}
+                {order.time ? DateTime.fromISO(order.time).toLocaleString(DateTime.DATETIME_MED) : 'N/A'}
               </DetailValue>
             </DetailItem>
 

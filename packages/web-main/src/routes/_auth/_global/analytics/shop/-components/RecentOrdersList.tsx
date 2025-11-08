@@ -106,7 +106,7 @@ export const RecentOrdersList: FC<RecentOrdersListProps> = ({ orders }) => {
                   <OrderItemRow>
                     <OrderMeta>
                       <ClockIcon size={12} />
-                      {DateTime.fromISO(order.time || DateTime.now().toISO()).toRelative()}
+                      {order.time ? DateTime.fromISO(order.time).toRelative() : 'Unknown'}
                       <div style={{ marginLeft: '10px' }} />
                       <CopyId id={order.id} placeholder="Order Id" />
                     </OrderMeta>
