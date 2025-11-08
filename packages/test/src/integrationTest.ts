@@ -100,6 +100,7 @@ export class IntegrationTest<SetupData> {
     }
 
     const createdDomain = await this.adminClient.domain.domainControllerCreate({
+      id: randomUUID(),
       name: `${testDomainPrefix}-${randomUUID()}`.slice(0, 49),
       maxGameservers: 100,
       maxUsers: 5,

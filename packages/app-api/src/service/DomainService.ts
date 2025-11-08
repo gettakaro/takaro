@@ -168,22 +168,12 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     this.log.info('[CONCURRENT_TESTS_DEBUG] Domain deletion starting', {
       domainId: id,
     });
-    console.log('[CONCURRENT_TESTS_DEBUG] DOMAIN DELETION STARTING:', {
-      domainId: id,
-      timestamp: new Date().toISOString(),
-    });
 
     const existing = await this.findOne(id);
 
     if (!existing) {
       throw new errors.NotFoundError();
     }
-
-    console.log('[CONCURRENT_TESTS_DEBUG] DOMAIN FOUND BEFORE DELETION:', {
-      domainId: id,
-      domainName: existing.name,
-      currentState: existing.state,
-    });
 
     const gameServerService = new GameServerService(id);
     for await (const gameServer of gameServerService.getIterator()) {
@@ -194,22 +184,9 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       await deleteLambda({ domainId: existing.id });
     }
 
-    console.log('[CONCURRENT_TESTS_DEBUG] ABOUT TO UPDATE DOMAIN STATE TO DELETED:', {
-      domainId: id,
-      targetState: DOMAIN_STATES.DELETED,
-    });
-
     // Soft-delete: update state to DELETED instead of hard-deleting
     // This avoids CASCADE deadlocks and allows domain recovery
-    const updated = await this.repo.update(id, new DomainUpdateInputDTO({ state: DOMAIN_STATES.DELETED }));
-
-    console.log('[CONCURRENT_TESTS_DEBUG] DOMAIN STATE UPDATE COMPLETED:', {
-      domainId: id,
-      domainName: existing.name,
-      updatedState: updated.state,
-      expectedState: DOMAIN_STATES.DELETED,
-      statesMatch: updated.state === DOMAIN_STATES.DELETED,
-    });
+    await this.repo.update(id, new DomainUpdateInputDTO({ state: DOMAIN_STATES.DELETED }));
 
     this.log.info('[CONCURRENT_TESTS_DEBUG] Domain soft-deleted (state=DELETED)', {
       domainId: id,
