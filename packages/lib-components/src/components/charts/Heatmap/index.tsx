@@ -102,6 +102,7 @@ const processCalendarData = <T,>(
   const currentDate = new Date(startDate);
   let weekIndex = 0;
   let lastMonth = -1;
+  let lastDayIndex = 0;
 
   while (currentDate <= endDate) {
     const dayIndex = currentDate.getDay(); // 0 (Sunday) to 6 (Saturday)
@@ -127,6 +128,7 @@ const processCalendarData = <T,>(
       }
     }
 
+    lastDayIndex = dayIndex;
     currentDate.setDate(currentDate.getDate() + 1);
 
     // If we completed a week (Saturday), move to next week column
@@ -139,12 +141,15 @@ const processCalendarData = <T,>(
 
   const dayLabels = DAY_LABELS.map((label, index) => ({ label, index })).filter((l) => l.label);
 
+  // Only add an extra column if the last day was not Saturday (incomplete week)
+  const gridWidth = lastDayIndex === 6 ? weekIndex : weekIndex + 1;
+
   return {
     cells: cellsData,
     xLabels: monthLabelsData,
     yLabels: dayLabels,
     maxValue,
-    gridWidth: weekIndex + 1,
+    gridWidth,
     gridHeight: 7,
   };
 };
