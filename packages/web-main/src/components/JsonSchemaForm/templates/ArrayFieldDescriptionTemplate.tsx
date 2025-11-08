@@ -13,7 +13,7 @@ export function ArrayFieldDescriptionTemplate<
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any,
 >(props: ArrayFieldDescriptionProps<T, S, F>) {
-  const { idSchema, description, registry, schema, uiSchema } = props;
+  const { fieldPathId, description, registry, schema, uiSchema } = props;
   const options = getUiOptions<T, S, F>(uiSchema, registry.globalUiOptions);
   const { label: displayLabel = true } = options;
   if (!description || !displayLabel) {
@@ -26,7 +26,7 @@ export function ArrayFieldDescriptionTemplate<
   );
   return (
     <DescriptionFieldTemplate
-      id={descriptionId<T>(idSchema)}
+      id={descriptionId(fieldPathId)}
       description={description}
       schema={schema}
       uiSchema={uiSchema}
