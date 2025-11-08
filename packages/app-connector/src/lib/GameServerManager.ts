@@ -426,9 +426,16 @@ class GameServerManager {
 
   async remove(id: string) {
     const mutex = this.getServerMutex(id);
-    return await mutex.runExclusive(async () => {
-      return await this._removeInternal(id);
-    });
+    try {
+      await mutex.runExclusive(async () => {
+        await this._removeInternal(id);
+      });
+    } finally {
+      // Clean up the mutex after the critical section completes
+      // This happens AFTER runExclusive releases the lock, preventing race conditions
+      // where new operations create a different mutex while the old one is still active
+      this.serverMutexes.delete(id);
+    }
   }
 
   private async _removeInternal(id: string) {
@@ -445,9 +452,6 @@ class GameServerManager {
       this.emitterMap.delete(id);
       this.lastMessageMap.delete(id);
       this.gameServerDomainMap.delete(id);
-
-      // Clean up the mutex after removing the server
-      this.serverMutexes.delete(id);
 
       this.log.info('Removed game server and cleaned up all maps', { gameServerId: id, domainId });
     } else {

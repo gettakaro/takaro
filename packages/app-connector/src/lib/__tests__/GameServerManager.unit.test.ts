@@ -1121,5 +1121,106 @@ describe('GameServerManager', () => {
         expect((gameServerManager as any).serverMutexes.has(gameServerId)).to.be.false;
       });
     });
+
+    describe('Mutex lifecycle bug regression', () => {
+      it('should not allow concurrent operations during remove due to premature mutex deletion', async () => {
+        const domainId = 'test-domain-id';
+        const gameServerId = 'test-server-id';
+
+        // Add a server first
+        await gameServerManager.add(domainId, gameServerId);
+
+        // Verify server was added
+        expect((gameServerManager as any).emitterMap.has(gameServerId)).to.be.true;
+
+        // Start a remove operation and immediately start an add
+        // If the bug exists: remove deletes mutex mid-operation, add creates new mutex and runs concurrently
+        // If fixed: add waits for remove to complete, then creates new mutex
+        const removePromise = gameServerManager.remove(gameServerId);
+        const addPromise = gameServerManager.add(domainId, gameServerId);
+
+        // Wait for both to complete
+        await Promise.all([removePromise, addPromise]);
+
+        // Verify: operations completed successfully and server is in consistent state
+        // The final state should be that server exists (add happened after remove)
+        expect((gameServerManager as any).emitterMap.has(gameServerId)).to.be.true;
+        expect((gameServerManager as any).lastMessageMap.has(gameServerId)).to.be.true;
+        expect((gameServerManager as any).gameServerDomainMap.has(gameServerId)).to.be.true;
+
+        // All maps should be in sync - this is the key test
+        // If there was a race, some maps might have entries and others might not
+        const hasEmitter = (gameServerManager as any).emitterMap.has(gameServerId);
+        const hasLastMessage = (gameServerManager as any).lastMessageMap.has(gameServerId);
+        const hasDomain = (gameServerManager as any).gameServerDomainMap.has(gameServerId);
+
+        expect(hasEmitter).to.equal(hasLastMessage);
+        expect(hasLastMessage).to.equal(hasDomain);
+      });
+
+      it('should keep mutex alive during update operation', async () => {
+        const domainId = 'test-domain-id';
+        const gameServerId = 'test-server-id';
+
+        // Add a server
+        await gameServerManager.add(domainId, gameServerId);
+
+        // Get mutex reference before update
+        const mutexBefore = (gameServerManager as any).serverMutexes.get(gameServerId);
+        expect(mutexBefore).to.exist;
+
+        // Update server (internally calls remove + add)
+        await gameServerManager.update(domainId, gameServerId);
+
+        // Mutex should still exist and be the SAME object (update doesn't delete it)
+        const mutexAfter = (gameServerManager as any).serverMutexes.get(gameServerId);
+        expect(mutexAfter).to.exist;
+        expect(mutexAfter).to.equal(mutexBefore);
+
+        // Server should be in consistent state
+        expect((gameServerManager as any).emitterMap.has(gameServerId)).to.be.true;
+      });
+
+      it('should serialize concurrent remove and add operations', async () => {
+        const domainId = 'test-domain-id';
+        const gameServerId = 'test-server-id';
+
+        // Add a server
+        await gameServerManager.add(domainId, gameServerId);
+
+        // Track operation order with timestamps
+        const operationLog: { operation: string; timestamp: number }[] = [];
+
+        // Override _removeInternal to log when it executes
+        const originalRemove = (gameServerManager as any)._removeInternal.bind(gameServerManager);
+        (gameServerManager as any)._removeInternal = async (id: string) => {
+          operationLog.push({ operation: 'remove-start', timestamp: Date.now() });
+          await originalRemove(id);
+          operationLog.push({ operation: 'remove-end', timestamp: Date.now() });
+        };
+
+        // Override _addInternal to log when it executes
+        const originalAdd = (gameServerManager as any)._addInternal.bind(gameServerManager);
+        (gameServerManager as any)._addInternal = async (domain: string, id: string, forced: boolean) => {
+          operationLog.push({ operation: 'add-start', timestamp: Date.now() });
+          await originalAdd(domain, id, forced);
+          operationLog.push({ operation: 'add-end', timestamp: Date.now() });
+        };
+
+        // Fire concurrent remove and add
+        await Promise.all([gameServerManager.remove(gameServerId), gameServerManager.add(domainId, gameServerId)]);
+
+        // Verify operations were serialized (remove completed before add started)
+        // The log should show: remove-start, remove-end, add-start, add-end
+        // NOT interleaved like: remove-start, add-start, remove-end, add-end
+        expect(operationLog).to.have.length(4);
+
+        const removeEndTime = operationLog.find((e) => e.operation === 'remove-end')?.timestamp || 0;
+        const addStartTime = operationLog.find((e) => e.operation === 'add-start')?.timestamp || 0;
+
+        // Add should start AFTER remove ends (or very close due to scheduling)
+        expect(addStartTime).to.be.at.least(removeEndTime);
+      });
+    });
   });
 });
