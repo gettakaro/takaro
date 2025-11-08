@@ -57,6 +57,17 @@ export class EventsAwaiter {
           socketId: this.socket.id,
           connected: this.socket.connected,
         });
+        // Don't resolve yet - wait for room-joined event
+      });
+
+      this.socket.on('room-joined', (data: { domainId: string }) => {
+        console.log('[CONCURRENT_TESTS_DEBUG] CLIENT SOCKET JOINED ROOM:', {
+          timestamp: new Date().toISOString(),
+          socketId: this.socket.id,
+          domainId: data.domainId,
+          connected: this.socket.connected,
+        });
+        // Now we're safe to resolve - socket is in the room and ready for events
         return resolve(this);
       });
 

@@ -235,6 +235,10 @@ class SocketServer {
           socketRooms: Array.from(socket.rooms),
         });
 
+        // Emit confirmation that the socket has joined the room
+        // This ensures clients can wait for room membership before starting to listen for events
+        socket.emit('room-joined', { domainId: authData.domainId });
+
         next();
       });
 
