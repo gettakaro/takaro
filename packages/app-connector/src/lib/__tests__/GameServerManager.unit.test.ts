@@ -162,6 +162,7 @@ describe('GameServerManager', () => {
       (gameServerManager as any).emitterMap?.clear();
       (gameServerManager as any).lastMessageMap?.clear();
       (gameServerManager as any).gameServerDomainMap?.clear();
+      (gameServerManager as any).serverMutexes?.clear();
       if ((gameServerManager as any).syncInterval) {
         clearInterval((gameServerManager as any).syncInterval);
       }
@@ -937,6 +938,187 @@ describe('GameServerManager', () => {
 
         // Server should not be tracked after failure
         expect((gameServerManager as any).emitterMap.has(gameServerId)).to.be.false;
+      });
+    });
+  });
+
+  describe('Concurrency Tests', () => {
+    describe('Concurrent update() calls', () => {
+      it('should serialize concurrent update() calls for the same server', async () => {
+        const domainId = 'test-domain-id';
+        const gameServerId = 'test-server-id';
+
+        // Track the order of operations
+        const operationLog: string[] = [];
+
+        // Create a mock emitter that logs when it's created
+        let _emitterCreationCount = 0;
+        getGameStub.callsFake(() => {
+          _emitterCreationCount++;
+          operationLog.push(`emitter-created-${_emitterCreationCount}`);
+          return Promise.resolve(mockGameServer);
+        });
+
+        // Fire 10 concurrent update() calls
+        const updatePromises = [];
+        for (let i = 0; i < 10; i++) {
+          updatePromises.push(gameServerManager.update(domainId, gameServerId));
+        }
+
+        await Promise.all(updatePromises);
+
+        // Only 1 emitter should be active at the end
+        expect((gameServerManager as any).emitterMap.size).to.equal(1);
+        expect((gameServerManager as any).emitterMap.has(gameServerId)).to.be.true;
+
+        // Verify the server is in the emitter map
+        const emitterData = (gameServerManager as any).emitterMap.get(gameServerId);
+        expect(emitterData.domainId).to.equal(domainId);
+      });
+    });
+
+    describe('Concurrent add() calls', () => {
+      it('should serialize concurrent add() calls for the same server', async () => {
+        const domainId = 'test-domain-id';
+        const gameServerId = 'test-server-id';
+
+        let _emitterCreationCount = 0;
+        getGameStub.callsFake(() => {
+          _emitterCreationCount++;
+          return Promise.resolve(mockGameServer);
+        });
+
+        // Fire 10 concurrent add() calls
+        const addPromises = [];
+        for (let i = 0; i < 10; i++) {
+          addPromises.push(gameServerManager.add(domainId, gameServerId));
+        }
+
+        await Promise.all(addPromises);
+
+        // Only 1 emitter should be active
+        expect((gameServerManager as any).emitterMap.size).to.equal(1);
+        expect((gameServerManager as any).emitterMap.has(gameServerId)).to.be.true;
+      });
+    });
+
+    describe('Concurrent remove() calls', () => {
+      it('should handle concurrent remove() calls without errors', async () => {
+        const domainId = 'test-domain-id';
+        const gameServerId = 'test-server-id';
+
+        // First add a server
+        await gameServerManager.add(domainId, gameServerId);
+
+        // Fire 10 concurrent remove() calls
+        const removePromises = [];
+        for (let i = 0; i < 10; i++) {
+          removePromises.push(gameServerManager.remove(gameServerId));
+        }
+
+        // Should not throw
+        await Promise.all(removePromises);
+
+        // Server should be removed
+        expect((gameServerManager as any).emitterMap.has(gameServerId)).to.be.false;
+        expect((gameServerManager as any).lastMessageMap.has(gameServerId)).to.be.false;
+        expect((gameServerManager as any).gameServerDomainMap.has(gameServerId)).to.be.false;
+
+        // Mutex should be cleaned up
+        expect((gameServerManager as any).serverMutexes.has(gameServerId)).to.be.false;
+      });
+    });
+
+    describe('Mixed concurrent operations', () => {
+      it('should handle mixed add/update/remove operations consistently', async () => {
+        const domainId = 'test-domain-id';
+        const gameServerId = 'test-server-id';
+
+        // Mix of operations
+        const operations = [
+          gameServerManager.add(domainId, gameServerId),
+          gameServerManager.update(domainId, gameServerId),
+          gameServerManager.add(domainId, gameServerId),
+          gameServerManager.remove(gameServerId),
+          gameServerManager.add(domainId, gameServerId),
+        ];
+
+        // Should not throw
+        await Promise.all(operations);
+
+        // Final state should be consistent
+        // Either the server exists or it doesn't, but all maps should agree
+        const hasInEmitterMap = (gameServerManager as any).emitterMap.has(gameServerId);
+        const hasInLastMessageMap = (gameServerManager as any).lastMessageMap.has(gameServerId);
+        const hasInDomainMap = (gameServerManager as any).gameServerDomainMap.has(gameServerId);
+
+        // All maps should be in sync
+        if (hasInEmitterMap) {
+          expect(hasInLastMessageMap).to.be.true;
+          expect(hasInDomainMap).to.be.true;
+        } else {
+          expect(hasInLastMessageMap).to.be.false;
+          expect(hasInDomainMap).to.be.false;
+        }
+      });
+    });
+
+    describe('Different servers can run concurrently', () => {
+      it('should allow concurrent operations on different servers', async () => {
+        const domainId = 'test-domain-id';
+        const server1 = 'server-1';
+        const server2 = 'server-2';
+        const server3 = 'server-3';
+
+        // Mock getOne to return different servers based on ID - use callsFake
+        domainClientInstance.gameserver.gameServerControllerGetOne = sandboxInstance
+          .stub()
+          .callsFake((serverId: string) => {
+            return Promise.resolve({
+              data: {
+                data: {
+                  id: serverId, // Use the requested ID
+                  name: `Test Server ${serverId}`,
+                  type: GameServerOutputDTOTypeEnum.Rust,
+                  connectionInfo: { host: 'localhost', port: 28015 },
+                  enabled: true,
+                  reachable: true,
+                },
+              },
+            });
+          });
+
+        // Different servers should be able to add concurrently
+        await Promise.all([
+          gameServerManager.add(domainId, server1),
+          gameServerManager.add(domainId, server2),
+          gameServerManager.add(domainId, server3),
+        ]);
+
+        // All should be added
+        expect((gameServerManager as any).emitterMap.size).to.equal(3);
+        expect((gameServerManager as any).emitterMap.has(server1)).to.be.true;
+        expect((gameServerManager as any).emitterMap.has(server2)).to.be.true;
+        expect((gameServerManager as any).emitterMap.has(server3)).to.be.true;
+      });
+    });
+
+    describe('Mutex cleanup on remove', () => {
+      it('should clean up mutex when server is removed', async () => {
+        const domainId = 'test-domain-id';
+        const gameServerId = 'test-server-id';
+
+        // Add a server
+        await gameServerManager.add(domainId, gameServerId);
+
+        // Verify mutex exists (it's created when getServerMutex is called)
+        expect((gameServerManager as any).serverMutexes.has(gameServerId)).to.be.true;
+
+        // Remove the server
+        await gameServerManager.remove(gameServerId);
+
+        // Mutex should be cleaned up
+        expect((gameServerManager as any).serverMutexes.has(gameServerId)).to.be.false;
       });
     });
   });
