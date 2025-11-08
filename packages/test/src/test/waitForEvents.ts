@@ -36,6 +36,15 @@ export class EventsAwaiter {
       // Attach event listener immediately to capture all events from connection time
       // This prevents race conditions where events are emitted before waitForEvents() is called
       this.socket.on('event', (event) => {
+        console.log('[CONCURRENT_TESTS_DEBUG] CLIENT RECEIVED EVENT:', {
+          timestamp: new Date().toISOString(),
+          socketId: this.socket.id,
+          eventName: event.eventName,
+          eventId: event.id,
+          bufferSize: this.eventBuffer.length,
+          activeWaiters: this.activeWaiters.size,
+        });
+
         this.eventBuffer.push(event);
 
         // Notify all active waiters about the new event
@@ -43,6 +52,11 @@ export class EventsAwaiter {
       });
 
       this.socket.on('connect', async () => {
+        console.log('[CONCURRENT_TESTS_DEBUG] CLIENT SOCKET CONNECTED:', {
+          timestamp: new Date().toISOString(),
+          socketId: this.socket.id,
+          connected: this.socket.connected,
+        });
         return resolve(this);
       });
 
@@ -63,12 +77,33 @@ export class EventsAwaiter {
     const events: IDetectedEvent[] = [];
     let hasFinished = false;
 
+    console.log('[CONCURRENT_TESTS_DEBUG] WAITING FOR EVENTS:', {
+      timestamp: new Date().toISOString(),
+      socketId: this.socket.id,
+      expectedEvent,
+      expectedAmount: amount,
+      currentBufferSize: this.eventBuffer.length,
+      socketConnected: this.socket.connected,
+    });
+
     // First check buffer for events that already arrived
     const bufferedMatches = this.eventBuffer.filter((e) => e.eventName === expectedEvent);
     events.push(...bufferedMatches.map((data) => ({ event: data.eventName, data })));
 
+    console.log('[CONCURRENT_TESTS_DEBUG] CHECKED BUFFER:', {
+      timestamp: new Date().toISOString(),
+      expectedEvent,
+      bufferedMatchesFound: bufferedMatches.length,
+      totalEventsNeeded: amount,
+    });
+
     // If we already have enough events from buffer, return immediately
     if (events.length >= amount) {
+      console.log('[CONCURRENT_TESTS_DEBUG] ENOUGH EVENTS IN BUFFER, RETURNING:', {
+        timestamp: new Date().toISOString(),
+        expectedEvent,
+        eventsFound: events.length,
+      });
       return events.slice(0, amount);
     }
 
@@ -95,6 +130,16 @@ export class EventsAwaiter {
         setTimeout(() => {
           if (hasFinished) return;
           const msg = `Event ${expectedEvent} timed out - received ${events.length}/${amount} events.`;
+          console.log('[CONCURRENT_TESTS_DEBUG] EVENT TIMEOUT:', {
+            timestamp: new Date().toISOString(),
+            socketId: this.socket.id,
+            expectedEvent,
+            expectedAmount: amount,
+            receivedAmount: events.length,
+            timeout: integrationConfig.get('waitForEventsTimeout'),
+            bufferSize: this.eventBuffer.length,
+            socketConnected: this.socket.connected,
+          });
           console.warn(msg);
           this.disconnect();
           reject(new Error(msg));

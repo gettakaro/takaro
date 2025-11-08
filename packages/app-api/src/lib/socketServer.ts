@@ -146,6 +146,18 @@ class SocketServer {
       eventData: event === 'event' ? (data[0] as any)?.eventName : undefined,
     });
 
+    // Force console.log to bypass test mode logging suppression
+    console.log('[CONCURRENT_TESTS_DEBUG] SERVER EMITTING EVENT:', {
+      timestamp: new Date().toISOString(),
+      domainId,
+      eventType: event,
+      eventName: event === 'event' ? (data[0] as any)?.eventName : undefined,
+      eventId: event === 'event' ? (data[0] as any)?.id : undefined,
+      connectedSocketsInRoom: connectedSocketsCount,
+      totalConnectedSockets: this.io.sockets.sockets.size,
+      hasRoom: !!room,
+    });
+
     this.log.debug('[CONCURRENT_TESTS_DEBUG] About to emit via Redis adapter', {
       domainId,
       eventType: event,
@@ -211,6 +223,18 @@ class SocketServer {
         // Force Redis synchronization - ensures join has propagated before proceeding
         // Workaround for Socket.IO Redis adapter race condition (issue #4734)
         await this.io.in(authData.domainId).fetchSockets();
+
+        // Log socket join completion
+        const room = this.io.sockets.adapter.rooms.get(authData.domainId);
+        console.log('[CONCURRENT_TESTS_DEBUG] SOCKET JOINED ROOM:', {
+          timestamp: new Date().toISOString(),
+          socketId: socket.id,
+          domainId: authData.domainId,
+          userId: authData.userId,
+          roomSize: room ? room.size : 0,
+          socketRooms: Array.from(socket.rooms),
+        });
+
         next();
       });
 
