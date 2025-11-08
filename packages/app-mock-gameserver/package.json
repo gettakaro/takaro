@@ -1,6 +1,6 @@
 {
   "name": "@takaro/mock-gameserver",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "A mock gameserver for testing purposes, acts just like a real gameserver",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
