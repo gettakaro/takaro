@@ -1,6 +1,6 @@
 {
   "name": "@takaro/apiclient",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "API client for Takaro",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
