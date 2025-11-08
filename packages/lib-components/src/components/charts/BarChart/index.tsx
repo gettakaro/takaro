@@ -139,9 +139,9 @@ const Chart = <T,>({
         range: [0, xMax],
         round: true,
         domain: filteredData.map(xAccessor),
-        padding: (1 - barWidth) / barWidth,
+        padding: 1 - barWidth,
       }),
-    [xMax, filteredData, barWidth],
+    [xMax, filteredData, barWidth, xAccessor],
   );
   const yScale = useMemo(
     () =>
@@ -159,9 +159,9 @@ const Chart = <T,>({
         range: [0, xBrushMax],
         domain: data.map(xAccessor),
         round: true,
-        padding: (1 - barWidth) / barWidth,
+        padding: 1 - barWidth,
       }),
-    [xBrushMax, barWidth],
+    [xBrushMax, barWidth, xAccessor, data],
   );
 
   const yBrushScale = useMemo(
