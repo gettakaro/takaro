@@ -61,8 +61,8 @@ async function triggerEntitySync(client: Client, gameServerId: string) {
 }
 
 export const setup = async function (this: IntegrationTest<ISetupData>): Promise<ISetupData> {
-  const eventsAwaiter = new EventsAwaiter();
-  await eventsAwaiter.connect(this.client);
+  // Use createEventsAwaiter to ensure proper cleanup on retry
+  const eventsAwaiter = await this.createEventsAwaiter(this.client);
   // 20 players, 20 pogs should be created
   const connectedEvents = eventsAwaiter.waitForEvents('player-created', 40);
 
