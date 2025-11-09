@@ -40,12 +40,12 @@ export const connectionInfoFieldsMap = (isLoading: boolean, control: Control<any
         loading={isLoading}
       />,
       <Switch
-        label="Use CPM"
+        label="Use PrismaCore/CPM"
         name="connectionInfo.useCPM"
         key="seven-days-to-die-use-cpm"
         control={control}
         loading={isLoading}
-        description="CPM is a helper mod for 7 Days to Die. Download at https://github.com/Prisma501/CSMM-Patrons-Mod/releases"
+        description="PrismaCore (formerly CPM/CSMM_Patrons) is a helper mod for 7 Days to Die. Download at https://github.com/Prisma501/PrismaCore/releases"
       />,
       <Switch
         label="Use legacy connection method"
