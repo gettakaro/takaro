@@ -6,6 +6,7 @@ import { AdminClient, Client, AxiosResponse, isAxiosError, TakaroEventCommandExe
 import { randomUUID } from 'crypto';
 import { before, it } from 'node:test';
 import { getMockServer } from '@takaro/mock-gameserver';
+import { EventsAwaiter } from './test/waitForEvents.js';
 
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
@@ -75,6 +76,8 @@ export class IntegrationTest<SetupData> {
 
   // Track mock servers created by this test instance for automatic cleanup
   private createdMockServers: Awaited<ReturnType<typeof getMockServer>>[] = [];
+  // Track EventsAwaiter instances for automatic cleanup on retry
+  private createdEventAwaiters: EventsAwaiter[] = [];
 
   constructor(public test: IIntegrationTest<SetupData>) {
     if (test.snapshot) {
@@ -97,6 +100,9 @@ export class IntegrationTest<SetupData> {
 
     if (oldDomainId) {
       console.log(`Creating fresh domain for retry (previous domain: ${oldDomainId})`);
+      // Clear client session to force fresh authentication with new domain
+      // This prevents "Domain is disabled" errors when the old domain is DELETED
+      this.client.token = null;
     }
 
     const createdDomain = await this.adminClient.domain.domainControllerCreate({
@@ -133,6 +139,17 @@ export class IntegrationTest<SetupData> {
     return server;
   }
 
+  /**
+   * Create an EventsAwaiter and track it for automatic cleanup in teardown.
+   * This prevents orphaned socket connections when tests retry or fail.
+   */
+  async createEventsAwaiter(client: Client) {
+    const awaiter = new EventsAwaiter();
+    await awaiter.connect(client);
+    this.createdEventAwaiters.push(awaiter);
+    return awaiter;
+  }
+
   async run() {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const integrationTestContext = this;
@@ -165,6 +182,18 @@ export class IntegrationTest<SetupData> {
       if (integrationTestContext.test.teardown) {
         await integrationTestContext.test.teardown.bind(integrationTestContext)();
       }
+
+      // Disconnect ALL tracked EventsAwaiter instances FIRST to abort pending waits
+      // This prevents EVENT TIMEOUT errors when retrying with a new domain
+      for (const awaiter of integrationTestContext.createdEventAwaiters) {
+        try {
+          await awaiter.disconnect();
+        } catch (error) {
+          // Ignore disconnect errors - socket may already be disconnected
+          console.warn('[CONCURRENT_TESTS_DEBUG] Failed to disconnect EventsAwaiter during cleanup:', error);
+        }
+      }
+      integrationTestContext.createdEventAwaiters = [];
 
       // Clean up ALL tracked mock servers (even if setupData is undefined due to timeout)
       // This prevents orphaned servers from accumulating across retry attempts

@@ -23,6 +23,8 @@ export class EventsAwaiter {
   socket: Socket;
   private eventBuffer: any[] = [];
   private activeWaiters: Set<(event: any) => void> = new Set();
+  private pendingWaits: Set<{ expectedEvent: string; reject: (error: Error) => void }> = new Set();
+  private isDisconnected = false;
 
   async connect(client: Client) {
     return new Promise<EventsAwaiter>((resolve, reject) => {
@@ -78,6 +80,19 @@ export class EventsAwaiter {
   }
 
   async disconnect() {
+    this.isDisconnected = true;
+
+    // Abort all pending waitForEvents() promises immediately
+    // This prevents EVENT TIMEOUT errors when retrying tests with a new domain
+    for (const pending of this.pendingWaits) {
+      pending.reject(
+        new Error(
+          `EventsAwaiter disconnected while waiting for event '${pending.expectedEvent}' (likely due to test retry)`,
+        ),
+      );
+    }
+    this.pendingWaits.clear();
+
     this.activeWaiters.clear();
     this.socket.removeAllListeners();
     this.socket.disconnect();
@@ -85,6 +100,8 @@ export class EventsAwaiter {
 
   async waitForEvents(expectedEvent: EventTypes | string, amount = 1) {
     if (!this.socket.connected) throw new Error('Socket not connected');
+    if (this.isDisconnected) throw new Error('EventsAwaiter has been disconnected');
+
     const events: IDetectedEvent[] = [];
     let hasFinished = false;
 
@@ -120,7 +137,14 @@ export class EventsAwaiter {
 
     // Need to wait for more events
     return Promise.race([
-      new Promise<IDetectedEvent[]>((resolve) => {
+      new Promise<IDetectedEvent[]>((resolve, reject) => {
+        // Track this pending wait so disconnect() can abort it
+        const pendingWait = { expectedEvent, reject };
+        this.pendingWaits.add(pendingWait);
+
+        const cleanup = () => {
+          this.pendingWaits.delete(pendingWait);
+        };
         const waiter = (event: any) => {
           if (event.eventName === expectedEvent) {
             events.push({ event: event.eventName, data: event });
@@ -128,6 +152,7 @@ export class EventsAwaiter {
             if (events.length >= amount) {
               hasFinished = true;
               this.activeWaiters.delete(waiter);
+              cleanup();
               this.disconnect();
               resolve(events.slice(0, amount));
             }
@@ -138,8 +163,17 @@ export class EventsAwaiter {
         this.activeWaiters.add(waiter);
       }),
       new Promise<IDetectedEvent[]>((_, reject) => {
+        // Track this timeout rejecter so disconnect() can abort it
+        const pendingWait = { expectedEvent, reject };
+        this.pendingWaits.add(pendingWait);
+
+        const cleanup = () => {
+          this.pendingWaits.delete(pendingWait);
+        };
+
         setTimeout(() => {
           if (hasFinished) return;
+          if (this.isDisconnected) return; // Already aborted by disconnect()
           const msg = `Event ${expectedEvent} timed out - received ${events.length}/${amount} events.`;
           console.log('[CONCURRENT_TESTS_DEBUG] EVENT TIMEOUT:', {
             timestamp: new Date().toISOString(),
@@ -152,6 +186,7 @@ export class EventsAwaiter {
             socketConnected: this.socket.connected,
           });
           console.warn(msg);
+          cleanup();
           this.disconnect();
           reject(new Error(msg));
         }, integrationConfig.get('waitForEventsTimeout'));
