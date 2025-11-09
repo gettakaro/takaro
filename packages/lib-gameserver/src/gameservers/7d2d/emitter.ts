@@ -44,9 +44,9 @@ const EventRegexMap = {
   [GameEvents.CHAT_MESSAGE]:
     /Chat \(from '(?<platformId>[\w\d-]+)', entity id '(?<entityId>[-\d]+)', to '(?<channel>\w+)'\): ('(?<playerName>.+)':)?(?<message>.+)/,
   [GameEvents.PLAYER_DEATH]:
-    /GMSG: Player '(?<name1>.+)' died|\[CSMM_Patrons\]playerDied: (?<name2>.+) \((?<steamOrXboxId>.+)\) died @ (?<xCoord>[-\d]+) (?<yCoord>[-\d]+) (?<zCoord>[-\d]+)/,
+    /GMSG: Player '(?<name1>.+)' died|\[(?:CSMM_Patrons|PrismaCore)\]playerDied: (?<name2>.+) \((?<steamOrXboxId>.+)\) died @ (?<xCoord>[-\d]+) (?<yCoord>[-\d]+) (?<zCoord>[-\d]+)/,
   [GameEvents.ENTITY_KILLED]:
-    /\[CSMM_Patrons\]entityKilled: (?<killerName>.+) \((?<steamOrXboxId>.+)\) killed (?<entityType>\w+) (?<entityName>[\w\s\u00C0-\u024F\[\]-]+) with (?<weapon>.+)|Entity (?<entityName2>[\w\s\u00C0-\u024F]+) \d+ killed by (?<killerName2>.+) \d+/,
+    /\[(?:CSMM_Patrons|PrismaCore)\]entityKilled: (?<killerName>.+) \((?<steamOrXboxId>.+)\) killed (?<entityType>\w+) (?<entityName>[\w\s\u00C0-\u024F\[\]-]+) with (?<weapon>.+)|Entity (?<entityName2>[\w\s\u00C0-\u024F]+) \d+ killed by (?<killerName2>.+) \d+/,
 };
 
 export class SevenDaysToDieEmitter extends TakaroEmitter {
@@ -64,6 +64,10 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   constructor(private config: SdtdConnectionInfo) {
     super();
     this.sdtd = new SevenDaysToDie(config, {});
+  }
+
+  private isModdedFormat(msg: string): boolean {
+    return msg.includes('[CSMM_Patrons]') || msg.includes('[PrismaCore]');
   }
 
   get url() {
@@ -270,7 +274,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
 
   private async handlePlayerDeath(logLine: I7DaysToDieEvent) {
-    if (logLine.msg.includes('[CSMM_Patrons]') && !this.config.useCPM) return;
+    if (this.isModdedFormat(logLine.msg) && !this.config.useCPM) return;
     if (logLine.msg.includes('GMSG') && this.config.useCPM) return;
 
     const match = EventRegexMap[GameEvents.PLAYER_DEATH].exec(logLine.msg);
@@ -294,7 +298,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
 
   private async handleEntityKilled(logLine: I7DaysToDieEvent) {
-    if (logLine.msg.includes('[CSMM_Patrons]') && !this.config.useCPM) return;
+    if (this.isModdedFormat(logLine.msg) && !this.config.useCPM) return;
     if (logLine.msg.includes('killed by') && this.config.useCPM) return;
 
     const match = EventRegexMap[GameEvents.ENTITY_KILLED].exec(logLine.msg);
