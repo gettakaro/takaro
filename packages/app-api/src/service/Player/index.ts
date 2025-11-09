@@ -293,20 +293,56 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         await this.repo.observeName(player.id, gameServerId, gamePlayer.name);
       }
 
-      // Update any missing IDs and name if it changed
+      // Filter placeholder values to prevent overwriting valid IDs with bad data
+      const validPlatformIds = this.repo.filterValidPlatformIds({
+        steamId: gamePlayer.steamId,
+        xboxLiveId: gamePlayer.xboxLiveId,
+        epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
+        platformId: gamePlayer.platformId,
+      });
+
       await this.update(
         player.id,
         new PlayerUpdateDTO({
           name: gamePlayer.name,
-          steamId: gamePlayer.steamId,
-          xboxLiveId: gamePlayer.xboxLiveId,
-          epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
-          platformId: gamePlayer.platformId,
+          ...validPlatformIds,
         }),
       );
     }
 
     if (!pog) {
+      // Check if this player already has a POG on this server with a DIFFERENT gameId
+      const existingPogs = await playerOnGameServerService.find({
+        filters: {
+          playerId: [player.id],
+          gameServerId: [gameServerId],
+        },
+      });
+
+      if (existingPogs.results.length > 0 && existingPogs.results[0].gameId !== gamePlayer.gameId) {
+        // Platform ID collision - different gameIds for same platform IDs
+        // This indicates data quality issues (duplicate IDs, incorrect IDs from game server)
+        this.log.error('Platform ID collision detected', {
+          playerId: player.id,
+          existingGameId: existingPogs.results[0].gameId,
+          newGameId: gamePlayer.gameId,
+          gameServerId,
+          steamId: gamePlayer.steamId,
+          epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
+          xboxLiveId: gamePlayer.xboxLiveId,
+          platformId: gamePlayer.platformId,
+        });
+
+        throw new errors.BadRequestError(
+          `Platform ID collision detected: Player ${player.id} already has gameId "${existingPogs.results[0].gameId}" on this server, but received gameId "${gamePlayer.gameId}". This indicates duplicate or incorrect platform IDs from the game server.`,
+          {
+            playerId: player.id,
+            existingGameId: existingPogs.results[0].gameId,
+            newGameId: gamePlayer.gameId,
+          },
+        );
+      }
+
       this.log.debug('Creating new player association', { player: player.id, gameServerId });
       pog = await playerOnGameServerService.insertAssociation(gamePlayer.gameId, player.id, gameServerId);
     }
