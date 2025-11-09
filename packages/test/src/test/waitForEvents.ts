@@ -153,7 +153,6 @@ export class EventsAwaiter {
               hasFinished = true;
               this.activeWaiters.delete(waiter);
               cleanup();
-              this.disconnect();
               resolve(events.slice(0, amount));
             }
           }
@@ -187,7 +186,6 @@ export class EventsAwaiter {
           });
           console.warn(msg);
           cleanup();
-          this.disconnect();
           reject(new Error(msg));
         }, integrationConfig.get('waitForEventsTimeout'));
       }),
