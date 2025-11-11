@@ -206,4 +206,10 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   /* notistack snackbar styling */
   ${SnackBarStyles}
 
+  /* leaflet styles */
+  .leaflet-div-icon {
+    background: transparent;
+    border: none;
+  }
+
   `;
