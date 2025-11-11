@@ -5,7 +5,7 @@ import { scaleBand, scaleRadial } from '@visx/scale';
 import { shade } from 'polished';
 import { motion } from 'framer-motion';
 
-import { Margin, InnerChartProps, getDefaultTooltipStyles } from '../util';
+import { Margin, InnerChartProps, getDefaultTooltipStyles, TooltipConfig } from '../util';
 import { useTheme } from '../../../hooks';
 import { ParentSize } from '@visx/responsive';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
@@ -20,7 +20,7 @@ export interface RadialBarChartProps<T> {
   margin?: Margin;
   xAccessor: (d: T) => string;
   yAccessor: (d: T) => number;
-  tooltipAccessor: (d: T) => string;
+  tooltip?: TooltipConfig<T>;
   animate?: boolean;
 }
 
@@ -29,7 +29,7 @@ export const RadialBarChart = <T,>({
   data,
   margin,
   yAccessor,
-  tooltipAccessor,
+  tooltip,
   name,
   animate = true,
 }: RadialBarChartProps<T>) => {
@@ -48,7 +48,7 @@ export const RadialBarChart = <T,>({
                 margin={margin}
                 yAccessor={yAccessor}
                 xAccessor={xAccessor}
-                tooltipAccessor={tooltipAccessor}
+                tooltip={tooltip}
                 animate={animate}
               />
             )
@@ -66,7 +66,7 @@ const Chart = <T,>({
   height,
   xAccessor,
   yAccessor,
-  tooltipAccessor,
+  tooltip,
   data,
   margin = defaultMargin,
   animate = true,
@@ -74,6 +74,9 @@ const Chart = <T,>({
   const toDegrees = (x: number) => (x * 180) / Math.PI;
   const theme = useTheme();
   const gradients = useGradients(name);
+
+  const tooltipAccessor = tooltip?.accessor;
+  const showTooltipEnabled = tooltip?.enabled ?? true;
 
   const { tooltipData, tooltipLeft, tooltipTop, tooltipOpen, hideTooltip, showTooltip } = useTooltip<string>();
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
@@ -83,6 +86,7 @@ const Chart = <T,>({
 
   const handleMouseOver = useCallback(
     (event: MouseEvent, data: T) => {
+      if (!showTooltipEnabled || !tooltipAccessor) return;
       const target = event.target as SVGElement;
       const coords = localPoint(target.ownerSVGElement!, event);
       showTooltip({
@@ -91,7 +95,7 @@ const Chart = <T,>({
         tooltipData: tooltipAccessor(data),
       });
     },
-    [data, tooltipAccessor],
+    [data, tooltipAccessor, showTooltipEnabled],
   );
 
   // bounds

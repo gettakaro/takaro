@@ -28,8 +28,10 @@ export const RevenueDistributionChart: FC<RevenueDistributionChartProps> = ({ pr
             data={products.categories}
             xAccessor={(d) => d.name}
             yAccessor={(d) => d.revenue}
-            tooltipAccessor={(d) => {
-              return `${d.name}: ${d.revenue.toLocaleString()} ${d.percentage.toFixed(2)}%`;
+            tooltip={{
+              accessor: (d) => {
+                return `${d.name}: ${d.revenue.toLocaleString()} ${d.percentage.toFixed(2)}%`;
+              },
             }}
           />
         </div>

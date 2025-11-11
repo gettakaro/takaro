@@ -27,7 +27,9 @@ export const Default: StoryFn<RadialBarChartProps<LetterFrequency>> = () => {
         xAccessor={getLetter}
         yAccessor={getLetterFrequency}
         data={data}
-        tooltipAccessor={(d) => `Tooltip content for '${d.frequency}'`}
+        tooltip={{
+          accessor: (d) => `Tooltip content for '${d.frequency}'`,
+        }}
         animate={true}
       />
     </Wrapper>
@@ -47,7 +49,9 @@ export const WithoutAnimation: StoryFn<RadialBarChartProps<LetterFrequency>> = (
         xAccessor={getLetter}
         yAccessor={getLetterFrequency}
         data={data}
-        tooltipAccessor={(d) => `Tooltip content for '${d.frequency}'`}
+        tooltip={{
+          accessor: (d) => `Tooltip content for '${d.frequency}'`,
+        }}
         animate={false}
       />
     </Wrapper>
