@@ -96,7 +96,9 @@ export const useUserAssignRole = () => {
         enqueueSnackbar('Role successfully assigned!', { variant: 'default', type: 'success' });
       },
     }),
-    {},
+    {
+      UniqueConstraintError: 'The user already has this role assigned.',
+    },
   );
 };
 
