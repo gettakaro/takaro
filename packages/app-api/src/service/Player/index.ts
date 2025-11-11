@@ -579,6 +579,11 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
   }
 
   async handlePlayerLink(player: PlayerOutputDTO, pog: PlayerOnGameserverOutputDTO) {
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] handlePlayerLink started', {
+      playerId: player.id,
+      pogId: pog.id,
+      gameServerId: pog.gameServerId,
+    });
     const secretCode = humanId({ separator: '-', capitalize: false });
     const redis = await Redis.getClient('playerLink');
 
@@ -599,8 +604,13 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     await redis.set(`playerLink:${secretCode}-domain`, this.domainId, {
       EX: 60 * 30,
     });
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] Secret code stored in Redis', { secretCode, playerId: player.id });
 
     const gameServerService = new GameServerService(this.domainId);
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] Calling gameServerService.sendMessage for link', {
+      gameServerId: pog.gameServerId,
+      recipientPogId: pog.id,
+    });
     await gameServerService.sendMessage(
       pog.gameServerId,
       `Browse to ${config.get('http.frontendHost')}/link?code=${secretCode} to complete the linking process.`,
@@ -608,5 +618,6 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         recipient: pog,
       }),
     );
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] handlePlayerLink completed, message sent');
   }
 }

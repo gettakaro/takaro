@@ -409,6 +409,15 @@ export class GameServerService extends TakaroService<
   }
 
   async sendMessage(gameServerId: string, message: string, opts: IMessageOptsDTO) {
+    const isLinkingMessage = message.includes('to complete the linking process');
+    if (isLinkingMessage) {
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] sendMessage called for linking message', {
+        gameServerId,
+        hasRecipient: !!opts?.recipient,
+        recipientId: opts?.recipient?.id,
+      });
+    }
+
     // Get settings to check for message prefix
     const settingsService = new SettingsService(this.domainId, gameServerId);
     const messagePrefixSetting = await settingsService.get(SETTINGS_KEYS.messagePrefix);
@@ -424,6 +433,9 @@ export class GameServerService extends TakaroService<
 
     const gameInstance = await this.getGame(gameServerId);
     await gameInstance.sendMessage(message, opts);
+    if (isLinkingMessage) {
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] Message sent to mock gameserver successfully');
+    }
 
     // Hacky way to detect if the message is a linking message
     if (message.includes('to complete the linking process')) {
@@ -453,6 +465,14 @@ export class GameServerService extends TakaroService<
       }
     }
 
+    if (isLinkingMessage) {
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] Creating chat-message event for linking message', {
+        gameServerId,
+        channel: meta.channel,
+        hasRecipient: !!meta.recipient,
+      });
+    }
+
     await eventService.create(
       new EventCreateDTO({
         eventName: GameEvents.CHAT_MESSAGE,
@@ -460,6 +480,10 @@ export class GameServerService extends TakaroService<
         meta,
       }),
     );
+
+    if (isLinkingMessage) {
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] chat-message event created successfully for linking message');
+    }
   }
 
   async teleportPlayer(gameServerId: string, playerId: string, position: IPosition) {
