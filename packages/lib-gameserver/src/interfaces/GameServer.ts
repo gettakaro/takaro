@@ -184,7 +184,7 @@ export interface IGameServer {
 
   getMapInfo(): Promise<MapInfoDTO>;
   // Returns a base64 encoded image of the map tile
-  getMapTile(x: number, y: number, z: number): Promise<string>;
+  getMapTile(z: number, x: number, y: number): Promise<string>;
 }
 
 // All actions that can be sent to the gameserver

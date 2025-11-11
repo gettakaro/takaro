@@ -631,14 +631,14 @@ export class GameServerController {
     return apiResponse(await service.getMapInfo(params.id));
   }
 
-  @Get('/gameserver/:id/map/tile/:x/:y/:z')
+  @Get('/gameserver/:id/map/tile/:z/:x/:y')
   @UseBefore(AuthService.getAuthMiddleware([]))
   @OpenAPI({
     description: 'Get a map tile',
   })
   async getMapTile(@Req() req: AuthenticatedRequest, @Params() params: MapTileInputDTO, @Res() res: Response) {
     const service = new GameServerService(req.domainId);
-    const result = await service.getMapTile(params.id, params.x, params.y, params.z);
+    const result = await service.getMapTile(params.id, params.z, params.x, params.y);
     if (result) {
       res.set('Content-Type', 'image/png');
       res.set('Content-Length', result.length.toString());
