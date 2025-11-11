@@ -235,12 +235,8 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     gamePlayer: IGamePlayer,
     gameServerId: string,
   ): Promise<{ player: PlayerOutputWithRolesDTO; pog: PlayerOnGameserverOutputWithRolesDTO }> {
-    // Validate that at least one platform identifier is provided
-    if (!gamePlayer.steamId && !gamePlayer.epicOnlineServicesId && !gamePlayer.xboxLiveId && !gamePlayer.platformId) {
-      throw new errors.ValidationError(
-        'At least one platform identifier (steamId, epicOnlineServicesId, xboxLiveId, or platformId) must be provided',
-      );
-    }
+    // Validation deferred - we allow finding existing players via gameId even with placeholder IDs
+    // Validation only enforced when creating NEW players
 
     const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
     let pog = await playerOnGameServerService.findAssociations(gamePlayer.gameId, gameServerId);
@@ -263,8 +259,42 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
       (player, index, self) => self.findIndex((p) => p.id === player.id) === index,
     );
 
-    // If NO players are found, create a new one
-    if (!uniquePlayers.length) {
+    // If NO players found via platform IDs, try finding via existing POG
+    if (!uniquePlayers.length && pog) {
+      this.log.debug('No players found via platform IDs, checking existing POG', {
+        pogId: pog.id,
+        pogPlayerId: pog.playerId,
+        gameId: gamePlayer.gameId,
+      });
+
+      const playerViaPog = await this.findOne(pog.playerId);
+      if (playerViaPog) {
+        player = playerViaPog;
+        this.log.debug('Found existing player via POG', {
+          playerId: player.id,
+          gameId: gamePlayer.gameId,
+        });
+      }
+    }
+
+    // If still no player found after both searches, need to create one
+    if (!uniquePlayers.length && !player) {
+      // Validate that we have at least one valid platform ID for creation
+      const validPlatformIds = this.repo.filterValidPlatformIds({
+        steamId: gamePlayer.steamId,
+        epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
+        xboxLiveId: gamePlayer.xboxLiveId,
+        platformId: gamePlayer.platformId,
+      });
+
+      const hasValidId = Object.values(validPlatformIds).some((id) => id !== undefined);
+
+      if (!hasValidId) {
+        throw new errors.ValidationError(
+          'At least one platform identifier (steamId, epicOnlineServicesId, xboxLiveId, or platformId) must be provided',
+        );
+      }
+
       // Main player profile does not exist yet!
       this.log.debug('No existing associations found, creating new global player', {
         gameId: gamePlayer.gameId,
@@ -284,8 +314,8 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
       if (gamePlayer.name) {
         await this.repo.observeName(player.id, gameServerId, gamePlayer.name);
       }
-    } else {
-      // At least one player is found, use the first one
+    } else if (uniquePlayers.length) {
+      // At least one player is found via platform IDs, use the first one
       player = uniquePlayers[0];
 
       // Track name changes
@@ -308,6 +338,33 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
           ...validPlatformIds,
         }),
       );
+    } else if (player) {
+      // Player found via POG, update with any valid platform IDs
+      // Track name changes
+      if (gamePlayer.name && gamePlayer.name !== player.name) {
+        await this.repo.observeName(player.id, gameServerId, gamePlayer.name);
+      }
+
+      // Filter placeholder values to prevent overwriting valid IDs with bad data
+      const validPlatformIds = this.repo.filterValidPlatformIds({
+        steamId: gamePlayer.steamId,
+        xboxLiveId: gamePlayer.xboxLiveId,
+        epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
+        platformId: gamePlayer.platformId,
+      });
+
+      await this.update(
+        player.id,
+        new PlayerUpdateDTO({
+          name: gamePlayer.name,
+          ...validPlatformIds,
+        }),
+      );
+    }
+
+    // Ensure player was found or created
+    if (!player) {
+      throw new errors.NotFoundError('Player not found after lookup and creation attempts');
     }
 
     if (!pog) {
