@@ -414,7 +414,7 @@ export class GameServerService extends TakaroService<
       this.log.debug('[CONCURRENT_TESTS_DEBUG] sendMessage called for linking message', {
         gameServerId,
         hasRecipient: !!opts?.recipient,
-        recipientId: opts?.recipient?.id,
+        recipientGameId: opts?.recipient?.gameId,
       });
     }
 
