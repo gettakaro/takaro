@@ -11,6 +11,8 @@ import {
   ImportOutputDTO,
   InstallModuleDTO,
   KickPlayerInputDTO,
+  MapInfoDTO,
+  MapTileInputDTO,
   ModuleInstallationOutputDTO,
   ModuleInstallationOutputDTOAPI,
   ModuleInstallationSearchInputDTO,
@@ -36,6 +38,7 @@ export const gameServerKeys = {
   all: ['gameservers'] as const,
   list: () => [...gameServerKeys.all, 'list'] as const,
   detail: (gameServerId: string) => [...gameServerKeys.all, 'detail', gameServerId] as const,
+  mapInfo: (gameServerId: string) => [...gameServerKeys.all, 'map', gameServerId] as const,
   reachability: (gameServerId: string) => [...gameServerKeys.all, 'reachable', gameServerId] as const,
   count: () => [...gameServerKeys.all, 'count'] as const,
 };
@@ -293,6 +296,22 @@ export const gameServerModuleInstallationOptions = (moduleId: string, gameServer
         .data,
   });
 };
+
+export const gameServerMapInfoOptions = (gameServerId: string) => {
+  return queryOptions<MapInfoDTO, AxiosError<MapInfoDTO>>({
+    queryKey: gameServerKeys.mapInfo(gameServerId),
+    queryFn: async () =>
+      ((await getApiClient().gameserver.gameServerControllerGetMapInfo(gameServerId)).data as any).data as MapInfoDTO,
+  });
+};
+
+// export const gameServerMapTileOptions = (input: MapTileInputDTO) => {
+//   return queryOptions<unknown, AxiosError<unknown>>({
+//     queryKey: gameServerKeys.mapTile(input.id, input.x, input.y, input.z),
+//     queryFn: async () =>
+//       (await getApiClient().gameserver.gameServerControllerGetMapTile(input.id, input.x.toString(), input.y.toString(), input.z.toString())).data.data as unknown as
+//   });
+// };
 
 export const useGameServerModuleInstall = () => {
   const apiClient = getApiClient();

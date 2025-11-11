@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.react.json",
   "compilerOptions": {
+    "moduleResolution": "bundler",
     "baseUrl": "src",
     "composite": true,
     "noImplicitAny": false,
