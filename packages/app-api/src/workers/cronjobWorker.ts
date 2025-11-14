@@ -18,5 +18,22 @@ async function processCronJob(job: Job<ICronJobData>) {
     jobId: job.id,
   });
 
+  // Check if module is enabled
+  if (!job.data.module.systemConfig.enabled) {
+    return;
+  }
+
+  // Find the cronjob by itemId to get its name
+  const cronjob = job.data.module.version.cronJobs.find((cj) => cj.id === job.data.itemId);
+  if (!cronjob) {
+    // Cronjob not found in module version, skip execution
+    return;
+  }
+
+  // Check if cronjob is enabled
+  if (!job.data.module.systemConfig.cronJobs[cronjob.name].enabled) {
+    return;
+  }
+
   await executeFunction(job.data.functionId, job.data, job.data.domainId);
 }
