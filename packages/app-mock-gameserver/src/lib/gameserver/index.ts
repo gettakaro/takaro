@@ -97,7 +97,7 @@ export class MockGameserver implements IMockGameServer {
 
     const players = Array.from(Array(5).keys()).map((p) => ({
       gameId: p.toString(),
-      name: faker.internet.userName(),
+      name: faker.internet.username(),
       epicOnlineServicesId: faker.string.alphanumeric(16),
       steamId: faker.string.alphanumeric(16),
       xboxLiveId: faker.string.alphanumeric(16),

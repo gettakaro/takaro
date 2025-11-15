@@ -86,7 +86,7 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
       <Drawer.Content>
         <Drawer.Heading>
           <span style={{ marginRight: '10px' }}>{readOnly ? 'View configuration' : 'Install module'}</span>
-          <Chip variant="outline" color="primary" label={modVersion.tag} />
+          <Chip color="primary" label={modVersion.tag} />
         </Drawer.Heading>
         <Drawer.Body>
           <CollapseList>

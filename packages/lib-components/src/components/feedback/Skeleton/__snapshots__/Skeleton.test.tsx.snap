@@ -3,7 +3,7 @@
 exports[`Should render <Skeleton/> 1`] = `
 <div>
   <div
-    class="sc-aXZVg dMeLsA"
+    class="sc-aXZVg VRVWh"
   />
 </div>
 `;

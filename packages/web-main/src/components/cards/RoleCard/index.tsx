@@ -15,7 +15,7 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
               {system ? (
                 <Tooltip placement="top">
                   <Tooltip.Trigger asChild>
-                    <Chip label="system" color="backgroundAccent" variant="outline" />
+                    <Chip label="system" color="backgroundAccent" />
                   </Tooltip.Trigger>
                   <Tooltip.Content>System roles are managed by Takaro and cannot be deleted.</Tooltip.Content>
                 </Tooltip>

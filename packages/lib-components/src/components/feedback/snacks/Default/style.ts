@@ -6,7 +6,6 @@ export const Wrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
   padding: ${({ theme }) =>
     `${theme.spacing['1']} ${theme.spacing[2]} ${theme.spacing['1_5']} ${theme.spacing['1_5']}`};
-  box-shadow: ${({ theme }) => theme.elevation[4]};
   border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
   border-radius: ${({ theme }) => theme.borderRadius.large};
 `;

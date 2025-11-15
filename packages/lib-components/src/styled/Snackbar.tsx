@@ -20,7 +20,6 @@ export const SnackBarStyles = css<{ theme: ThemeType }>`
 
   div.SnackbarContent-root {
     border: 1px solid ${({ theme }) => theme.colors.background};
-    box-shadow: ${({ theme }): string => theme.elevation[4]}!important;
   }
 
   /* info */

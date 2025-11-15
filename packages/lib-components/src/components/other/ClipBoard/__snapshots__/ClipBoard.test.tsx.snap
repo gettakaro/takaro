@@ -3,7 +3,7 @@
 exports[`Should render <ClipBoard /> 1`] = `
 <div>
   <div
-    class="sc-aXZVg jSPpZO"
+    class="sc-aXZVg kRYlLL"
     role="button"
     tabindex="-1"
   >
@@ -15,7 +15,7 @@ exports[`Should render <ClipBoard /> 1`] = `
       value="ClipBoard text"
     />
     <div
-      class="sc-gEvEer bneOhB"
+      class="sc-gEvEer juIItl"
     >
       <svg
         fill="currentColor"

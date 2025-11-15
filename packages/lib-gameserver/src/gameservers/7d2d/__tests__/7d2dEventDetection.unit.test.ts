@@ -369,4 +369,56 @@ describe('7d2d event detection', () => {
     expect((emitStub.getCalls()[0].args[1] as EventEntityKilled).player.name).to.equal('[ptz]stoun');
     expect((emitStub.getCalls()[0].args[1] as EventEntityKilled).weapon).to.equal('Stun Baton');
   });
+
+  it('[EntityKilled] Can detect PrismaCore entity killed', async () => {
+    const emitter = new SevenDaysToDieEmitter(await mockConnectionInfo({ useCPM: true }));
+
+    await emitter.parseMessage({
+      msg: `[PrismaCore]entityKilled: ${mockGamePlayer.name} (Steam_${mockGamePlayer.steamId}) killed zombie zombieNurse with S.H.I.E.L.D. Auto Shotgun`,
+    });
+
+    expect(emitStub).to.have.been.calledTwice;
+
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.ENTITY_KILLED);
+    expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
+
+    expect((emitStub.getCalls()[0].args[1] as EventEntityKilled).entity).to.equal('zombieNurse');
+    expect((emitStub.getCalls()[0].args[1] as EventEntityKilled).player.name).to.equal(mockGamePlayer.name);
+    expect((emitStub.getCalls()[0].args[1] as EventEntityKilled).weapon).to.equal('S.H.I.E.L.D. Auto Shotgun');
+  });
+
+  it('[EntityKilled] Can detect PrismaCore entity killed with legendary zombie', async () => {
+    const emitter = new SevenDaysToDieEmitter(await mockConnectionInfo({ useCPM: true }));
+
+    await emitter.parseMessage({
+      msg: `[PrismaCore]entityKilled: ${mockGamePlayer.name} (Steam_${mockGamePlayer.steamId}) killed zombie Frostclaw with Thor Hammer`,
+    });
+
+    expect(emitStub).to.have.been.calledTwice;
+
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.ENTITY_KILLED);
+    expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
+
+    expect((emitStub.getCalls()[0].args[1] as EventEntityKilled).entity).to.equal('Frostclaw');
+    expect((emitStub.getCalls()[0].args[1] as EventEntityKilled).player.name).to.equal(mockGamePlayer.name);
+    expect((emitStub.getCalls()[0].args[1] as EventEntityKilled).weapon).to.equal('Thor Hammer');
+  });
+
+  it('[PlayerDeath] Can detect PrismaCore player death', async () => {
+    const emitter = new SevenDaysToDieEmitter(await mockConnectionInfo({ useCPM: true }));
+
+    await emitter.parseMessage({
+      msg: `[PrismaCore]playerDied: ${mockGamePlayer.name} (Steam_${mockGamePlayer.steamId}) died @ 702 34 -2938`,
+    });
+
+    expect(emitStub).to.have.been.calledTwice;
+
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_DEATH);
+    expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
+
+    expect((emitStub.getCalls()[0].args[1] as EventPlayerDeath).player.name).to.equal(mockGamePlayer.name);
+    expect((emitStub.getCalls()[0].args[1] as EventPlayerDeath).position.x).to.equal(702);
+    expect((emitStub.getCalls()[0].args[1] as EventPlayerDeath).position.y).to.equal(34);
+    expect((emitStub.getCalls()[0].args[1] as EventPlayerDeath).position.z).to.equal(-2938);
+  });
 });

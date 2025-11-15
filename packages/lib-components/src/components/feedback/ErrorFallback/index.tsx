@@ -27,6 +27,7 @@ const Container = styled.div`
     justify-content: center;
     font-size: ${({ theme }) => theme.fontSize.mediumLarge};
     margin-bottom: ${({ theme }) => theme.spacing['0_5']};
+    color: ${({ theme }) => theme.colors.text};
 
     svg {
       margin-right: ${({ theme }) => theme.spacing['0_75']};

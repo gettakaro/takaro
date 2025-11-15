@@ -32,7 +32,7 @@ export const PlayerContainer: FC<PlayerContainerProps> = ({ playerId, showAvatar
 
 export const Player: FC<PlayerProps> = ({ playerId, name, avatarUrl, showAvatar, hasError, gameServerId }) => {
   if (!name || hasError) {
-    return <Chip variant="outline" color="backgroundAccent" label="unknown" />;
+    return <Chip color="backgroundAccent" label="unknown" />;
   }
 
   const content = (

@@ -1,18 +1,22 @@
 import { FC, useContext, ReactNode, cloneElement, isValidElement } from 'react';
-import { styled } from '../../../styled';
-import { StatContext, Direction, Size } from './context';
+import { styled, Size } from '../../../styled';
+import { StatContext, Direction } from './context';
 import { AiOutlineArrowUp, AiOutlineArrowDown } from 'react-icons/ai';
 
 const Container = styled.div<{ isGrouped: boolean; direction: Direction; size: Size }>`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   padding: ${({ theme, size }) => {
     switch (size) {
+      case 'tiny':
+        return theme.spacing['0_5'];
       case 'small':
         return theme.spacing['1'];
       case 'medium':
         return theme.spacing['2'];
       case 'large':
         return theme.spacing['3'];
+      case 'huge':
+        return theme.spacing['4'];
     }
   }};
 
@@ -58,15 +62,19 @@ const Container = styled.div<{ isGrouped: boolean; direction: Direction; size: S
   dt {
     font-size: ${({ theme, size }) => {
       switch (size) {
+        case 'tiny':
+          return theme.fontSize.tiny;
         case 'small':
           return theme.fontSize.small;
         case 'medium':
           return theme.fontSize.medium;
         case 'large':
           return theme.fontSize.mediumLarge;
+        case 'huge':
+          return theme.fontSize.large;
       }
     }};
-    color: ${({ theme }) => theme.colors.secondary};
+    color: ${({ theme }) => theme.colors.textAlt};
     margin-bottom: ${({ theme }) => theme.spacing['0_5']};
   }
 
@@ -75,14 +83,20 @@ const Container = styled.div<{ isGrouped: boolean; direction: Direction; size: S
     color: ${({ theme }) => theme.colors.white};
     font-size: ${({ theme, size }) => {
       switch (size) {
+        case 'tiny':
+          return theme.fontSize.small;
         case 'small':
           return theme.fontSize.medium;
         case 'medium':
           return theme.fontSize.mediumLarge;
         case 'large':
           return theme.fontSize.large;
+        case 'huge':
+          return theme.fontSize.huge;
       }
     }};
+    color: ${({ theme }) => theme.colors.text};
+    font-size: ${({ theme }) => theme.fontSize.mediumLarge};
     letter-spacing: 1px;
     margin: 0;
     padding: 0;

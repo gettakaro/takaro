@@ -16,11 +16,11 @@ const Container = styled.div`
   width: 700px;
   margin: 0 auto;
   padding: 6rem 0;
-
   
   p {
     font-size: 1.7rem;
     text-align: center;
+    color: ${({ theme }) => theme.colors.textAlt};
 
     &.error {
       margin-top: ${({ theme }) => theme.spacing[6]};
@@ -34,14 +34,14 @@ const Container = styled.div`
   h3 {
     font-size: 4.125rem;
     font-weight: 700;
-    color: ${({ theme }) => theme.colors.secondary};
+    color: ${({ theme }) => theme.colors.text};
     margin-bottom: .5rem;
     text-align: center;
   }
   h4 {
     font-weight: 600;
     font-size: 1.5rem;
-    color: ${({ theme }) => theme.colors.secondary};
+    color: ${({ theme }) => theme.colors.textAlt};
     margin: 3rem 0 1.5rem 0;
   }
   h5 {

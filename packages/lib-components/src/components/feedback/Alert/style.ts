@@ -1,4 +1,4 @@
-import { Elevation, styled } from '../../../styled';
+import { styled } from '../../../styled';
 import { AlertVariants } from '.';
 import { motion } from 'framer-motion';
 import { shade } from 'polished';
@@ -9,12 +9,10 @@ import { shade } from 'polished';
 export const Container = styled(motion.div)<{
   $variant: AlertVariants;
   $hasTitle: boolean;
-  $elevation: Elevation;
 }>`
   width: 100%;
   padding: ${({ theme }) => theme.spacing['0_75']};
   border-radius: ${({ theme }) => theme.borderRadius.large};
-  box-shadow: ${({ theme, $elevation }) => theme.elevation[$elevation]};
   margin: ${({ theme }) => `${theme.spacing['1_5']} auto`};
   h2 {
     font-size: ${({ theme }) => theme.fontSize.mediumLarge};

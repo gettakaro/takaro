@@ -23,6 +23,8 @@ test('Can create module', async ({ page, takaro }) => {
     name: newModuleName,
     description: newModuleDescription,
   });
+  await expect(page.getByRole('dialog')).not.toBeVisible();
+
   await expect(page.getByText(newModuleName)).toBeVisible();
   await expect(page.getByText(newModuleDescription)).toBeVisible();
 });

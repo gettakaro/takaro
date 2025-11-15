@@ -350,7 +350,7 @@ const tests = [
       await this.client.user.userControllerCreate({
         email: fakeEmail,
         password: fakePassword,
-        name: faker.internet.userName(),
+        name: faker.internet.username(),
       });
 
       const userClient = new Client({
