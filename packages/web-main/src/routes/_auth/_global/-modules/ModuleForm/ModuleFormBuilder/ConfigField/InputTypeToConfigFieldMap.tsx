@@ -3,6 +3,7 @@ import { TextField, TagField, SelectField, Switch, DurationField } from '@takaro
 import { IFormInputs } from '..';
 import { Control, useWatch } from 'react-hook-form';
 import { CountrySelectField } from '../../../../../../../components/selects/CountrySelectField';
+import { RoleSelectQueryField } from '../../../../../../../components/selects';
 
 export const InputTypeToConfigFieldMap = (
   control: Control<IFormInputs>,
@@ -213,6 +214,26 @@ export const InputTypeToConfigFieldMap = (
         readOnly={readOnly}
         placeholder="Select default duration..."
         control={control}
+      />,
+    ],
+    [InputType.role]: [
+      <Switch
+        key={`${InputType.role}-multiple-${id}`}
+        name={getName('multiple')}
+        control={control}
+        readOnly={readOnly}
+        label="Multiple roles?"
+        description="Allow selecting multiple roles"
+      />,
+      <RoleSelectQueryField
+        key={`${InputType.role}-default-${id}`}
+        name={getName('default')}
+        label="Default role(s)"
+        multiple={multiple ? true : false}
+        includeSpecialRoles={true}
+        canClear={true}
+        control={control}
+        readOnly={readOnly}
       />,
     ],
   };

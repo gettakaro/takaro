@@ -37,6 +37,7 @@ export type CustomUncontrolledSelectQueryFieldProps = Omit<
 
 export { GameServerSelectQueryField } from './GameServerSelectQueryField';
 export { RoleSelectQueryField } from './RoleSelectQueryField';
+export { UnControlledRoleSelectQueryField } from './UnControlledRoleSelectQueryField';
 export { PlayerSelectQueryField } from './PlayerSelectQueryField';
 export { ModuleSelectQueryField } from './ModuleSelectQueryField';
 export {

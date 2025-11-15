@@ -86,6 +86,13 @@ export const validationSchema = z.object({
             // there is no validation on `default` key of country, because default is not a required field and since it is a select field, users cannot enter invalid values
             required: z.boolean(),
           }),
+          z.object({
+            type: z.literal(InputType.role.valueOf()),
+            multiple: z.boolean(),
+            default: z.union([z.string(), z.array(z.string())]).optional(),
+            // no validation on `default` key of role, because default is not a required field and since it is a select field, users cannot enter invalid values
+            required: z.boolean(),
+          }),
         ])
         .and(baseConfigFieldShape),
     )

@@ -90,6 +90,9 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
           if (property['x-component'] === InputType.country) {
             input.type = InputType.country;
             input.multiple = false;
+          } else if (property['x-component'] === InputType.role) {
+            input.type = InputType.role;
+            input.multiple = false;
           } else if (property.enum) {
             input.type = InputType.enumeration;
             input.multiple = false;
@@ -107,6 +110,9 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
             input.multiple = true;
           } else if (property['x-component'] === InputType.country) {
             input.type = InputType.country;
+            input.multiple = true;
+          } else if (property['x-component'] === InputType.role) {
+            input.type = InputType.role;
             input.multiple = true;
           } else if (property['x-component'] === InputType.enumeration) {
             input.type = InputType.enumeration;
