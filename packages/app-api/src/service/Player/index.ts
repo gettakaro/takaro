@@ -259,7 +259,6 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     // Validation deferred - we allow finding existing players via gameId even with placeholder IDs
     // Validation only enforced when creating NEW players
 
-
     const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
     let pog = await playerOnGameServerService.findAssociations(gamePlayer.gameId, gameServerId);
 
