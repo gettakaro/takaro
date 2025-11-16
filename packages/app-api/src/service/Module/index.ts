@@ -151,18 +151,6 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     // This ensures that there is a 'latest' version
     const version = await this.getLatestVersion(created.id);
 
-    if (mod.latestVersion.defaultSystemConfig) {
-      const validator = ajv.compile(JSON.parse(getSystemConfigSchema(version)));
-      const valid = validator(JSON.parse(mod.latestVersion.defaultSystemConfig));
-      if (!valid) {
-        if (validator.errors) {
-          throw new errors.ValidationError('Invalid system config', validator.errors);
-        } else {
-          throw new errors.ValidationError('Invalid system config');
-        }
-      }
-    }
-
     await this.repo.updateVersion(
       version.id,
       new ModuleVersionUpdateDTO({
