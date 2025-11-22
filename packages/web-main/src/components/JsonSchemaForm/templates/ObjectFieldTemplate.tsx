@@ -1,4 +1,5 @@
 import {
+  FieldPathId,
   FormContextType,
   ObjectFieldTemplateProps,
   RJSFSchema,
@@ -36,10 +37,10 @@ export function ObjectFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSc
     disabled,
     readonly,
     uiSchema,
-    idSchema,
+    fieldPathId,
     schema,
     formData,
-    onAddClick,
+    onAddProperty,
     registry,
   } = props;
   const uiOptions = getUiOptions<T, S, F>(uiSchema);
@@ -56,17 +57,17 @@ export function ObjectFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSc
 
   function isParentCommandHookCronjob() {
     if (
-      idSchema['$id'] === 'root_commands' ||
-      idSchema['$id'] === 'root_hooks' ||
-      idSchema['$id'] === 'root_cronJobs'
+      fieldPathId['$id'] === 'root_commands' ||
+      fieldPathId['$id'] === 'root_hooks' ||
+      fieldPathId['$id'] === 'root_cronJobs'
     ) {
       return true;
     }
     return false;
   }
 
-  function isTopLevelObject(idSchema: any): boolean {
-    return idSchema['$id'] === 'root';
+  function isTopLevelObject(fieldPathId: FieldPathId): boolean {
+    return fieldPathId['$id'] === 'root';
   }
 
   return (
@@ -74,7 +75,7 @@ export function ObjectFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSc
       {/* if parent title is commands/cronjobs/hooks then dont render */}
       {title && isParentCommandHookCronjob() && (
         <TitleFieldTemplate
-          id={titleId<T>(idSchema)}
+          id={titleId(fieldPathId)}
           title={title}
           required={required}
           schema={schema}
@@ -84,7 +85,7 @@ export function ObjectFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSc
       )}
       {description && (
         <DescriptionFieldTemplate
-          id={descriptionId<T>(idSchema)}
+          id={descriptionId(fieldPathId)}
           description={description}
           schema={schema}
           uiSchema={uiSchema}
@@ -105,7 +106,7 @@ export function ObjectFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSc
           return element.hidden ? (
             element.content
           ) : (
-            <ItemContainer key={`element-${title}-${index}`} isTopLevel={isTopLevelObject(idSchema)}>
+            <ItemContainer key={`element-${title}-${index}`} isTopLevel={isTopLevelObject(fieldPathId)}>
               {element.content}
             </ItemContainer>
           );
@@ -115,7 +116,7 @@ export function ObjectFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSc
           <div>
             <div>
               <AddButton
-                onClick={onAddClick(schema)}
+                onClick={onAddProperty}
                 disabled={disabled || readonly}
                 uiSchema={uiSchema}
                 registry={registry}

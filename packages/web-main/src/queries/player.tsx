@@ -75,7 +75,9 @@ export const usePlayerRoleAssign = () => {
         queryClient.invalidateQueries({ queryKey: playerKeys.detail(playerId) });
       },
     }),
-    {},
+    {
+      UniqueConstraintError: 'The player already has this role assigned.',
+    },
   );
 };
 

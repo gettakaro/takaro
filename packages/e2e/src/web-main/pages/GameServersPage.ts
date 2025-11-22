@@ -64,8 +64,8 @@ export class GameServersPage extends BasePage {
     // Wait for dialog to appear
     await expect(this.page.getByRole('dialog')).toBeVisible();
 
-    // Type RESET in confirmation field
-    await this.page.getByLabel('Confirmation').fill('RESET');
+    // Type game server name in confirmation field
+    await this.page.getByLabel('Confirmation').fill(this.gameServer.name);
 
     // Click reset button
     await this.page.getByRole('button', { name: 'Reset all currency' }).click();

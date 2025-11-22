@@ -2,7 +2,6 @@ import {
   getTemplate,
   getUiOptions,
   ArrayFieldTemplateProps,
-  ArrayFieldTemplateItemType,
   FormContextType,
   RJSFSchema,
   StrictRJSFSchema,
@@ -24,17 +23,11 @@ const ItemListContainer = styled.div`
 export function ArrayFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>(
   props: ArrayFieldTemplateProps<T, S, F>,
 ) {
-  const { canAdd, disabled, idSchema, uiSchema, items, onAddClick, readonly, registry, required, schema, title } =
+  const { canAdd, disabled, fieldPathId, uiSchema, items, onAddClick, readonly, registry, required, schema, title } =
     props;
   const uiOptions = getUiOptions(uiSchema);
   const ArrayFieldDescriptionTemplate = getTemplate<'ArrayFieldDescriptionTemplate', T, S, F>(
     'ArrayFieldDescriptionTemplate',
-    registry,
-    uiOptions,
-  );
-
-  const ArrayFieldItemTemplate = getTemplate<'ArrayFieldItemTemplate', T, S, F>(
-    'ArrayFieldItemTemplate',
     registry,
     uiOptions,
   );
@@ -52,7 +45,7 @@ export function ArrayFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSch
   return (
     <Container>
       <ArrayFieldTitleTemplate
-        idSchema={idSchema}
+        fieldPathId={fieldPathId}
         title={title}
         schema={schema}
         uiSchema={uiSchema}
@@ -60,17 +53,14 @@ export function ArrayFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSch
         registry={registry}
       />
       <ArrayFieldDescriptionTemplate
-        idSchema={idSchema}
+        fieldPathId={fieldPathId}
         description={schema.description}
         schema={schema}
         uiSchema={uiSchema}
         registry={registry}
       />
-      <ItemListContainer key={`array-item-list-${idSchema.$id}`}>
-        {items &&
-          items.map(({ key, ...itemProps }: ArrayFieldTemplateItemType<T, S, F>) => (
-            <ArrayFieldItemTemplate key={key} {...itemProps} />
-          ))}
+      <ItemListContainer key={`array-item-list-${fieldPathId.$id}`}>
+        {items}
         {canAdd && (
           <AddButton
             className="array-item-add"

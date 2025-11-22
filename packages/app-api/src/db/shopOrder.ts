@@ -59,22 +59,35 @@ export class ShopOrderRepo extends ITakaroRepo<
 
   async find(filters: ITakaroQuery<ShopOrderOutputDTO>) {
     const { query } = await this.getModel();
-    const qry = new QueryBuilder<ShopOrderModel, ShopOrderOutputDTO>({
-      ...filters,
-    }).build(query);
 
-    if (filters.filters?.gameServerId && Array.isArray(filters.filters.gameServerId)) {
-      qry
-        .join(ShopListingModel.tableName, `${ShopListingModel.tableName}.id`, `${ShopOrderModel.tableName}.listingId`)
-        .whereIn(`${ShopListingModel.tableName}.gameServerId`, filters.filters.gameServerId as string[]);
+    // Extract special filters that require joins before QueryBuilder clears them
+    const gameServerIdFilter = filters.filters?.gameServerId;
+    const userIdFilter = filters.filters?.userId;
+
+    // Remove these from filters so QueryBuilder doesn't try to handle them
+    const modifiedFilters = { ...filters };
+    if (modifiedFilters.filters) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { gameServerId, userId, ...rest } = modifiedFilters.filters;
+      modifiedFilters.filters = rest;
     }
 
-    if (filters.filters?.userId && Array.isArray(filters.filters.userId)) {
+    const qry = new QueryBuilder<ShopOrderModel, ShopOrderOutputDTO>(modifiedFilters).build(query);
+
+    // Apply gameServerId filter with join to shopListing table
+    if (gameServerIdFilter && Array.isArray(gameServerIdFilter) && gameServerIdFilter.length > 0) {
+      qry
+        .join(ShopListingModel.tableName, `${ShopListingModel.tableName}.id`, `${ShopOrderModel.tableName}.listingId`)
+        .whereIn(`${ShopListingModel.tableName}.gameServerId`, gameServerIdFilter as string[]);
+    }
+
+    // Apply userId filter with joins to player and user tables
+    if (userIdFilter && Array.isArray(userIdFilter) && userIdFilter.length > 0) {
       // We need to lookup the user from order.playerId -> player.id -> user.playerId
       qry
         .join(PLAYER_TABLE_NAME, `${PLAYER_TABLE_NAME}.id`, 'shopOrder.playerId')
         .join(USER_TABLE_NAME, `${USER_TABLE_NAME}.playerId`, `${PLAYER_TABLE_NAME}.id`)
-        .whereIn(`${USER_TABLE_NAME}.id`, filters.filters.userId as string[]);
+        .whereIn(`${USER_TABLE_NAME}.id`, userIdFilter as string[]);
     }
 
     const result = await qry;

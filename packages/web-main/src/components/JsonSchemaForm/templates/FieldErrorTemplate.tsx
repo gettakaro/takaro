@@ -7,10 +7,10 @@ import { ErrorMessage } from '@takaro/lib-components';
  */
 export function FieldErrorTemplate<T = any, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>({
   errors,
-  idSchema,
+  fieldPathId,
 }: FieldErrorProps<T, S, F>) {
   if (errors && errors.length > 0) {
-    const id = errorId<T>(idSchema);
+    const id = errorId(fieldPathId);
     return <ErrorMessage key={id} message={errors[0] as string} />;
   }
   return null;

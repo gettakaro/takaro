@@ -100,7 +100,12 @@ export const CurrencyView: FC<CurrencyViewProps> = ({
               name="Currency"
               data={currencyStats.values as [number, number][]}
               xAccessor={(d) => new Date(d[0] * 1000)}
-              yAccessor={(d) => d[1]}
+              lines={[
+                {
+                  id: 'currency',
+                  yAccessor: (d) => d[1],
+                },
+              ]}
               curveType="curveBasis"
             />
           </div>

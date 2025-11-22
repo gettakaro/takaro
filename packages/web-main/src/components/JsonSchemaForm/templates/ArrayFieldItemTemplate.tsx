@@ -1,5 +1,5 @@
 import { CSSProperties } from 'react';
-import { ArrayFieldTemplateItemType, FormContextType, RJSFSchema, StrictRJSFSchema } from '@rjsf/utils';
+import { ArrayFieldItemTemplateProps, FormContextType, RJSFSchema, StrictRJSFSchema } from '@rjsf/utils';
 import { styled } from '@takaro/lib-components';
 
 const Container = styled.div`
@@ -27,24 +27,11 @@ export function ArrayFieldItemTemplate<
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any,
->(props: ArrayFieldTemplateItemType<T, S, F>) {
-  const {
-    children,
-    disabled,
-    hasToolbar,
-    hasCopy,
-    hasMoveDown,
-    hasMoveUp,
-    hasRemove,
-    index,
-    onCopyIndexClick,
-    onDropIndexClick,
-    onReorderClick,
-    readonly,
-    uiSchema,
-    registry,
-  } = props;
+>(props: ArrayFieldItemTemplateProps<T, S, F>) {
+  const { children, disabled, hasToolbar, readonly, uiSchema, registry, buttonsProps } = props;
   const { CopyButton, MoveDownButton, MoveUpButton, RemoveButton } = registry.templates.ButtonTemplates;
+  const { hasMoveUp, hasMoveDown, hasCopy, hasRemove, onCopyItem, onMoveDownItem, onMoveUpItem, onRemoveItem } =
+    buttonsProps;
   const btnStyle: CSSProperties = {
     flex: 1,
     paddingLeft: 6,
@@ -61,7 +48,7 @@ export function ArrayFieldItemTemplate<
             <MoveUpButton
               style={btnStyle}
               disabled={disabled || readonly || !hasMoveUp}
-              onClick={onReorderClick(index, index - 1)}
+              onClick={onMoveUpItem}
               uiSchema={uiSchema}
               registry={registry}
             />
@@ -70,7 +57,7 @@ export function ArrayFieldItemTemplate<
             <MoveDownButton
               style={btnStyle}
               disabled={disabled || readonly || !hasMoveDown}
-              onClick={onReorderClick(index, index + 1)}
+              onClick={onMoveDownItem}
               uiSchema={uiSchema}
               registry={registry}
             />
@@ -79,7 +66,7 @@ export function ArrayFieldItemTemplate<
             <CopyButton
               style={btnStyle}
               disabled={disabled || readonly}
-              onClick={onCopyIndexClick(index)}
+              onClick={onCopyItem}
               uiSchema={uiSchema}
               registry={registry}
             />
@@ -88,7 +75,7 @@ export function ArrayFieldItemTemplate<
             <RemoveButton
               style={btnStyle}
               disabled={disabled || readonly}
-              onClick={onDropIndexClick(index)}
+              onClick={onRemoveItem}
               uiSchema={uiSchema}
               registry={registry}
             />

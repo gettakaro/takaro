@@ -1,5 +1,11 @@
-import { IntegrationTest, expect } from '@takaro/test';
-import { GameServerOutputDTO, ModuleOutputDTO, CronJobOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
+import { IntegrationTest, expect, EventsAwaiter } from '@takaro/test';
+import {
+  GameServerOutputDTO,
+  ModuleOutputDTO,
+  CronJobOutputDTO,
+  ModuleInstallationOutputDTO,
+  IHookEventTypeEnum,
+} from '@takaro/apiclient';
 import { queueService } from '../../workers/QueueService.js';
 import { describe } from 'node:test';
 import { randomUUID } from 'crypto';
@@ -177,6 +183,232 @@ const tests = [
       });
 
       expect(repeatables).to.have.length(0);
+    },
+  }),
+  new IntegrationTest<IStandardSetupData>({
+    group,
+    snapshot: false,
+    name: 'Cronjob does NOT fire when module is disabled at module level',
+    setup,
+    test: async function (this: IntegrationTest<IStandardSetupData>) {
+      const { mod, gameserver, cronjob } = this.setupData;
+
+      // Create a function for the cronjob to execute
+      const functionRes = await this.client.function.functionControllerCreate({
+        name: 'Test cronjob function',
+        versionId: mod.latestVersion.id,
+        code: `
+          import { data, takaro } from '@takaro/helpers';
+          async function main() {
+            await takaro.log('Cronjob executed!');
+          }
+          await main();
+        `,
+      });
+
+      // Update the cronjob to use this function
+      await this.client.cronjob.cronJobControllerUpdate(cronjob.id, {
+        function: functionRes.data.data.id,
+      });
+
+      // Get the updated module
+      const updatedMod = (await this.client.module.moduleControllerGetOne(mod.id)).data.data;
+
+      // Install the module with enabled=true (default)
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: gameserver.id,
+        versionId: updatedMod.latestVersion.id,
+      });
+
+      // Set up event awaiter to verify cronjob executes
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+      const initialExecution = eventsAwaiter.waitForEvents(IHookEventTypeEnum.CronjobExecuted, 1);
+
+      // Manually trigger the cronjob
+      await this.client.cronjob.cronJobControllerTrigger({
+        gameServerId: gameserver.id,
+        moduleId: mod.id,
+        cronjobId: cronjob.id,
+      });
+
+      // Verify it executed
+      const initialEvents = await initialExecution;
+      expect(initialEvents).to.have.length(1);
+
+      // Now disable the module
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: gameserver.id,
+        versionId: updatedMod.latestVersion.id,
+        systemConfig: JSON.stringify({
+          enabled: false,
+        }),
+      });
+
+      // Set up new event awaiter for disabled state
+      const disabledEventsAwaiter = new EventsAwaiter();
+      await disabledEventsAwaiter.connect(this.client);
+      const disabledExecution = disabledEventsAwaiter.waitForEvents(IHookEventTypeEnum.CronjobExecuted, 1);
+
+      // Manually trigger the cronjob again (should NOT execute)
+      await this.client.cronjob.cronJobControllerTrigger({
+        gameServerId: gameserver.id,
+        moduleId: mod.id,
+        cronjobId: cronjob.id,
+      });
+
+      // Wait a bit to ensure no execution happens
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Check that NO events were received
+      const eventsReceived = await Promise.race([
+        disabledExecution,
+        new Promise<[]>((resolve) => setTimeout(() => resolve([]), 100)),
+      ]);
+
+      // Assert that NO cronjob executed while module was disabled
+      expect(eventsReceived).to.have.length(0);
+
+      // Re-enable the module
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: gameserver.id,
+        versionId: updatedMod.latestVersion.id,
+        systemConfig: JSON.stringify({
+          enabled: true,
+        }),
+      });
+
+      // Verify it executes again after re-enabling
+      const reenabledEventsAwaiter = new EventsAwaiter();
+      await reenabledEventsAwaiter.connect(this.client);
+      const reenabledExecution = reenabledEventsAwaiter.waitForEvents(IHookEventTypeEnum.CronjobExecuted, 1);
+
+      // Trigger again
+      await this.client.cronjob.cronJobControllerTrigger({
+        gameServerId: gameserver.id,
+        moduleId: mod.id,
+        cronjobId: cronjob.id,
+      });
+
+      const reenabledEvents = await reenabledExecution;
+      expect(reenabledEvents).to.have.length(1);
+    },
+  }),
+  new IntegrationTest<IStandardSetupData>({
+    group,
+    snapshot: false,
+    name: 'Cronjob does NOT fire when disabled at cronjob level',
+    setup,
+    test: async function (this: IntegrationTest<IStandardSetupData>) {
+      const { mod, gameserver, cronjob } = this.setupData;
+
+      // Create a function for the cronjob to execute
+      const functionRes = await this.client.function.functionControllerCreate({
+        name: 'Test cronjob function individual',
+        versionId: mod.latestVersion.id,
+        code: `
+          import { data, takaro } from '@takaro/helpers';
+          async function main() {
+            await takaro.log('Cronjob executed!');
+          }
+          await main();
+        `,
+      });
+
+      // Update the cronjob to use this function
+      await this.client.cronjob.cronJobControllerUpdate(cronjob.id, {
+        function: functionRes.data.data.id,
+      });
+
+      // Get the updated module
+      const updatedMod = (await this.client.module.moduleControllerGetOne(mod.id)).data.data;
+
+      // Install the module with cronjob enabled (default)
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: gameserver.id,
+        versionId: updatedMod.latestVersion.id,
+      });
+
+      // Set up event awaiter to verify cronjob executes
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+      const initialExecution = eventsAwaiter.waitForEvents(IHookEventTypeEnum.CronjobExecuted, 1);
+
+      // Manually trigger the cronjob
+      await this.client.cronjob.cronJobControllerTrigger({
+        gameServerId: gameserver.id,
+        moduleId: mod.id,
+        cronjobId: cronjob.id,
+      });
+
+      // Verify it executed
+      const initialEvents = await initialExecution;
+      expect(initialEvents).to.have.length(1);
+
+      // Now disable the specific cronjob
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: gameserver.id,
+        versionId: updatedMod.latestVersion.id,
+        systemConfig: JSON.stringify({
+          cronJobs: {
+            [cronjob.name]: {
+              enabled: false,
+            },
+          },
+        }),
+      });
+
+      // Set up new event awaiter for disabled state
+      const disabledEventsAwaiter = new EventsAwaiter();
+      await disabledEventsAwaiter.connect(this.client);
+      const disabledExecution = disabledEventsAwaiter.waitForEvents(IHookEventTypeEnum.CronjobExecuted, 1);
+
+      // Manually trigger the cronjob again (should NOT execute)
+      await this.client.cronjob.cronJobControllerTrigger({
+        gameServerId: gameserver.id,
+        moduleId: mod.id,
+        cronjobId: cronjob.id,
+      });
+
+      // Wait a bit to ensure no execution happens
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Check that NO events were received
+      const eventsReceived = await Promise.race([
+        disabledExecution,
+        new Promise<[]>((resolve) => setTimeout(() => resolve([]), 100)),
+      ]);
+
+      // Assert that NO cronjob executed while it was disabled
+      expect(eventsReceived).to.have.length(0);
+
+      // Re-enable the cronjob
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: gameserver.id,
+        versionId: updatedMod.latestVersion.id,
+        systemConfig: JSON.stringify({
+          cronJobs: {
+            [cronjob.name]: {
+              enabled: true,
+            },
+          },
+        }),
+      });
+
+      // Verify it executes again after re-enabling
+      const reenabledEventsAwaiter = new EventsAwaiter();
+      await reenabledEventsAwaiter.connect(this.client);
+      const reenabledExecution = reenabledEventsAwaiter.waitForEvents(IHookEventTypeEnum.CronjobExecuted, 1);
+
+      // Trigger again
+      await this.client.cronjob.cronJobControllerTrigger({
+        gameServerId: gameserver.id,
+        moduleId: mod.id,
+        cronjobId: cronjob.id,
+      });
+
+      const reenabledEvents = await reenabledExecution;
+      expect(reenabledEvents).to.have.length(1);
     },
   }),
 ];

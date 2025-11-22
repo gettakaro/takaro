@@ -6,11 +6,7 @@ import { styled } from '../../../styled';
 
 const ButtonContainer = styled.div`
   display: flex;
-  button {
-    &:first-child {
-      margin: 0 1rem;
-    }
-  }
+  gap: ${({ theme }) => theme.spacing[1]};
 `;
 
 export default {
@@ -18,22 +14,25 @@ export default {
   component: ProgressBar,
   args: {
     mode: 'indeterminate',
-    showValue: false,
+    showPercentage: false,
   },
 } as Meta<ProgressBarProps>;
 
-export const Default: StoryFn<ProgressBarProps> = (args) => <ProgressBar {...args} />;
-
-export const Determinate: StoryFn<ProgressBarProps> = () => {
+export const Default: StoryFn<ProgressBarProps> = (args) => {
   const [value, setValue] = useState<number>(0);
 
   return (
     <>
-      <ProgressBar mode="determinate" showPercentage value={value} />
-      <ButtonContainer>
-        <button onClick={() => setValue(value + 5)}>+5</button>
-        <button onClick={() => setValue(value + 10)}>+10</button>
-      </ButtonContainer>
+      <ProgressBar {...args} value={value} />
+
+      {args.mode === 'determinate' && (
+        <ButtonContainer>
+          <button onClick={() => setValue(value - 10)}>-10</button>
+          <button onClick={() => setValue(value - 5)}>-5</button>
+          <button onClick={() => setValue(value + 5)}>+5</button>
+          <button onClick={() => setValue(value + 10)}>+10</button>
+        </ButtonContainer>
+      )}
     </>
   );
 };

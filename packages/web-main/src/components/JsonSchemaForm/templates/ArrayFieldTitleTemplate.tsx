@@ -13,7 +13,7 @@ export function ArrayFieldTitleTemplate<
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any,
 >(props: ArrayFieldTitleProps<T, S, F>) {
-  const { idSchema, title, uiSchema, registry, schema } = props;
+  const { fieldPathId, title, uiSchema, registry, schema } = props;
   const options = getUiOptions<T, S, F>(uiSchema, registry.globalUiOptions);
   const { label: displayLabel = true } = options;
   if (!title || !displayLabel) {
@@ -24,7 +24,7 @@ export function ArrayFieldTitleTemplate<
 
   return (
     <TitleFieldTemplate
-      id={titleId<T>(idSchema)}
+      id={titleId(fieldPathId)}
       title={title}
       schema={schema}
       uiSchema={uiSchema}

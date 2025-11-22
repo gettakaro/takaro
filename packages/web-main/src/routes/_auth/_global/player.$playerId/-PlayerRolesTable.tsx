@@ -1,8 +1,13 @@
-import { FC, useState } from 'react';
+import { FC, MouseEvent, useState } from 'react';
 import { PlayerRoleAssignmentOutputDTO } from '@takaro/apiclient';
 import { createColumnHelper, CellContext } from '@tanstack/react-table';
 import { gameServersQueryOptions } from '../../../../queries/gameserver';
-import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon, AiOutlineEye as ViewIcon } from 'react-icons/ai';
+import {
+  AiOutlineDelete as DeleteIcon,
+  AiOutlineRight as ActionIcon,
+  AiOutlineEye as ViewIcon,
+  AiOutlineEdit as EditIcon,
+} from 'react-icons/ai';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useTableActions, Table, Button, Dropdown, IconButton, Skeleton } from '@takaro/lib-components';
 import { DateTime } from 'luxon';
@@ -34,6 +39,14 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
   if (isLoading || !gameServers) {
     return <Skeleton variant="rectangular" width="100%" height="100%" />;
   }
+
+  const handleOnEditRoleClick = (e: MouseEvent, roleId: string) => {
+    e.stopPropagation();
+    navigate({
+      to: '/roles/update/$roleId',
+      params: { roleId },
+    });
+  };
 
   const columnHelper = createColumnHelper<PlayerRoleAssignmentOutputDTO>();
 
@@ -109,6 +122,11 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
                   params: { roleId: info.row.original.roleId },
                 })
               }
+            />
+            <Dropdown.Menu.Item
+              label="Edit role"
+              icon={<EditIcon />}
+              onClick={(e) => handleOnEditRoleClick(e, info.row.original.roleId)}
             />
             <Dropdown.Menu.Item
               label="Remove role"

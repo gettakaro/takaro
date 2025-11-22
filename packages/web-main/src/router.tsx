@@ -5,6 +5,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { DefaultErrorComponent } from './components/ErrorComponent';
 import { IAuthContext } from './hooks/useAuth';
 import { MeOutputDTO } from '@takaro/apiclient';
+import { Spinner } from '@takaro/lib-components';
 
 export interface RouterContext {
   queryClient: QueryClient;
@@ -37,7 +38,14 @@ export const router = createRouter({
   // Atleast hover for 500ms before preloading the route.
   defaultPreloadDelay: 500,
   defaultStaleTime: 0,
-  defaultPendingMs: 1000,
+  defaultPendingMs: 50,
+  defaultPendingComponent: function PendingComponent() {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <Spinner size="large" />
+      </div>
+    );
+  },
 
   // Since we're using React Query, we don't want loader calls to ever be stale.
   // This will ensure that the loader is always called when the route is preloaded or visisted.

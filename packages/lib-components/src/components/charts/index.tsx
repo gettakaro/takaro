@@ -24,29 +24,3 @@ export type { RadialBarChartProps } from './RadialBarChart';
 
 export { GeoMercator } from './GeoMercator';
 export type { GeoMercatorProps } from './GeoMercator';
-
-// ECharts components
-export {
-  EChartsBase,
-  ResponsiveECharts,
-  EChartsLine,
-  EChartsBar,
-  EChartsPie,
-  EChartsArea,
-  EChartsHeatmap,
-  EChartsRadialBar,
-  EChartsScatter,
-  EChartsFunnel,
-} from './echarts';
-
-export type {
-  EChartsBaseProps,
-  EChartsLineProps,
-  EChartsBarProps,
-  EChartsPieProps,
-  EChartsAreaProps,
-  EChartsHeatmapProps,
-  EChartsRadialBarProps,
-  EChartsScatterProps,
-  EChartsFunnelProps,
-} from './echarts';

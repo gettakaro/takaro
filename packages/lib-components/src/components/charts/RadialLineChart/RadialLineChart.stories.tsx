@@ -7,6 +7,12 @@ import { styled } from '../../../styled';
 export default {
   title: 'Charts/RadialLineChart',
   component: RadialLineChart,
+  args: {
+    animate: true,
+  },
+  argTypes: {
+    animate: { control: 'boolean' },
+  },
 } as Meta<RadialLineChartProps<AppleStock>>;
 
 const Wrapper = styled.div`
@@ -14,13 +20,24 @@ const Wrapper = styled.div`
   width: 500px;
 `;
 
-export const Default: StoryFn<RadialLineChartProps<AppleStock>> = () => {
+export const Default: StoryFn<RadialLineChartProps<AppleStock>> = (args) => {
   const getDate = (d: AppleStock) => new Date(d.date).valueOf();
   const getStockValue = (d: AppleStock) => d.close;
+  const tooltipAccessor = (d: AppleStock) => {
+    const date = new Date(d.date).toLocaleDateString();
+    return `Date: ${date}\nClose: $${d.close.toFixed(2)}`;
+  };
 
   return (
     <Wrapper>
-      <RadialLineChart<AppleStock> name="AppleStock" xAccessor={getDate} yAccessor={getStockValue} data={appleStock} />
+      <RadialLineChart<AppleStock>
+        {...args}
+        name="AppleStock"
+        xAccessor={getDate}
+        yAccessor={getStockValue}
+        data={appleStock}
+        tooltip={{ accessor: tooltipAccessor }}
+      />
     </Wrapper>
   );
 };

@@ -48,7 +48,7 @@ export const Route = createFileRoute('/_auth/_global/user/$userId/role/assign')(
 function Component() {
   const [open, setOpen] = useState(true);
   const { userId } = Route.useParams();
-  const { mutate, isPending, error } = useUserAssignRole();
+  const { mutateAsync, isPending, error } = useUserAssignRole();
   const navigate = Route.useNavigate();
   const params = Route.useParams();
 
@@ -66,9 +66,9 @@ function Component() {
     },
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = ({ id, roleId, expiresAt }) => {
+  const onSubmit: SubmitHandler<IFormInputs> = async ({ id, roleId, expiresAt }) => {
     try {
-      mutate({ userId: id, roleId, expiresAt });
+      await mutateAsync({ userId: id, roleId, expiresAt });
       setOpen(false);
     } catch {
       // do nothing

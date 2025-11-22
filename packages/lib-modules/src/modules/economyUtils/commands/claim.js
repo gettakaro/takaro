@@ -1,15 +1,22 @@
 import { takaro, data, TakaroUserError } from '@takaro/helpers';
 
 async function main() {
-  const { user, player, arguments: args, _gameServerId } = data;
+  const { user, player, arguments: args, gameServerId } = data;
 
   if (!user) throw new TakaroUserError('You must link your account to Takaro to use this command.');
 
+  const filters = {
+    userId: [user.id],
+    status: ['PAID'],
+  };
+
+  // Only filter by gameServerId if it's available (should always be present in command context)
+  if (gameServerId) {
+    filters.gameServerId = [gameServerId];
+  }
+
   const pendingOrdersRes = await takaro.shopOrder.shopOrderControllerSearch({
-    filters: {
-      userId: [user.id],
-      status: ['PAID'],
-    },
+    filters,
     sortBy: 'createdAt',
     sortDirection: 'asc',
   });

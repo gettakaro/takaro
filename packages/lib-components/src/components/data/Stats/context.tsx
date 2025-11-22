@@ -1,7 +1,7 @@
 import { createContext } from 'react';
+import { Size } from '../../../styled/types';
 
 export type Direction = 'horizontal' | 'vertical';
-export type Size = 'small' | 'medium' | 'large';
 
 interface StatsContextValue {
   grouped: boolean;

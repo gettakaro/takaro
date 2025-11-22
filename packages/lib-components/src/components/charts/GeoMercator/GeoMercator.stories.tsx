@@ -2,6 +2,7 @@ import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { GeoMercator, GeoMercatorProps } from '.';
 import { Card } from '../../../components';
+import { CountryList } from '../../data/CountryList';
 import { styled } from '../../../styled';
 
 interface Shape {
@@ -39,6 +40,8 @@ const Wrapper = styled.div`
 const Inner = styled.div`
   width: 800px;
   height: 800px;
+  display: flex;
+  gap: 1rem;
 `;
 
 export const Default: StoryFn<GeoMercatorProps<Shape>> = (args) => {
@@ -54,15 +57,18 @@ export const Default: StoryFn<GeoMercatorProps<Shape>> = (args) => {
         <Card.Title label="Map" />
         <Card.Body>
           <Inner>
-            <GeoMercator<Shape>
-              name="geo-mercator"
-              xAccessor={getCountry}
-              yAccessor={getAmount}
-              tooltipAccessor={tooltipAccessor}
-              data={alpha3}
-              showZoomControls={args.showZoomControls}
-              allowZoomAndDrag={args.allowZoomAndDrag}
-            />
+            <div style={{ position: 'relative', flex: 1 }}>
+              <GeoMercator<Shape>
+                name="geo-mercator"
+                xAccessor={getCountry}
+                yAccessor={getAmount}
+                tooltipAccessor={tooltipAccessor}
+                data={alpha3}
+                showZoomControls={args.showZoomControls}
+                allowZoomAndDrag={args.allowZoomAndDrag}
+              />
+            </div>
+            <CountryList<Shape> data={alpha3} xAccessor={getCountry} yAccessor={getAmount} />
           </Inner>
         </Card.Body>
       </Card>

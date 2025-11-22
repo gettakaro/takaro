@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { RequiredDialogOptions } from '.';
-import { Button, Dialog, FormError, ValueConfirmationField } from '@takaro/lib-components';
+import { Alert, Button, Dialog, FormError, ValueConfirmationField } from '@takaro/lib-components';
 import { useGameServerResetCurrency } from '../../queries/gameserver';
 
 interface GameServerResetCurrencyDialogProps extends RequiredDialogOptions {
@@ -29,17 +29,17 @@ export const GameServerResetCurrencyDialog = ({
       <Dialog.Content>
         <Dialog.Heading>reset: all players' currency</Dialog.Heading>
         <Dialog.Body size="medium">
+          <Alert
+            variant="error"
+            text={` This action will permanently reset ALL players' currency to 0 on ${gameServerName}.
+            This action cannot be undone.`}
+          />
           <p>
-            <strong>Warning:</strong> This action will permanently reset ALL players' currency to 0 on{' '}
-            <strong>{gameServerName}</strong>. This action cannot be undone.
-          </p>
-          <p>
-            To confirm, type <strong>RESET</strong> in the field below.
+            To confirm, type <strong>{gameServerName}</strong> in the field below.
           </p>
           <ValueConfirmationField
-            value="RESET"
+            value={gameServerName}
             onValidChange={(v) => setValid(v)}
-            label="Confirmation"
             id="resetCurrencyConfirmation"
           />
           <Button isLoading={isResetting} onClick={handleOnReset} disabled={!valid} fullWidth color="error">
