@@ -241,7 +241,7 @@
     "@types/supertest": "6.0.2",
     "@types/topojson-client": "3.1.5",
     "@types/uuid": "10.0.0",
-    "@vitejs/plugin-react-swc": "4.2.1",
+    "@vitejs/plugin-react-swc": "4.2.2",
     "browserify-zlib": "0.2.0",
     "chai": "4.5.0",
     "chai-as-promised": "8.0.0",
