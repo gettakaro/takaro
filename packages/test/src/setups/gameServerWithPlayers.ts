@@ -61,8 +61,8 @@ async function triggerEntitySync(client: Client, gameServerId: string) {
 }
 
 export const setup = async function (this: IntegrationTest<ISetupData>): Promise<ISetupData> {
-  const eventsAwaiter = new EventsAwaiter();
-  await eventsAwaiter.connect(this.client);
+  // Use createEventsAwaiter to ensure proper cleanup on retry
+  const eventsAwaiter = await this.createEventsAwaiter(this.client);
   // 20 players, 20 pogs should be created
   const connectedEvents = eventsAwaiter.waitForEvents('player-created', 40);
 
@@ -70,10 +70,10 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
   const gameServer1IdentityToken = randomUUID();
   const gameServer2IdentityToken = randomUUID();
 
-  const mockserver1 = await getMockServer({
+  const mockserver1 = await this.createMockServer({
     mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer1IdentityToken },
   });
-  const mockserver2 = await getMockServer({
+  const mockserver2 = await this.createMockServer({
     mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer2IdentityToken },
   });
 

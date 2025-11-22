@@ -27,7 +27,7 @@ export function getAllSystemTasks(): SystemTaskType[] {
 
 export class SystemWorker extends TakaroWorker<ISystemJobData> {
   constructor() {
-    super(config.get('queues.system.name'), 1, processJob, {
+    super(config.get('queues.system.name'), config.get('queues.system.concurrency'), processJob, {
       stalledInterval: ms('10minutes'),
     });
 
@@ -51,6 +51,11 @@ export async function processJob(job: Job<ISystemJobData>) {
     const domains = [];
 
     for await (const domain of domainService.getIterator()) {
+      log.info('[CONCURRENT_TESTS_DEBUG] systemWorker discovered domain', {
+        domainId: domain.id,
+        domainName: domain.name,
+        domainState: domain.state,
+      });
       domains.push(domain);
     }
 

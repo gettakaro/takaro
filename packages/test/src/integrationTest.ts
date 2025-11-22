@@ -5,6 +5,8 @@ import { expect } from './test/expect.js';
 import { AdminClient, Client, AxiosResponse, isAxiosError, TakaroEventCommandExecuted } from '@takaro/apiclient';
 import { randomUUID } from 'crypto';
 import { before, it } from 'node:test';
+import { getMockServer } from '@takaro/mock-gameserver';
+import { EventsAwaiter } from './test/waitForEvents.js';
 
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
@@ -72,6 +74,11 @@ export class IntegrationTest<SetupData> {
     password: '',
   };
 
+  // Track mock servers created by this test instance for automatic cleanup
+  private createdMockServers: Awaited<ReturnType<typeof getMockServer>>[] = [];
+  // Track EventsAwaiter instances for automatic cleanup on retry
+  private createdEventAwaiters: EventsAwaiter[] = [];
+
   constructor(public test: IIntegrationTest<SetupData>) {
     if (test.snapshot) {
       this.test.expectedStatus ??= 200;
@@ -86,13 +93,30 @@ export class IntegrationTest<SetupData> {
   }
 
   private async setupStandardEnvironment() {
+    // Clear any stale domain IDs from previous attempts to ensure clean state
+    const oldDomainId = this.standardDomainId;
+    this.standardDomainId = null;
+    this.domainRegistrationToken = null;
+
+    if (oldDomainId) {
+      console.log(`Creating fresh domain for retry (previous domain: ${oldDomainId})`);
+      // Clear client session to force fresh authentication with new domain
+      // This prevents "Domain is disabled" errors when the old domain is DELETED
+      this.client.token = null;
+    }
+
     const createdDomain = await this.adminClient.domain.domainControllerCreate({
+      id: randomUUID(),
       name: `${testDomainPrefix}-${randomUUID()}`.slice(0, 49),
       maxGameservers: 100,
       maxUsers: 5,
     });
     this.standardDomainId = createdDomain.data.data.createdDomain.id;
     this.domainRegistrationToken = createdDomain.data.data.createdDomain.serverRegistrationToken!;
+
+    if (oldDomainId) {
+      console.log(`Created new domain ${this.standardDomainId} for retry`);
+    }
 
     this.client.username = createdDomain.data.data.rootUser.email;
     this.client.password = createdDomain.data.data.password;
@@ -103,6 +127,27 @@ export class IntegrationTest<SetupData> {
     };
 
     await this.client.login();
+  }
+
+  /**
+   * Create a mock server and track it for automatic cleanup in teardown.
+   * This prevents orphaned mock servers when setup times out or throws.
+   */
+  async createMockServer(config: Parameters<typeof getMockServer>[0]) {
+    const server = await getMockServer(config);
+    this.createdMockServers.push(server);
+    return server;
+  }
+
+  /**
+   * Create an EventsAwaiter and track it for automatic cleanup in teardown.
+   * This prevents orphaned socket connections when tests retry or fail.
+   */
+  async createEventsAwaiter(client: Client) {
+    const awaiter = new EventsAwaiter();
+    await awaiter.connect(client);
+    this.createdEventAwaiters.push(awaiter);
+    return awaiter;
   }
 
   async run() {
@@ -138,6 +183,31 @@ export class IntegrationTest<SetupData> {
         await integrationTestContext.test.teardown.bind(integrationTestContext)();
       }
 
+      // Disconnect ALL tracked EventsAwaiter instances FIRST to abort pending waits
+      // This prevents EVENT TIMEOUT errors when retrying with a new domain
+      for (const awaiter of integrationTestContext.createdEventAwaiters) {
+        try {
+          await awaiter.disconnect();
+        } catch (error) {
+          // Ignore disconnect errors - socket may already be disconnected
+          console.warn('[CONCURRENT_TESTS_DEBUG] Failed to disconnect EventsAwaiter during cleanup:', error);
+        }
+      }
+      integrationTestContext.createdEventAwaiters = [];
+
+      // Clean up ALL tracked mock servers (even if setupData is undefined due to timeout)
+      // This prevents orphaned servers from accumulating across retry attempts
+      for (const mockserver of integrationTestContext.createdMockServers) {
+        try {
+          await mockserver.shutdown();
+        } catch (error) {
+          // Ignore shutdown errors - server may already be down
+          console.warn('Failed to shutdown mock server during cleanup:', error);
+        }
+      }
+      integrationTestContext.createdMockServers = [];
+
+      // Also clean up mock servers in setupData (for backwards compatibility)
       if (
         integrationTestContext.setupData &&
         typeof integrationTestContext.setupData === 'object' &&
@@ -145,11 +215,17 @@ export class IntegrationTest<SetupData> {
       ) {
         const servers = integrationTestContext.setupData.mockservers as any[];
         for (const mockserver of servers) {
-          await mockserver.shutdown();
+          try {
+            await mockserver.shutdown();
+          } catch {
+            // May have already been cleaned up above
+          }
         }
       }
 
       if (integrationTestContext.standardDomainId) {
+        const oldDomainId = integrationTestContext.standardDomainId;
+
         try {
           const failedFunctionsRes = await integrationTestContext.client.event.eventControllerGetFailedFunctions();
 
@@ -168,8 +244,14 @@ export class IntegrationTest<SetupData> {
         }
 
         try {
+          console.log(
+            `[CONCURRENT_TESTS_DEBUG] Attempting to delete domain ${integrationTestContext.standardDomainId}`,
+          );
           await integrationTestContext.adminClient.domain.domainControllerRemove(
             integrationTestContext.standardDomainId,
+          );
+          console.log(
+            `[CONCURRENT_TESTS_DEBUG] Successfully deleted domain ${integrationTestContext.standardDomainId}`,
           );
         } catch (error) {
           if (!isAxiosError(error)) {
@@ -179,18 +261,31 @@ export class IntegrationTest<SetupData> {
             throw error;
           }
         }
+
+        // Clear the domain ID to force fresh domain creation on next attempt
+        console.log(`Cleaned up domain ${oldDomainId}, clearing domain IDs for next attempt`);
+        integrationTestContext.standardDomainId = null;
+        integrationTestContext.domainRegistrationToken = null;
       }
+
+      // Add small delay to ensure database operations complete
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
     async function executeTest(): Promise<void> {
       let response;
       let lastError: Error | null = null;
-
+      if (maxRetries <= 0) {
+        throw new Error('Max retries must be at least 1');
+      }
       for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
           if (attempt > 0) {
             console.log(
-              `Retry attempt ${attempt}/${maxRetries} for test: ${integrationTestContext.test.name} (Domain ID: ${integrationTestContext.standardDomainId || 'not yet created'})`,
+              `\n=== Retry attempt ${attempt}/${maxRetries} for test: ${integrationTestContext.test.name} ===`,
+            );
+            console.log(
+              `Previous domain: ${integrationTestContext.standardDomainId || 'none'} (will be cleared and recreated)`,
             );
           }
 

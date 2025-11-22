@@ -170,6 +170,11 @@ const main = pwTest.extend<IBaseFixtures>({
       });
 
       // fixture teardown
+      try {
+        await mockServer.shutdown();
+      } catch (error) {
+        console.warn('Failed to shutdown mock server during E2E teardown:', error);
+      }
       await adminClient.domain.domainControllerRemove(domain.createdDomain.id);
     },
     { auto: true },

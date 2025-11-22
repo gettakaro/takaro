@@ -1,6 +1,6 @@
 import { ModuleOutputDTO, GameServerOutputDTO, RoleOutputDTO, PlayerOutputDTO, Client } from '@takaro/apiclient';
 import type { EventTypes } from '@takaro/modules';
-import { EventsAwaiter, IntegrationTest } from '../main.js';
+import { IntegrationTest } from '../main.js';
 import { randomUUID } from 'crypto';
 import { getMockServer } from '@takaro/mock-gameserver';
 
@@ -64,18 +64,18 @@ export const modulesTestSetup = async function (
 ): Promise<IModuleTestsSetupData> {
   const modules = (await this.client.module.moduleControllerSearch()).data.data;
 
-  const eventAwaiter = new EventsAwaiter();
-  await eventAwaiter.connect(this.client);
+  // Use createEventsAwaiter to ensure proper cleanup on retry
+  const eventAwaiter = await this.createEventsAwaiter(this.client);
   // 10 players, 10 pogs should be created
   const playerCreatedEvents = eventAwaiter.waitForEvents('player-created', 20);
 
   if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
   const gameServer1IdentityToken = randomUUID();
   const gameServer2IdentityToken = randomUUID();
-  const mockserver1 = await getMockServer({
+  const mockserver1 = await this.createMockServer({
     mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer1IdentityToken },
   });
-  const mockserver2 = await getMockServer({
+  const mockserver2 = await this.createMockServer({
     mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer2IdentityToken },
   });
 

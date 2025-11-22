@@ -424,8 +424,17 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
     this.log.debug('handleChatMessage: Extracted command name', { commandName });
 
     if (commandName === 'link') {
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] Processing /link command', {
+        player: chatMessage.player.gameId,
+        gameServerId,
+      });
       const { player, pog } = await this.playerService.resolveRef(chatMessage.player, gameServerId);
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] Calling handlePlayerLink', {
+        playerId: player.id,
+        pogId: pog.id,
+      });
       await this.playerService.handlePlayerLink(player, pog);
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] handlePlayerLink completed, creating command-executed event');
       await new EventService(this.domainId).create(
         new EventCreateDTO({
           playerId: player.id,
@@ -440,6 +449,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
           }),
         }),
       );
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] /link command processing complete');
     }
 
     const triggeredCommands = await this.repo.getTriggeredCommands(commandName, gameServerId);

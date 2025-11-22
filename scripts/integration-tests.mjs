@@ -2,6 +2,8 @@ import { randomUUID } from 'crypto';
 import { upMany, logs, upAll, down, run, pullAll, buildOne } from 'docker-compose/dist/v2.js';
 import { $ } from 'zx';
 import { writeFile, mkdir } from 'fs/promises';
+import { createWriteStream } from 'fs';
+import { spawn } from 'child_process';
 
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -111,22 +113,57 @@ async function main() {
 
       await $`npm run --workspace=./packages/e2e test:e2e`;
     } else {
-      await run('takaro', 'npm run test:ci', { ...composeOpts, NODE_ENV: 'test', LOGGING_LEVEL: 'none' });
+      await run('takaro', 'npm run test:ci', { ...composeOpts, NODE_ENV: 'test', LOGGING_LEVEL: 'debug', TEST_CONCURRENCY: '5' });
     }
   } catch (error) {
     console.error('Tests failed');
     failed = true;
+  } finally {
+    // Always collect docker logs, even if tests failed
+    console.log('Collecting docker logs...');
+    try {
+      // Ensure directory exists
+      await mkdir('./reports/integrationTests', { recursive: true });
+
+      // Create write streams for output
+      const outStream = createWriteStream('./reports/integrationTests/docker-logs.txt');
+      const errStream = createWriteStream('./reports/integrationTests/docker-logs-err.txt');
+
+      // Call docker compose logs directly to avoid library's memory accumulation
+      const dockerCompose = spawn('docker', [
+        'compose',
+        '-f', 'docker-compose.test.yml',
+        'logs',
+        '--no-color',
+        'takaro_api', 'takaro_worker', 'takaro_mock_gameserver', 'takaro_connector', 'kratos'
+      ], {
+        cwd: process.cwd(),
+        env: composeOpts.env
+      });
+
+      // Stream directly to files
+      dockerCompose.stdout.pipe(outStream);
+      dockerCompose.stderr.pipe(errStream);
+
+      // Wait for completion
+      await new Promise((resolve, reject) => {
+        dockerCompose.on('close', (code) => {
+          console.log(`Docker logs collection completed with code ${code}`);
+          resolve();
+        });
+        dockerCompose.on('error', (err) => {
+          console.error('Error collecting docker logs:', err);
+          reject(err);
+        });
+      });
+
+      console.log('Docker logs collected successfully via direct streaming');
+    } catch (logError) {
+      console.error('Failed to collect docker logs:', logError);
+    }
   }
 
   await $`TAKARO_HOST=http://127.0.0.1:13000 npm -w packages/lib-apiclient run generate && npm run test:style:fix`;
-
-  const logsResult = await logs(['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'kratos'], {
-    ...composeOpts,
-    log: false,
-  });
-
-  await writeFile('./reports/integrationTests/docker-logs.txt', logsResult.out);
-  await writeFile('./reports/integrationTests/docker-logs-err.txt', logsResult.err);
 
   await cleanUp();
 

@@ -16,8 +16,19 @@ export async function domainStateMiddleware(
   const domain = await new DomainService().findOne(req.domainId);
 
   if (!domain) {
+    logger('domainStateMiddleware').warn('[CONCURRENT_TESTS_DEBUG] Domain lookup failed in middleware', {
+      requestedDomainId: req.domainId,
+      path: req.path,
+    });
     return next(new errors.NotFoundError());
   }
+
+  logger('domainStateMiddleware').debug('[CONCURRENT_TESTS_DEBUG] Domain state check in middleware', {
+    domainId: domain.id,
+    domainName: domain.name,
+    state: domain.state,
+    path: req.path,
+  });
 
   switch (domain.state) {
     case DOMAIN_STATES.ACTIVE:

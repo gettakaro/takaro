@@ -11,6 +11,7 @@ source "$(dirname "$0")/typecheck-tests.sh"
 # Default values
 TEST_TYPE=""
 CI_MODE=false
+CONCURRENCY=${TEST_CONCURRENCY:-10}
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -61,21 +62,21 @@ case $TEST_TYPE in
     typecheck_tests 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'
     
     if [[ "$CI_MODE" == "true" ]]; then
-      node --test-concurrency 1 --test-force-exit --import=ts-node-maintained/register/esm --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=@reporters/github --test-reporter-destination=stdout 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'
+      node --test-concurrency $CONCURRENCY --test-force-exit --import=ts-node-maintained/register/esm --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=@reporters/github --test-reporter-destination=stdout 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'
     else
-      node --test-concurrency 1 --test-force-exit --import=ts-node-maintained/register/esm --test 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'
+      node --test-concurrency $CONCURRENCY --test-force-exit --import=ts-node-maintained/register/esm --test 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'
     fi
     ;;
   "unit")
     echo "Checking TypeScript for unit tests..."
     typecheck_tests 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.unit.test.ts'
     
-    node --test-concurrency 1 --test-force-exit --import=ts-node-maintained/register/esm --test 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.unit.test.ts'
+    node --test-concurrency $CONCURRENCY --test-force-exit --import=ts-node-maintained/register/esm --test 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.unit.test.ts'
     ;;
   "integration")
     echo "Checking TypeScript for integration tests..."
     typecheck_tests 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.integration.test.ts'
     
-    node --test-concurrency 1 --test-force-exit --import=ts-node-maintained/register/esm --test 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.integration.test.ts'
+    node --test-concurrency $CONCURRENCY --test-force-exit --import=ts-node-maintained/register/esm --test 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.integration.test.ts'
     ;;
 esac

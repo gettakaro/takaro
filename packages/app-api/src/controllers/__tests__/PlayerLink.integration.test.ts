@@ -12,7 +12,6 @@ import { faker } from '@faker-js/faker';
 import { randomUUID } from 'crypto';
 import { Client, isAxiosError } from '@takaro/apiclient';
 import { describe } from 'node:test';
-import { getMockServer } from '@takaro/mock-gameserver';
 
 const group = 'Player-User linking';
 
@@ -162,7 +161,7 @@ const tests = [
 
       const connectedEvents = eventsAwaiter.waitForEvents('player-created', 10);
 
-      await getMockServer({
+      await this.createMockServer({
         mockserver: { registrationToken: newDomainRegistrationToken, identityToken: serverName },
       });
 

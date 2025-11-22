@@ -564,7 +564,7 @@ const tests = [
       // Create a mock game server
       if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set');
       const identityToken = randomUUID();
-      const mockServer = await getMockServer({
+      const mockServer = await this.createMockServer({
         mockserver: {
           registrationToken: this.domainRegistrationToken,
           identityToken,

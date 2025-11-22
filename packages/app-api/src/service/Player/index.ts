@@ -123,7 +123,18 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
   }
 
   async create(item: PlayerCreateDTO): Promise<PlayerOutputWithRolesDTO> {
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] Creating player', {
+      name: item.name,
+      steamId: item.steamId,
+      domainId: this.domainId,
+    });
+
     const created = await this.repo.create(item);
+
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] Player created, about to emit player-created event', {
+      playerId: created.id,
+      domainId: this.domainId,
+    });
 
     const eventsService = new EventService(this.domainId);
     await eventsService.create(new EventCreateDTO({ eventName: TakaroEvents.PLAYER_CREATED, playerId: created.id }));
@@ -235,6 +246,16 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     gamePlayer: IGamePlayer,
     gameServerId: string,
   ): Promise<{ player: PlayerOutputWithRolesDTO; pog: PlayerOnGameserverOutputWithRolesDTO }> {
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] resolveRef called', {
+      gameId: gamePlayer.gameId,
+      gameServerId,
+      steamId: gamePlayer.steamId,
+      epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
+      xboxLiveId: gamePlayer.xboxLiveId,
+      platformId: gamePlayer.platformId,
+      domainId: this.domainId,
+    });
+
     // Validation deferred - we allow finding existing players via gameId even with placeholder IDs
     // Validation only enforced when creating NEW players
 
@@ -296,9 +317,10 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
       }
 
       // Main player profile does not exist yet!
-      this.log.debug('No existing associations found, creating new global player', {
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] No existing associations found, creating new global player', {
         gameId: gamePlayer.gameId,
         gameServerId,
+        domainId: this.domainId,
       });
       player = await this.create(
         new PlayerCreateDTO({
@@ -650,6 +672,11 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
   }
 
   async handlePlayerLink(player: PlayerOutputDTO, pog: PlayerOnGameserverOutputDTO) {
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] handlePlayerLink started', {
+      playerId: player.id,
+      pogId: pog.id,
+      gameServerId: pog.gameServerId,
+    });
     const secretCode = humanId({ separator: '-', capitalize: false });
     const redis = await Redis.getClient('playerLink');
 
@@ -670,8 +697,13 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     await redis.set(`playerLink:${secretCode}-domain`, this.domainId, {
       EX: 60 * 30,
     });
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] Secret code stored in Redis', { secretCode, playerId: player.id });
 
     const gameServerService = new GameServerService(this.domainId);
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] Calling gameServerService.sendMessage for link', {
+      gameServerId: pog.gameServerId,
+      recipientPogId: pog.id,
+    });
     await gameServerService.sendMessage(
       pog.gameServerId,
       `Browse to ${config.get('http.frontendHost')}/link?code=${secretCode} to complete the linking process.`,
@@ -679,5 +711,6 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         recipient: pog,
       }),
     );
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] handlePlayerLink completed, message sent');
   }
 }

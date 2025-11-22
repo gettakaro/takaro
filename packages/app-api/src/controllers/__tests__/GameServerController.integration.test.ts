@@ -9,7 +9,6 @@ import {
 import { describe } from 'node:test';
 import { HookEvents } from '@takaro/modules';
 import { randomUUID } from 'crypto';
-import { getMockServer } from '@takaro/mock-gameserver';
 
 const group = 'GameServerController';
 
@@ -176,7 +175,7 @@ const tests = [
       const gameServerIdentityToken = randomUUID();
 
       // Create a new mock server that will register automatically
-      const mockServer = await getMockServer({
+      const mockServer = await this.createMockServer({
         mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServerIdentityToken },
       });
 

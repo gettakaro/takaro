@@ -21,16 +21,55 @@ export const sorter = (a: IDetectedEvent, b: IDetectedEvent) => {
 
 export class EventsAwaiter {
   socket: Socket;
+  private eventBuffer: any[] = [];
+  private activeWaiters: Set<(event: any) => void> = new Set();
+  private pendingWaits: Set<{ expectedEvent: string; reject: (error: Error) => void }> = new Set();
+  private isDisconnected = false;
 
   async connect(client: Client) {
     return new Promise<EventsAwaiter>((resolve, reject) => {
       this.socket = io(integrationConfig.get('host'), {
+        transports: ['websocket'],
         extraHeaders: {
           Authorization: `Bearer ${client.token}`,
         },
       });
 
+      // Attach event listener immediately to capture all events from connection time
+      // This prevents race conditions where events are emitted before waitForEvents() is called
+      this.socket.on('event', (event) => {
+        console.log('[CONCURRENT_TESTS_DEBUG] CLIENT RECEIVED EVENT:', {
+          timestamp: new Date().toISOString(),
+          socketId: this.socket.id,
+          eventName: event.eventName,
+          eventId: event.id,
+          bufferSize: this.eventBuffer.length,
+          activeWaiters: this.activeWaiters.size,
+        });
+
+        this.eventBuffer.push(event);
+
+        // Notify all active waiters about the new event
+        this.activeWaiters.forEach((waiter) => waiter(event));
+      });
+
       this.socket.on('connect', async () => {
+        console.log('[CONCURRENT_TESTS_DEBUG] CLIENT SOCKET CONNECTED:', {
+          timestamp: new Date().toISOString(),
+          socketId: this.socket.id,
+          connected: this.socket.connected,
+        });
+        // Don't resolve yet - wait for room-joined event
+      });
+
+      this.socket.on('room-joined', (data: { domainId: string }) => {
+        console.log('[CONCURRENT_TESTS_DEBUG] CLIENT SOCKET JOINED ROOM:', {
+          timestamp: new Date().toISOString(),
+          socketId: this.socket.id,
+          domainId: data.domainId,
+          connected: this.socket.connected,
+        });
+        // Now we're safe to resolve - socket is in the room and ready for events
         return resolve(this);
       });
 
@@ -41,38 +80,112 @@ export class EventsAwaiter {
   }
 
   async disconnect() {
+    this.isDisconnected = true;
+
+    // Abort all pending waitForEvents() promises immediately
+    // This prevents EVENT TIMEOUT errors when retrying tests with a new domain
+    for (const pending of this.pendingWaits) {
+      pending.reject(
+        new Error(
+          `EventsAwaiter disconnected while waiting for event '${pending.expectedEvent}' (likely due to test retry)`,
+        ),
+      );
+    }
+    this.pendingWaits.clear();
+
+    this.activeWaiters.clear();
     this.socket.removeAllListeners();
     this.socket.disconnect();
   }
 
   async waitForEvents(expectedEvent: EventTypes | string, amount = 1) {
     if (!this.socket.connected) throw new Error('Socket not connected');
+    if (this.isDisconnected) throw new Error('EventsAwaiter has been disconnected');
+
     const events: IDetectedEvent[] = [];
-    const discardedEvents: IDetectedEvent[] = [];
     let hasFinished = false;
 
-    return Promise.race([
-      new Promise<IDetectedEvent[]>((resolve) => {
-        this.socket.on('event', (event) => {
-          if (event.eventName === expectedEvent) {
-            events.push({ event, data: event });
-          } else {
-            discardedEvents.push({ event, data: event });
-          }
+    console.log('[CONCURRENT_TESTS_DEBUG] WAITING FOR EVENTS:', {
+      timestamp: new Date().toISOString(),
+      socketId: this.socket.id,
+      expectedEvent,
+      expectedAmount: amount,
+      currentBufferSize: this.eventBuffer.length,
+      socketConnected: this.socket.connected,
+    });
 
-          if (events.length === amount) {
-            hasFinished = true;
-            this.disconnect();
-            resolve(events);
+    // First check buffer for events that already arrived
+    const bufferedMatches = this.eventBuffer.filter((e) => e.eventName === expectedEvent);
+    events.push(...bufferedMatches.map((data) => ({ event: data.eventName, data })));
+
+    console.log('[CONCURRENT_TESTS_DEBUG] CHECKED BUFFER:', {
+      timestamp: new Date().toISOString(),
+      expectedEvent,
+      bufferedMatchesFound: bufferedMatches.length,
+      totalEventsNeeded: amount,
+    });
+
+    // If we already have enough events from buffer, return immediately
+    if (events.length >= amount) {
+      console.log('[CONCURRENT_TESTS_DEBUG] ENOUGH EVENTS IN BUFFER, RETURNING:', {
+        timestamp: new Date().toISOString(),
+        expectedEvent,
+        eventsFound: events.length,
+      });
+      return events.slice(0, amount);
+    }
+
+    // Need to wait for more events
+    return Promise.race([
+      new Promise<IDetectedEvent[]>((resolve, reject) => {
+        // Track this pending wait so disconnect() can abort it
+        const pendingWait = { expectedEvent, reject };
+        this.pendingWaits.add(pendingWait);
+
+        const cleanup = () => {
+          this.pendingWaits.delete(pendingWait);
+        };
+        const waiter = (event: any) => {
+          if (event.eventName === expectedEvent) {
+            events.push({ event: event.eventName, data: event });
+
+            if (events.length >= amount) {
+              hasFinished = true;
+              this.activeWaiters.delete(waiter);
+              cleanup();
+              resolve(events.slice(0, amount));
+            }
           }
-        });
+        };
+
+        // Register this waiter to be notified of new events
+        this.activeWaiters.add(waiter);
       }),
       new Promise<IDetectedEvent[]>((_, reject) => {
+        // Track this timeout rejecter so disconnect() can abort it
+        const pendingWait = { expectedEvent, reject };
+        this.pendingWaits.add(pendingWait);
+
+        const cleanup = () => {
+          this.pendingWaits.delete(pendingWait);
+        };
+
         setTimeout(() => {
           if (hasFinished) return;
+          if (this.isDisconnected) return; // Already aborted by disconnect()
           const msg = `Event ${expectedEvent} timed out - received ${events.length}/${amount} events.`;
+          console.log('[CONCURRENT_TESTS_DEBUG] EVENT TIMEOUT:', {
+            timestamp: new Date().toISOString(),
+            socketId: this.socket.id,
+            expectedEvent,
+            expectedAmount: amount,
+            receivedAmount: events.length,
+            timeout: integrationConfig.get('waitForEventsTimeout'),
+            bufferSize: this.eventBuffer.length,
+            socketConnected: this.socket.connected,
+          });
           console.warn(msg);
-          this.disconnect();
+          cleanup();
           reject(new Error(msg));
         }, integrationConfig.get('waitForEventsTimeout'));
       }),

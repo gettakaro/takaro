@@ -52,6 +52,51 @@ If you wish to see logs when testing you can add the `LOGGING_LEVEL` env to your
 docker compose exec -e LOGGING_LEVEL=debug takaro npm t
 ```
 
+### Parallel test execution
+
+Backend tests support parallel execution to significantly speed up test runs. By default, tests run with a concurrency of 10, but you can configure this based on your environment.
+
+**Configure concurrency:**
+
+```sh
+# Run tests with custom concurrency
+docker compose exec -e TEST_CONCURRENCY=15 takaro npm test
+
+# For CI environments, use lower concurrency
+docker compose exec -e TEST_CONCURRENCY=5 takaro npm test
+```
+
+**Environment variables:**
+
+- `TEST_CONCURRENCY` - Number of tests to run in parallel (default: 10)
+- `POSTGRES_POOL_MIN` - Minimum database connections (default: 5)
+- `POSTGRES_POOL_MAX` - Maximum database connections (default: 250)
+
+**Database configuration:**
+
+PostgreSQL is configured with `max_connections=300` in the test environment to support parallel execution. The Knex connection pool is set to `POSTGRES_POOL_MAX=250` to prevent connection pool starvation during parallel test execution.
+
+**Connection Pool Sizing:**
+
+All tests run in a single Node.js process and share one global Knex connection pool. Each test typically needs 10-15 connections during domain setup (creating domain, users, roles, modules, etc.). To prevent connection pool starvation:
+
+**Formula:** `POSTGRES_POOL_MAX >= TEST_CONCURRENCY × 20`
+
+- For `TEST_CONCURRENCY=5`: Pool of 100 minimum
+- For `TEST_CONCURRENCY=10`: Pool of 200 minimum
+- Current default: `POSTGRES_POOL_MAX=250` supports up to 12 concurrent tests
+
+**Why This Matters:**
+
+If the pool is too small, parallel tests will compete for connections, causing them to block and wait. This creates **inverse performance scaling** where running with higher concurrency is actually SLOWER than sequential execution (concurrency=1) due to contention overhead.
+
+**Recommendations:**
+- **Local development:** `TEST_CONCURRENCY=5-10`
+- **CI environments:** `TEST_CONCURRENCY=5-8`
+- If tests with concurrency=5 are slower than concurrency=1, increase `POSTGRES_POOL_MAX`
+
+Each test runs in an isolated domain (tenant), so parallel execution is safe from a data isolation perspective.
+
 ### Playwright e2e tests
 Playwright tests are run locally, so make sure to set all required environment variables in shell. 
 

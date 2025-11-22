@@ -36,6 +36,7 @@ export interface IQueuesConfig {
     };
     system: {
       name: string;
+      concurrency: number;
     };
   };
 }
@@ -52,7 +53,7 @@ export const queuesConfigSchema = {
       concurrency: {
         doc: 'The number of commands to run at once',
         format: Number,
-        default: 10,
+        default: 50,
         env: 'COMMANDS_QUEUE_CONCURRENCY',
       },
     },
@@ -66,7 +67,7 @@ export const queuesConfigSchema = {
       concurrency: {
         doc: 'The number of cronjobs to run at once',
         format: Number,
-        default: 10,
+        default: 50,
         env: 'CRONJOBS_QUEUE_CONCURRENCY',
       },
     },
@@ -80,7 +81,7 @@ export const queuesConfigSchema = {
       concurrency: {
         doc: 'The number of hooks to run at once',
         format: Number,
-        default: 10,
+        default: 50,
         env: 'HOOKS_QUEUE_CONCURRENCY',
       },
     },
@@ -94,7 +95,7 @@ export const queuesConfigSchema = {
       concurrency: {
         doc: 'The number of events to run at once',
         format: Number,
-        default: 10,
+        default: 50,
         env: 'EVENTS_QUEUE_CONCURRENCY',
       },
     },
@@ -122,7 +123,7 @@ export const queuesConfigSchema = {
       concurrency: {
         doc: 'Job concurrency',
         format: Number,
-        default: 5,
+        default: 50,
         env: 'PLAYER_SYNC_QUEUE_CONCURRENCY',
       },
     },
@@ -142,7 +143,7 @@ export const queuesConfigSchema = {
       concurrency: {
         doc: 'Job concurrency',
         format: Number,
-        default: 5,
+        default: 50,
         env: 'KPI_QUEUE_CONCURRENCY',
       },
     },
@@ -160,6 +161,12 @@ export const queuesConfigSchema = {
         format: String,
         default: 'system',
         env: 'SYSTEM_QUEUE_NAME',
+      },
+      concurrency: {
+        doc: 'Job concurrency',
+        format: Number,
+        default: 50,
+        env: 'SYSTEM_QUEUE_CONCURRENCY',
       },
     },
   },

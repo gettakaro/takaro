@@ -18,6 +18,11 @@ interface IConnectorConfig extends IBaseConfig, IRedisConfig {
     reconnectAfterMs: number;
     syncIntervalMs: number;
   };
+  connector: {
+    queue: {
+      concurrency: number;
+    };
+  };
 }
 
 const configSchema = {
@@ -85,6 +90,16 @@ const configSchema = {
       format: 'integer',
       default: ms('5m'),
       env: 'GAMESERVER_MANAGER_SYNC_INTERVAL_MS',
+    },
+  },
+  connector: {
+    queue: {
+      concurrency: {
+        doc: 'The number of connector jobs to run at once',
+        format: Number,
+        default: 50,
+        env: 'CONNECTOR_QUEUE_CONCURRENCY',
+      },
     },
   },
 };

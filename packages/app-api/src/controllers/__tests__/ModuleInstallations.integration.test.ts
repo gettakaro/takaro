@@ -26,7 +26,7 @@ const defaultSetup = async function (this: IntegrationTest<ISetupData>): Promise
 
   if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
   const identityToken = randomUUID();
-  const mockServer = await getMockServer({
+  const mockServer = await this.createMockServer({
     mockserver: {
       registrationToken: this.domainRegistrationToken,
       identityToken,

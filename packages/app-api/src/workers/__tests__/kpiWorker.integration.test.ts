@@ -39,7 +39,7 @@ async function setup(this: IntegrationTest<ISetupData>): Promise<ISetupData> {
 
   for (let i = 0; i < 2; i++) {
     const identityToken = randomUUID();
-    const mockServer = await getMockServer({
+    const mockServer = await this.createMockServer({
       mockserver: {
         registrationToken: this.domainRegistrationToken,
         identityToken,
