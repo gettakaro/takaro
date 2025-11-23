@@ -176,9 +176,32 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       await deleteLambda({ domainId: existing.id });
     }
 
-    // Soft-delete: update state to DELETED instead of hard-deleting
-    // This avoids CASCADE deadlocks and allows domain recovery
-    await this.repo.update(id, new DomainUpdateInputDTO({ state: DOMAIN_STATES.DELETED }));
+    // Soft-delete: update state to DISABLED instead of hard-deleting
+    // This avoids CASCADE deadlocks
+    await this.repo.update(id, new DomainUpdateInputDTO({ state: DOMAIN_STATES.DISABLED }));
+
+    return id;
+  }
+
+  async hardDelete(id: string) {
+    const existing = await this.findOne(id);
+
+    if (!existing) {
+      throw new errors.NotFoundError();
+    }
+
+    const gameServerService = new GameServerService(id);
+    for await (const gameServer of gameServerService.getIterator()) {
+      await gameServerService.delete(gameServer.id);
+    }
+
+    if (config.get('functions.executionMode') == EXECUTION_MODE.LAMBDA) {
+      await deleteLambda({ domainId: existing.id });
+    }
+
+    // Hard-delete: physically remove the domain from the database
+    // Child records are deleted first to avoid CASCADE deadlocks
+    await this.repo.delete(id);
 
     return id;
   }
@@ -304,9 +327,9 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     const result = await this.repo.find({ filters: { serverRegistrationToken: [registrationToken] } });
     if (!result.total) throw new errors.NotFoundError();
 
-    // Filter out deleted domains - they should not be resolvable
+    // Filter out disabled domains - they should not be resolvable
     const domain = result.results[0];
-    if (domain.state === DOMAIN_STATES.DELETED) {
+    if (domain.state === DOMAIN_STATES.DISABLED) {
       throw new errors.NotFoundError();
     }
 
