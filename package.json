@@ -1,7 +1,7 @@
 {
   "name": "takaro",
   "version": "0.4.9",
-  "packageManager": "npm@11.6.1",
+  "packageManager": "npm@11.6.4",
   "description": "",
   "keywords": [],
   "homepage": "https://takaro.app",
@@ -291,7 +291,7 @@
   },
   "engines": {
     "node": "24.11.0",
-    "npm": "11.6.1"
+    "npm": "11.6.4"
   },
   "overrides": {
     "esbuild": "0.24.0",
