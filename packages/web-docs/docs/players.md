@@ -29,5 +29,5 @@ Players can link to your community and receive login credentials to access it th
 4. Click the link to be redirected to Takaro, where you can create your user account.
 5. Once linked, you'll have access to Takaro and the associated game community.
 
-If you wish to link to another game community, simply repeat the `/link` process. Within Takaro, you can easily switch between game communities by using the domain widgets in the bottom left.
+If your player wishes to link to another game community, simply repeat the `/link` process. Within Takaro, you can easily switch between game communities by using the domain widgets in the bottom left.
 To know more about how to use the shop, please visit [Economy page](./economy.md).
