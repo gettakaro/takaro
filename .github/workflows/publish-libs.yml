@@ -3,7 +3,7 @@ name: Publish libs
 on:
   push:
     tags:
-      - '**'
+      - "**"
 jobs:
   publish:
     name: Publish packages
@@ -12,31 +12,30 @@ jobs:
       matrix:
         package:
           [
-            { name: 'lib-apiclient' },
-            { name: 'lib-auth' },
-            { name: 'lib-aws' },
-            { name: 'lib-components' },
-            { name: 'lib-config' },
-            { name: 'lib-db' },
-            { name: 'lib-email' },
-            { name: 'lib-function-helpers' },
-            { name: 'lib-gameserver' },
-            { name: 'lib-http' },
-            { name: 'lib-modules' },
-            { name: 'lib-queues' },
-            { name: 'lib-util' },
+            { name: "lib-apiclient" },
+            { name: "lib-auth" },
+            { name: "lib-aws" },
+            { name: "lib-components" },
+            { name: "lib-config" },
+            { name: "lib-db" },
+            { name: "lib-email" },
+            { name: "lib-function-helpers" },
+            { name: "lib-gameserver" },
+            { name: "lib-http" },
+            { name: "lib-modules" },
+            { name: "lib-queues" },
+            { name: "lib-util" },
           ]
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24.11.0
-          cache: 'npm'
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: "https://registry.npmjs.org"
 
       - run: ./scripts/dev-init.sh
 

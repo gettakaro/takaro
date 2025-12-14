@@ -17,11 +17,11 @@ jobs:
     steps:
       - name: Generate token
         id: generate_token
-        uses: tibdex/github-app-token@v2
+        uses: actions/create-github-app-token@v2
         with:
-          app_id: ${{ secrets.TAKARO_CI_APP_ID }}
-          private_key: ${{ secrets.TAKARO_CI_APP_PRIV_KEY }}
-      - uses: actions/checkout@v4
+          app-id: ${{ secrets.TAKARO_CI_APP_ID }}
+          private-key: ${{ secrets.TAKARO_CI_APP_PRIV_KEY }}
+      - uses: actions/checkout@v5
         with:
           ref: main
           token: ${{ steps.generate_token.outputs.token }}
@@ -31,7 +31,7 @@ jobs:
           git fetch origin main:refs/remotes/origin/main
           git reset --hard development
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           branch: main-promotion
           labels: skip-changelog
@@ -39,7 +39,7 @@ jobs:
           title: 🤖 Merge development into main
           body: |
             This PR merges the development branch into the main branch.
-            
+
             The PR description will be automatically updated with the list of included changes.
 
   updateDevelopment:
@@ -48,11 +48,11 @@ jobs:
     steps:
       - name: Generate token
         id: generate_token
-        uses: tibdex/github-app-token@v2
+        uses: actions/create-github-app-token@v2
         with:
-          app_id: ${{ secrets.TAKARO_CI_APP_ID }}
-          private_key: ${{ secrets.TAKARO_CI_APP_PRIV_KEY }}
-      - uses: actions/checkout@v4
+          app-id: ${{ secrets.TAKARO_CI_APP_ID }}
+          private-key: ${{ secrets.TAKARO_CI_APP_PRIV_KEY }}
+      - uses: actions/checkout@v5
         with:
           ref: development
           token: ${{ steps.generate_token.outputs.token }}
@@ -70,11 +70,11 @@ jobs:
     steps:
       - name: Generate token
         id: generate_token
-        uses: tibdex/github-app-token@v2
+        uses: actions/create-github-app-token@v2
         with:
-          app_id: ${{ secrets.TAKARO_CI_APP_ID }}
-          private_key: ${{ secrets.TAKARO_CI_APP_PRIV_KEY }}
-      - uses: actions/checkout@v4
+          app-id: ${{ secrets.TAKARO_CI_APP_ID }}
+          private-key: ${{ secrets.TAKARO_CI_APP_PRIV_KEY }}
+      - uses: actions/checkout@v5
         with:
           ref: main-promotion
           token: ${{ steps.generate_token.outputs.token }}
@@ -83,30 +83,30 @@ jobs:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
           set -e  # Exit on any error
-          
+
           echo "Generating PR description for main-promotion PR..."
           echo "Current branch: main-promotion"
           echo "Current commit: $(git rev-parse HEAD)"
-          
+
           # Ensure we have the required tools
           if ! command -v gh &> /dev/null; then
             echo "Error: gh CLI not found"
             exit 1
           fi
-          
+
           if ! command -v jq &> /dev/null; then
             echo "Error: jq not found"
             exit 1
           fi
-          
+
           # Fetch main to ensure we have latest and full history
           echo "Fetching main branch..."
           git fetch --unshallow origin main:refs/remotes/origin/main || git fetch origin main:refs/remotes/origin/main
           echo "Main branch: $(git rev-parse origin/main)"
-          
+
           # Get merge commits that will be included when merging to main
           echo "Getting merge commits that will be included when merging to main..."
-          
+
           # Try to find the common ancestor between main and main-promotion
           if MERGE_BASE=$(git merge-base origin/main HEAD 2>/dev/null); then
             echo "Merge base between main and main-promotion: $MERGE_BASE"
@@ -117,10 +117,10 @@ jobs:
             # Fallback: just compare against origin/main
             PR_LIST=$(git log origin/main..HEAD --merges --pretty=format:"%H %s" | grep -E "Merge pull request #[0-9]+" | head -20 || true)
           fi
-          
+
           echo "Found merge commits:"
           echo "$PR_LIST"
-          
+
           # Initialize categorized PR lists
           declare -A PR_CATEGORIES
           PR_CATEGORIES[feature]=""
@@ -128,16 +128,16 @@ jobs:
           PR_CATEGORIES[chore]=""
           PR_CATEGORIES[docs]=""
           PR_CATEGORIES[other]=""
-          
+
           declare -A PR_COUNTS
           PR_COUNTS[feature]=0
           PR_COUNTS[bug]=0
           PR_COUNTS[chore]=0
           PR_COUNTS[docs]=0
           PR_COUNTS[other]=0
-          
+
           TOTAL_PR_COUNT=0
-          
+
           if [ -n "$PR_LIST" ]; then
             echo "Processing PR list..."
             while IFS= read -r line; do
@@ -210,14 +210,14 @@ jobs:
           else
             echo "No merge commits found between origin/main and HEAD"
           fi
-          
+
           echo "Final total PR count: $TOTAL_PR_COUNT"
           echo "Feature PRs: ${PR_COUNTS[feature]}"
           echo "Bug fix PRs: ${PR_COUNTS[bug]}"
           echo "Chore PRs: ${PR_COUNTS[chore]}"
           echo "Documentation PRs: ${PR_COUNTS[docs]}"
           echo "Other PRs: ${PR_COUNTS[other]}"
-          
+
           # Create the categorized PR body
           TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
           if [ "$TOTAL_PR_COUNT" -eq 0 ]; then
@@ -250,34 +250,34 @@ jobs:
               PR_BODY="${PR_BODY}### 🔄 Other Changes\n${PR_CATEGORIES[other]}\n"
             fi
           fi
-          
+
           # Add comparison link
           if REPO_URL=$(gh repo view --json url -q .url 2>/dev/null); then
             PR_BODY="${PR_BODY}\n\n## Branch Comparison\n[View all changes](${REPO_URL}/compare/main...main-promotion)"
           else
             echo "Warning: Could not fetch repository URL"
           fi
-          
+
           # Add timestamp
           PR_BODY="${PR_BODY}\n\n---\n_Last updated: ${TIMESTAMP}_"
-          
+
           # Save to temp file
           echo -e "$PR_BODY" > "/tmp/pr_body.txt"
           echo "PR body saved to temp file"
-          
+
           # Find the PR number
           echo "Finding PR from main-promotion to main..."
           PR_NUMBER=$(gh pr list --base main --head main-promotion --json number -q '.[0].number' || echo "")
-          
+
           if [ -z "$PR_NUMBER" ]; then
             echo "Error: Could not find PR from main-promotion to main"
             exit 1
           fi
-          
+
           echo "Found PR #$PR_NUMBER"
-          
+
           # Update the PR body
           echo "Updating PR #$PR_NUMBER with new description..."
           gh pr edit "$PR_NUMBER" --body-file "/tmp/pr_body.txt"
-          
+
           echo "PR description updated successfully!"

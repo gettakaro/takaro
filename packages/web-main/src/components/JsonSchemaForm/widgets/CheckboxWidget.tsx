@@ -81,7 +81,7 @@ export function CheckBoxWidget<T = unknown, S extends StrictRJSFSchema = RJSFSch
       </Container>
       {!hideLabel && !!description && (
         <DescriptionFieldTemplate
-          id={descriptionId<T>(id)}
+          id={descriptionId(id)}
           description={description}
           schema={schema}
           uiSchema={uiSchema}
