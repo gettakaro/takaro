@@ -201,9 +201,9 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
 
   async cleanupLocation(date: string) {
     const { query } = await this.getModel();
-    const res = await query.where('createdAt', '<', date).delete().returning('*');
+    const deletedCount = await query.where('createdAt', '<', date).delete();
 
-    this.log.info(`Deleted ${res.length} player location records older than ${date}`);
+    this.log.info(`Deleted ${deletedCount} player location records older than ${date}`);
   }
 
   async ensureInventoryPartition(date?: string) {
@@ -216,9 +216,9 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
 
   async cleanupInventory(date: string) {
     const { query } = await this.getInventoryModel();
-    const res = await query.where('createdAt', '<', date).delete().returning('*');
+    const deletedCount = await query.where('createdAt', '<', date).delete();
 
-    this.log.info(`Deleted ${res.length} player inventory records older than ${date}`);
+    this.log.info(`Deleted ${deletedCount} player inventory records older than ${date}`);
   }
 
   async getPlayerMovementHistory(input: PlayerMovementHistoryInputDTO): Promise<PlayerLocationOutputDTO[]> {
