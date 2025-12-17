@@ -13,10 +13,6 @@ const Container = styled.div<{ canClick: boolean; variant: Variant }>`
   cursor: ${({ canClick }) => (canClick ? 'pointer' : 'default')};
   height: fit-content;
 
-  &:focus-within {
-    border-color: none;
-  }
-
   &:focus {
     border-color: ${({ theme, canClick }) => (canClick ? theme.colors.primary : theme.colors.backgroundAccent)};
   }

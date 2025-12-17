@@ -17,8 +17,8 @@ export const PointHighlight: FC<PointHighlightProps> = ({ margin, yMax, tooltipL
   return (
     <Group left={margin.left} top={margin.top}>
       <Line
-        from={{ x: tooltipLeft, y: margin.top }}
-        to={{ x: tooltipLeft, y: yMax + margin.top }}
+        from={{ x: tooltipLeft, y: 0 }}
+        to={{ x: tooltipLeft, y: yMax }}
         stroke={theme.colors.backgroundAccent}
         strokeWidth={1}
         pointerEvents="none"

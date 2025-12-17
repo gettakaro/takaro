@@ -569,6 +569,44 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     };
   }
 
+  private isPlaceholderValue(id?: string): boolean {
+    if (!id || id.trim() === '') return true;
+
+    const trimmed = id.trim();
+
+    // Literal '0' string (not IDs containing the digit 0)
+    if (trimmed === '0') return true;
+
+    const placeholders = ['Unknown', 'unknown', 'UNKNOWN', 'N/A', 'n/a', 'null', 'undefined', 'None', 'none'];
+
+    return placeholders.includes(trimmed);
+  }
+
+  /**
+   * Filters platform IDs to only include valid (non-placeholder) values.
+   * Used when updating player records to prevent overwriting valid IDs with placeholders.
+   */
+  filterValidPlatformIds(platformIds: {
+    steamId?: string;
+    epicOnlineServicesId?: string;
+    xboxLiveId?: string;
+    platformId?: string;
+  }): {
+    steamId?: string;
+    epicOnlineServicesId?: string;
+    xboxLiveId?: string;
+    platformId?: string;
+  } {
+    return {
+      steamId: this.isPlaceholderValue(platformIds.steamId) ? undefined : platformIds.steamId,
+      epicOnlineServicesId: this.isPlaceholderValue(platformIds.epicOnlineServicesId)
+        ? undefined
+        : platformIds.epicOnlineServicesId,
+      xboxLiveId: this.isPlaceholderValue(platformIds.xboxLiveId) ? undefined : platformIds.xboxLiveId,
+      platformId: this.isPlaceholderValue(platformIds.platformId) ? undefined : platformIds.platformId,
+    };
+  }
+
   async findByPlatformIds(platformIds: {
     steamId?: string;
     epicOnlineServicesId?: string;
@@ -578,30 +616,50 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     const { query } = await this.getModel();
 
     let qb = query;
+    let hasValidId = false;
 
-    // Use OR conditions to find players matching any of the platform IDs
+    // Check for valid IDs BEFORE building the query
+    if (!this.isPlaceholderValue(platformIds.steamId)) {
+      hasValidId = true;
+    }
+    if (!this.isPlaceholderValue(platformIds.epicOnlineServicesId)) {
+      hasValidId = true;
+    }
+    if (!this.isPlaceholderValue(platformIds.xboxLiveId)) {
+      hasValidId = true;
+    }
+    if (!this.isPlaceholderValue(platformIds.platformId)) {
+      hasValidId = true;
+    }
+
     qb = qb.where((builder) => {
-      if (platformIds.steamId) {
-        builder.orWhere('steamId', platformIds.steamId);
+      if (!this.isPlaceholderValue(platformIds.steamId)) {
+        builder.orWhere('steamId', platformIds.steamId!);
       }
-      if (platformIds.epicOnlineServicesId) {
-        builder.orWhere('epicOnlineServicesId', platformIds.epicOnlineServicesId);
+      if (!this.isPlaceholderValue(platformIds.epicOnlineServicesId)) {
+        builder.orWhere('epicOnlineServicesId', platformIds.epicOnlineServicesId!);
       }
-      if (platformIds.xboxLiveId) {
-        builder.orWhere('xboxLiveId', platformIds.xboxLiveId);
+      if (!this.isPlaceholderValue(platformIds.xboxLiveId)) {
+        builder.orWhere('xboxLiveId', platformIds.xboxLiveId!);
       }
-      if (platformIds.platformId) {
-        builder.orWhere('platformId', platformIds.platformId);
+      if (!this.isPlaceholderValue(platformIds.platformId)) {
+        builder.orWhere('platformId', platformIds.platformId!);
       }
     });
 
-    const result = await qb.withGraphFetched('roleAssignments.role.permissions.permission');
-
-    if (!result.length) {
+    // If all platform IDs were placeholders, return empty array
+    // This prevents querying without WHERE conditions which would return all players
+    if (!hasValidId) {
       return [];
     }
 
-    return Promise.all(result.map(async (player) => new PlayerOutputWithRolesDTO(player)));
+    const foundPlayers = await qb.withGraphFetched('roleAssignments.role.permissions.permission');
+
+    if (!foundPlayers.length) {
+      return [];
+    }
+
+    return Promise.all(foundPlayers.map(async (player) => new PlayerOutputWithRolesDTO(player)));
   }
 
   async batchRemoveRoles(

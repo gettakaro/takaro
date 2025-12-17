@@ -485,7 +485,11 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     const gameIds = players.map((player) => player.gameId);
 
     await Promise.all([
-      query1.whereNotIn('gameId', gameIds).andWhere({ gameServerId }).update({ online: false }),
+      query1
+        .whereNotIn('gameId', gameIds)
+        .andWhere({ gameServerId })
+        .andWhere({ online: true })
+        .update({ online: false }),
 
       query2
         .whereIn('gameId', gameIds)

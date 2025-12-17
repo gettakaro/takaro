@@ -48,9 +48,8 @@ export const ModuleExportDialog: FC<ModuleExportDialogProps> = ({ moduleId, modu
             <div>
               <h4>Module Ready</h4>
               <p>
-                <CheckMarkIcon />{' '}
+                <CheckMarkIcon />
                 <a href={url} download={`${moduleName}-${Date.now()}.json`}>
-                  {' '}
                   Download now
                 </a>
               </p>

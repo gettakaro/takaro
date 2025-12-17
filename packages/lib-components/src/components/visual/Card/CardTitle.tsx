@@ -9,6 +9,12 @@ const Container = styled.div`
   padding: ${({ theme }) => theme.spacing[1]};
 `;
 
+const Inner = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing['0_5']};
+`;
+
 interface CardTitleProps {
   label: string;
 }
@@ -17,7 +23,7 @@ export const CardTitle: FC<PropsWithChildren<CardTitleProps>> = (props) => {
   return (
     <Container>
       <h2>{props.label}</h2>
-      <div>{props.children}</div>
+      <Inner>{props.children}</Inner>
     </Container>
   );
 };

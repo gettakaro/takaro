@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { ParentSize } from '@visx/responsive';
-import { GridColumns } from '@visx/grid';
+import { GridColumns, GridRows } from '@visx/grid';
 import { Group } from '@visx/group';
 import { AreaClosed, Bar } from '@visx/shape';
 import { max, extent, bisector } from '@visx/vendor/d3-array';
@@ -14,21 +14,23 @@ import { timeFormat } from '@visx/vendor/d3-time-format';
 import { PatternLines } from '@visx/pattern';
 import { Brush } from '@visx/brush';
 import { Bounds } from '@visx/brush/lib/types';
+import { motion } from 'framer-motion';
 
 import { useTheme } from '../../../hooks';
 import { useGradients } from '../useGradients';
-import { Margin, ChartProps, InnerChartProps, getDefaultTooltipStyles } from '../util';
+import { ChartProps, InnerChartProps, getDefaultTooltipStyles, TooltipConfig, BrushConfig } from '../util';
 import { BrushHandle } from '../BrushHandle';
 import { PointHighlight } from '../PointHighlight';
+import { EmptyChart } from '../EmptyChart';
 
 export interface AreaChartProps<T> extends ChartProps {
   data: T[];
   xAccessor: (d: T) => Date;
   yAccessor: (d: T) => number;
-  tooltipAccessor?: (d: T) => string;
-  margin?: Margin;
-  showBrush?: boolean;
-  brushMargin?: Margin;
+  /** Tooltip configuration */
+  tooltip?: TooltipConfig<T>;
+  /** Brush/zoom configuration */
+  brush?: BrushConfig;
 }
 
 const formatDate = timeFormat("%b %d, '%y");
@@ -37,48 +39,41 @@ const defaultMargin = { top: 20, left: 50, bottom: 20, right: 5 };
 const defaultBrushMargin = { top: 10, bottom: 15, left: 50, right: 5 };
 const defaultShowAxisX = true;
 const defaultShowAxisY = true;
-const defaultShowGrid = true;
 
 export const AreaChart = <T,>({
   data,
   xAccessor,
   yAccessor,
-  tooltipAccessor,
-  margin = defaultMargin,
-  showGrid = defaultShowGrid,
-  showBrush = false,
-  brushMargin = defaultBrushMargin,
   name,
-  showAxisX = defaultShowAxisX,
-  showAxisY = defaultShowAxisY,
-  axisXLabel,
-  axisYLabel,
+  grid = 'none',
+  axis,
+  tooltip,
+  brush,
+  animate = true,
+  margin = defaultMargin,
 }: AreaChartProps<T>) => {
-  // TODO: handle empty data
-  if (!data || data.length === 0) return null;
+  const hasData = data && data.length > 0;
 
-  // TODO: handle loading state
   return (
     <ParentSize>
-      {(parent) => (
-        <Chart<T>
-          name={name}
-          xAccessor={xAccessor}
-          yAccessor={yAccessor}
-          tooltipAccessor={tooltipAccessor}
-          data={data}
-          width={parent.width}
-          height={parent.height}
-          brushMargin={brushMargin}
-          showBrush={showBrush}
-          showGrid={showGrid}
-          margin={margin}
-          axisYLabel={axisYLabel}
-          axisXLabel={axisXLabel}
-          showAxisX={showAxisX}
-          showAxisY={showAxisY}
-        />
-      )}
+      {hasData
+        ? (parent) => (
+            <Chart<T>
+              name={name}
+              xAccessor={xAccessor}
+              yAccessor={yAccessor}
+              data={data}
+              width={parent.width}
+              height={parent.height}
+              grid={grid}
+              axis={axis}
+              tooltip={tooltip}
+              brush={brush}
+              animate={animate}
+              margin={margin}
+            />
+          )
+        : () => <EmptyChart />}
     </ParentSize>
   );
 };
@@ -89,19 +84,25 @@ const Chart = <T,>({
   data,
   xAccessor,
   yAccessor,
-  tooltipAccessor,
   width,
   height,
   margin = defaultMargin,
-  showGrid = defaultShowGrid,
-  showBrush = false,
-  brushMargin = defaultBrushMargin,
+  grid = 'none',
+  axis,
+  tooltip,
+  brush,
+  animate = true,
   name,
-  showAxisX = defaultShowAxisX,
-  showAxisY = defaultShowAxisY,
-  axisYLabel,
-  axisXLabel,
 }: InnerAreaChartProps<T>) => {
+  const showAxisX = axis?.showX ?? defaultShowAxisX;
+  const showAxisY = axis?.showY ?? defaultShowAxisY;
+  const axisXLabel = axis?.labelX;
+  const axisYLabel = axis?.labelY;
+  const tooltipAccessor = tooltip?.accessor;
+
+  // Extract brush configuration
+  const showBrush = brush?.enabled ?? false;
+  const brushMargin = brush?.margin ?? defaultBrushMargin;
   const PATTERN_ID = `${name}-brush_pattern`;
   const theme = useTheme();
   const gradients = useGradients(name);
@@ -219,21 +220,27 @@ const Chart = <T,>({
     <div>
       <svg width={width} height={height}>
         {gradients.chart.gradient}
-        {gradients.background.gradient}
-        <rect x={0} y={0} width={width} height={height} fill={`url(#${gradients.background.id})`} rx={14} />
-        {showGrid && (
-          <GridColumns
-            top={margin.top}
-            left={margin.left}
-            scale={xScale}
-            height={yMax}
-            strokeDasharray="1,5"
-            stroke={theme.colors.backgroundAccent}
-            strokeOpacity={0.2}
-            pointerEvents="none"
-          />
-        )}
         <Group id="chart" top={margin.top} left={margin.left}>
+          {(grid === 'y' || grid === 'xy') && (
+            <GridRows
+              scale={yScale}
+              width={xMax}
+              stroke={theme.colors.backgroundAccent}
+              strokeOpacity={1}
+              strokeDasharray="2,2"
+              pointerEvents="none"
+            />
+          )}
+          {(grid === 'x' || grid === 'xy') && (
+            <GridColumns
+              scale={xScale}
+              height={yMax}
+              stroke={theme.colors.backgroundAccent}
+              strokeOpacity={1}
+              strokeDasharray="2,2"
+              pointerEvents="none"
+            />
+          )}
           <AreaClosed<T>
             x={(d) => xScale(xAccessor(d)) ?? 0}
             y={(d) => yScale(yAccessor(d)) ?? 0}
@@ -243,7 +250,29 @@ const Chart = <T,>({
             stroke={theme.colors.primary}
             fill={`url(#${gradients.chart.id})`}
             curve={curveMonotoneX}
-          />
+          >
+            {({ path }) => {
+              const pathData = path(filteredData) || '';
+              return (
+                <motion.path
+                  d={pathData}
+                  stroke={theme.colors.primary}
+                  strokeWidth={1}
+                  fill={`url(#${gradients.chart.id})`}
+                  initial={animate ? { pathLength: 0, opacity: 0 } : { pathLength: 1, opacity: 1 }}
+                  animate={{ pathLength: 1, opacity: 1 }}
+                  transition={
+                    animate
+                      ? {
+                          pathLength: { duration: 1, ease: 'easeInOut' },
+                          opacity: { duration: 0.8, ease: 'easeInOut' },
+                        }
+                      : { duration: 0 }
+                  }
+                />
+              );
+            }}
+          </AreaClosed>
         </Group>
         <Bar
           x={margin.left}
@@ -273,7 +302,29 @@ const Chart = <T,>({
               stroke={`url(#${gradients.chart.id})`}
               fill={`url(#${gradients.chart.id})`}
               curve={curveMonotoneX}
-            />
+            >
+              {({ path }) => {
+                const pathData = path(data) || '';
+                return (
+                  <motion.path
+                    d={pathData}
+                    stroke={`url(#${gradients.chart.id})`}
+                    strokeWidth={1}
+                    fill={`url(#${gradients.chart.id})`}
+                    initial={animate ? { pathLength: 0, opacity: 0 } : { pathLength: 1, opacity: 1 }}
+                    animate={{ pathLength: 1, opacity: 1 }}
+                    transition={
+                      animate
+                        ? {
+                            pathLength: { duration: 0.5, ease: 'easeInOut' },
+                            opacity: { duration: 0.4, ease: 'easeInOut' },
+                          }
+                        : { duration: 0 }
+                    }
+                  />
+                );
+              }}
+            </AreaClosed>
             <PatternLines
               id={PATTERN_ID}
               height={8}
@@ -334,7 +385,7 @@ const Chart = <T,>({
             tickLabelProps={{
               fill: theme.colors.textAlt,
               fontSize: theme.fontSize.small,
-              textAnchor: 'end',
+              textAnchor: 'middle',
             }}
             tickFormat={tickFormatDate}
             labelProps={{

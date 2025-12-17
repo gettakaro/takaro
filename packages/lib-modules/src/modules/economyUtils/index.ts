@@ -9,7 +9,7 @@ export class EconomyUtils extends ModuleTransferDTO<EconomyUtils> {
     this.supportedGames = ['all'];
     this.versions = [
       new ModuleTransferVersionDTO({
-        tag: '0.0.2',
+        tag: '0.0.3',
         description: 'A set of commands to allow players to manage their currency.',
         configSchema: JSON.stringify({
           $schema: 'http://json-schema.org/draft-07/schema#',
