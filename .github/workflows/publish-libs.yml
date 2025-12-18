@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - "**"
+    branches:
+      - main
 jobs:
   publish:
     name: Publish packages
@@ -40,9 +42,23 @@ jobs:
 
       - run: ./scripts/dev-init.sh
 
+      - name: Set next version
+        if: github.ref == 'refs/heads/main'
+        run: |
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+          npm -w packages/${{ matrix.package.name }} version 0.0.0-next.${SHORT_SHA} --no-git-tag-version
+
       - name: Authenticate with NPM
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
-      - run: npm -w packages/${{ matrix.package.name }} publish --access public
+      - name: Publish release
+        if: github.ref != 'refs/heads/main'
+        run: npm -w packages/${{ matrix.package.name }} publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish next
+        if: github.ref == 'refs/heads/main'
+        run: npm -w packages/${{ matrix.package.name }} publish --access public --tag next
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
