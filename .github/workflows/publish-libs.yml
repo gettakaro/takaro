@@ -25,6 +25,7 @@ jobs:
             { name: "lib-modules" },
             { name: "lib-queues" },
             { name: "lib-util" },
+            { name: "app-mock-gameserver" },
           ]
 
     steps:
