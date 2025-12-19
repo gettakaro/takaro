@@ -29,6 +29,33 @@ When integration tests fail, they log the domain ID. You can grep docker compose
 docker compose logs | grep <domain-id>
 ```
 
+### Reading GitHub CI Logs
+
+When investigating CI failures from GitHub Actions:
+
+1. **Get PR checks status**: `gh pr checks <PR_NUMBER> --repo gettakaro/takaro`
+2. **Find the failed workflow run ID**: `gh run list --branch <branch-name> --repo gettakaro/takaro --limit 5`
+3. **Get failed logs directly**: `gh run view <RUN_ID> --repo gettakaro/takaro --log-failed`
+
+The CI logs are verbose. To find actual test failures:
+
+```bash
+# Search for test failures (✖ marks failures)
+gh run view <RUN_ID> --repo gettakaro/takaro --log-failed 2>&1 | grep -E "✖|FAIL|AssertionError"
+
+# Get context around a specific failing test name
+gh run view <RUN_ID> --repo gettakaro/takaro --log-failed 2>&1 | grep -B 10 -A 20 "test name here"
+
+# Look at the end of logs for summary
+gh run view <RUN_ID> --repo gettakaro/takaro --log-failed 2>&1 | tail -100
+```
+
+Key patterns in test output:
+- `✖ <test name>` - Failed test
+- `ValidationError` / `AssertionError` - Error types
+- `Request ... failed with status 400` - API validation failure
+- `Request data:` - Shows what was sent to the API
+
 ### Test Commands
 
 - **Run a specific test file**: `npm run test:file <path/to/test.ts>`

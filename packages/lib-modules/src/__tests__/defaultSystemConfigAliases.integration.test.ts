@@ -11,24 +11,17 @@ const tests = [
     name: 'Custom module with defaultSystemConfig aliases should work after installation',
     setup: modulesTestSetup,
     test: async function () {
-      // Create a module with defaultSystemConfig containing aliases
+      // Create a module WITHOUT defaultSystemConfig first
       const mod = (
         await this.client.module.moduleControllerCreate({
           name: 'Test Module With Default Aliases',
           latestVersion: {
             description: 'Testing defaultSystemConfig aliases',
-            defaultSystemConfig: JSON.stringify({
-              commands: {
-                pingcommand: {
-                  aliases: ['pong', 'pp'],
-                },
-              },
-            }),
           },
         })
       ).data.data;
 
-      // Create a command in the module
+      // Create a command in the module FIRST
       await this.client.command.commandControllerCreate({
         name: 'pingcommand',
         description: 'Test ping command',
@@ -41,6 +34,19 @@ const tests = [
             });
           }
           await main();`,
+      });
+
+      // THEN update module with defaultSystemConfig (now command exists, schema is valid)
+      await this.client.module.moduleControllerUpdate(mod.id, {
+        latestVersion: {
+          defaultSystemConfig: JSON.stringify({
+            commands: {
+              pingcommand: {
+                aliases: ['pong', 'pp'],
+              },
+            },
+          }),
+        },
       });
 
       // Install the module WITHOUT providing explicit systemConfig
@@ -71,23 +77,17 @@ const tests = [
     name: 'Custom module aliases work when explicitly provided during installation',
     setup: modulesTestSetup,
     test: async function () {
-      // Create a module with defaultSystemConfig containing aliases
+      // Create a module WITHOUT defaultSystemConfig first
       const mod = (
         await this.client.module.moduleControllerCreate({
           name: 'Test Module Explicit Aliases',
           latestVersion: {
             description: 'Testing explicit aliases',
-            defaultSystemConfig: JSON.stringify({
-              commands: {
-                echocommand: {
-                  aliases: ['defaultalias'],
-                },
-              },
-            }),
           },
         })
       ).data.data;
 
+      // Create command FIRST
       await this.client.command.commandControllerCreate({
         name: 'echocommand',
         description: 'Test echo command',
@@ -100,6 +100,19 @@ const tests = [
             });
           }
           await main();`,
+      });
+
+      // THEN update module with defaultSystemConfig
+      await this.client.module.moduleControllerUpdate(mod.id, {
+        latestVersion: {
+          defaultSystemConfig: JSON.stringify({
+            commands: {
+              echocommand: {
+                aliases: ['defaultalias'],
+              },
+            },
+          }),
+        },
       });
 
       // Install the module WITH explicit systemConfig (overriding defaults)
@@ -135,22 +148,17 @@ const tests = [
     name: 'Multiple aliases from defaultSystemConfig should all work',
     setup: modulesTestSetup,
     test: async function () {
+      // Create module WITHOUT defaultSystemConfig first
       const mod = (
         await this.client.module.moduleControllerCreate({
           name: 'Test Module Multiple Aliases',
           latestVersion: {
             description: 'Testing multiple aliases',
-            defaultSystemConfig: JSON.stringify({
-              commands: {
-                testcmd: {
-                  aliases: ['alias1', 'alias2', 'alias3'],
-                },
-              },
-            }),
           },
         })
       ).data.data;
 
+      // Create command FIRST
       await this.client.command.commandControllerCreate({
         name: 'testcmd',
         description: 'Test command',
@@ -163,6 +171,19 @@ const tests = [
             });
           }
           await main();`,
+      });
+
+      // THEN update module with defaultSystemConfig
+      await this.client.module.moduleControllerUpdate(mod.id, {
+        latestVersion: {
+          defaultSystemConfig: JSON.stringify({
+            commands: {
+              testcmd: {
+                aliases: ['alias1', 'alias2', 'alias3'],
+              },
+            },
+          }),
+        },
       });
 
       await this.client.module.moduleInstallationsControllerInstallModule({
