@@ -169,6 +169,15 @@ jobs:
           name: integrationTests-${{ github.run_id }}-${{ env.DATE }}
           path: reports
           retention-days: 30
+
+      - name: Test Report
+        uses: dorny/test-reporter@v2
+        if: always()
+        with:
+          name: Integration Tests
+          path: 'reports/junit/*.xml'
+          reporter: java-junit
+
   e2e:
     needs: [docker]
     timeout-minutes: 60
@@ -194,3 +203,11 @@ jobs:
           name: e2e-${{ github.run_id }}-${{ env.DATE }}
           path: reports
           retention-days: 30
+
+      - name: Test Report
+        uses: dorny/test-reporter@v2
+        if: always()
+        with:
+          name: E2E Tests
+          path: 'reports/junit/*.xml'
+          reporter: java-junit

@@ -42,6 +42,7 @@ export default defineConfig({
   // Reporter to use
   reporter: [
     ['html', { outputFolder: '../../reports/playwright-html', open: 'never' }],
+    ['junit', { outputFile: '../../reports/junit/e2e.xml' }],
     [process.env.CI ? 'github' : 'list', {}],
   ],
   outputDir: '../../reports/playwright-results/',
