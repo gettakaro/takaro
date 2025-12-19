@@ -49,6 +49,8 @@ services:
     build:
       context: .
       dockerfile: containers/takaro/dev.Dockerfile
+    volumes:
+      - ./reports:/app/reports
     command: ['sh']
     environment:
       NODE_OPTIONS: '--import=ts-node-maintained/register/esm'
