@@ -54,6 +54,7 @@ async function cleanUp() {
 async function main() {
   await cleanUp();
   await mkdir('./reports/integrationTests', { recursive: true });
+  await mkdir('./reports/junit', { recursive: true });
 
   console.log('Bringing up datastores');
   await upMany(['postgresql', 'redis', 'postgresql_kratos'], composeOpts);
