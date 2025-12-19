@@ -10,13 +10,13 @@
     "objection": "3.1.5",
     "redis": "4.7.0"
   },
+  "keywords": [],
+  "license": "ISC",
+  "main": "dist/main.js",
   "peerDependencies": {
     "@takaro/config": "*",
     "@takaro/util": "*"
   },
-  "keywords": [],
-  "license": "ISC",
-  "main": "dist/main.js",
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
     "migrate:create": "run(){ touch ./src/migrations/sql/$(date -u +\"%Y%m%d%H%M%S\")-$1.ts; }; run",

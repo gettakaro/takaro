@@ -7,14 +7,14 @@
     "class-transformer": "0.5.1",
     "class-validator": "0.14.2"
   },
+  "keywords": [],
+  "license": "ISC",
+  "main": "dist/main.js",
   "peerDependencies": {
     "@takaro/apiclient": "*",
     "@takaro/helpers": "*",
     "@takaro/util": "*"
   },
-  "keywords": [],
-  "license": "ISC",
-  "main": "dist/main.js",
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
     "build:builtin-json": "node --import=ts-node-maintained/register/esm ./scripts/buildBuiltinJson.ts",

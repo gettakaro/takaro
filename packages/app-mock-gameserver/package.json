@@ -10,6 +10,9 @@
     "type-fest": "2.19.0",
     "ws": "^8.17.1"
   },
+  "keywords": [],
+  "license": "ISC",
+  "main": "dist/main.js",
   "peerDependencies": {
     "@takaro/config": "*",
     "@takaro/db": "*",
@@ -18,9 +21,6 @@
     "@takaro/modules": "*",
     "@takaro/util": "*"
   },
-  "keywords": [],
-  "license": "ISC",
-  "main": "dist/main.js",
   "scripts": {
     "build": "mkdir -p dist/lib/map/tiles && cp -r src/lib/map/tiles dist/lib/map/ && tsc -p ./tsconfig.build.json",
     "start": "node --loader ../../node_modules/@takaro/util/dist/tracing.js dist/bin.js",

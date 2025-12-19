@@ -17,15 +17,15 @@
     "routing-controllers": "0.10.4",
     "yup": "0.32.11"
   },
+  "keywords": [],
+  "license": "ISC",
+  "main": "dist/main.js",
   "peerDependencies": {
     "@takaro/auth": "*",
     "@takaro/db": "*",
     "@takaro/modules": "*",
     "@takaro/util": "*"
   },
-  "keywords": [],
-  "license": "ISC",
-  "main": "dist/main.js",
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json"

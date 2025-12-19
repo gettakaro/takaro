@@ -8,13 +8,13 @@
     "@bull-board/express": "6.2.3",
     "bullmq": "5.15.0"
   },
+  "keywords": [],
+  "license": "ISC",
+  "main": "dist/main.js",
   "peerDependencies": {
     "@takaro/config": "*",
     "@takaro/util": "*"
   },
-  "keywords": [],
-  "license": "ISC",
-  "main": "dist/main.js",
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json"

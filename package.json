@@ -285,6 +285,8 @@
     "shell": "docker compose exec takaro bash",
     "start": "COMMAND=\"start\" REGEX=app bash ./scripts/run-all-pkgs.sh",
     "start:dev": "COMMAND=\"start:dev\" bash ./scripts/run-all-pkgs.sh",
+    "syncpack:fix": "syncpack fix-mismatches && syncpack format",
+    "syncpack:lint": "syncpack lint",
     "test": "bash ./scripts/test-runner.sh --all",
     "test:check": "bash ./scripts/test-check.sh --tests",
     "test:ci": "bash ./scripts/test-runner.sh --ci",
@@ -296,8 +298,6 @@
     "test:package:unit": "bash ./scripts/test-package.sh --unit",
     "test:style": "npm run lint && npm run prettier",
     "test:style:fix": "npm run lint:fix && npm run prettier:fix",
-    "syncpack:lint": "syncpack lint",
-    "syncpack:fix": "syncpack fix-mismatches && syncpack format",
     "test:unit": "bash ./scripts/test-runner.sh --unit",
     "typedoc": "typedoc"
   },

@@ -8,13 +8,13 @@
     "axios": "1.7.7",
     "express": "4.21.2"
   },
+  "keywords": [],
+  "license": "ISC",
+  "main": "dist/main.js",
   "peerDependencies": {
     "@takaro/config": "*",
     "@takaro/util": "*"
   },
-  "keywords": [],
-  "license": "ISC",
-  "main": "dist/main.js",
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json"
