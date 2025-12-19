@@ -8,7 +8,7 @@
     "reflect-metadata": "0.2.2",
     "socket.io": "4.8.0",
     "type-fest": "2.19.0",
-    "ws": "^8.17.1"
+    "ws": "8.17.1"
   },
   "keywords": [],
   "license": "ISC",
