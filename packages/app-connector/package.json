@@ -1,19 +1,19 @@
 {
   "name": "@takaro/connector",
-  "version": "0.4.10",
   "description": "Connects to game servers and detects events for Takaro",
-  "main": "dist/main.js",
-  "types": "main.ts",
-  "type": "module",
-  "scripts": {
-    "start": "node --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js",
-    "start:dev": "nodemon --exec 'npm run build && node --inspect=0.0.0.0:12003 --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js' --config ../../nodemon.json",
-    "build": "tsc -p ./tsconfig.build.json"
-  },
-  "keywords": [],
+  "version": "0.4.10",
   "author": "",
-  "license": "ISC",
   "dependencies": {
     "async-mutex": "^0.5.0"
-  }
+  },
+  "keywords": [],
+  "license": "ISC",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "start": "node --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js",
+    "start:dev": "nodemon --exec 'npm run build && node --inspect=0.0.0.0:12003 --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js' --config ../../nodemon.json"
+  },
+  "type": "module",
+  "types": "main.ts"
 }

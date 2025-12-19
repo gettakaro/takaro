@@ -1,16 +1,30 @@
 {
   "name": "@takaro/gameserver",
-  "version": "0.4.10",
   "description": "Handles abstraction between Takaro and game servers",
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
-  "type": "module",
-  "scripts": {
-    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p ./tsconfig.build.json",
-    "postbuild": "cp src/gameservers/7d2d/items-7d2d.json dist/gameservers/7d2d/items-7d2d.json"
+  "version": "0.4.10",
+  "author": "",
+  "dependencies": {
+    "axios": "1.7.7",
+    "class-validator": "0.14.2",
+    "eventsource": "2.0.2",
+    "luxon": "3.4.1",
+    "type-fest": "2.19.0",
+    "ws": "^8.17.1"
+  },
+  "peerDependencies": {
+    "@takaro/apiclient": "*",
+    "@takaro/config": "*",
+    "@takaro/modules": "*",
+    "@takaro/util": "*"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "postbuild": "cp src/gameservers/7d2d/items-7d2d.json dist/gameservers/7d2d/items-7d2d.json",
+    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json"
+  },
+  "type": "module",
+  "types": "dist/main.d.ts"
 }

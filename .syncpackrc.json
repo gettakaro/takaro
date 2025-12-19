@@ -1,0 +1,10 @@
+{
+  "source": ["package.json", "packages/*/package.json"],
+  "versionGroups": [
+    {
+      "label": "Use highest version across all packages",
+      "dependencies": ["**"],
+      "policy": "sameRange"
+    }
+  ]
+}

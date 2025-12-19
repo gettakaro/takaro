@@ -1,16 +1,27 @@
 {
   "name": "@takaro/db",
-  "version": "0.4.10",
   "description": "An opinionated data layer",
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
-  "type": "module",
-  "scripts": {
-    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p ./tsconfig.build.json",
-    "migrate:create": "run(){ touch ./src/migrations/sql/$(date -u +\"%Y%m%d%H%M%S\")-$1.ts; }; run"
+  "version": "0.4.10",
+  "author": "",
+  "dependencies": {
+    "class-validator": "0.14.2",
+    "knex": "3.1.0",
+    "ms": "2.1.3",
+    "objection": "3.1.5",
+    "redis": "4.7.0"
+  },
+  "peerDependencies": {
+    "@takaro/config": "*",
+    "@takaro/util": "*"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "migrate:create": "run(){ touch ./src/migrations/sql/$(date -u +\"%Y%m%d%H%M%S\")-$1.ts; }; run",
+    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json"
+  },
+  "type": "module",
+  "types": "dist/main.d.ts"
 }

@@ -1,15 +1,24 @@
 {
   "name": "@takaro/auth",
-  "version": "0.4.10",
   "description": "An opinionated auth handler",
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
-  "type": "module",
-  "scripts": {
-    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p ./tsconfig.build.json"
+  "version": "0.4.10",
+  "author": "",
+  "dependencies": {
+    "@ory/client": "1.14.5",
+    "axios": "1.7.7",
+    "express": "4.21.2"
+  },
+  "peerDependencies": {
+    "@takaro/config": "*",
+    "@takaro/util": "*"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json"
+  },
+  "type": "module",
+  "types": "dist/main.d.ts"
 }

@@ -1,15 +1,24 @@
 {
   "name": "@takaro/queues",
-  "version": "0.4.10",
   "description": "An opinionated BullMQ queues handler",
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
-  "type": "module",
-  "scripts": {
-    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p ./tsconfig.build.json"
+  "version": "0.4.10",
+  "author": "",
+  "dependencies": {
+    "@bull-board/api": "6.2.3",
+    "@bull-board/express": "6.2.3",
+    "bullmq": "5.15.0"
+  },
+  "peerDependencies": {
+    "@takaro/config": "*",
+    "@takaro/util": "*"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json"
+  },
+  "type": "module",
+  "types": "dist/main.d.ts"
 }
