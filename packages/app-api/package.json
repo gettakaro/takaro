@@ -9,6 +9,9 @@
   "keywords": [],
   "license": "ISC",
   "main": "dist/main.js",
+  "peerDependencies": {
+    "@takaro/util": "*"
+  },
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
     "db:migrate": "node scripts/migrate-up.mjs",

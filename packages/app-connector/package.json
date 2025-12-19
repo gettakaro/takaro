@@ -15,5 +15,5 @@
     "start:dev": "nodemon --exec 'npm run build && node --inspect=0.0.0.0:12003 --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js' --config ../../nodemon.json"
   },
   "type": "module",
-  "types": "main.ts"
+  "types": "dist/main.d.ts"
 }
