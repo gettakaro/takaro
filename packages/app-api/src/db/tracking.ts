@@ -414,7 +414,7 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
 
       await redis.set(cacheKey, JSON.stringify(inventoryItems), { EX: 1800 });
     } catch (error) {
-      this.log.warn('Failed to process inventory observation', { error, playerId });
+      this.log.error('Failed to process inventory observation', { error, playerId });
     }
   }
 
@@ -598,8 +598,17 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     }
     const pogId = pogResult.id;
 
-    // Get baselines in date range (plus most recent one before startDate for reconstruction)
-    const baselines = await knex('playerInventoryBaseline')
+    // Get baselines: most recent before startDate (anchor) + all in date range
+    // The anchor baseline is needed to reconstruct inventory state when only diffs exist in the queried range
+    const anchorBaseline = await knex('playerInventoryBaseline')
+      .select('baselineId')
+      .where('playerId', pogId)
+      .andWhere('domain', this.domainId)
+      .andWhere('createdAt', '<=', startDate)
+      .orderBy('createdAt', 'desc')
+      .first();
+
+    let baselinesQuery = knex('playerInventoryBaseline')
       .select(
         'playerInventoryBaseline.baselineId',
         'playerInventoryBaseline.itemId',
@@ -612,10 +621,27 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
       )
       .join('items', 'items.id', '=', 'playerInventoryBaseline.itemId')
       .where('playerInventoryBaseline.playerId', pogId)
-      .andWhere('playerInventoryBaseline.domain', this.domainId)
-      .andWhere('playerInventoryBaseline.createdAt', '>=', startDate)
-      .andWhere('playerInventoryBaseline.createdAt', '<=', endDate)
-      .orderBy('playerInventoryBaseline.createdAt', 'asc');
+      .andWhere('playerInventoryBaseline.domain', this.domainId);
+
+    if (anchorBaseline) {
+      // Include anchor baseline OR baselines in date range
+      baselinesQuery = baselinesQuery.where(function () {
+        this.where('playerInventoryBaseline.baselineId', anchorBaseline.baselineId).orWhere(function () {
+          this.where('playerInventoryBaseline.createdAt', '>=', startDate).andWhere(
+            'playerInventoryBaseline.createdAt',
+            '<=',
+            endDate,
+          );
+        });
+      });
+    } else {
+      // No anchor, just get baselines in range
+      baselinesQuery = baselinesQuery
+        .andWhere('playerInventoryBaseline.createdAt', '>=', startDate)
+        .andWhere('playerInventoryBaseline.createdAt', '<=', endDate);
+    }
+
+    const baselines = await baselinesQuery.orderBy('playerInventoryBaseline.createdAt', 'asc');
 
     // Get all diffs in date range
     const diffs = await knex('playerInventoryDiff')
