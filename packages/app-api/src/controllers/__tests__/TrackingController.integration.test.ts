@@ -283,19 +283,45 @@ async function setupInventoryData(
     await repo.ensureInventoryPartition(partitionDate.toISOString());
   }
 
-  // Insert inventory data
+  // Insert inventory data into baseline table
+  // Group by (playerId, timestamp) to create baselines
   if (inventoryData.length > 0) {
-    const insertData = inventoryData.map((point) => ({
-      playerId: point.playerId,
-      itemId: point.itemId,
-      quantity: point.quantity,
-      quality: point.quality,
-      createdAt: point.timestamp.toISOString(),
-      domain: domainId,
-    }));
+    const groupedByPlayerAndTime = new Map<string, InventoryDataPoint[]>();
+    for (const point of inventoryData) {
+      const key = `${point.playerId}:${point.timestamp.toISOString()}`;
+      if (!groupedByPlayerAndTime.has(key)) {
+        groupedByPlayerAndTime.set(key, []);
+      }
+      groupedByPlayerAndTime.get(key)!.push(point);
+    }
+
+    const insertData: {
+      playerId: string;
+      baselineId: string;
+      itemId: string;
+      quantity: number;
+      quality?: string;
+      createdAt: string;
+      domain: string;
+    }[] = [];
+
+    for (const [_key, points] of groupedByPlayerAndTime) {
+      const baselineId = crypto.randomUUID();
+      for (const point of points) {
+        insertData.push({
+          playerId: point.playerId,
+          baselineId,
+          itemId: point.itemId,
+          quantity: point.quantity,
+          quality: point.quality,
+          createdAt: point.timestamp.toISOString(),
+          domain: domainId,
+        });
+      }
+    }
 
     const knex = await repo.getKnex();
-    await knex.batchInsert('playerInventoryHistory', insertData, 1000);
+    await knex.batchInsert('playerInventoryBaseline', insertData, 1000);
   }
 
   return {
@@ -1477,11 +1503,19 @@ const tests = [
       await repo.ensureInventoryPartition(mediumDate.toISOString());
       await repo.ensureInventoryPartition(recentDate.toISOString());
 
-      // Insert test data
+      // Insert test data into baseline table
+      const baselineId1 = crypto.randomUUID();
+      const baselineId2 = crypto.randomUUID();
+      const baselineId3 = crypto.randomUUID();
+      const baselineId4 = crypto.randomUUID();
+      const baselineId5 = crypto.randomUUID();
+      const baselineId6 = crypto.randomUUID();
+
       const testData = [
         // Old data (should be deleted)
         {
           playerId: pogId,
+          baselineId: baselineId1,
           itemId: itemId,
           quantity: 10,
           createdAt: oldDate.toISOString(),
@@ -1489,6 +1523,7 @@ const tests = [
         },
         {
           playerId: pogId,
+          baselineId: baselineId2,
           itemId: itemId,
           quantity: 11,
           createdAt: new Date(oldDate.getTime() + 3600000).toISOString(),
@@ -1497,6 +1532,7 @@ const tests = [
         // Medium age data (should be kept)
         {
           playerId: pogId,
+          baselineId: baselineId3,
           itemId: itemId,
           quantity: 20,
           createdAt: mediumDate.toISOString(),
@@ -1504,6 +1540,7 @@ const tests = [
         },
         {
           playerId: pogId,
+          baselineId: baselineId4,
           itemId: itemId,
           quantity: 21,
           createdAt: new Date(mediumDate.getTime() + 3600000).toISOString(),
@@ -1512,6 +1549,7 @@ const tests = [
         // Recent data (should be kept)
         {
           playerId: pogId,
+          baselineId: baselineId5,
           itemId: itemId,
           quantity: 30,
           createdAt: recentDate.toISOString(),
@@ -1519,6 +1557,7 @@ const tests = [
         },
         {
           playerId: pogId,
+          baselineId: baselineId6,
           itemId: itemId,
           quantity: 31,
           createdAt: new Date(recentDate.getTime() + 3600000).toISOString(),
@@ -1526,10 +1565,10 @@ const tests = [
         },
       ];
 
-      await knex.batchInsert('playerInventoryHistory', testData);
+      await knex.batchInsert('playerInventoryBaseline', testData);
 
       // Count initial records
-      const initialCount = await knex('playerInventoryHistory')
+      const initialCount = await knex('playerInventoryBaseline')
         .where('domain', this.standardDomainId)
         .where('playerId', pogId)
         .count('* as count')
@@ -1541,7 +1580,7 @@ const tests = [
       await repo.cleanupInventory(cutoffDate.toISOString());
 
       // Count remaining records
-      const finalCount = await knex('playerInventoryHistory')
+      const finalCount = await knex('playerInventoryBaseline')
         .where('domain', this.standardDomainId)
         .where('playerId', pogId)
         .count('* as count')
@@ -1551,7 +1590,7 @@ const tests = [
       expect(Number((finalCount as any)?.count || 0)).to.equal(4);
 
       // Verify no old data remains
-      const oldRecords = await knex('playerInventoryHistory')
+      const oldRecords = await knex('playerInventoryBaseline')
         .where('domain', this.standardDomainId)
         .where('playerId', pogId)
         .where('createdAt', '<', cutoffDate.toISOString());
@@ -1674,10 +1713,14 @@ const tests = [
       await repo.ensureInventoryPartition(recentDate1.toISOString());
       await repo.ensureInventoryPartition(recentDate2.toISOString());
 
-      // Insert only recent data
+      // Insert only recent data into baseline table
+      const baselineId1 = crypto.randomUUID();
+      const baselineId2 = crypto.randomUUID();
+
       const testData = [
         {
           playerId: pogId,
+          baselineId: baselineId1,
           itemId: itemId,
           quantity: 10,
           createdAt: recentDate1.toISOString(),
@@ -1685,6 +1728,7 @@ const tests = [
         },
         {
           playerId: pogId,
+          baselineId: baselineId2,
           itemId: itemId,
           quantity: 20,
           createdAt: recentDate2.toISOString(),
@@ -1692,10 +1736,10 @@ const tests = [
         },
       ];
 
-      await knex.batchInsert('playerInventoryHistory', testData);
+      await knex.batchInsert('playerInventoryBaseline', testData);
 
       // Count initial records
-      const initialCount = await knex('playerInventoryHistory')
+      const initialCount = await knex('playerInventoryBaseline')
         .where('domain', this.standardDomainId)
         .where('playerId', pogId)
         .count('* as count')
@@ -1707,7 +1751,7 @@ const tests = [
       await repo.cleanupInventory(cutoffDate.toISOString());
 
       // Count remaining records
-      const finalCount = await knex('playerInventoryHistory')
+      const finalCount = await knex('playerInventoryBaseline')
         .where('domain', this.standardDomainId)
         .where('playerId', pogId)
         .count('* as count')
