@@ -6,7 +6,7 @@
   "types": "dist/main.d.ts",
   "type": "module",
   "scripts": {
-    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
+    "start:dev": ":",
     "build": "tsc -p ./tsconfig.build.json",
     "migrate:create": "run(){ touch ./src/migrations/sql/$(date -u +\"%Y%m%d%H%M%S\")-$1.ts; }; run"
   },
