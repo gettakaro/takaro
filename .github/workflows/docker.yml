@@ -106,11 +106,13 @@ jobs:
           SOURCE_DATE_EPOCH: ${{ env.TIMESTAMP }}
   node-ci:
     needs: [docker]
-    timeout-minutes: 120
+    timeout-minutes: 60
     runs-on: ubuntu-24.04
     strategy:
+      fail-fast: false
       matrix:
         node-version: [24]
+        shard: [1, 2, 3, 4]
 
     steps:
       - name: Generate token
@@ -134,18 +136,21 @@ jobs:
       - name: Generate timestamp for artifact name
         run: echo "DATE=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
 
-      - name: Integration tests
+      - name: Integration tests (shard ${{ matrix.shard }}/4)
         run: npx zx scripts/integration-tests.mjs
         env:
           DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
+          SHARD_INDEX: ${{ matrix.shard }}
+          SHARD_TOTAL: 4
           TEST_LOGGING_LEVEL: debug
           NODE_ENV: test
           GRAFANA_CLOUD_TEMPO_URL: ${{ secrets.GRAFANA_CLOUD_TEMPO_URL }}
           GRAFANA_CLOUD_API_USER: ${{ secrets.GRAFANA_CLOUD_API_USER }}
           GRAFANA_CLOUD_API_KEY: ${{ secrets.GRAFANA_CLOUD_API_KEY }}
           TAKARO_TEST_RUNNER_ATTEMPTS: 2
+
       - name: Commit and push if changed
-        if: github.ref == 'refs/heads/development'
+        if: github.ref == 'refs/heads/development' && matrix.shard == 1
         run: |
           # Check if there are any changes
           if git diff --quiet; then
@@ -166,7 +171,7 @@ jobs:
       - uses: actions/upload-artifact@v5
         if: always()
         with:
-          name: integrationTests-${{ github.run_id }}-${{ env.DATE }}
+          name: integrationTests-shard-${{ matrix.shard }}-${{ github.run_id }}-${{ env.DATE }}
           path: reports
           retention-days: 30
   e2e:
