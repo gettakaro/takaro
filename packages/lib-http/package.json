@@ -1,15 +1,35 @@
 {
   "name": "@takaro/http",
-  "version": "0.4.10",
   "description": "An opinionated http server",
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
-  "type": "module",
-  "scripts": {
-    "start:dev": ":",
-    "build": "tsc -p ./tsconfig.build.json"
+  "version": "0.4.10",
+  "author": "",
+  "dependencies": {
+    "@opentelemetry/api": "1.9.0",
+    "axios": "1.7.7",
+    "body-parser": "1.20.3",
+    "class-validator": "0.14.2",
+    "cookie-parser": "1.4.7",
+    "cors": "2.8.5",
+    "express": "4.21.2",
+    "multer": "1.4.5-lts.2",
+    "rate-limiter-flexible": "5.0.3",
+    "reflect-metadata": "0.2.2",
+    "routing-controllers": "0.10.4",
+    "yup": "0.32.11"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "main": "dist/main.js",
+  "peerDependencies": {
+    "@takaro/auth": "*",
+    "@takaro/db": "*",
+    "@takaro/modules": "*",
+    "@takaro/util": "*"
+  },
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "start:dev": ":"
+  },
+  "type": "module",
+  "types": "dist/main.d.ts"
 }
