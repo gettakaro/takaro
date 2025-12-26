@@ -1,9 +1,20 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "composite": true,
     "rootDir": "./src",
     "outDir": "dist"
   },
   "include": ["src/**/*"],
-  "exclude": ["src/**/*.test.ts"]
+  "exclude": ["src/**/*.test.ts"],
+  "references": [
+    { "path": "../lib-apiclient/tsconfig.build.json" },
+    { "path": "../lib-auth/tsconfig.build.json" },
+    { "path": "../lib-config/tsconfig.build.json" },
+    { "path": "../lib-gameserver/tsconfig.build.json" },
+    { "path": "../lib-http/tsconfig.build.json" },
+    { "path": "../lib-modules/tsconfig.build.json" },
+    { "path": "../lib-queues/tsconfig.build.json" },
+    { "path": "../lib-util/tsconfig.build.json" }
+  ]
 }
