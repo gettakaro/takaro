@@ -21,6 +21,10 @@ export function getKnexOptions(extra: Record<string, unknown> = {}) {
       database: config.get('postgres.database'),
       ssl: config.get('postgres.ssl') ? { ca: config.get('postgres.ca') } : false,
     },
+    pool: {
+      min: parseInt(process.env.POSTGRES_POOL_MIN || '5', 10),
+      max: parseInt(process.env.POSTGRES_POOL_MAX || '50', 10),
+    },
     ...extra,
   };
   return opts;

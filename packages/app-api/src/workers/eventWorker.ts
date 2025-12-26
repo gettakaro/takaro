@@ -27,6 +27,12 @@ async function processJob(job: Job<IEventQueueData>) {
     jobId: job.id,
   });
   log.verbose('Processing an event', { data: job.data });
+  log.debug('[CONCURRENT_TESTS_DEBUG] Worker received job', {
+    jobId: job.id,
+    domainId: job.data.domainId,
+    gameServerId: job.data.gameServerId,
+    eventType: job.data.type,
+  });
 
   const { type, event, domainId, gameServerId } = job.data;
 
@@ -52,7 +58,21 @@ async function processJob(job: Job<IEventQueueData>) {
     const playerService = new PlayerService(domainId);
     const gameServerService = new GameServerService(domainId);
     const playerOnGameServerService = new PlayerOnGameServerService(domainId);
+
+    log.debug('[CONCURRENT_TESTS_DEBUG] About to resolve player ref', {
+      gameId: event.player.gameId,
+      gameServerId,
+      domainId,
+    });
+
     const { player, pog } = await playerService.resolveRef(event.player, gameServerId);
+
+    log.debug('[CONCURRENT_TESTS_DEBUG] Player ref resolved', {
+      playerId: player.id,
+      pogId: pog.id,
+      playerName: player.name,
+      domainId,
+    });
 
     await gameServerService.getPlayerLocation(gameServerId, player.id);
 
@@ -77,6 +97,13 @@ async function processJob(job: Job<IEventQueueData>) {
     }
 
     if (type === EVENT_TYPES.PLAYER_CONNECTED) {
+      log.debug('[CONCURRENT_TESTS_DEBUG] Handling PLAYER_CONNECTED event', {
+        playerId: player.id,
+        pogId: pog.id,
+        gameServerId,
+        domainId,
+      });
+
       await playerOnGameServerService.update(pog.id, new PlayerOnGameServerUpdateDTO({ online: true }));
 
       await eventService.create(
@@ -86,6 +113,8 @@ async function processJob(job: Job<IEventQueueData>) {
           playerId: player.id,
         }),
       );
+
+      log.debug('[CONCURRENT_TESTS_DEBUG] PLAYER_CONNECTED event created');
     }
 
     if (type === EVENT_TYPES.PLAYER_DISCONNECTED) {

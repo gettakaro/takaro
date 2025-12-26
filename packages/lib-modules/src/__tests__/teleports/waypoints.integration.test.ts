@@ -3,7 +3,6 @@ import { GameEvents, HookEvents } from '../../dto/index.js';
 import { PlayerOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
 import { describe } from 'node:test';
 import { randomUUID } from 'crypto';
-import { getMockServer } from '@takaro/mock-gameserver';
 
 const group = 'Teleports - waypoints';
 
@@ -66,7 +65,7 @@ const waypointsSetup = async function (this: IntegrationTest<WaypointsSetup>): P
 async function setupSecondServer(this: IntegrationTest<WaypointsSetup>) {
   if (!this.domainRegistrationToken) throw new Error('Domain registration token not set');
   const identityToken = randomUUID();
-  const mockserver = await getMockServer({
+  const mockserver = await this.createMockServer({
     mockserver: { registrationToken: this.domainRegistrationToken, identityToken },
   });
   this.setupData.mockservers.push(mockserver);

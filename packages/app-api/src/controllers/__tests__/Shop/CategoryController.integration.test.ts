@@ -2,7 +2,6 @@ import { IntegrationTest, expect, IShopCategorySetup, shopCategorySetup } from '
 import { describe } from 'node:test';
 import { ShopCategorySearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { randomUUID } from 'crypto';
-import { getMockServer } from '@takaro/mock-gameserver';
 
 const group = 'Shop/ShopCategoryController';
 
@@ -578,7 +577,7 @@ const tests = [
       const gameServer2IdentityToken = randomUUID();
       if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
 
-      const mockserver2 = await getMockServer({
+      const mockserver2 = await this.createMockServer({
         mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer2IdentityToken },
       });
 
@@ -688,7 +687,7 @@ const tests = [
       const gameServer2IdentityToken = randomUUID();
       if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
 
-      const mockserver2 = await getMockServer({
+      const mockserver2 = await this.createMockServer({
         mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer2IdentityToken },
       });
 

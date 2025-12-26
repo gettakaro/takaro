@@ -1,7 +1,6 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/gameEvents.js';
 import { randomUUID } from 'crypto';
-import { getMockServer } from '@takaro/mock-gameserver';
 import { GameServerOutputDTO } from '@takaro/apiclient';
 import { describe } from 'node:test';
 
@@ -20,7 +19,7 @@ const crossServerPlayerSetup = async function (
   if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
   // Create a second server
   const server2IdentityToken = randomUUID();
-  await getMockServer({
+  await this.createMockServer({
     mockserver: {
       registrationToken: this.domainRegistrationToken,
       identityToken: server2IdentityToken,

@@ -75,6 +75,9 @@ export async function createUserForPlayer(client: Client, playerId: string, game
   const code = await getSecretCodeForPlayer(playerId);
   await userClient.user.userControllerLinkPlayerProfile({ email: user.email, code });
 
+  // Disconnect EventsAwaiter to prevent socket leaks
+  await eventsAwaiter.disconnect();
+
   return {
     user,
     client: userClient,

@@ -217,6 +217,12 @@ export class AuthService extends DomainScoped {
           // Find the first active domain
           domainId = domains.find((d) => d.state === DOMAIN_STATES.ACTIVE)?.id;
 
+          log.debug('[CONCURRENT_TESTS_DEBUG] AuthService domain resolution', {
+            totalDomains: domains.length,
+            domainStates: domains.map((d) => ({ id: d.id, name: d.name, state: d.state })),
+            foundActiveDomain: !!domainId,
+          });
+
           if (!domainId && domains.length) {
             log.warn(
               `No active domain found for identity (but domains found: ${domains.map((d) => ({ id: d.id, state: d.state })).join(',')})`,

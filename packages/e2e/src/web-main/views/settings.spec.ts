@@ -31,7 +31,7 @@ test('Can set server-scoped settings', async ({ page, takaro }) => {
 });
 
 test('Setting server-scoped setting for server A does not affect server B', async ({ page, takaro }) => {
-  await getMockServer({
+  const secondMockServer = await getMockServer({
     mockserver: {
       registrationToken: takaro.domain.createdDomain.serverRegistrationToken,
       identityToken: 'Second server',
@@ -58,4 +58,11 @@ test('Setting server-scoped setting for server A does not affect server B', asyn
 
   await navigateTo(page, 'server-settings');
   await expect(page.getByText('Takaro').nth(1)).toBeVisible();
+
+  // Clean up the second mock server
+  try {
+    await secondMockServer.shutdown();
+  } catch (error) {
+    console.warn('Failed to shutdown second mock server:', error);
+  }
 });

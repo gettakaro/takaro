@@ -15,6 +15,7 @@ interface ServerToClientEvents {
   gameEvent: (gameserverId: string, type: EventTypes, data: EventPayload) => void;
   event: (event: EventOutputDTO) => void;
   pong: () => void;
+  'room-joined': (data: { domainId: string }) => void;
 }
 
 interface ClientToServerEvents {
@@ -62,7 +63,18 @@ class SocketServer {
 
     const authMiddleware = ctx.wrap('socket:auth', AuthService.getAuthMiddleware([]));
     this.io.engine.use((req: IncomingMessage, res: ServerResponse<IncomingMessage>, next: NextFunction) => {
-      return authMiddleware(req as AuthenticatedRequest, res as Response, next);
+      return authMiddleware(req as AuthenticatedRequest, res as Response, (err?: Error) => {
+        // Store auth data in the request for socket handshake access
+        // This ensures the data persists across the engine->socket middleware boundary
+        if (!err) {
+          const ctxData = ctx.data;
+          (req as any).takaroAuth = {
+            userId: ctxData.user,
+            domainId: ctxData.domain,
+          };
+        }
+        next(err);
+      });
     });
 
     this.io.use(
@@ -102,6 +114,21 @@ class SocketServer {
     const subRedis = await Redis.getClient('socketio:sub');
 
     this.io.adapter(createAdapter(pubRedis, subRedis));
+
+    // Add debug logging for Redis adapter events
+    this.io.of('/').adapter.on('create-room', (room) => {
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] Redis adapter: room created', { room });
+    });
+
+    this.io.of('/').adapter.on('join-room', (room, id) => {
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] Redis adapter: socket joined room', { room, socketId: id });
+    });
+
+    this.io.of('/').adapter.on('leave-room', (room, id) => {
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] Redis adapter: socket left room', { room, socketId: id });
+    });
+
+    this.log.info('[CONCURRENT_TESTS_DEBUG] Redis adapter initialized and event listeners attached');
   }
 
   public emit(
@@ -109,9 +136,52 @@ class SocketServer {
     event: keyof ServerToClientEvents,
     data: Parameters<ServerToClientEvents[keyof ServerToClientEvents]> = [],
   ) {
+    const room = this.io.sockets.adapter.rooms.get(domainId);
+    const connectedSocketsCount = room ? room.size : 0;
+
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] Emitting event to room', {
+      domainId,
+      eventType: event,
+      connectedSocketsInRoom: connectedSocketsCount,
+      totalConnectedSockets: this.io.sockets.sockets.size,
+      eventData: event === 'event' ? (data[0] as any)?.eventName : undefined,
+    });
+
+    // Force console.log to bypass test mode logging suppression
+    console.log('[CONCURRENT_TESTS_DEBUG] SERVER EMITTING EVENT:', {
+      timestamp: new Date().toISOString(),
+      domainId,
+      eventType: event,
+      eventName: event === 'event' ? (data[0] as any)?.eventName : undefined,
+      eventId: event === 'event' ? (data[0] as any)?.id : undefined,
+      connectedSocketsInRoom: connectedSocketsCount,
+      totalConnectedSockets: this.io.sockets.sockets.size,
+      hasRoom: !!room,
+    });
+
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] About to emit via Redis adapter', {
+      domainId,
+      eventType: event,
+      hasData: data.length > 0,
+    });
+
     this.io.to(domainId).emit(event, ...data);
+
+    this.log.debug('[CONCURRENT_TESTS_DEBUG] Emitted via Redis adapter', {
+      domainId,
+      eventType: event,
+    });
+
     if (event === 'event') {
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] About to serverSideEmit', {
+        domainId,
+        eventName: (data[0] as any)?.eventName,
+      });
       this.io.serverSideEmit(event, data[0] as unknown as EventOutputDTO);
+      this.log.debug('[CONCURRENT_TESTS_DEBUG] serverSideEmit completed', {
+        domainId,
+        eventName: (data[0] as any)?.eventName,
+      });
     }
   }
 
@@ -120,13 +190,60 @@ class SocketServer {
     next: (err?: Error | undefined) => void,
   ) {
     try {
-      const ctxData = ctx.data;
-      if (!ctxData.domain) {
-        this.log.error('No domain found in context');
+      // Get auth data from the handshake request (stored by engine middleware)
+      const authData = (socket.request as any).takaroAuth;
+
+      if (!authData?.domainId) {
+        this.log.error('No domain found in handshake auth data');
         return next(new errors.UnauthorizedError());
       }
-      await socket.join(ctxData.domain);
-      next();
+
+      // Create a new AsyncLocalStorage context with auth data
+      // The context from engine middleware doesn't propagate to socket middleware
+      const wrappedHandler = ctx.wrap('socket:router', async () => {
+        ctx.addData({ user: authData.userId, domain: authData.domainId });
+        this.log.debug('[CONCURRENT_TESTS_DEBUG] Socket joining room', {
+          socketId: socket.id,
+          userId: authData.userId,
+          domainId: authData.domainId,
+          contextUser: ctx.data.user,
+          contextDomain: ctx.data.domain,
+        });
+
+        // Check domain state before joining
+        const { DomainService } = await import('../service/DomainService.js');
+        const domainService = new DomainService();
+        const domain = await domainService.findOne(authData.domainId);
+        this.log.debug('[CONCURRENT_TESTS_DEBUG] Domain state during socket join', {
+          domainId: authData.domainId,
+          domainState: domain?.state,
+          domainExists: !!domain,
+        });
+
+        await socket.join(authData.domainId);
+        // Force Redis synchronization - ensures join has propagated before proceeding
+        // Workaround for Socket.IO Redis adapter race condition (issue #4734)
+        await this.io.in(authData.domainId).fetchSockets();
+
+        // Log socket join completion
+        const room = this.io.sockets.adapter.rooms.get(authData.domainId);
+        console.log('[CONCURRENT_TESTS_DEBUG] SOCKET JOINED ROOM:', {
+          timestamp: new Date().toISOString(),
+          socketId: socket.id,
+          domainId: authData.domainId,
+          userId: authData.userId,
+          roomSize: room ? room.size : 0,
+          socketRooms: Array.from(socket.rooms),
+        });
+
+        // Emit confirmation that the socket has joined the room
+        // This ensures clients can wait for room membership before starting to listen for events
+        socket.emit('room-joined', { domainId: authData.domainId });
+
+        next();
+      });
+
+      await wrappedHandler();
     } catch (error) {
       this.log.error('Unknown error when routing socket', error);
       next(new errors.UnauthorizedError());
