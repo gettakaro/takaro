@@ -140,20 +140,20 @@ services:
       NODE_OPTIONS: "--import=ts-node-maintained/register/esm"
       POSTGRES_HOST: postgresql
 
-  # e2e:
-  #   build:
-  #     context: .
-  #     dockerfile: containers/playwright/dev.Dockerfile
-  #   depends_on:
-  #     - takaro
-  #   ipc: host
-  #   volumes:
-  #     - ./packages/e2e:/app/packages/e2e
-  #     - /tmp/.X11-unix:/tmp/.X11-unix
-  #   ports:
-  #     - 20000:20000
-  #   environment:
-  #     - DISPLAY=:0
+  e2e:
+    build:
+      context: .
+      dockerfile: containers/playwright/dev.Dockerfile
+    depends_on:
+      - takaro
+    ipc: host
+    volumes:
+      - ./packages/e2e:/app/packages/e2e
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    ports:
+      - 20000:20000
+    environment:
+      - DISPLAY=:0
 
   kratos-migrate:
     image: oryd/kratos:v1.2.0

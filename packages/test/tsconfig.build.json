@@ -10,5 +10,13 @@
   ],
   "exclude": [
     "src/**/*.test.ts"
+  ],
+  "references": [
+    { "path": "../lib-apiclient/tsconfig.build.json" },
+    { "path": "../lib-util/tsconfig.build.json" },
+    { "path": "../lib-modules/tsconfig.build.json" },
+    { "path": "../lib-config/tsconfig.build.json" },
+    { "path": "../lib-db/tsconfig.build.json" },
+    { "path": "../app-mock-gameserver/tsconfig.build.json" }
   ]
 }

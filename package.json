@@ -31,7 +31,7 @@
     "release:minor": "npm version minor --no-git-tag-version --workspaces && git add **/package.json; npm version minor --include-workspace-root --force && git push && git push --tags",
     "shell": "docker compose exec takaro bash",
     "start": "COMMAND=\"start\" REGEX=app bash ./scripts/run-all-pkgs.sh",
-    "start:dev": "npx concurrently --names TSC,PKGS \"tsc --build --watch tsconfig.build.json\" \"sleep 10 && COMMAND=start:dev bash ./scripts/run-all-pkgs.sh\"",
+    "start:dev": "npx concurrently --names TSC,PKGS \"tsc --build --watch tsconfig.build.json\" \"COMMAND=start:dev bash ./scripts/run-all-pkgs.sh\"",
     "test": "bash ./scripts/test-runner.sh --all",
     "test:check": "bash ./scripts/test-check.sh --tests",
     "test:ci": "bash ./scripts/test-runner.sh --ci",
