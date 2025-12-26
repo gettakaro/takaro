@@ -315,22 +315,19 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     itemDefs: { id: string; code: string }[],
     observationTime: string,
   ) {
-    const toInsert = items
-      .map((item) => {
-        const itemDef = itemDefs.find((def) => def.code === item.code);
-        if (!itemDef) return null;
+    // Aggregate items by code first to handle multiple stacks of same item
+    // This prevents primary key violations when the same item appears multiple times
+    const aggregatedMap = this.aggregateByCode(items, itemDefs);
 
-        return {
-          playerId,
-          baselineId,
-          itemId: itemDef.id,
-          quantity: item.amount ?? 0,
-          quality: item.quality,
-          domain: this.domainId,
-          createdAt: observationTime,
-        };
-      })
-      .filter((item): item is NonNullable<typeof item> => item !== null);
+    const toInsert = Array.from(aggregatedMap.values()).map((agg) => ({
+      playerId,
+      baselineId,
+      itemId: agg.itemId,
+      quantity: agg.amount,
+      quality: agg.quality,
+      domain: this.domainId,
+      createdAt: observationTime,
+    }));
 
     if (toInsert.length > 0) {
       const { query } = await this.getBaselineModel();
@@ -358,12 +355,6 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
   }
 
   async observePlayerInventory(playerId: string, gameServerId: string, items: IItemDTO[]) {
-    const itemRepo = new ItemRepo(this.domainId);
-    const itemDefs = await itemRepo.findItemsByCodes(
-      items.map((item) => item.code),
-      gameServerId,
-    );
-
     const observationTime = new Date().toISOString();
 
     try {
@@ -371,9 +362,16 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
       const cacheKey = `inventory:${this.domainId}:${playerId}`;
       const baselineKey = `inventory:baseline:${this.domainId}:${playerId}`;
 
-      // Get previous state from cache
+      // Get previous state from cache FIRST (needed to fetch all item definitions)
       const previousJson = await redis.get(cacheKey);
       const previousItems: IItemDTO[] = previousJson ? JSON.parse(previousJson) : [];
+
+      // Collect ALL codes from both previous and current inventory
+      // This ensures removed items are properly detected in diffs
+      const allCodes = new Set([...items.map((item) => item.code), ...previousItems.map((item) => item.code)]);
+
+      const itemRepo = new ItemRepo(this.domainId);
+      const itemDefs = await itemRepo.findItemsByCodes([...allCodes], gameServerId);
 
       // Check if baseline is needed
       const lastBaselineStr = await redis.get(baselineKey);
