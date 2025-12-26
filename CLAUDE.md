@@ -1,5 +1,23 @@
 # Claude AI Development Guide
 
+## Repository Engineer Skill
+
+This repository has an engineer skill at `.claude/skills/takaro-engineer/SKILL.md` with comprehensive knowledge about the monorepo structure, testing, Docker setup, and debugging.
+
+### Proactive Maintenance
+
+During your work, if you discover something that should be in the engineer skill:
+- A debugging technique that worked
+- A command or workflow that's useful
+- A gotcha or non-obvious behavior
+- An error and its solution
+
+**ASK THE HUMAN:** "Should I add this to the engineer skill?"
+
+Also watch for **outdated information** in the skill and ask before updating.
+
+---
+
 When working on the frontend, you should ALWAYS use existing components from lib-components. Do not make inline components unless explicitly asked to
 
 ## Quick Links
