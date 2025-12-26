@@ -34,6 +34,9 @@ jobs:
       - name: Run Prettier
         run: npm run test:style:fix
 
+      - name: Run Syncpack Fix
+        run: npm run syncpack:fix
+
       - name: Commit and push if changed
         run: |
           if git diff --quiet; then

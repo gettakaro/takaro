@@ -1,59 +1,15 @@
 {
   "name": "takaro",
-  "version": "0.4.10",
-  "packageManager": "npm@11.6.1",
   "description": "",
-  "keywords": [],
-  "homepage": "https://takaro.app",
-  "license": "AGPL-3.0-or-later",
+  "version": "0.4.10",
   "contributors": [
-    "Niek Candaele",
-    "Emiel Van Severen"
+    "Emiel Van Severen",
+    "Niek Candaele"
   ],
-  "type": "module",
-  "workspaces": [
-    "packages/*"
-  ],
-  "scripts": {
-    "build": "COMMAND=\"build\" ./scripts/run-all-pkgs.sh",
-    "postbuild": "npm run typedoc",
-    "typedoc": "typedoc",
-    "clean": "npx --workspaces rimraf dist && npx --workspaces rimraf node_modules && npx rimraf node_modules",
-    "e2e:codegen": "npm run e2e:webmain && docker compose run e2e npm run --workspace=./packages/e2e codegen",
-    "e2e:ui": "npm run e2e:webmain && docker compose run e2e npm run --workspace=./packages/e2e dev:ui",
-    "e2e:webmain": "docker compose exec takaro npm run --workspace=./packages/web-main start:dev &",
-    "lint": "npx eslint \"**/*.{js,ts,tsx}\"",
-    "lint:fix": "npx eslint \"**/*.{js,ts,tsx}\" --fix ",
-    "prepare": "[ -d '.husky' ] && husky || true",
-    "prettier": "npx --workspaces --if-present prettier --log-level silent --check --no-error-on-unmatched-pattern 'src/**/*.{ts,md,tsx}'",
-    "prettier:fix": "npx --workspaces --if-present prettier --log-level silent --write --no-error-on-unmatched-pattern 'src/**/*.{ts,md,tsx}'",
-    "release:patch": "npm version patch --no-git-tag-version --workspaces && git add **/package.json; npm version patch --include-workspace-root --force && git push && git push --tags",
-    "release:minor": "npm version minor --no-git-tag-version --workspaces && git add **/package.json; npm version minor --include-workspace-root --force && git push && git push --tags",
-    "shell": "docker compose exec takaro bash",
-    "start": "COMMAND=\"start\" REGEX=app bash ./scripts/run-all-pkgs.sh",
-    "start:dev": "COMMAND=\"start:dev\" bash ./scripts/run-all-pkgs.sh",
-    "test": "bash ./scripts/test-runner.sh --all",
-    "test:check": "bash ./scripts/test-check.sh --tests",
-    "test:ci": "bash ./scripts/test-runner.sh --ci",
-    "test:debug": "bash ./scripts/test-file.sh --debug",
-    "test:file": "bash ./scripts/test-file.sh",
-    "test:integration": "bash ./scripts/test-runner.sh --integration",
-    "test:package": "bash ./scripts/test-package.sh",
-    "test:package:integration": "bash ./scripts/test-package.sh --integration",
-    "test:package:unit": "bash ./scripts/test-package.sh --unit",
-    "test:style": "npm run lint && npm run prettier",
-    "test:style:fix": "npm run lint:fix && npm run prettier:fix",
-    "test:unit": "bash ./scripts/test-runner.sh --unit"
-  },
-  "mocha": {
-    "file": [
-      "./test/lifecycle.test.ts"
-    ],
-    "recursive": true
-  },
   "dependencies": {
     "@aws-sdk/client-lambda": "3.659.0",
     "@aws-sdk/client-s3": "3.658.1",
+    "@bull-board/api": "6.2.3",
     "@bull-board/express": "6.2.3",
     "@discordjs/rest": "2.4.0",
     "@docusaurus/core": "3.5.2",
@@ -131,6 +87,7 @@
     "deep-equal-in-any-order": "2.0.6",
     "discord-api-types": "0.37.101",
     "discord.js": "14.16.3",
+    "dnd-core": "16.0.1",
     "ejs": "3.1.10",
     "eventsource": "2.0.2",
     "express": "4.21.2",
@@ -184,6 +141,7 @@
     "url": "0.11.4",
     "web-vitals": "4.2.3",
     "winston": "3.14.2",
+    "ws": "^8.17.1",
     "xml2js": "0.6.2",
     "yup": "0.32.11",
     "zod": "3.23.8",
@@ -274,6 +232,7 @@
     "stream-browserify": "3.0.0",
     "stream-http": "3.2.0",
     "supertest": "6.3.4",
+    "syncpack": "^13.0.4",
     "ts-mocha": "10.0.0",
     "ts-node-maintained": "10.9.6",
     "typedoc": "0.28.14",
@@ -285,18 +244,65 @@
     "vitest": "4.0.8",
     "zx": "7.2.4"
   },
-  "optionalDependencies": {
-    "bufferutil": "4.0.9",
-    "utf-8-validate": "6.0.5"
-  },
   "engines": {
     "node": "24.11.0",
     "npm": "11.6.1"
+  },
+  "homepage": "https://takaro.app",
+  "keywords": [],
+  "license": "AGPL-3.0-or-later",
+  "mocha": {
+    "file": [
+      "./test/lifecycle.test.ts"
+    ],
+    "recursive": true
+  },
+  "optionalDependencies": {
+    "bufferutil": "4.0.9",
+    "utf-8-validate": "6.0.5"
   },
   "overrides": {
     "esbuild": "0.24.0",
     "@tanstack/router-generator": "1.102.1",
     "@tanstack/router-core": "1.102.0",
     "ws@7": "^8.17.1"
-  }
+  },
+  "packageManager": "npm@11.6.1",
+  "scripts": {
+    "build": "COMMAND=\"build\" ./scripts/run-all-pkgs.sh",
+    "clean": "npx --workspaces rimraf dist && npx --workspaces rimraf node_modules && npx rimraf node_modules",
+    "e2e:codegen": "npm run e2e:webmain && docker compose run e2e npm run --workspace=./packages/e2e codegen",
+    "e2e:ui": "npm run e2e:webmain && docker compose run e2e npm run --workspace=./packages/e2e dev:ui",
+    "e2e:webmain": "docker compose exec takaro npm run --workspace=./packages/web-main start:dev &",
+    "lint": "npx eslint \"**/*.{js,ts,tsx}\"",
+    "lint:fix": "npx eslint \"**/*.{js,ts,tsx}\" --fix ",
+    "postbuild": "npm run typedoc",
+    "prepare": "[ -d '.husky' ] && husky || true",
+    "prettier": "npx --workspaces --if-present prettier --log-level silent --check --no-error-on-unmatched-pattern 'src/**/*.{ts,md,tsx}'",
+    "prettier:fix": "npx --workspaces --if-present prettier --log-level silent --write --no-error-on-unmatched-pattern 'src/**/*.{ts,md,tsx}'",
+    "release:minor": "npm version minor --no-git-tag-version --workspaces && git add **/package.json; npm version minor --include-workspace-root --force && git push && git push --tags",
+    "release:patch": "npm version patch --no-git-tag-version --workspaces && git add **/package.json; npm version patch --include-workspace-root --force && git push && git push --tags",
+    "shell": "docker compose exec takaro bash",
+    "start": "COMMAND=\"start\" REGEX=app bash ./scripts/run-all-pkgs.sh",
+    "start:dev": "COMMAND=\"start:dev\" bash ./scripts/run-all-pkgs.sh",
+    "syncpack:fix": "syncpack fix-mismatches && syncpack format",
+    "syncpack:lint": "syncpack lint",
+    "test": "bash ./scripts/test-runner.sh --all",
+    "test:check": "bash ./scripts/test-check.sh --tests",
+    "test:ci": "bash ./scripts/test-runner.sh --ci",
+    "test:debug": "bash ./scripts/test-file.sh --debug",
+    "test:file": "bash ./scripts/test-file.sh",
+    "test:integration": "bash ./scripts/test-runner.sh --integration",
+    "test:package": "bash ./scripts/test-package.sh",
+    "test:package:integration": "bash ./scripts/test-package.sh --integration",
+    "test:package:unit": "bash ./scripts/test-package.sh --unit",
+    "test:style": "npm run lint && npm run prettier",
+    "test:style:fix": "npm run lint:fix && npm run prettier:fix",
+    "test:unit": "bash ./scripts/test-runner.sh --unit",
+    "typedoc": "typedoc"
+  },
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ]
 }
