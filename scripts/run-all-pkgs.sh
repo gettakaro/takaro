@@ -23,6 +23,10 @@ PACKAGES=$(find packages -maxdepth 1 -mindepth 1 -type d)
 # Filter packages by regex
 FILTERED_PACKAGES=$(echo "$PACKAGES" | grep -E "$REGEX")
 
+# Exclude optional dev tools (storybook, docs) - run manually if needed
+EXCLUDED_PACKAGES="packages/web-docs|packages/lib-components"
+FILTERED_PACKAGES=$(echo "$FILTERED_PACKAGES" | grep -v -E "$EXCLUDED_PACKAGES")
+
 echo "Running in following packages:"
 echo "$FILTERED_PACKAGES"
 
