@@ -1,15 +1,24 @@
 {
   "name": "@takaro/helpers",
-  "version": "0.4.10",
   "description": "A collection of helpers, used inside Takaro Functions",
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
-  "type": "module",
-  "scripts": {
-    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p ./tsconfig.build.json"
+  "version": "0.4.10",
+  "author": "",
+  "dependencies": {
+    "axios": "1.7.7",
+    "croner": "8.1.2",
+    "lodash-es": "4.17.21"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "main": "dist/main.js",
+  "peerDependencies": {
+    "@takaro/apiclient": "*",
+    "@takaro/config": "*"
+  },
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json"
+  },
+  "type": "module",
+  "types": "dist/main.d.ts"
 }

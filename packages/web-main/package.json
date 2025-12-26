@@ -1,16 +1,6 @@
 {
   "name": "web-main",
   "version": "0.4.10",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "start:dev": "vite dev --port 13001 --host 0.0.0.0",
-    "build": "NODE_OPTIONS=--max-old-space-size=8195 vite build && tsc --noemit",
-    "test": "npm run test:unit",
-    "test:unit": "CI=true vitest",
-    "test:snapshot": "vitest --updateSnapshot",
-    "test:watch": "vitest --watch"
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -26,5 +16,15 @@
   "dependencies": {
     "@emoji-mart/data": "1.2.1",
     "@emoji-mart/react": "1.1.1"
-  }
+  },
+  "private": true,
+  "scripts": {
+    "build": "NODE_OPTIONS=--max-old-space-size=8195 vite build && tsc --noemit",
+    "start:dev": "vite dev --port 13001 --host 0.0.0.0",
+    "test": "npm run test:unit",
+    "test:snapshot": "vitest --updateSnapshot",
+    "test:unit": "CI=true vitest",
+    "test:watch": "vitest --watch"
+  },
+  "type": "module"
 }
