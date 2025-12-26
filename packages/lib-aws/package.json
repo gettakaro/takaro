@@ -1,15 +1,18 @@
 {
   "name": "@takaro/aws",
-  "version": "0.4.10",
   "description": "AWS helper functions",
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
-  "type": "module",
-  "scripts": {
-    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p ./tsconfig.build.json"
+  "version": "0.4.10",
+  "author": "",
+  "dependencies": {
+    "@aws-sdk/client-lambda": "3.659.0"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "start:dev": ":"
+  },
+  "type": "module",
+  "types": "dist/main.d.ts"
 }

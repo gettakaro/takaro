@@ -1,15 +1,36 @@
 {
   "name": "@takaro/util",
-  "version": "0.4.10",
   "description": "An opinionated logger",
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
-  "type": "module",
-  "scripts": {
-    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p ./tsconfig.build.json"
+  "version": "0.4.10",
+  "author": "",
+  "dependencies": {
+    "@opentelemetry/api": "1.9.0",
+    "@opentelemetry/auto-instrumentations-node": "0.50.0",
+    "@opentelemetry/exporter-trace-otlp-grpc": "0.53.0",
+    "@opentelemetry/sdk-node": "0.53.0",
+    "@opentelemetry/semantic-conventions": "1.27.0",
+    "@sentry/node": "7.120.3",
+    "axios": "1.7.7",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.14.2",
+    "knex": "3.1.0",
+    "lodash-es": "4.17.21",
+    "posthog-node": "4.2.0",
+    "prom-client": "14.2.0",
+    "type-fest": "2.19.0",
+    "winston": "3.14.2",
+    "yup": "0.32.11"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "main": "dist/main.js",
+  "peerDependencies": {
+    "@takaro/config": "*"
+  },
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "start:dev": ":"
+  },
+  "type": "module",
+  "types": "dist/main.d.ts"
 }

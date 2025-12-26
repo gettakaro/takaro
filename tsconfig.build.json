@@ -1,0 +1,21 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/lib-config/tsconfig.build.json" },
+    { "path": "packages/lib-apiclient/tsconfig.build.json" },
+    { "path": "packages/lib-util/tsconfig.build.json" },
+    { "path": "packages/lib-auth/tsconfig.build.json" },
+    { "path": "packages/lib-db/tsconfig.build.json" },
+    { "path": "packages/lib-queues/tsconfig.build.json" },
+    { "path": "packages/lib-email/tsconfig.build.json" },
+    { "path": "packages/lib-aws/tsconfig.build.json" },
+    { "path": "packages/lib-modules/tsconfig.build.json" },
+    { "path": "packages/lib-function-helpers/tsconfig.build.json" },
+    { "path": "packages/lib-http/tsconfig.build.json" },
+    { "path": "packages/lib-gameserver/tsconfig.build.json" },
+    { "path": "packages/app-mock-gameserver/tsconfig.build.json" },
+    { "path": "packages/app-api/tsconfig.build.json" },
+    { "path": "packages/app-connector/tsconfig.build.json" },
+    { "path": "packages/test/tsconfig.build.json" }
+  ]
+}
