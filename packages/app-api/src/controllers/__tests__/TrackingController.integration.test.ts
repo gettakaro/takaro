@@ -2,6 +2,8 @@ import { IntegrationTest, expect, SetupGameServerPlayers } from '@takaro/test';
 import { isAxiosError, PlayerOnGameserverOutputDTO, ItemsOutputDTO } from '@takaro/apiclient';
 import { describe } from 'node:test';
 import { TrackingRepo } from '../../db/tracking.js';
+import { IItemDTO } from '@takaro/gameserver';
+import { Redis } from '@takaro/db';
 
 const group = 'TrackingController';
 
@@ -283,19 +285,45 @@ async function setupInventoryData(
     await repo.ensureInventoryPartition(partitionDate.toISOString());
   }
 
-  // Insert inventory data
+  // Insert inventory data into baseline table
+  // Group by (playerId, timestamp) to create baselines
   if (inventoryData.length > 0) {
-    const insertData = inventoryData.map((point) => ({
-      playerId: point.playerId,
-      itemId: point.itemId,
-      quantity: point.quantity,
-      quality: point.quality,
-      createdAt: point.timestamp.toISOString(),
-      domain: domainId,
-    }));
+    const groupedByPlayerAndTime = new Map<string, InventoryDataPoint[]>();
+    for (const point of inventoryData) {
+      const key = `${point.playerId}:${point.timestamp.toISOString()}`;
+      if (!groupedByPlayerAndTime.has(key)) {
+        groupedByPlayerAndTime.set(key, []);
+      }
+      groupedByPlayerAndTime.get(key)!.push(point);
+    }
+
+    const insertData: {
+      playerId: string;
+      baselineId: string;
+      itemId: string;
+      quantity: number;
+      quality?: string;
+      createdAt: string;
+      domain: string;
+    }[] = [];
+
+    for (const [_key, points] of groupedByPlayerAndTime) {
+      const baselineId = crypto.randomUUID();
+      for (const point of points) {
+        insertData.push({
+          playerId: point.playerId,
+          baselineId,
+          itemId: point.itemId,
+          quantity: point.quantity,
+          quality: point.quality,
+          createdAt: point.timestamp.toISOString(),
+          domain: domainId,
+        });
+      }
+    }
 
     const knex = await repo.getKnex();
-    await knex.batchInsert('playerInventoryHistory', insertData, 1000);
+    await knex.batchInsert('playerInventoryBaseline', insertData, 1000);
   }
 
   return {
@@ -1258,6 +1286,278 @@ const tests = [
       });
     },
   }),
+
+  // Diff-based inventory storage tests
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Inventory observation creates baseline on first call',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      const repo = new TrackingRepo(this.standardDomainId);
+      const knex = await repo.getKnex();
+      const pog = this.setupData.pogs1[0];
+
+      // Get items from game server
+      const itemsRes = await this.client.item.itemControllerSearch({
+        filters: { gameserverId: [this.setupData.gameServer1.id] },
+      });
+      const items: ItemsOutputDTO[] = itemsRes.data.data;
+      if (items.length < 2) throw new Error('Need at least 2 items for test');
+
+      // Clear Redis keys for clean test
+      const redis = await Redis.getClient('inventory');
+      await redis.del(`inventory:${this.standardDomainId}:${pog.id}`);
+      await redis.del(`inventory:baseline:${this.standardDomainId}:${pog.id}`);
+
+      // Ensure partition exists for today
+      await repo.ensureInventoryPartition();
+
+      // Create inventory observation
+      const inventoryItems = [
+        new IItemDTO({ code: items[0].code, name: items[0].name, amount: 64 }),
+        new IItemDTO({ code: items[1].code, name: items[1].name, amount: 32, quality: 'high' }),
+      ];
+
+      await repo.observePlayerInventory(pog.id, this.setupData.gameServer1.id, inventoryItems);
+
+      // Verify baseline was created
+      const baselines = await knex('playerInventoryBaseline')
+        .where('playerId', pog.id)
+        .andWhere('domain', this.standardDomainId);
+
+      expect(baselines.length).to.equal(2); // One row per item
+      expect(baselines.some((b: any) => b.quantity === 64)).to.be.true;
+      expect(baselines.some((b: any) => b.quantity === 32)).to.be.true;
+      expect(baselines.some((b: any) => b.quality === 'high')).to.be.true;
+
+      // Verify all items have same baselineId
+      const baselineIds = new Set(baselines.map((b: any) => b.baselineId));
+      expect(baselineIds.size).to.equal(1);
+    },
+  }),
+
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Inventory observation stores diffs when items change',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      const repo = new TrackingRepo(this.standardDomainId);
+      const knex = await repo.getKnex();
+      const pog = this.setupData.pogs1[0];
+
+      // Get items from game server
+      const itemsRes = await this.client.item.itemControllerSearch({
+        filters: { gameserverId: [this.setupData.gameServer1.id] },
+      });
+      const items: ItemsOutputDTO[] = itemsRes.data.data;
+      if (items.length < 3) throw new Error('Need at least 3 items for test');
+
+      // Clear Redis keys and set a recent baseline timestamp (to skip baseline creation)
+      const redis = await Redis.getClient('inventory');
+      await redis.del(`inventory:${this.standardDomainId}:${pog.id}`);
+      // Set baseline timestamp to now (so diff mode is used)
+      await redis.set(`inventory:baseline:${this.standardDomainId}:${pog.id}`, Date.now().toString());
+
+      // Pre-populate cache with initial inventory
+      const initialInventory = [
+        new IItemDTO({ code: items[0].code, name: items[0].name, amount: 64 }),
+        new IItemDTO({ code: items[1].code, name: items[1].name, amount: 32 }),
+      ];
+      await redis.set(`inventory:${this.standardDomainId}:${pog.id}`, JSON.stringify(initialInventory), { EX: 1800 });
+
+      // Ensure partition exists for today
+      await repo.ensureInventoryPartition();
+
+      // Now observe changed inventory: wood changed (64->48), stone removed, iron added
+      const changedInventory = [
+        new IItemDTO({ code: items[0].code, name: items[0].name, amount: 48 }), // changed
+        new IItemDTO({ code: items[2].code, name: items[2].name, amount: 16 }), // added (items[1] removed)
+      ];
+
+      await repo.observePlayerInventory(pog.id, this.setupData.gameServer1.id, changedInventory);
+
+      // Verify diffs were stored
+      const diffs = await knex('playerInventoryDiff')
+        .where('playerId', pog.id)
+        .andWhere('domain', this.standardDomainId);
+
+      expect(diffs.length).to.equal(3); // 1 changed, 1 removed, 1 added
+
+      const changedDiff = diffs.find((d: any) => d.changeType === 'changed') as any;
+      const addedDiff = diffs.find((d: any) => d.changeType === 'added') as any;
+      const removedDiff = diffs.find((d: any) => d.changeType === 'removed') as any;
+
+      expect(changedDiff).to.exist;
+      expect(changedDiff?.previousQuantity).to.equal(64);
+      expect(changedDiff?.newQuantity).to.equal(48);
+
+      expect(addedDiff).to.exist;
+      expect(addedDiff?.newQuantity).to.equal(16);
+
+      expect(removedDiff).to.exist;
+      expect(removedDiff?.previousQuantity).to.equal(32);
+    },
+  }),
+
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Inventory observation aggregates multiple stacks of same item',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      const repo = new TrackingRepo(this.standardDomainId);
+      const knex = await repo.getKnex();
+      const pog = this.setupData.pogs1[0];
+
+      // Get items from game server
+      const itemsRes = await this.client.item.itemControllerSearch({
+        filters: { gameserverId: [this.setupData.gameServer1.id] },
+      });
+      const items: ItemsOutputDTO[] = itemsRes.data.data;
+      if (items.length < 1) throw new Error('Need at least 1 item for test');
+
+      // Clear Redis keys
+      const redis = await Redis.getClient('inventory');
+      await redis.del(`inventory:${this.standardDomainId}:${pog.id}`);
+      await redis.del(`inventory:baseline:${this.standardDomainId}:${pog.id}`);
+
+      // Ensure partition exists for today
+      await repo.ensureInventoryPartition();
+
+      // Create inventory with multiple stacks of same item (64 + 32 + 10 = 106)
+      const inventoryItems = [
+        new IItemDTO({ code: items[0].code, name: items[0].name, amount: 64 }),
+        new IItemDTO({ code: items[0].code, name: items[0].name, amount: 32 }),
+        new IItemDTO({ code: items[0].code, name: items[0].name, amount: 10 }),
+      ];
+
+      await repo.observePlayerInventory(pog.id, this.setupData.gameServer1.id, inventoryItems);
+
+      // Verify baseline was created with aggregated total
+      const baselines = await knex('playerInventoryBaseline')
+        .where('playerId', pog.id)
+        .andWhere('domain', this.standardDomainId);
+
+      // Should be a single row with aggregated quantity
+      expect(baselines.length).to.equal(1);
+      expect((baselines[0] as any).quantity).to.equal(106); // 64 + 32 + 10
+    },
+  }),
+
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Inventory observation skips database write when unchanged',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      const repo = new TrackingRepo(this.standardDomainId);
+      const knex = await repo.getKnex();
+      const pog = this.setupData.pogs1[0];
+
+      // Get items from game server
+      const itemsRes = await this.client.item.itemControllerSearch({
+        filters: { gameserverId: [this.setupData.gameServer1.id] },
+      });
+      const items: ItemsOutputDTO[] = itemsRes.data.data;
+      if (items.length < 2) throw new Error('Need at least 2 items for test');
+
+      // Clear Redis keys and set a recent baseline timestamp
+      const redis = await Redis.getClient('inventory');
+      await redis.del(`inventory:${this.standardDomainId}:${pog.id}`);
+      await redis.set(`inventory:baseline:${this.standardDomainId}:${pog.id}`, Date.now().toString());
+
+      // Pre-populate cache with initial inventory
+      const inventory = [
+        new IItemDTO({ code: items[0].code, name: items[0].name, amount: 64 }),
+        new IItemDTO({ code: items[1].code, name: items[1].name, amount: 32 }),
+      ];
+      await redis.set(`inventory:${this.standardDomainId}:${pog.id}`, JSON.stringify(inventory), { EX: 1800 });
+
+      // Ensure partition exists
+      await repo.ensureInventoryPartition();
+
+      // Get diff count before observation
+      const diffsBefore = await knex('playerInventoryDiff')
+        .where('playerId', pog.id)
+        .andWhere('domain', this.standardDomainId);
+      const countBefore = diffsBefore.length;
+
+      // Observe identical inventory
+      await repo.observePlayerInventory(pog.id, this.setupData.gameServer1.id, inventory);
+
+      // Verify no new diffs were created
+      const diffsAfter = await knex('playerInventoryDiff')
+        .where('playerId', pog.id)
+        .andWhere('domain', this.standardDomainId);
+      const countAfter = diffsAfter.length;
+
+      expect(countAfter).to.equal(countBefore); // No new rows
+    },
+  }),
+
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Inventory observation detects quality changes',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      const repo = new TrackingRepo(this.standardDomainId);
+      const knex = await repo.getKnex();
+      const pog = this.setupData.pogs1[0];
+
+      // Get items from game server
+      const itemsRes = await this.client.item.itemControllerSearch({
+        filters: { gameserverId: [this.setupData.gameServer1.id] },
+      });
+      const items: ItemsOutputDTO[] = itemsRes.data.data;
+      if (items.length < 1) throw new Error('Need at least 1 item for test');
+
+      // Clear Redis keys and set a recent baseline timestamp
+      const redis = await Redis.getClient('inventory');
+      await redis.del(`inventory:${this.standardDomainId}:${pog.id}`);
+      await redis.set(`inventory:baseline:${this.standardDomainId}:${pog.id}`, Date.now().toString());
+
+      // Pre-populate cache with initial inventory (pickaxe at 50% quality)
+      const initialInventory = [new IItemDTO({ code: items[0].code, name: items[0].name, amount: 1, quality: '50%' })];
+      await redis.set(`inventory:${this.standardDomainId}:${pog.id}`, JSON.stringify(initialInventory), { EX: 1800 });
+
+      // Ensure partition exists
+      await repo.ensureInventoryPartition();
+
+      // Observe repaired item (same amount, different quality)
+      const repairedInventory = [
+        new IItemDTO({ code: items[0].code, name: items[0].name, amount: 1, quality: '100%' }),
+      ];
+
+      await repo.observePlayerInventory(pog.id, this.setupData.gameServer1.id, repairedInventory);
+
+      // Verify diff was stored for quality change
+      const diffs = await knex('playerInventoryDiff')
+        .where('playerId', pog.id)
+        .andWhere('domain', this.standardDomainId);
+
+      expect(diffs.length).to.equal(1);
+      const diff = diffs[0] as any;
+      expect(diff.changeType).to.equal('changed');
+      expect(diff.previousQuality).to.equal('50%');
+      expect(diff.newQuality).to.equal('100%');
+      expect(diff.previousQuantity).to.equal(1);
+      expect(diff.newQuantity).to.equal(1);
+    },
+  }),
+
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: false,
@@ -1477,11 +1777,19 @@ const tests = [
       await repo.ensureInventoryPartition(mediumDate.toISOString());
       await repo.ensureInventoryPartition(recentDate.toISOString());
 
-      // Insert test data
+      // Insert test data into baseline table
+      const baselineId1 = crypto.randomUUID();
+      const baselineId2 = crypto.randomUUID();
+      const baselineId3 = crypto.randomUUID();
+      const baselineId4 = crypto.randomUUID();
+      const baselineId5 = crypto.randomUUID();
+      const baselineId6 = crypto.randomUUID();
+
       const testData = [
         // Old data (should be deleted)
         {
           playerId: pogId,
+          baselineId: baselineId1,
           itemId: itemId,
           quantity: 10,
           createdAt: oldDate.toISOString(),
@@ -1489,6 +1797,7 @@ const tests = [
         },
         {
           playerId: pogId,
+          baselineId: baselineId2,
           itemId: itemId,
           quantity: 11,
           createdAt: new Date(oldDate.getTime() + 3600000).toISOString(),
@@ -1497,6 +1806,7 @@ const tests = [
         // Medium age data (should be kept)
         {
           playerId: pogId,
+          baselineId: baselineId3,
           itemId: itemId,
           quantity: 20,
           createdAt: mediumDate.toISOString(),
@@ -1504,6 +1814,7 @@ const tests = [
         },
         {
           playerId: pogId,
+          baselineId: baselineId4,
           itemId: itemId,
           quantity: 21,
           createdAt: new Date(mediumDate.getTime() + 3600000).toISOString(),
@@ -1512,6 +1823,7 @@ const tests = [
         // Recent data (should be kept)
         {
           playerId: pogId,
+          baselineId: baselineId5,
           itemId: itemId,
           quantity: 30,
           createdAt: recentDate.toISOString(),
@@ -1519,6 +1831,7 @@ const tests = [
         },
         {
           playerId: pogId,
+          baselineId: baselineId6,
           itemId: itemId,
           quantity: 31,
           createdAt: new Date(recentDate.getTime() + 3600000).toISOString(),
@@ -1526,10 +1839,10 @@ const tests = [
         },
       ];
 
-      await knex.batchInsert('playerInventoryHistory', testData);
+      await knex.batchInsert('playerInventoryBaseline', testData);
 
       // Count initial records
-      const initialCount = await knex('playerInventoryHistory')
+      const initialCount = await knex('playerInventoryBaseline')
         .where('domain', this.standardDomainId)
         .where('playerId', pogId)
         .count('* as count')
@@ -1541,7 +1854,7 @@ const tests = [
       await repo.cleanupInventory(cutoffDate.toISOString());
 
       // Count remaining records
-      const finalCount = await knex('playerInventoryHistory')
+      const finalCount = await knex('playerInventoryBaseline')
         .where('domain', this.standardDomainId)
         .where('playerId', pogId)
         .count('* as count')
@@ -1551,7 +1864,7 @@ const tests = [
       expect(Number((finalCount as any)?.count || 0)).to.equal(4);
 
       // Verify no old data remains
-      const oldRecords = await knex('playerInventoryHistory')
+      const oldRecords = await knex('playerInventoryBaseline')
         .where('domain', this.standardDomainId)
         .where('playerId', pogId)
         .where('createdAt', '<', cutoffDate.toISOString());
@@ -1674,10 +1987,14 @@ const tests = [
       await repo.ensureInventoryPartition(recentDate1.toISOString());
       await repo.ensureInventoryPartition(recentDate2.toISOString());
 
-      // Insert only recent data
+      // Insert only recent data into baseline table
+      const baselineId1 = crypto.randomUUID();
+      const baselineId2 = crypto.randomUUID();
+
       const testData = [
         {
           playerId: pogId,
+          baselineId: baselineId1,
           itemId: itemId,
           quantity: 10,
           createdAt: recentDate1.toISOString(),
@@ -1685,6 +2002,7 @@ const tests = [
         },
         {
           playerId: pogId,
+          baselineId: baselineId2,
           itemId: itemId,
           quantity: 20,
           createdAt: recentDate2.toISOString(),
@@ -1692,10 +2010,10 @@ const tests = [
         },
       ];
 
-      await knex.batchInsert('playerInventoryHistory', testData);
+      await knex.batchInsert('playerInventoryBaseline', testData);
 
       // Count initial records
-      const initialCount = await knex('playerInventoryHistory')
+      const initialCount = await knex('playerInventoryBaseline')
         .where('domain', this.standardDomainId)
         .where('playerId', pogId)
         .count('* as count')
@@ -1707,7 +2025,7 @@ const tests = [
       await repo.cleanupInventory(cutoffDate.toISOString());
 
       // Count remaining records
-      const finalCount = await knex('playerInventoryHistory')
+      const finalCount = await knex('playerInventoryBaseline')
         .where('domain', this.standardDomainId)
         .where('playerId', pogId)
         .count('* as count')

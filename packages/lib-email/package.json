@@ -1,14 +1,22 @@
 {
   "name": "@takaro/email",
-  "version": "0.4.10",
   "description": "",
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
-  "type": "module",
-  "scripts": {
-    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p ./tsconfig.build.json"
-  },
+  "version": "0.4.10",
   "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "nodemailer": "6.9.15",
+    "nodemailer-postmark-transport": "6.0.1"
+  },
+  "license": "ISC",
+  "main": "dist/main.js",
+  "peerDependencies": {
+    "@takaro/config": "*",
+    "@takaro/util": "*"
+  },
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "start:dev": ":"
+  },
+  "type": "module",
+  "types": "dist/main.d.ts"
 }

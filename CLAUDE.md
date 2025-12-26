@@ -1,5 +1,23 @@
 # Claude AI Development Guide
 
+## Repository Engineer Skill
+
+This repository has an engineer skill at `.claude/skills/takaro-engineer/SKILL.md` with comprehensive knowledge about the monorepo structure, testing, Docker setup, and debugging.
+
+### Proactive Maintenance
+
+During your work, if you discover something that should be in the engineer skill:
+- A debugging technique that worked
+- A command or workflow that's useful
+- A gotcha or non-obvious behavior
+- An error and its solution
+
+**ASK THE HUMAN:** "Should I add this to the engineer skill?"
+
+Also watch for **outdated information** in the skill and ask before updating.
+
+---
+
 When working on the frontend, you should ALWAYS use existing components from lib-components. Do not make inline components unless explicitly asked to
 
 ## Quick Links
@@ -88,3 +106,40 @@ npm run test:unit          # All unit tests
 npm run test:integration   # All integration tests
 npm test                   # All tests
 ```
+
+## Package Management
+
+This monorepo uses npm workspaces with syncpack for version synchronization.
+
+### Adding Dependencies
+
+When adding a new dependency to a package:
+
+1. **External npm packages**: Add to the package's `dependencies` with the version from root `package.json`
+2. **Internal @takaro/* packages**: Add to `peerDependencies` with `*` as the version
+
+Example:
+```json
+{
+  "dependencies": {
+    "axios": "1.7.7"
+  },
+  "peerDependencies": {
+    "@takaro/util": "*",
+    "@takaro/config": "*"
+  }
+}
+```
+
+### Version Synchronization
+
+syncpack ensures all packages use the same version of shared dependencies.
+
+- **Check versions**: `npm run syncpack:lint`
+- **Fix mismatches**: `npm run syncpack:fix`
+
+CI automatically runs `syncpack:fix` on every push via `.github/workflows/codestyle.yml`.
+
+### Config
+
+See `.syncpackrc.json` for syncpack configuration (uses `sameRange` policy).
