@@ -6,7 +6,7 @@
   "types": "",
   "type": "module",
   "scripts": {
-    "test:e2e": "npx playwright test --reporter=list",
+    "test:e2e": "npx playwright test",
     "dev:ui": "npx playwright test --ui",
     "codegen": "npx playwright codegen 127.0.0.1:13001",
     "build": "echo not really anything to build here!"

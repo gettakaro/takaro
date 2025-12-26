@@ -171,12 +171,12 @@ jobs:
           retention-days: 30
 
       - name: Test Report
-        uses: dorny/test-reporter@v2
+        uses: mikepenz/action-junit-report@v5
         if: always()
         with:
-          name: Integration Tests
-          path: 'reports/junit/*.xml'
-          reporter: java-junit
+          report_paths: 'reports/junit/*.xml'
+          check_name: Integration Tests
+          include_passed: true
 
   e2e:
     needs: [docker]
@@ -205,9 +205,9 @@ jobs:
           retention-days: 30
 
       - name: Test Report
-        uses: dorny/test-reporter@v2
+        uses: mikepenz/action-junit-report@v5
         if: always()
         with:
-          name: E2E Tests
-          path: 'reports/junit/*.xml'
-          reporter: java-junit
+          report_paths: 'reports/junit/*.xml'
+          check_name: E2E Tests
+          include_passed: true
