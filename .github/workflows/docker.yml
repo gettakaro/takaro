@@ -38,10 +38,6 @@ jobs:
               name: "web-main",
               dockerfile: "./containers/generic-web/Dockerfile",
             },
-            {
-              name: "web-docs",
-              dockerfile: "./containers/generic-web/Dockerfile",
-            },
           ]
 
     steps:
