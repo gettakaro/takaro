@@ -12,7 +12,7 @@
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
     "generate": "../../scripts/generate-api-client.sh",
-    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json"
+    "start:dev": ":"
   },
   "type": "module",
   "types": "dist/main.d.ts"

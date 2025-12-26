@@ -2,11 +2,10 @@
   "$schema": "https://json.schemastore.org/nodemon.json",
   "verbose": true,
   "watch": [
-    "src",
-    "../lib-modules/src"
+    "dist"
   ],
-  "ext": "ts,js",
+  "ext": "js",
   "ignore": [
-    "**/*.test.ts"
+    "**/*.test.js"
   ]
 }

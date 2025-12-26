@@ -19,7 +19,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-      
+
   redis:
     image: redis:7.2-alpine
     # enables memory overcommit on reboot
@@ -74,7 +74,7 @@ services:
     env_file:
       - .env
     environment:
-      NODE_OPTIONS: '--import=ts-node-maintained/register/esm'
+      NODE_OPTIONS: "--import=ts-node-maintained/register/esm"
       REDIS_HOST: redis
       POSTGRES_HOST: postgresql
       POSTGRES_PORT: 5432
@@ -91,8 +91,8 @@ services:
 
       CORS_ALLOWED_ORIGINS: http://127.0.0.1:13000,http://127.0.0.1:13001,http://127.0.0.1:13004,https://admin.socket.io,http://takaro:13000,http://takaro:13001
 
-      TRACING_ENDPOINT: 'http://tempo:4317/'
-      TAKARO_SERVICE: 'dev-takaro'
+      TRACING_ENDPOINT: "http://tempo:4317/"
+      TAKARO_SERVICE: "dev-takaro"
     ports:
       # api
       - 13000:3000
@@ -111,7 +111,15 @@ services:
       # Docs
       - 13005:13005
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/readyz"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3000/readyz",
+        ]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -129,7 +137,7 @@ services:
       - .env
     environment:
       LOGGING_LEVEL: debug
-      NODE_OPTIONS: '--import=ts-node-maintained/register/esm'
+      NODE_OPTIONS: "--import=ts-node-maintained/register/esm"
       POSTGRES_HOST: postgresql
 
   e2e:
@@ -158,14 +166,14 @@ services:
   kratos:
     image: oryd/kratos:v1.2.0
     ports:
-      - '4433:4433' # public
-      - '4434:4434' # admin
+      - "4433:4433" # public
+      - "4434:4434" # admin
     restart: on-failure
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
     volumes:
-      - ./containers/ory/kratos:/etc/config/kratos 
+      - ./containers/ory/kratos:/etc/config/kratos
   postgresql_kratos:
     image: postgres:15
     ports:
@@ -194,18 +202,18 @@ services:
     image: prom/prometheus:v2.54.1
     container_name: prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
     ports:
       - 9090:9090
     volumes:
       - ./containers/prometheus:/etc/prometheus
-      - ./_data/prometheus:/prometheus      
+      - ./_data/prometheus:/prometheus
   pushgateway:
     image: prom/pushgateway
     container_name: pushgateway
     ports:
-      - "9091:9091"  
+      - "9091:9091"
   takaro-mcp:
     image: ghcr.io/gettakaro/mcp:0.0.3
     ports:
@@ -218,9 +226,8 @@ services:
     depends_on:
       takaro:
         condition: service_healthy
-      
+
 networks:
   default:
     name: takaro_default
     driver: bridge
-
