@@ -211,3 +211,4 @@ jobs:
           report_paths: 'reports/junit/*.xml'
           check_name: E2E Tests
           include_passed: true
+
