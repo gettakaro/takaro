@@ -92,7 +92,7 @@ services:
       - 127.0.0.1:6379:6379
 
   kratos-migrate:
-    image: oryd/kratos:v1.2.0
+    image: oryd/kratos:v1.3.1
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
     volumes:
@@ -102,7 +102,7 @@ services:
     env_file:
       - ./../../.env
   kratos:
-    image: oryd/kratos:v1.2.0
+    image: oryd/kratos:v1.3.1
     ports:
       - '127.0.0.1:4433:4433' # public
       - '127.0.0.1:4434:4434' # admin
