@@ -104,6 +104,9 @@ jobs:
     needs: [docker]
     timeout-minutes: 120
     runs-on: ubuntu-24.04
+    permissions:
+      checks: write
+      contents: read
     strategy:
       matrix:
         node-version: [24]
@@ -166,18 +169,19 @@ jobs:
           path: reports
           retention-days: 30
 
-      - name: Test Report
-        uses: mikepenz/action-junit-report@v5
+      - name: Publish Test Results
         if: always()
-        with:
-          report_paths: 'reports/junit/*.xml'
-          check_name: Integration Tests
-          include_passed: true
+        run: node scripts/publish-test-results.mjs "Integration Tests" "reports/junit"
+        env:
+          GH_TOKEN: ${{ github.token }}
 
   e2e:
     needs: [docker]
     timeout-minutes: 60
     runs-on: ubuntu-24.04
+    permissions:
+      checks: write
+      contents: read
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v6
@@ -200,11 +204,9 @@ jobs:
           path: reports
           retention-days: 30
 
-      - name: Test Report
-        uses: mikepenz/action-junit-report@v5
+      - name: Publish Test Results
         if: always()
-        with:
-          report_paths: 'reports/junit/*.xml'
-          check_name: E2E Tests
-          include_passed: true
+        run: node scripts/publish-test-results.mjs "E2E Tests" "reports/junit"
+        env:
+          GH_TOKEN: ${{ github.token }}
 
