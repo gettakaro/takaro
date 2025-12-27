@@ -176,7 +176,7 @@ jobs:
 
       - name: Publish Test Results
         if: always()
-        run: node scripts/publish-test-results.mjs "Integration Tests" "reports/junit"
+        run: node scripts/publish-test-results.mjs "Integration Tests (Shard ${{ matrix.shard }}/4)" "reports/junit"
         env:
           GH_TOKEN: ${{ github.token }}
           GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
