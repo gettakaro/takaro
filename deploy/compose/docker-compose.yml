@@ -1,4 +1,10 @@
 version: "3"
+
+volumes:
+  postgres_data:
+  postgres_kratos_data:
+  prometheus_data:
+
 services:
   takaro_api:
     image: ghcr.io/gettakaro/takaro-app-api:latest
@@ -74,7 +80,7 @@ services:
     ports:
       - 127.0.0.1:15432:5432
     volumes:
-      - ../../_data/db:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     env_file:
       - ./../../.env
     restart: unless-stopped
@@ -113,7 +119,7 @@ services:
     ports:
       - 127.0.0.1:13101:5432
     volumes:
-      - ../../_data/kratos-db:/var/lib/postgresql/data
+      - postgres_kratos_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -128,7 +134,7 @@ services:
       - 9090:9090
     volumes:
       - ../../containers/prometheus:/etc/prometheus
-      - ../../_data/prometheus:/prometheus
+      - prometheus_data:/prometheus
   pushgateway:
     image: prom/pushgateway
     ports:
