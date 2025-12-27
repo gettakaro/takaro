@@ -30,4 +30,9 @@ describe('config', () => {
     const config = new Config<ITestConfig>([testConfigSchema]);
     expect(config.get('test')).to.equal('test');
   });
+
+  it('INTENTIONAL FAILURE - Testing PR comment output', () => {
+    // This test is intentionally broken to see how failures appear in the PR comment
+    expect(1 + 1).to.equal(42, 'Math is broken: expected 2 to equal 42');
+  });
 });
