@@ -1,7 +1,6 @@
 services:
   grafana:
     image: grafana/grafana:11.2.2
-    container_name: grafana
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
@@ -18,7 +17,6 @@ services:
 
   tempo:
     image: grafana/tempo:latest
-    container_name: tempo
     command: ['-config.file=/etc/tempo.yaml']
     volumes:
       - ./containers/tempo/tempo.yaml:/etc/tempo.yaml

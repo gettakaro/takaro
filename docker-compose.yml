@@ -1,7 +1,6 @@
 services:
   homer:
     image: b4bz/homer
-    container_name: homer
     restart: always
     volumes:
       - ./containers/homer/assets:/www/assets
@@ -179,7 +178,6 @@ services:
 
   mailhog:
     image: mailhog/mailhog
-    container_name: mailhog
     ports:
       # SMTP
       # Doesnt need to be exposed outside the container network
@@ -192,7 +190,6 @@ services:
 
   prometheus:
     image: prom/prometheus:v2.54.1
-    container_name: prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -203,7 +200,6 @@ services:
       - ./_data/prometheus:/prometheus      
   pushgateway:
     image: prom/pushgateway
-    container_name: pushgateway
     ports:
       - "9091:9091"  
   takaro-mcp:
