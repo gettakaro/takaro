@@ -1,8 +1,17 @@
 # Claude AI Development Guide
 
-## Repository Engineer Skill
+## MANDATORY: Use the Engineer Skill
 
-This repository has an engineer skill at `.claude/skills/takaro-engineer/SKILL.md` with comprehensive knowledge about the monorepo structure, testing, Docker setup, and debugging.
+**Before doing ANYTHING in this repository, invoke `/takaro-engineer`.**
+
+The engineer skill at `.claude/skills/takaro-engineer/SKILL.md` contains essential knowledge about the monorepo structure, testing, Docker setup, and debugging. You MUST consult it for:
+- Setting up a fresh environment
+- Running tests
+- Debugging issues
+- Understanding the monorepo structure
+- Any command or workflow you're unsure about
+
+**NEVER guess at commands or workflows.** If unsure, the skill has the answer.
 
 ### Proactive Maintenance
 
@@ -15,6 +24,23 @@ During your work, if you discover something that should be in the engineer skill
 **ASK THE HUMAN:** "Should I add this to the engineer skill?"
 
 Also watch for **outdated information** in the skill and ask before updating.
+
+---
+
+## Fresh Environment Setup
+
+When starting in a **new git worktree** or fresh checkout (no node_modules, nothing built):
+
+```bash
+./scripts/dev-init.sh
+```
+
+**DO NOT** attempt to:
+- Manually run `npm install` on individual packages
+- Build packages one by one
+- Guess at build order or dependencies
+
+The script handles everything: .env setup, data folders, clean npm install, and building all packages in the correct dependency order.
 
 ---
 
