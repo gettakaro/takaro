@@ -175,11 +175,13 @@ jobs:
           retention-days: 30
 
       - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
-        run: node scripts/publish-test-results.mjs "Integration Tests (Shard ${{ matrix.shard }}/4)" "reports/junit"
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        with:
+          files: reports/junit/**/*.xml
+          check_name: "Integration Tests (Shard ${{ matrix.shard }}/4)"
+          comment_mode: off
+          github_token: ${{ steps.generate_token.outputs.token }}
 
   e2e:
     needs: [docker]
@@ -189,6 +191,12 @@ jobs:
       checks: write
       contents: read
     steps:
+      - name: Generate token
+        id: generate_token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.TAKARO_CI_APP_ID }}
+          private-key: ${{ secrets.TAKARO_CI_APP_PRIV_KEY }}
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v6
         with:
@@ -211,9 +219,49 @@ jobs:
           retention-days: 30
 
       - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
-        run: node scripts/publish-test-results.mjs "E2E Tests" "reports/junit"
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        with:
+          files: reports/junit/**/*.xml
+          check_name: "E2E Tests"
+          comment_mode: off
+          github_token: ${{ steps.generate_token.outputs.token }}
+
+  test-results:
+    needs: [node-ci, e2e]
+    if: always()
+    runs-on: ubuntu-24.04
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.TAKARO_CI_APP_ID }}
+          private-key: ${{ secrets.TAKARO_CI_APP_PRIV_KEY }}
+
+      - name: Download all test artifacts
+        uses: actions/download-artifact@v5
+        with:
+          pattern: 'integrationTests-*'
+          path: reports
+          merge-multiple: true
+
+      - name: Download E2E artifacts
+        uses: actions/download-artifact@v5
+        with:
+          pattern: 'e2e-*'
+          path: reports
+          merge-multiple: true
+
+      - name: Publish Aggregated Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: reports/**/junit/**/*.xml
+          check_name: "Test Results"
+          comment_title: "Test Results"
+          github_token: ${{ steps.generate_token.outputs.token }}
 
