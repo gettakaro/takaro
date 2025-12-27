@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import { upMany, logs, upAll, down, run, pullAll, buildOne } from 'docker-compose/dist/v2.js';
 import { $ } from 'zx';
-import { writeFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir, chmod } from 'fs/promises';
 
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -54,6 +54,9 @@ async function cleanUp() {
 async function main() {
   await cleanUp();
   await mkdir('./reports/integrationTests', { recursive: true });
+  await mkdir('./reports/junit', { recursive: true });
+  // Make junit directory writable by Docker container user
+  await chmod('./reports/junit', 0o777);
 
   console.log('Bringing up datastores');
   await upMany(['postgresql', 'redis', 'postgresql_kratos'], composeOpts);
