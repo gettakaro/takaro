@@ -1,17 +1,26 @@
 {
   "name": "@takaro/modules",
-  "version": "0.4.9",
   "description": "Built-in modules for Takaro",
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
-  "type": "module",
-  "scripts": {
-    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p ./tsconfig.build.json",
-    "postbuild": "npm run build:builtin-json",
-    "build:builtin-json": "node --import=ts-node-maintained/register/esm ./scripts/buildBuiltinJson.ts"
+  "version": "0.4.10",
+  "author": "",
+  "dependencies": {
+    "class-transformer": "0.5.1",
+    "class-validator": "0.14.2"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "main": "dist/main.js",
+  "peerDependencies": {
+    "@takaro/apiclient": "*",
+    "@takaro/helpers": "*",
+    "@takaro/util": "*"
+  },
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "build:builtin-json": "node --import=ts-node-maintained/register/esm ./scripts/buildBuiltinJson.ts",
+    "postbuild": "npm run build:builtin-json",
+    "start:dev": ":"
+  },
+  "type": "module",
+  "types": "dist/main.d.ts"
 }

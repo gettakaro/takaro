@@ -1,20 +1,20 @@
 {
   "name": "@takaro/e2e",
-  "version": "0.4.9",
   "description": "e2e",
-  "main": "",
-  "types": "",
-  "type": "module",
-  "scripts": {
-    "test:e2e": "npx playwright test --reporter=list",
-    "dev:ui": "npx playwright test --ui",
-    "codegen": "npx playwright codegen 127.0.0.1:13001",
-    "build": "echo not really anything to build here!"
+  "version": "0.4.10",
+  "author": "Takaro Team",
+  "dependencies": {
+    "@playwright/test": "1.57.0"
   },
   "keywords": [],
-  "author": "Takaro Team",
   "license": "AGPL-3.0-or-later",
-  "dependencies": {
-    "@playwright/test": "1.56.1"
-  }
+  "main": "",
+  "scripts": {
+    "build": "echo not really anything to build here!",
+    "codegen": "npx playwright codegen 127.0.0.1:13001",
+    "dev:ui": "npx playwright test --ui",
+    "test:e2e": "npx playwright test --reporter=list"
+  },
+  "type": "module",
+  "types": ""
 }

@@ -45,7 +45,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}   
 
   takaro:
-    container_name: takaro
     build:
       context: .
       dockerfile: containers/takaro/dev.Dockerfile
@@ -73,7 +72,6 @@ services:
   takaro_api:
     image: ghcr.io/gettakaro/takaro-app-api:${DOCKER_TAG}
     restart: always
-    container_name: takaro_api
     volumes:
       - ./reports:/app/reports
     environment:
@@ -101,7 +99,6 @@ services:
   takaro_web_main:
     image: ghcr.io/gettakaro/takaro-web-main:${DOCKER_TAG}
     restart: always
-    container_name: takaro_web_main
     environment:
       VITE_API: http://127.0.0.1:13000
       VITE_ORY_URL: http://127.0.0.1:4433
@@ -113,7 +110,6 @@ services:
   takaro_mock_gameserver:
     image: ghcr.io/gettakaro/takaro-app-mock-gameserver:${DOCKER_TAG}
     restart: always
-    container_name: takaro_mock_gameserver
     environment:
       LOGGING_LEVEL: debug
       REDIS_HOST: 'redis'
@@ -125,7 +121,6 @@ services:
   takaro_connector:
     image: ghcr.io/gettakaro/takaro-app-connector:${DOCKER_TAG}
     restart: always
-    container_name: takaro_connector
     environment:
       LOGGING_LEVEL: debug
       REDIS_HOST: 'redis'
@@ -138,7 +133,6 @@ services:
 
   mailhog:
     image: mailhog/mailhog
-    container_name: mailhog
     ports:
       # SMTP
       # Doesnt need to be exposed outside the container network

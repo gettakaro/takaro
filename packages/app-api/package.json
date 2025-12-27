@@ -1,23 +1,26 @@
 {
   "name": "@takaro/api",
-  "version": "0.4.9",
   "description": "REST API for Takaro",
-  "main": "dist/main.js",
-  "types": "main.ts",
-  "type": "module",
-  "scripts": {
-    "start": "node --experimental-vm-modules --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js",
-    "start:dev": "nodemon --exec 'npm run build && node  --experimental-vm-modules --inspect=0.0.0.0:12001 --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js' --config ../../nodemon.json",
-    "prestart:dev": "npm run db:migrate",
-    "preload": "node -e \"import('geolite2-redist').then(geolite => geolite.downloadDbs())\"",
-    "build": "tsc -p ./tsconfig.build.json",
-    "db:migrate": "node scripts/migrate-up.mjs",
-    "db:rollback": "node scripts/migrate-down.mjs"
+  "version": "0.4.10",
+  "author": "",
+  "dependencies": {
+    "fastest-levenshtein": "1.0.16"
   },
   "keywords": [],
-  "author": "",
   "license": "ISC",
-  "dependencies": {
-    "fastest-levenshtein": "^1.0.16"
-  }
+  "main": "dist/main.js",
+  "peerDependencies": {
+    "@takaro/util": "*"
+  },
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "db:migrate": "node scripts/migrate-up.mjs",
+    "db:rollback": "node scripts/migrate-down.mjs",
+    "preload": "node -e \"import('geolite2-redist').then(geolite => geolite.downloadDbs())\"",
+    "prestart:dev": "npm run db:migrate",
+    "start": "node --experimental-vm-modules --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js",
+    "start:dev": ":"
+  },
+  "type": "module",
+  "types": "dist/main.d.ts"
 }

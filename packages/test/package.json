@@ -1,15 +1,15 @@
 {
   "name": "@takaro/test",
-  "version": "0.4.9",
   "description": "Test modules",
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
-  "type": "module",
-  "scripts": {
-    "start:dev": "tsc -w --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p tsconfig.build.json"
-  },
-  "keywords": [],
+  "version": "0.4.10",
   "author": "Takaro Team",
-  "license": "AGPL-3.0-or-later"
+  "keywords": [],
+  "license": "AGPL-3.0-or-later",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "start:dev": ":"
+  },
+  "type": "module",
+  "types": "dist/main.d.ts"
 }

@@ -1,0 +1,15 @@
+{
+  "source": ["package.json", "packages/*/package.json"],
+  "versionGroups": [
+    {
+      "label": "Ignore overrides - transitive dependency pins",
+      "dependencyTypes": ["overrides"],
+      "isIgnored": true
+    },
+    {
+      "label": "Use highest version across all packages",
+      "dependencies": ["**"],
+      "policy": "sameRange"
+    }
+  ]
+}
