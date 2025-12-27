@@ -1,6 +1,6 @@
 import { ModuleOutputDTO, GameServerOutputDTO, RoleOutputDTO, PlayerOutputDTO, Client } from '@takaro/apiclient';
 import type { EventTypes } from '@takaro/modules';
-import { EventsAwaiter, IntegrationTest } from '../main.js';
+import { EventsAwaiter, IntegrationTest, timeStart } from '../main.js';
 import { randomUUID } from 'crypto';
 import { getMockServer } from '@takaro/mock-gameserver';
 
@@ -62,28 +62,40 @@ async function triggerItemSync(client: Client, gameServerId: string) {
 export const modulesTestSetup = async function (
   this: IntegrationTest<IModuleTestsSetupData>,
 ): Promise<IModuleTestsSetupData> {
-  const modules = (await this.client.module.moduleControllerSearch()).data.data;
+  const endModulesSetup = timeStart('modules_setup', 'total');
 
+  const endModuleSearch = timeStart('modules_setup', 'module_search');
+  const modules = (await this.client.module.moduleControllerSearch()).data.data;
+  endModuleSearch();
+
+  const endEventConnect = timeStart('modules_setup', 'event_awaiter_connect');
   const eventAwaiter = new EventsAwaiter();
   await eventAwaiter.connect(this.client);
+  endEventConnect();
+
   // 10 players, 10 pogs should be created
   const playerCreatedEvents = eventAwaiter.waitForEvents('player-created', 20);
 
   if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
   const gameServer1IdentityToken = randomUUID();
   const gameServer2IdentityToken = randomUUID();
+
+  const endMockServers = timeStart('modules_setup', 'mock_server_creation');
   const mockserver1 = await getMockServer({
     mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer1IdentityToken },
   });
   const mockserver2 = await getMockServer({
     mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer2IdentityToken },
   });
+  endMockServers();
 
+  const endGameServerSearch = timeStart('modules_setup', 'gameserver_search');
   const gameServers = (
     await this.client.gameserver.gameServerControllerSearch({
       filters: { identityToken: [gameServer1IdentityToken, gameServer2IdentityToken] },
     })
   ).data.data;
+  endGameServerSearch();
 
   const gameServer1 = gameServers.find((gs) => gs.identityToken === gameServer1IdentityToken);
   const gameServer2 = gameServers.find((gs) => gs.identityToken === gameServer2IdentityToken);
@@ -119,16 +131,23 @@ export const modulesTestSetup = async function (
   const highPingKickerModule = modules.find((m) => m.name === 'highPingKicker');
   if (!highPingKickerModule) throw new Error('highPingKicker module not found');
 
+  const endConnectAll = timeStart('modules_setup', 'connect_all_commands');
   await Promise.all([
     this.client.gameserver.gameServerControllerExecuteCommand(gameServer1.id, { command: 'connectAll' }),
     this.client.gameserver.gameServerControllerExecuteCommand(gameServer2.id, { command: 'connectAll' }),
   ]);
+  endConnectAll();
 
+  const endItemSync = timeStart('modules_setup', 'item_sync');
   await triggerItemSync(this.client, gameServer1.id);
   await triggerItemSync(this.client, gameServer2.id);
+  endItemSync();
 
+  const endPlayerEvents = timeStart('modules_setup', 'wait_player_events');
   await playerCreatedEvents;
+  endPlayerEvents();
 
+  const endRoleSetup = timeStart('modules_setup', 'role_and_assignment');
   const permissions = await this.client.permissionCodesToInputs(['ROOT']);
   const roleRes = await this.client.role.roleControllerCreate({ name: 'test role', permissions });
 
@@ -164,7 +183,9 @@ export const modulesTestSetup = async function (
       await this.client.player.playerControllerAssignRole(player.id, roleRes.data.data.id);
     }),
   );
+  endRoleSetup();
 
+  endModulesSetup();
   return {
     modules: modules,
     utilsModule,

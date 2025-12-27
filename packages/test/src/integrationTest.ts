@@ -5,6 +5,12 @@ import { expect } from './test/expect.js';
 import { AdminClient, Client, AxiosResponse, isAxiosError, TakaroEventCommandExecuted } from '@takaro/apiclient';
 import { randomUUID } from 'crypto';
 import { before, it } from 'node:test';
+import { timeStart, incrementTestCount, printTimingSummary } from './timing.js';
+
+// Print timing summary when process exits
+process.on('beforeExit', () => {
+  printTimingSummary();
+});
 
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
@@ -111,16 +117,21 @@ export class IntegrationTest<SetupData> {
     const maxRetries = this.test.attempts || integrationConfig.get('testRunner.attempts');
 
     async function setup(): Promise<void> {
+      const endTotalSetup = timeStart('test', 'total_setup');
       sandbox.restore();
 
       if (integrationTestContext.test.standardEnvironment) {
+        const endEnvSetup = timeStart('test', 'setup_standard_environment');
         await integrationTestContext.setupStandardEnvironment();
+        endEnvSetup();
       }
 
       if (integrationTestContext.test.setup) {
+        const endCustomSetup = timeStart('test', 'setup_custom');
         try {
           integrationTestContext.setupData = await integrationTestContext.test.setup.bind(integrationTestContext)();
         } catch (error) {
+          endCustomSetup();
           if (!isAxiosError(error)) {
             throw error;
           }
@@ -130,10 +141,13 @@ export class IntegrationTest<SetupData> {
             `Setup failed: ${error.config?.method} ${error.config?.url} ${JSON.stringify(error.response?.data)}} (Domain ID: ${integrationTestContext.standardDomainId || 'not yet created'})`,
           );
         }
+        endCustomSetup();
       }
+      endTotalSetup();
     }
 
     async function teardown(): Promise<void> {
+      const endTeardown = timeStart('test', 'teardown');
       if (integrationTestContext.test.teardown) {
         await integrationTestContext.test.teardown.bind(integrationTestContext)();
       }
@@ -180,6 +194,7 @@ export class IntegrationTest<SetupData> {
           }
         }
       }
+      endTeardown();
     }
 
     async function executeTest(): Promise<void> {
@@ -196,7 +211,10 @@ export class IntegrationTest<SetupData> {
 
           await setup();
 
+          const endExecution = timeStart('test', 'execution');
           response = await integrationTestContext.test.test.bind(integrationTestContext)();
+          endExecution();
+          incrementTestCount();
 
           if (integrationTestContext.test.snapshot) {
             if (!response) {
