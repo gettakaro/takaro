@@ -53,6 +53,12 @@ if [[ -n "$SHARD_INDEX" && -n "$SHARD_TOTAL" ]]; then
   echo "Running test shard ${SHARD_INDEX} of ${SHARD_TOTAL}"
 fi
 
+# Build JUnit output filename (include shard index if sharding)
+JUNIT_FILE="reports/junit/backend.xml"
+if [[ -n "$SHARD_INDEX" ]]; then
+  JUNIT_FILE="reports/junit/backend-shard-${SHARD_INDEX}.xml"
+fi
+
 # Ensure we have a test type
 if [[ -z "$TEST_TYPE" ]]; then
   echo "Error: Please specify a test type (--all, --unit, --integration, or --ci)"
@@ -62,6 +68,9 @@ fi
 # Wait for dependencies to be ready
 echo "Waiting for test dependencies..."
 node packages/test/dist/waitUntilReady.js
+
+# Create reports directory for JUnit output
+mkdir -p reports/junit
 
 # Run workspace tests first (for web-main and lib-components)
 # Note: Skipping TypeScript check for workspace tests as Vitest handles TypeScript validation
@@ -75,7 +84,11 @@ case $TEST_TYPE in
     typecheck_tests 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'
     
     if [[ "$CI_MODE" == "true" ]]; then
-      node --test-concurrency 1 --test-force-exit ${SHARD_OPTS} --import=ts-node-maintained/register/esm --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=@reporters/github --test-reporter-destination=stdout 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'
+      node --test-concurrency 1 --test-force-exit ${SHARD_OPTS} --import=ts-node-maintained/register/esm --test \
+        --test-reporter=spec --test-reporter-destination=stdout \
+        --test-reporter=@reporters/github --test-reporter-destination=stdout \
+        --test-reporter=junit --test-reporter-destination=$JUNIT_FILE \
+        'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'
     else
       node --test-concurrency 1 --test-force-exit ${SHARD_OPTS} --import=ts-node-maintained/register/esm --test 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'
     fi
