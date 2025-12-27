@@ -30,4 +30,9 @@ describe('config', () => {
     const config = new Config<ITestConfig>([testConfigSchema]);
     expect(config.get('test')).to.equal('test');
   });
+
+  it('INTENTIONAL FAILURE - Testing JUnit reporting visibility', () => {
+    // This test is intentionally broken to verify GitHub check annotations work
+    expect(1 + 1).to.equal(42, 'This failure should appear in the GitHub PR checks UI');
+  });
 });
