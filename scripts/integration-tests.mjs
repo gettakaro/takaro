@@ -87,6 +87,12 @@ async function main() {
   console.log('Starting all containers...');
   await upAll(composeOpts);
 
+  // Shard configuration for parallel test execution
+  const shardIndex = process.env.SHARD_INDEX;
+  const shardTotal = process.env.SHARD_TOTAL;
+  const isSharded = shardIndex && shardTotal;
+  const isFirstShard = !isSharded || shardIndex === '1';
+
   let failed = false;
 
   try {
@@ -114,14 +120,23 @@ async function main() {
 
       await $`npm run --workspace=./packages/e2e test:e2e`;
     } else {
-      await run('takaro', 'npm run test:ci', { ...composeOpts, NODE_ENV: 'test', LOGGING_LEVEL: 'none' });
+      // Build test command with optional shard arguments
+      let testCommand = 'npm run test:ci';
+      if (isSharded) {
+        testCommand = `npm run test:ci -- --shard ${shardIndex} ${shardTotal}`;
+        console.log(`Running test shard ${shardIndex} of ${shardTotal}`);
+      }
+      await run('takaro', testCommand, { ...composeOpts, NODE_ENV: 'test', LOGGING_LEVEL: 'none' });
     }
   } catch (error) {
     console.error('Tests failed');
     failed = true;
   }
 
-  await $`TAKARO_HOST=http://127.0.0.1:13000 npm -w packages/lib-apiclient run generate && npm run test:style:fix`;
+  // Only generate API client on shard 1 (or when not sharding)
+  if (isFirstShard) {
+    await $`TAKARO_HOST=http://127.0.0.1:13000 npm -w packages/lib-apiclient run generate && npm run test:style:fix`;
+  }
 
   const logsResult = await logs(['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'kratos'], {
     ...composeOpts,
