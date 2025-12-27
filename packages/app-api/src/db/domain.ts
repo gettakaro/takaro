@@ -8,7 +8,6 @@ export enum DOMAIN_STATES {
   ACTIVE = 'ACTIVE',
   DISABLED = 'DISABLED',
   MAINTENANCE = 'MAINTENANCE',
-  DELETED = 'DELETED',
 }
 
 const TABLE_NAME = 'domains';

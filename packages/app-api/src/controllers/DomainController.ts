@@ -9,7 +9,19 @@ import {
 } from '../service/DomainService.js';
 import { apiResponse, APIOutput } from '@takaro/http';
 
-import { Param, Body, Get, Post, Put, Delete, JsonController, UseBefore, Req, Res } from 'routing-controllers';
+import {
+  Param,
+  Body,
+  Get,
+  Post,
+  Put,
+  Delete,
+  JsonController,
+  UseBefore,
+  Req,
+  Res,
+  QueryParam,
+} from 'routing-controllers';
 
 import { ResponseSchema, OpenAPI } from 'routing-controllers-openapi';
 import { Type, Exclude } from 'class-transformer';
@@ -132,9 +144,13 @@ export class DomainController {
 
   @Delete('/domain/:id')
   @ResponseSchema(APIOutput)
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string, @QueryParam('hardDelete') hardDelete = false) {
     const service = new DomainService();
-    await service.delete(id);
+    if (hardDelete) {
+      await service.hardDelete(id);
+    } else {
+      await service.delete(id);
+    }
     return apiResponse();
   }
 
