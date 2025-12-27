@@ -50,6 +50,8 @@ export class EventsAwaiter {
     const events: IDetectedEvent[] = [];
     const discardedEvents: IDetectedEvent[] = [];
     let hasFinished = false;
+    const startTime = Date.now();
+    console.log(`[TIMING] wait_events/start: event=${expectedEvent}, count=${amount}`);
 
     return Promise.race([
       new Promise<IDetectedEvent[]>((resolve) => {
@@ -62,6 +64,9 @@ export class EventsAwaiter {
 
           if (events.length === amount) {
             hasFinished = true;
+            console.log(
+              `[TIMING] wait_events/success: event=${expectedEvent}, duration=${Date.now() - startTime}ms, received=${amount}`,
+            );
             this.disconnect();
             resolve(events);
           }
@@ -70,6 +75,9 @@ export class EventsAwaiter {
       new Promise<IDetectedEvent[]>((_, reject) => {
         setTimeout(() => {
           if (hasFinished) return;
+          console.log(
+            `[TIMING] wait_events/timeout: event=${expectedEvent}, duration=${Date.now() - startTime}ms, received=${events.length}/${amount}`,
+          );
           const msg = `Event ${expectedEvent} timed out - received ${events.length}/${amount} events.`;
           console.warn(msg);
           this.disconnect();
