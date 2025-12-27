@@ -174,29 +174,11 @@ jobs:
           path: reports
           retention-days: 30
 
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          files: reports/junit/**/*.xml
-          check_name: "Integration Tests (Shard ${{ matrix.shard }}/4)"
-          comment_mode: off
-          github_token: ${{ steps.generate_token.outputs.token }}
-
   e2e:
     needs: [docker]
     timeout-minutes: 60
     runs-on: ubuntu-24.04
-    permissions:
-      checks: write
-      contents: read
     steps:
-      - name: Generate token
-        id: generate_token
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ secrets.TAKARO_CI_APP_ID }}
-          private-key: ${{ secrets.TAKARO_CI_APP_PRIV_KEY }}
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v6
         with:
@@ -217,15 +199,6 @@ jobs:
           name: e2e-${{ github.run_id }}-${{ env.DATE }}
           path: reports
           retention-days: 30
-
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          files: reports/junit/**/*.xml
-          check_name: "E2E Tests"
-          comment_mode: off
-          github_token: ${{ steps.generate_token.outputs.token }}
 
   test-results:
     needs: [node-ci, e2e]
