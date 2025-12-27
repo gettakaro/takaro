@@ -4,7 +4,7 @@
   "version": "0.4.10",
   "author": "Takaro Team",
   "dependencies": {
-    "@playwright/test": "1.56.1"
+    "@playwright/test": "1.57.0"
   },
   "keywords": [],
   "license": "AGPL-3.0-or-later",

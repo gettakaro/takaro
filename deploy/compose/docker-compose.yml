@@ -43,7 +43,6 @@ services:
     image: ghcr.io/gettakaro/takaro-app-api:latest
     depends_on:
       - postgresql
-    container_name: takaro_migrator
     command: npm -w packages/app-api run db:migrate
     env_file:
       - ./../../.env
@@ -51,7 +50,6 @@ services:
       POSTGRES_HOST: postgresql
   takaro_connector:
     image: ghcr.io/gettakaro/takaro-app-connector:latest
-    container_name: takaro_connector
     environment:
       REDIS_HOST: "redis"
       TAKARO_SERVICE: "app-connector"
@@ -123,7 +121,6 @@ services:
 
   prometheus:
     image: prom/prometheus:v2.54.1
-    container_name: prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -134,6 +131,5 @@ services:
       - ../../_data/prometheus:/prometheus
   pushgateway:
     image: prom/pushgateway
-    container_name: pushgateway
     ports:
       - "9091:9091"
