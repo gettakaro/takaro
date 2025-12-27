@@ -42,8 +42,6 @@ reports/
 tsconfig.*.tsbuildinfo
 *.tsbuildinfo
 
-_data/
-
 # Tanstack router
 routeTree.gen.ts
 

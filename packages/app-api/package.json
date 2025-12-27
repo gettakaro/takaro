@@ -19,7 +19,7 @@
     "preload": "node -e \"import('geolite2-redist').then(geolite => geolite.downloadDbs())\"",
     "prestart:dev": "npm run db:migrate",
     "start": "node --experimental-vm-modules --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js",
-    "start:dev": "nodemon --exec 'npm run build && node  --experimental-vm-modules --inspect=0.0.0.0:12001 --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js' --config ../../nodemon.json"
+    "start:dev": ":"
   },
   "type": "module",
   "types": "dist/main.d.ts"

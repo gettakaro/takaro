@@ -1,9 +1,16 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "composite": true,
     "rootDir": "./src",
     "outDir": "dist"
   },
   "include": ["src/**/*"],
-  "exclude": ["src/**/*.test.ts"]
+  "exclude": ["src/**/*.test.ts"],
+  "references": [
+    { "path": "../lib-auth/tsconfig.build.json" },
+    { "path": "../lib-db/tsconfig.build.json" },
+    { "path": "../lib-modules/tsconfig.build.json" },
+    { "path": "../lib-util/tsconfig.build.json" }
+  ]
 }

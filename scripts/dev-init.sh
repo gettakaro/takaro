@@ -15,9 +15,6 @@ if test -e ".env.example" && ! test -e ".env"; then
 	cp .env.example .env
 fi
 
-printHeader "Initializing datastores"
-./scripts/setup-data-folders.sh
-
 printHeader "Setup playwright reports directory"
 mkdir -p reports
 

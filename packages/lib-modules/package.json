@@ -19,7 +19,7 @@
     "build": "tsc -p ./tsconfig.build.json",
     "build:builtin-json": "node --import=ts-node-maintained/register/esm ./scripts/buildBuiltinJson.ts",
     "postbuild": "npm run build:builtin-json",
-    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json"
+    "start:dev": ":"
   },
   "type": "module",
   "types": "dist/main.d.ts"

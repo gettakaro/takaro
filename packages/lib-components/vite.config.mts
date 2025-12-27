@@ -8,6 +8,10 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    reporters: ['default', 'junit'],
+    outputFile: {
+      junit: '../../reports/junit/lib-components.xml',
+    },
   },
   css: {
     transformer: 'lightningcss',
