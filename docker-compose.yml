@@ -6,7 +6,7 @@ services:
     volumes:
       - ./containers/homer/assets:/www/assets
     ports:
-      - 13337:8080
+      - "${HOMER_PORT:-13337}:8080"
     environment:
       - INIT_ASSETS=0
   postgresql:
@@ -14,12 +14,12 @@ services:
     volumes:
       - ./_data/db:/var/lib/postgresql/data
     ports:
-      - 13100:5432
+      - "${POSTGRES_HOST_PORT:-13100}:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-      
+
   redis:
     image: redis:7.2-alpine
     # enables memory overcommit on reboot
@@ -31,12 +31,12 @@ services:
     volumes:
       - ./_data/redis:/data
     ports:
-      - 6379:6379
+      - "${REDIS_PORT:-6379}:6379"
 
   redis-insight:
     image: redis/redisinsight:2.58
     ports:
-      - "5540:5540"
+      - "${REDIS_INSIGHT_PORT:-5540}:5540"
     volumes:
       - ./_data/redis-insight:/data
 
@@ -74,7 +74,7 @@ services:
     env_file:
       - .env
     environment:
-      NODE_OPTIONS: '--import=ts-node-maintained/register/esm'
+      NODE_OPTIONS: "--import=ts-node-maintained/register/esm"
       REDIS_HOST: redis
       POSTGRES_HOST: postgresql
       POSTGRES_PORT: 5432
@@ -91,27 +91,35 @@ services:
 
       CORS_ALLOWED_ORIGINS: http://127.0.0.1:13000,http://127.0.0.1:13001,http://127.0.0.1:13004,https://admin.socket.io,http://takaro:13000,http://takaro:13001
 
-      TRACING_ENDPOINT: 'http://tempo:4317/'
-      TAKARO_SERVICE: 'dev-takaro'
+      TRACING_ENDPOINT: "http://tempo:4317/"
+      TAKARO_SERVICE: "dev-takaro"
     ports:
       # api
-      - 13000:3000
-      - 12001:12001
+      - "${TAKARO_API_PORT:-13000}:3000"
+      - "${TAKARO_API_DEBUG_PORT:-12001}:12001"
       # web-main
-      - 13001:13001
+      - "${TAKARO_WEB_PORT:-13001}:13001"
       # lib-components storybook
-      - 13002:13002
+      - "${TAKARO_STORYBOOK_PORT:-13002}:13002"
       # mock server
-      - 13006:3002
-      - 12004:12004
+      - "${TAKARO_MOCK_PORT:-13006}:3002"
+      - "${TAKARO_MOCK_DEBUG_PORT:-12004}:12004"
       # connector
-      - 13008:3003
-      - 3004:3004
-      - 12003:12003
+      - "${TAKARO_CONNECTOR_PORT:-13008}:3003"
+      - "${TAKARO_CONNECTOR_DEBUG_PORT:-3004}:3004"
+      - "${TAKARO_CONNECTOR_DEBUG_2_PORT:-12003}:12003"
       # Docs
-      - 13005:13005
+      - "${TAKARO_DOCS_PORT:-13005}:13005"
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/readyz"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3000/readyz",
+        ]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -129,7 +137,7 @@ services:
       - .env
     environment:
       LOGGING_LEVEL: debug
-      NODE_OPTIONS: '--import=ts-node-maintained/register/esm'
+      NODE_OPTIONS: "--import=ts-node-maintained/register/esm"
       POSTGRES_HOST: postgresql
 
   e2e:
@@ -143,7 +151,7 @@ services:
       - ./packages/e2e:/app/packages/e2e
       - /tmp/.X11-unix:/tmp/.X11-unix
     ports:
-      - 20000:20000
+      - "${E2E_DEBUG_PORT:-20000}:20000"
     environment:
       - DISPLAY=:0
 
@@ -158,18 +166,18 @@ services:
   kratos:
     image: oryd/kratos:v1.2.0
     ports:
-      - '4433:4433' # public
-      - '4434:4434' # admin
+      - "${KRATOS_PUBLIC_PORT:-4433}:4433" # public
+      - "${KRATOS_ADMIN_PORT:-4434}:4434" # admin
     restart: on-failure
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
     volumes:
-      - ./containers/ory/kratos:/etc/config/kratos 
+      - ./containers/ory/kratos:/etc/config/kratos
   postgresql_kratos:
     image: postgres:15
     ports:
-      - 127.0.0.1:13101:5432
+      - "127.0.0.1:${POSTGRES_KRATOS_PORT:-13101}:5432"
     volumes:
       - ./_data/kratos-db:/var/lib/postgresql/data
     environment:
@@ -186,7 +194,7 @@ services:
       # But keeping comment for 'documentation purposes'
       #  - 14000:1025
       # Web
-      - 8025:8025
+      - "${MAILHOG_WEB_PORT:-8025}:8025"
     logging:
       driver: none
 
@@ -194,22 +202,22 @@ services:
     image: prom/prometheus:v2.54.1
     container_name: prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
     ports:
-      - 9090:9090
+      - "${PROMETHEUS_PORT:-9090}:9090"
     volumes:
       - ./containers/prometheus:/etc/prometheus
-      - ./_data/prometheus:/prometheus      
+      - ./_data/prometheus:/prometheus
   pushgateway:
     image: prom/pushgateway
     container_name: pushgateway
     ports:
-      - "9091:9091"  
+      - "${PUSHGATEWAY_PORT:-9091}:9091"  
   takaro-mcp:
     image: ghcr.io/gettakaro/mcp:0.0.3
     ports:
-      - "18000:3000"
+      - "${TAKARO_MCP_PORT:-18000}:3000"
     environment:
       - HOST=0.0.0.0
       - TAKARO_HOST=http://takaro:3000
@@ -218,9 +226,8 @@ services:
     depends_on:
       takaro:
         condition: service_healthy
-      
+
 networks:
   default:
     name: takaro_default
     driver: bridge
-

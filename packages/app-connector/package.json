@@ -12,7 +12,7 @@
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
     "start": "node --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js",
-    "start:dev": "nodemon --exec 'npm run build && node --inspect=0.0.0.0:12003 --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js' --config ../../nodemon.json"
+    "start:dev": ":"
   },
   "type": "module",
   "types": "dist/main.d.ts"
