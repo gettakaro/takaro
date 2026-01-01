@@ -295,18 +295,36 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     return this.seedModule(mod, { isBuiltin: false });
   }
 
-  async seedBuiltinModules() {
+  async seedBuiltinModules(options: { parallel?: boolean } = {}) {
     const modules = getModules();
-    // Process builtin modules sequentially to avoid race conditions
-    // where parallel updates trigger uninstall/reinstall cycles
-    for (const m of modules) {
-      try {
-        await this.seedModule(m as ModuleTransferDTO<unknown>, { isBuiltin: true });
-      } catch (error) {
-        this.log.warn('Failed to seed builtin module', {
-          error: (error as Error).message,
-          module: (m as ModuleTransferDTO<unknown>).name,
-        });
+
+    if (options.parallel) {
+      // Parallel mode: Safe for fresh domains (test setup) where no existing
+      // module installations exist, avoiding uninstall/reinstall race conditions
+      await Promise.all(
+        modules.map(async (m) => {
+          try {
+            await this.seedModule(m as ModuleTransferDTO<unknown>, { isBuiltin: true });
+          } catch (error) {
+            this.log.warn('Failed to seed builtin module', {
+              error: (error as Error).message,
+              module: (m as ModuleTransferDTO<unknown>).name,
+            });
+          }
+        }),
+      );
+    } else {
+      // Sequential mode: Required for existing domains where parallel updates
+      // can trigger uninstall/reinstall race conditions
+      for (const m of modules) {
+        try {
+          await this.seedModule(m as ModuleTransferDTO<unknown>, { isBuiltin: true });
+        } catch (error) {
+          this.log.warn('Failed to seed builtin module', {
+            error: (error as Error).message,
+            module: (m as ModuleTransferDTO<unknown>).name,
+          });
+        }
       }
     }
   }

@@ -72,12 +72,14 @@ export const modulesTestSetup = async function (
   if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
   const gameServer1IdentityToken = randomUUID();
   const gameServer2IdentityToken = randomUUID();
-  const mockserver1 = await getMockServer({
-    mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer1IdentityToken },
-  });
-  const mockserver2 = await getMockServer({
-    mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer2IdentityToken },
-  });
+  const [mockserver1, mockserver2] = await Promise.all([
+    getMockServer({
+      mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer1IdentityToken },
+    }),
+    getMockServer({
+      mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer2IdentityToken },
+    }),
+  ]);
 
   const gameServers = (
     await this.client.gameserver.gameServerControllerSearch({
@@ -124,46 +126,47 @@ export const modulesTestSetup = async function (
     this.client.gameserver.gameServerControllerExecuteCommand(gameServer2.id, { command: 'connectAll' }),
   ]);
 
-  await triggerItemSync(this.client, gameServer1.id);
-  await triggerItemSync(this.client, gameServer2.id);
+  await Promise.all([
+    triggerItemSync(this.client, gameServer1.id),
+    triggerItemSync(this.client, gameServer2.id),
+  ]);
 
   await playerCreatedEvents;
 
   const permissions = await this.client.permissionCodesToInputs(['ROOT']);
   const roleRes = await this.client.role.roleControllerCreate({ name: 'test role', permissions });
 
-  const pogsRes = (
-    await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+  // Fetch both POG sets in parallel
+  const [pogsRes, pogsRes2] = await Promise.all([
+    this.client.playerOnGameserver.playerOnGameServerControllerSearch({
       filters: { gameServerId: [gameServer1.id] },
-    })
-  ).data.data;
-  const playersRes = await this.client.player.playerControllerSearch({
-    filters: { id: pogsRes.map((p) => p.playerId) },
-    extend: ['playerOnGameServers'],
-  });
-
-  await Promise.all(
-    playersRes.data.data.map(async (player) => {
-      await this.client.player.playerControllerAssignRole(player.id, roleRes.data.data.id);
     }),
-  );
-
-  const pogsRes2 = (
-    await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+    this.client.playerOnGameserver.playerOnGameServerControllerSearch({
       filters: { gameServerId: [gameServer2.id] },
-    })
-  ).data.data;
-
-  const playersRes2 = await this.client.player.playerControllerSearch({
-    filters: { id: pogsRes2.map((p) => p.playerId) },
-    extend: ['playerOnGameServers'],
-  });
-
-  await Promise.all(
-    playersRes2.data.data.map(async (player) => {
-      await this.client.player.playerControllerAssignRole(player.id, roleRes.data.data.id);
     }),
-  );
+  ]);
+
+  // Fetch both player sets in parallel
+  const [playersRes, playersRes2] = await Promise.all([
+    this.client.player.playerControllerSearch({
+      filters: { id: pogsRes.data.data.map((p) => p.playerId) },
+      extend: ['playerOnGameServers'],
+    }),
+    this.client.player.playerControllerSearch({
+      filters: { id: pogsRes2.data.data.map((p) => p.playerId) },
+      extend: ['playerOnGameServers'],
+    }),
+  ]);
+
+  // Assign roles to all players in parallel
+  await Promise.all([
+    ...playersRes.data.data.map((player) =>
+      this.client.player.playerControllerAssignRole(player.id, roleRes.data.data.id),
+    ),
+    ...playersRes2.data.data.map((player) =>
+      this.client.player.playerControllerAssignRole(player.id, roleRes.data.data.id),
+    ),
+  ]);
 
   return {
     modules: modules,

@@ -70,12 +70,14 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
   const gameServer1IdentityToken = randomUUID();
   const gameServer2IdentityToken = randomUUID();
 
-  const mockserver1 = await getMockServer({
-    mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer1IdentityToken },
-  });
-  const mockserver2 = await getMockServer({
-    mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer2IdentityToken },
-  });
+  const [mockserver1, mockserver2] = await Promise.all([
+    getMockServer({
+      mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer1IdentityToken },
+    }),
+    getMockServer({
+      mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer2IdentityToken },
+    }),
+  ]);
 
   const gameServers = (
     await this.client.gameserver.gameServerControllerSearch({
