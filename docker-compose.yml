@@ -163,7 +163,7 @@ services:
       - DISPLAY=:0
 
   kratos-migrate:
-    image: oryd/kratos:v1.2.0
+    image: oryd/kratos:v1.3.1
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
     volumes:
@@ -171,7 +171,7 @@ services:
     command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
     restart: on-failure
   kratos:
-    image: oryd/kratos:v1.2.0
+    image: oryd/kratos:v1.3.1
     ports:
       - "${KRATOS_PUBLIC_PORT:-4433}:4433" # public
       - "${KRATOS_ADMIN_PORT:-4434}:4434" # admin
