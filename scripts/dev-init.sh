@@ -19,8 +19,12 @@ printHeader "Setup playwright reports directory"
 mkdir -p reports
 
 printHeader "Installing node dependencies"
-rm -rf node_modules
-npm ci
+if [ ! -d node_modules ] || ! npm ls --depth=0 >/dev/null 2>&1; then
+  rm -rf node_modules
+  npm ci
+else
+  echo "node_modules is valid, skipping npm ci"
+fi
 
 printHeader "Building packages"
 
