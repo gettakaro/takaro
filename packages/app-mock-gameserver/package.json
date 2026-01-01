@@ -1,7 +1,7 @@
 {
   "name": "@takaro/mock-gameserver",
   "description": "A mock gameserver for testing purposes, acts just like a real gameserver",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "author": "",
   "dependencies": {
     "@faker-js/faker": "10.1.0",

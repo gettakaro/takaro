@@ -1,7 +1,7 @@
 {
   "name": "@takaro/queues",
   "description": "An opinionated BullMQ queues handler",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "author": "",
   "dependencies": {
     "@bull-board/api": "6.2.3",

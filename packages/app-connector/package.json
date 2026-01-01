@@ -1,7 +1,7 @@
 {
   "name": "@takaro/connector",
   "description": "Connects to game servers and detects events for Takaro",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "author": "",
   "dependencies": {
     "async-mutex": "0.5.0"

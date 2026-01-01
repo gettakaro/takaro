@@ -1,7 +1,7 @@
 {
   "name": "@takaro/http",
   "description": "An opinionated http server",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "author": "",
   "dependencies": {
     "@opentelemetry/api": "1.9.0",
