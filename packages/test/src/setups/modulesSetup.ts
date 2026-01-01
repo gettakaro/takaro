@@ -126,10 +126,7 @@ export const modulesTestSetup = async function (
     this.client.gameserver.gameServerControllerExecuteCommand(gameServer2.id, { command: 'connectAll' }),
   ]);
 
-  await Promise.all([
-    triggerItemSync(this.client, gameServer1.id),
-    triggerItemSync(this.client, gameServer2.id),
-  ]);
+  await Promise.all([triggerItemSync(this.client, gameServer1.id), triggerItemSync(this.client, gameServer2.id)]);
 
   await playerCreatedEvents;
 
