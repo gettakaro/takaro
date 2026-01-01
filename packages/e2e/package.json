@@ -4,7 +4,7 @@
   "version": "0.4.10",
   "author": "Takaro Team",
   "dependencies": {
-    "@playwright/test": "1.56.1"
+    "@playwright/test": "1.57.0"
   },
   "keywords": [],
   "license": "AGPL-3.0-or-later",
@@ -13,7 +13,7 @@
     "build": "echo not really anything to build here!",
     "codegen": "npx playwright codegen 127.0.0.1:13001",
     "dev:ui": "npx playwright test --ui",
-    "test:e2e": "npx playwright test --reporter=list"
+    "test:e2e": "npx playwright test"
   },
   "type": "module",
   "types": ""

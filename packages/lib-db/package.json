@@ -20,7 +20,7 @@
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
     "migrate:create": "run(){ touch ./src/migrations/sql/$(date -u +\"%Y%m%d%H%M%S\")-$1.ts; }; run",
-    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json"
+    "start:dev": ":"
   },
   "type": "module",
   "types": "dist/main.d.ts"

@@ -1,0 +1,29 @@
+{
+  "baseBranch": "development",
+  "portVarPatterns": ["*_PORT"],
+  "portRange": [30000, 39999],
+  "portMapping": {
+    "HOMER_PORT": { "service": "homer", "containerPort": 8080 },
+    "POSTGRES_HOST_PORT": { "service": "postgresql", "containerPort": 5432 },
+    "POSTGRES_KRATOS_PORT": { "service": "postgresql_kratos", "containerPort": 5432 },
+    "REDIS_PORT": { "service": "redis", "containerPort": 6379 },
+    "REDIS_INSIGHT_PORT": { "service": "redis-insight", "containerPort": 5540 },
+    "TAKARO_API_PORT": { "service": "takaro", "containerPort": 3000 },
+    "TAKARO_API_DEBUG_PORT": { "service": "takaro", "containerPort": 12001 },
+    "TAKARO_WEB_PORT": { "service": "takaro", "containerPort": 13001 },
+    "TAKARO_STORYBOOK_PORT": { "service": "takaro", "containerPort": 13002 },
+    "TAKARO_MOCK_PORT": { "service": "takaro", "containerPort": 3002 },
+    "TAKARO_MOCK_DEBUG_PORT": { "service": "takaro", "containerPort": 12004 },
+    "TAKARO_CONNECTOR_PORT": { "service": "takaro", "containerPort": 3003 },
+    "TAKARO_CONNECTOR_DEBUG_PORT": { "service": "takaro", "containerPort": 3004 },
+    "TAKARO_CONNECTOR_DEBUG_2_PORT": { "service": "takaro", "containerPort": 12003 },
+    "TAKARO_DOCS_PORT": { "service": "takaro", "containerPort": 13005 },
+    "E2E_DEBUG_PORT": { "service": "e2e", "containerPort": 20000 },
+    "KRATOS_PUBLIC_PORT": { "service": "kratos", "containerPort": 4433 },
+    "KRATOS_ADMIN_PORT": { "service": "kratos", "containerPort": 4434 },
+    "MAILHOG_WEB_PORT": { "service": "mailhog", "containerPort": 8025 },
+    "PROMETHEUS_PORT": { "service": "prometheus", "containerPort": 9090 },
+    "PUSHGATEWAY_PORT": { "service": "pushgateway", "containerPort": 9091 },
+    "TAKARO_MCP_PORT": { "service": "takaro-mcp", "containerPort": 3000 }
+  }
+}

@@ -15,10 +15,7 @@ fi
 
 echo "Deleting data..."
 
-docker compose down
-
-sudo rm -rf ./_data/db
-sudo rm -rf ./_data/kratos-db
+docker compose down -v
 
 docker compose up -d
 

@@ -155,7 +155,7 @@
     "@hookform/devtools": "4.3.1",
     "@mdx-js/react": "3.0.1",
     "@openapitools/openapi-generator-cli": "2.16.3",
-    "@playwright/test": "^1.54.0",
+    "@playwright/test": "1.57.0",
     "@reporters/github": "1.7.2",
     "@storybook/addon-a11y": "10.0.6",
     "@storybook/addon-links": "10.0.6",
@@ -246,7 +246,7 @@
   },
   "engines": {
     "node": "24.11.0",
-    "npm": "11.6.1"
+    "npm": "11.7.0"
   },
   "homepage": "https://takaro.app",
   "keywords": [],
@@ -267,7 +267,7 @@
     "@tanstack/router-core": "1.102.0",
     "ws@7": "^8.17.1"
   },
-  "packageManager": "npm@11.6.1",
+  "packageManager": "npm@11.7.0",
   "scripts": {
     "build": "COMMAND=\"build\" ./scripts/run-all-pkgs.sh",
     "clean": "npx --workspaces rimraf dist && npx --workspaces rimraf node_modules && npx rimraf node_modules",
@@ -284,7 +284,7 @@
     "release:patch": "npm version patch --no-git-tag-version --workspaces && git add **/package.json; npm version patch --include-workspace-root --force && git push && git push --tags",
     "shell": "docker compose exec takaro bash",
     "start": "COMMAND=\"start\" REGEX=app bash ./scripts/run-all-pkgs.sh",
-    "start:dev": "COMMAND=\"start:dev\" bash ./scripts/run-all-pkgs.sh",
+    "start:dev": "npx concurrently --names TSC,PKGS \"tsc --build --watch tsconfig.build.json\" \"COMMAND=start:dev bash ./scripts/run-all-pkgs.sh\"",
     "syncpack:fix": "syncpack fix-mismatches && syncpack format",
     "syncpack:lint": "syncpack lint",
     "test": "bash ./scripts/test-runner.sh --all",
