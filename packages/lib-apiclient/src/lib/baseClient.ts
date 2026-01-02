@@ -40,6 +40,10 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
     this.axios.defaults.headers.common[key] = value;
   }
 
+  setDomain(domainId: string) {
+    this.axios.defaults.headers.common['X-Takaro-Domain'] = domainId;
+  }
+
   get axiosInstance() {
     return this.axios;
   }
