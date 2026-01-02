@@ -26,6 +26,9 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
+  // Drop the enum type if it exists to prevent "type already exists" errors
+  await knex.raw('DROP TYPE IF EXISTS state_new CASCADE');
+  
   // Revert to include DELETED in enum values
   await knex.schema.alterTable('domains', (table) => {
     table.enum('state_new', ['ACTIVE', 'DISABLED', 'MAINTENANCE', 'DELETED']).notNullable().defaultTo('ACTIVE');
