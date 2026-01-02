@@ -1,3 +1,7 @@
+volumes:
+  grafana_data:
+  tempo_data:
+
 services:
   grafana:
     image: grafana/grafana:11.2.2
@@ -7,29 +11,17 @@ services:
       - GF_AUTH_DISABLE_LOGIN_FORM=true
       - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
     volumes:
-      - ./_data/grafana:/var/lib/grafana
+      - grafana_data:/var/lib/grafana
       - ./containers/grafana/grafana-provisioning:/etc/grafana/provisioning
     ports:
       - '13007:3000'
-    networks:
-      - takaro_default
-      - observability
 
   tempo:
     image: grafana/tempo:latest
     command: ['-config.file=/etc/tempo.yaml']
     volumes:
       - ./containers/tempo/tempo.yaml:/etc/tempo.yaml
-      - ./_data/tempo:/tmp/tempo
+      - tempo_data:/tmp/tempo
     ports:
       - '3200:3200' # tempo
       - '4317:4317' # otlp grpc
-    networks:
-      - takaro_default
-      - observability
-
-networks:
-  takaro_default:
-    external: true
-  observability:
-    driver: bridge

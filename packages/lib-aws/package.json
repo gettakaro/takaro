@@ -1,7 +1,7 @@
 {
   "name": "@takaro/aws",
   "description": "AWS helper functions",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "author": "",
   "dependencies": {
     "@aws-sdk/client-lambda": "3.659.0"

@@ -104,6 +104,9 @@ jobs:
     needs: [docker]
     timeout-minutes: 60
     runs-on: ubuntu-24.04
+    permissions:
+      checks: write
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -170,6 +173,7 @@ jobs:
           name: integrationTests-shard-${{ matrix.shard }}-${{ github.run_id }}-${{ env.DATE }}
           path: reports
           retention-days: 30
+
   e2e:
     needs: [docker]
     timeout-minutes: 60
@@ -195,3 +199,42 @@ jobs:
           name: e2e-${{ github.run_id }}-${{ env.DATE }}
           path: reports
           retention-days: 30
+
+  test-results:
+    needs: [node-ci, e2e]
+    if: always()
+    runs-on: ubuntu-24.04
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.TAKARO_CI_APP_ID }}
+          private-key: ${{ secrets.TAKARO_CI_APP_PRIV_KEY }}
+
+      - name: Download all test artifacts
+        uses: actions/download-artifact@v5
+        with:
+          pattern: 'integrationTests-*'
+          path: reports
+          merge-multiple: true
+
+      - name: Download E2E artifacts
+        uses: actions/download-artifact@v5
+        with:
+          pattern: 'e2e-*'
+          path: reports
+          merge-multiple: true
+
+      - name: Publish Aggregated Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: reports/**/junit/**/*.xml
+          check_name: "Test Results"
+          comment_title: "Test Results"
+          github_token: ${{ steps.generate_token.outputs.token }}
+

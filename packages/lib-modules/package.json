@@ -1,7 +1,7 @@
 {
   "name": "@takaro/modules",
   "description": "Built-in modules for Takaro",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "author": "",
   "dependencies": {
     "class-transformer": "0.5.1",

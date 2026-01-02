@@ -1,7 +1,7 @@
 {
   "name": "@takaro/e2e",
   "description": "e2e",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "author": "Takaro Team",
   "dependencies": {
     "@playwright/test": "1.57.0"
@@ -13,7 +13,7 @@
     "build": "echo not really anything to build here!",
     "codegen": "npx playwright codegen 127.0.0.1:13001",
     "dev:ui": "npx playwright test --ui",
-    "test:e2e": "npx playwright test --reporter=list"
+    "test:e2e": "npx playwright test"
   },
   "type": "module",
   "types": ""

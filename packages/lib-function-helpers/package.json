@@ -1,7 +1,7 @@
 {
   "name": "@takaro/helpers",
   "description": "A collection of helpers, used inside Takaro Functions",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "author": "",
   "dependencies": {
     "axios": "1.7.7",

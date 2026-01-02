@@ -1,7 +1,7 @@
 {
   "name": "takaro",
   "description": "",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "contributors": [
     "Emiel Van Severen",
     "Niek Candaele"
@@ -28,9 +28,9 @@
     "@opentelemetry/semantic-conventions": "1.27.0",
     "@ory/client": "1.14.5",
     "@ory/elements": "0.3.0",
-    "@rjsf/core": "^6.0.2",
-    "@rjsf/utils": "^6.0.2",
-    "@rjsf/validator-ajv8": "^6.0.2",
+    "@rjsf/core": "6.1.2",
+    "@rjsf/utils": "6.1.2",
+    "@rjsf/validator-ajv8": "6.1.2",
     "@sentry/integrations": "7.120.3",
     "@sentry/node": "7.120.3",
     "@sentry/opentelemetry-node": "7.114.0",
@@ -58,7 +58,7 @@
     "@visx/grid": "3.5.0",
     "@visx/group": "3.3.0",
     "@visx/heatmap": "3.3.0",
-    "@visx/legend": "^3.3.0",
+    "@visx/legend": "3.12.0",
     "@visx/mock-data": "3.3.0",
     "@visx/pattern": "3.3.0",
     "@visx/responsive": "3.10.2",
@@ -141,7 +141,7 @@
     "url": "0.11.4",
     "web-vitals": "4.2.3",
     "winston": "3.14.2",
-    "ws": "^8.17.1",
+    "ws": "8.18.3",
     "xml2js": "0.6.2",
     "yup": "0.32.11",
     "zod": "3.23.8",
@@ -232,7 +232,7 @@
     "stream-browserify": "3.0.0",
     "stream-http": "3.2.0",
     "supertest": "6.3.4",
-    "syncpack": "^13.0.4",
+    "syncpack": "13.0.4",
     "ts-mocha": "10.0.0",
     "ts-node-maintained": "10.9.6",
     "typedoc": "0.28.14",
@@ -246,7 +246,7 @@
   },
   "engines": {
     "node": "24.11.0",
-    "npm": "11.6.1"
+    "npm": "11.7.0"
   },
   "homepage": "https://takaro.app",
   "keywords": [],
@@ -267,7 +267,7 @@
     "@tanstack/router-core": "1.102.0",
     "ws@7": "^8.17.1"
   },
-  "packageManager": "npm@11.6.1",
+  "packageManager": "npm@11.7.0",
   "scripts": {
     "build": "COMMAND=\"build\" ./scripts/run-all-pkgs.sh",
     "clean": "npx --workspaces rimraf dist && npx --workspaces rimraf node_modules && npx rimraf node_modules",

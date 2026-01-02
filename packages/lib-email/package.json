@@ -1,7 +1,7 @@
 {
   "name": "@takaro/email",
   "description": "",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "author": "",
   "dependencies": {
     "nodemailer": "6.9.15",
