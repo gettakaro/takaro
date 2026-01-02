@@ -9,7 +9,7 @@
     "eventsource": "2.0.2",
     "luxon": "3.4.1",
     "type-fest": "2.19.0",
-    "ws": "8.17.1"
+    "ws": "8.18.3"
   },
   "keywords": [],
   "license": "ISC",
