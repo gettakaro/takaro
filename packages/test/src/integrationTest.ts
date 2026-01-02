@@ -45,7 +45,9 @@ before(async () => {
     });
 
     await Promise.allSettled(
-      danglingDomains.data.data.map((domain) => adminClient.domain.domainControllerRemove(domain.id)),
+      danglingDomains.data.data.map((domain) =>
+        adminClient.domain.domainControllerRemove(domain.id, { params: { hardDelete: true } }),
+      ),
     );
 
     if (danglingDomains.data.data.length > 0) {
