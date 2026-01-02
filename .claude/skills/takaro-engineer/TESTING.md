@@ -219,3 +219,69 @@ Environment variables (set in container):
 | Snapshot mismatch | Check if ordering is deterministic, update if expected |
 | Connection refused | Ensure `docker compose up -d` completed |
 | TypeScript errors | Run `npm run test:check` to validate |
+
+## Long-Running Test Workflow
+
+The full integration test suite takes ~2+ hours. Use this workflow to run tests in the background while continuing other work.
+
+### 1. Start Tests in Background
+
+Use Bash tool with background execution:
+```bash
+docker compose exec -T takaro npm run test:integration 2>&1
+```
+- Set `run_in_background: true`
+- Set `timeout: 7200000` (2 hours in milliseconds)
+- Use `-T` flag to disable pseudo-TTY (required for background)
+
+### 2. Monitor Progress Periodically
+
+Check every 5-20 minutes using sleep commands:
+
+```bash
+# Wait 5 minutes, then check test count
+sleep 300 && grep -c "✔ " /path/to/task/output
+
+# Wait 10 minutes, then check recent tests
+sleep 600 && grep -E "✔ " /path/to/task/output | tail -10
+
+# Wait 15 minutes, then check for failures
+sleep 900 && grep -E "✖|FAIL" /path/to/task/output | tail -10
+```
+
+### 3. Monitor Performance (if PERF_MONITOR_ENABLED=true)
+
+```bash
+# Queue backlog check
+cat reports/queue-stats-*.jsonl | jq -s '
+  group_by(.metric) |
+  map({queue: .[0].metric, max_waiting: (map(.metadata.waiting) | max)})
+'
+
+# Test timing summary
+cat reports/test-timing-*.jsonl | jq -s '
+  map(select(.phase == "total")) | length
+'
+```
+
+### 4. Detect Completion
+
+- Check if background task is still running via task status
+- Look for final summary line in output
+- Check test count matches expected (~764 integration tests)
+
+### Typical Timing
+
+| Checkpoint | Expected Progress |
+|------------|-------------------|
+| 30 min | ~150-200 tests |
+| 1 hour | ~350-400 tests |
+| 1.5 hours | ~550-600 tests |
+| 2 hours | ~700-764 tests (complete) |
+
+### Troubleshooting Long Runs
+
+If tests seem stuck (same count for 10+ minutes):
+1. Check for timeout errors: `grep -i "timeout" /path/to/output`
+2. Check Docker services: `docker compose ps`
+3. Check queue backlog: queue monitoring shows waiting > active
