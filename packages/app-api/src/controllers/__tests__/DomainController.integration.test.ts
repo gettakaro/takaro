@@ -138,7 +138,7 @@ const tests = [
   new IntegrationTest<{ domainId: string; registrationToken: string }>({
     group,
     snapshot: true,
-    name: 'Resolve registration token - deleted domain token returns 404',
+    name: 'Resolve registration token - disabled domain token returns 404',
     setup: async function () {
       // Create a temporary domain to get its registration token
       const tempDomainData = await this.adminClient.domain.domainControllerCreate({
@@ -160,7 +160,7 @@ const tests = [
       return { domainId, registrationToken };
     },
     test: async function () {
-      // Try to resolve the token from the deleted domain
+      // Try to resolve the token from the disabled domain
       return this.adminClient.domain.domainControllerResolveRegistrationToken({
         registrationToken: this.setupData.registrationToken,
       });
