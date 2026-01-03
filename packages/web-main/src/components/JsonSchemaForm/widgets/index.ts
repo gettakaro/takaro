@@ -5,6 +5,7 @@ import { TextareaWidget } from './TextAreaWidget';
 import { CheckBoxWidget } from './CheckboxWidget';
 import { ItemWidget } from './ItemWidget';
 import { DurationWidget } from './DurationWidget';
+import { RoleWidget } from './RoleWidget';
 import { InputType } from '../../../routes/_auth/_global/-modules/schemaConversion/inputTypes';
 
 export const customWidgets: RegistryWidgetsType = {
@@ -15,4 +16,5 @@ export const customWidgets: RegistryWidgetsType = {
   checkbox: CheckBoxWidget,
   [InputType.item]: ItemWidget,
   [InputType.duration]: DurationWidget,
+  [InputType.role]: RoleWidget,
 };
