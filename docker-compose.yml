@@ -82,6 +82,7 @@ services:
     environment:
       NODE_OPTIONS: "--import=ts-node-maintained/register/esm"
       REDIS_HOST: redis
+      REDIS_PORT: 6379
       POSTGRES_HOST: postgresql
       POSTGRES_PORT: 5432
 
@@ -89,6 +90,10 @@ services:
 
       TEST_HTTP_TARGET: http://takaro:3000
       MAILHOG_URL: http://mailhog:8025
+      MOCK_GAMESERVER_HOST: http://localhost:3002
+      T_WS_URL: ws://localhost:3004
+      KRATOS_URL: http://kratos:4433
+      KRATOS_ADMIN_URL: http://kratos:4434
 
       VITE_API: http://127.0.0.1:13000
       VITE_ORY_URL: http://127.0.0.1:4433

@@ -184,7 +184,8 @@ export class AuthService extends DomainScoped {
     // If we don't have a user yet, try to get it from the IDP
     if (!user) {
       try {
-        let domainId = req.cookies ? req.cookies['takaro-domain'] : null;
+        let domainId =
+          (req.headers['x-takaro-domain'] as string | undefined) || (req.cookies ? req.cookies['takaro-domain'] : null);
         if (req.headers['authorization']?.includes('Basic')) {
           delete req.headers['authorization'];
         }

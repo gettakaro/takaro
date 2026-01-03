@@ -297,17 +297,20 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
   async seedBuiltinModules() {
     const modules = getModules();
-    // Process builtin modules sequentially to avoid race conditions
-    // where parallel updates trigger uninstall/reinstall cycles
-    for (const m of modules) {
-      try {
-        await this.seedModule(m as ModuleTransferDTO<unknown>, { isBuiltin: true });
-      } catch (error) {
-        this.log.warn('Failed to seed builtin module', {
-          error: (error as Error).message,
-          module: (m as ModuleTransferDTO<unknown>).name,
-        });
-      }
+
+    // Process all modules in parallel - each module operates on independent records
+    const results = await Promise.allSettled(
+      modules.map((m) => this.seedModule(m as ModuleTransferDTO<unknown>, { isBuiltin: true })),
+    );
+
+    const failed = results.filter((r) => r.status === 'rejected') as PromiseRejectedResult[];
+    if (failed.length > 0) {
+      this.log.warn('Failed to seed builtin modules', {
+        failures: failed.map((f, i) => ({
+          module: (modules[i] as ModuleTransferDTO<unknown>).name,
+          error: f.reason?.message || String(f.reason),
+        })),
+      });
     }
   }
 

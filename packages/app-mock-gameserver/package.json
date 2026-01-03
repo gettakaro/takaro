@@ -8,7 +8,7 @@
     "reflect-metadata": "0.2.2",
     "socket.io": "4.8.0",
     "type-fest": "2.19.0",
-    "ws": "8.17.1"
+    "ws": "8.18.3"
   },
   "keywords": [],
   "license": "ISC",
@@ -24,7 +24,7 @@
   "scripts": {
     "build": "mkdir -p dist/lib/map/tiles && cp -r src/lib/map/tiles dist/lib/map/ && tsc -p ./tsconfig.build.json",
     "start": "node --loader ../../node_modules/@takaro/util/dist/tracing.js dist/bin.js",
-    "start:dev": ":",
+    "start:dev": "mkdir -p dist/lib/map/tiles && cp -r src/lib/map/tiles dist/lib/map/ && nodemon --exec 'node --inspect=0.0.0.0:12004 --loader ../../node_modules/@takaro/util/dist/tracing.js dist/bin.js' --config ../../nodemon.json",
     "start:dev:compile": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "start:dev:run": "nodemon --exec 'node --inspect=0.0.0.0:12004 --loader ../../node_modules/@takaro/util/dist/tracing.js dist/bin.js' --config ../../nodemon.json"
   },

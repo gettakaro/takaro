@@ -2033,7 +2033,6 @@ export const DomainCreateInputDTOStateEnum = {
   Active: 'ACTIVE',
   Disabled: 'DISABLED',
   Maintenance: 'MAINTENANCE',
-  Deleted: 'DELETED',
 } as const;
 
 export type DomainCreateInputDTOStateEnum =
@@ -2210,7 +2209,6 @@ export const DomainOutputDTOStateEnum = {
   Active: 'ACTIVE',
   Disabled: 'DISABLED',
   Maintenance: 'MAINTENANCE',
-  Deleted: 'DELETED',
 } as const;
 
 export type DomainOutputDTOStateEnum = (typeof DomainOutputDTOStateEnum)[keyof typeof DomainOutputDTOStateEnum];
@@ -2270,7 +2268,6 @@ export const DomainSearchInputAllowedFiltersStateEnum = {
   Active: 'ACTIVE',
   Disabled: 'DISABLED',
   Maintenance: 'MAINTENANCE',
-  Deleted: 'DELETED',
 } as const;
 
 export type DomainSearchInputAllowedFiltersStateEnum =
@@ -2425,7 +2422,6 @@ export const DomainUpdateInputDTOStateEnum = {
   Active: 'ACTIVE',
   Disabled: 'DISABLED',
   Maintenance: 'MAINTENANCE',
-  Deleted: 'DELETED',
 } as const;
 
 export type DomainUpdateInputDTOStateEnum =
@@ -17243,10 +17239,15 @@ export const DomainApiAxiosParamCreator = function (configuration?: Configuratio
      * <br> OperationId: `DomainControllerRemove`
      * @summary Remove
      * @param {string} id
+     * @param {any} [hardDelete]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    domainControllerRemove: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+    domainControllerRemove: async (
+      id: string,
+      hardDelete?: any,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
       assertParamExists('domainControllerRemove', 'id', id);
       const localVarPath = `/domain/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
@@ -17263,6 +17264,12 @@ export const DomainApiAxiosParamCreator = function (configuration?: Configuratio
 
       // authentication adminAuth required
       await setApiKeyToObject(localVarHeaderParameter, 'x-takaro-admin-token', configuration);
+
+      if (hardDelete !== undefined) {
+        for (const [key, value] of Object.entries(hardDelete)) {
+          localVarQueryParameter[key] = value;
+        }
+      }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -17478,14 +17485,16 @@ export const DomainApiFp = function (configuration?: Configuration) {
      * <br> OperationId: `DomainControllerRemove`
      * @summary Remove
      * @param {string} id
+     * @param {any} [hardDelete]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async domainControllerRemove(
       id: string,
+      hardDelete?: any,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.domainControllerRemove(id, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.domainControllerRemove(id, hardDelete, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['DomainApi.domainControllerRemove']?.[localVarOperationServerIndex]?.url;
@@ -17627,11 +17636,12 @@ export const DomainApiFactory = function (configuration?: Configuration, basePat
      * <br> OperationId: `DomainControllerRemove`
      * @summary Remove
      * @param {string} id
+     * @param {any} [hardDelete]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    domainControllerRemove(id: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
-      return localVarFp.domainControllerRemove(id, options).then((request) => request(axios, basePath));
+    domainControllerRemove(id: string, hardDelete?: any, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
+      return localVarFp.domainControllerRemove(id, hardDelete, options).then((request) => request(axios, basePath));
     },
     /**
      * <br> OperationId: `DomainControllerResolveRegistrationToken`
@@ -17736,13 +17746,14 @@ export class DomainApi extends BaseAPI {
    * <br> OperationId: `DomainControllerRemove`
    * @summary Remove
    * @param {string} id
+   * @param {any} [hardDelete]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof DomainApi
    */
-  public domainControllerRemove(id: string, options?: RawAxiosRequestConfig) {
+  public domainControllerRemove(id: string, hardDelete?: any, options?: RawAxiosRequestConfig) {
     return DomainApiFp(this.configuration)
-      .domainControllerRemove(id, options)
+      .domainControllerRemove(id, hardDelete, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
