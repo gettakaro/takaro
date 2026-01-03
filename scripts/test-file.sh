@@ -58,13 +58,14 @@ typecheck_tests "$TEST_FILE"
 # Set environment variables for consistent test behavior
 export LOGGING_LEVEL=none
 export TAKARO_TEST_RUNNER_ATTEMPTS=0
+export TRACING_SIMPLE_PROCESSOR=true
 
 # Debug mode
 if [[ "$DEBUG_MODE" == "true" ]]; then
   echo "Running test in debug mode: $TEST_FILE"
   echo "Debug server will be available for connection..."
-  node --inspect-brk --test-concurrency 1 --test-force-exit --import=ts-node-maintained/register/esm --test "$TEST_FILE"
+  node --inspect-brk --test-concurrency 1 --test-force-exit --import=./node_modules/@takaro/util/dist/tracing.js --import=ts-node-maintained/register/esm --test "$TEST_FILE"
 else
   echo "Running test: $TEST_FILE"
-  node --test-concurrency 1 --test-force-exit --import=ts-node-maintained/register/esm --test "$TEST_FILE"
+  node --test-concurrency 1 --test-force-exit --import=./node_modules/@takaro/util/dist/tracing.js --import=ts-node-maintained/register/esm --test "$TEST_FILE"
 fi

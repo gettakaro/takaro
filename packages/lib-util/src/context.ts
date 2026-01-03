@@ -1,6 +1,7 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import { errors } from './main.js';
-import { Span, trace, Tracer } from '@opentelemetry/api';
+import { Span, SpanStatusCode } from '@opentelemetry/api';
+import { getTracer } from './tracing.js';
 import { Knex } from 'knex';
 
 interface TransactionStore {
@@ -102,7 +103,8 @@ class Context {
     if (process.env.TRACING_ENABLED !== 'true') return ctxWrapped;
 
     return (...args: any[]) => {
-      const tracer: Tracer = trace.getTracer('takaro-generic-tracer');
+      const tracer = getTracer();
+      if (!tracer) return ctxWrapped(...args);
 
       return tracer.startActiveSpan(name, (span: Span) => {
         this.setContextAttributes(this.data, span);
@@ -111,17 +113,29 @@ class Context {
           if (result instanceof Promise && result.then) {
             return result
               .then((res) => {
+                span.setStatus({ code: SpanStatusCode.OK });
                 span.end();
                 return res;
               })
               .catch((err) => {
+                span.setStatus({
+                  code: SpanStatusCode.ERROR,
+                  message: err instanceof Error ? err.message : String(err),
+                });
+                span.recordException(err instanceof Error ? err : new Error(String(err)));
                 span.end();
                 throw err;
               });
           }
+          span.setStatus({ code: SpanStatusCode.OK });
           span.end();
           return result;
         } catch (err) {
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: err instanceof Error ? (err as Error).message : String(err),
+          });
+          span.recordException(err instanceof Error ? err : new Error(String(err)));
           span.end();
           throw err;
         }

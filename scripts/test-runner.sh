@@ -69,6 +69,9 @@ fi
 echo "Waiting for test dependencies..."
 node packages/test/dist/waitUntilReady.js
 
+# Set TRACING_SIMPLE_PROCESSOR to use SimpleSpanProcessor for immediate span export
+export TRACING_SIMPLE_PROCESSOR=true
+
 # Create reports directory for JUnit output
 mkdir -p reports/junit
 
@@ -84,25 +87,25 @@ case $TEST_TYPE in
     typecheck_tests 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'
     
     if [[ "$CI_MODE" == "true" ]]; then
-      node --test-concurrency 1 --test-force-exit ${SHARD_OPTS} --import=ts-node-maintained/register/esm --test \
+      node --test-concurrency 1 --test-force-exit ${SHARD_OPTS} --import=./node_modules/@takaro/util/dist/tracing.js --import=ts-node-maintained/register/esm --test \
         --test-reporter=spec --test-reporter-destination=stdout \
         --test-reporter=@reporters/github --test-reporter-destination=stdout \
         --test-reporter=junit --test-reporter-destination=$JUNIT_FILE \
         'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'
     else
-      node --test-concurrency 1 --test-force-exit ${SHARD_OPTS} --import=ts-node-maintained/register/esm --test 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'
+      node --test-concurrency 1 --test-force-exit ${SHARD_OPTS} --import=./node_modules/@takaro/util/dist/tracing.js --import=ts-node-maintained/register/esm --test 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'
     fi
     ;;
   "unit")
     echo "Checking TypeScript for unit tests..."
     typecheck_tests 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.unit.test.ts'
 
-    node --test-concurrency 1 --test-force-exit ${SHARD_OPTS} --import=ts-node-maintained/register/esm --test 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.unit.test.ts'
+    node --test-concurrency 1 --test-force-exit ${SHARD_OPTS} --import=./node_modules/@takaro/util/dist/tracing.js --import=ts-node-maintained/register/esm --test 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.unit.test.ts'
     ;;
   "integration")
     echo "Checking TypeScript for integration tests..."
     typecheck_tests 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.integration.test.ts'
 
-    node --test-concurrency 1 --test-force-exit ${SHARD_OPTS} --import=ts-node-maintained/register/esm --test 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.integration.test.ts'
+    node --test-concurrency 1 --test-force-exit ${SHARD_OPTS} --import=./node_modules/@takaro/util/dist/tracing.js --import=ts-node-maintained/register/esm --test 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.integration.test.ts'
     ;;
 esac

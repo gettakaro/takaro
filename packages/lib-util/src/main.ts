@@ -20,3 +20,13 @@ export { DomainScoped } from './DomainScoped.js';
 export { PostHog } from './posthog.js';
 
 export { createAxios, CleanAxiosError } from './http.js';
+
+export {
+  getTracer,
+  isTracingEnabled,
+  withSpan,
+  startSpan,
+  endSpanSuccess,
+  endSpanError,
+  shutdownTracing,
+} from './tracing.js';

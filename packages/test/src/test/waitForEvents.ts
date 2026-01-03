@@ -3,7 +3,7 @@ import type { EventTypes } from '@takaro/modules';
 import { Client } from '@takaro/apiclient';
 import { io, Socket } from 'socket.io-client';
 import { integrationConfig } from './integrationConfig.js';
-import { startSpan, endSpanSuccess, endSpanError } from './tracing.js';
+import { startSpan, endSpanSuccess, endSpanError } from '@takaro/util';
 
 export interface IDetectedEvent {
   event: EventTypes;

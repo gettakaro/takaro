@@ -5,7 +5,7 @@ import { expect } from './test/expect.js';
 import { AdminClient, Client, AxiosResponse, isAxiosError, TakaroEventCommandExecuted } from '@takaro/apiclient';
 import { randomUUID } from 'crypto';
 import { before, it } from 'node:test';
-import { initTestTracing, withSpan } from './test/tracing.js';
+import { withSpan } from '@takaro/util';
 
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
@@ -38,9 +38,6 @@ const adminClient = new AdminClient({
 });
 
 before(async () => {
-  // Initialize OpenTelemetry tracing - must happen before any HTTP requests
-  initTestTracing();
-
   try {
     const danglingDomains = await adminClient.domain.domainControllerSearch({
       search: {

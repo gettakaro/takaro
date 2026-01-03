@@ -88,17 +88,6 @@ docker compose exec redis redis-cli
 |------|---------|
 | `docker-compose.yml` | Main development stack |
 | `docker-compose.test.yml` | CI testing with pre-built images |
-| `docker-compose.observability.yml` | Grafana + Tempo for tracing |
-
-### Using Observability Stack
-
-```bash
-docker compose -f docker-compose.yml -f docker-compose.observability.yml up -d
-```
-
-Adds:
-- Grafana: http://127.0.0.1:13007
-- Tempo: ports 3200, 4317
 
 ## Port Reference
 

@@ -65,6 +65,7 @@ fi
 # Set environment variables for consistent test behavior
 export LOGGING_LEVEL=none
 export TAKARO_TEST_RUNNER_ATTEMPTS=0
+export TRACING_SIMPLE_PROCESSOR=true
 
 echo "Running tests for package: $PACKAGE_NAME (type: $TEST_TYPE)"
 
@@ -95,4 +96,4 @@ echo "Checking TypeScript for $PACKAGE_NAME ($TEST_TYPE tests)..."
 typecheck_tests "$TEST_PATTERN"
 
 # Run the tests
-node --test-concurrency 1 --test-force-exit --import=ts-node-maintained/register/esm --test "$TEST_PATTERN"
+node --test-concurrency 1 --test-force-exit --import=./node_modules/@takaro/util/dist/tracing.js --import=ts-node-maintained/register/esm --test "$TEST_PATTERN"
