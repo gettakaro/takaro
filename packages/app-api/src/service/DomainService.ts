@@ -277,9 +277,10 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
     await userService.assignRole(rootRole.id, rootUser.id);
 
-    await moduleService.seedBuiltinModules();
+    // Fresh domain: safe to seed modules in parallel (no existing installations)
+    await moduleService.seedBuiltinModules({ parallel: true });
 
-    // Create default shop categories
+    // Create default shop categories in parallel
     const categoryRepo = new ShopCategoryRepo(domain.id);
     const DEFAULT_CATEGORIES = [
       { name: 'Weapons', emoji: '⚔️' },
@@ -292,15 +293,17 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       { name: 'Vehicles', emoji: '🚗' },
     ];
 
-    for (const category of DEFAULT_CATEGORIES) {
-      await categoryRepo.create(
-        new ShopCategoryCreateDTO({
-          name: category.name,
-          emoji: category.emoji,
-          parentId: null,
-        }),
-      );
-    }
+    await Promise.all(
+      DEFAULT_CATEGORIES.map((category) =>
+        categoryRepo.create(
+          new ShopCategoryCreateDTO({
+            name: category.name,
+            emoji: category.emoji,
+            parentId: null,
+          }),
+        ),
+      ),
+    );
 
     if (config.get('functions.executionMode') == EXECUTION_MODE.LAMBDA) {
       await createLambda({ domainId: domain.id });
