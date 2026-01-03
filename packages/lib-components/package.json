@@ -7,7 +7,7 @@
   },
   "devDependencies": {
     "@storybook/react": "10.0.6",
-    "vitest": "4.0.8"
+    "vitest": "4.0.16"
   },
   "license": "AGPL-3.0-or-later",
   "main": "src/index.ts",

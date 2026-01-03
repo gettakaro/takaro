@@ -241,7 +241,7 @@
     "vite": "7.2.2",
     "vite-plugin-checker": "0.8.0",
     "vite-tsconfig-paths": "5.0.1",
-    "vitest": "4.0.8",
+    "vitest": "4.0.16",
     "zx": "7.2.4"
   },
   "engines": {
