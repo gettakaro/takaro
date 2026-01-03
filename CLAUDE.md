@@ -102,35 +102,37 @@ Key patterns in test output:
 
 ### Test Commands
 
-- **Run a specific test file**: `npm run test:file <path/to/test.ts>`
-- **Run test with TypeScript checking**: `npm run test:file:check <path/to/test.ts>`
-- **Debug a test file**: `npm run test:debug <path/to/test.ts>`
-- **Run all tests for a package**: `npm run test:package <package-name>`
-- **Run unit tests for a package**: `npm run test:package:unit <package-name>`
-- **Run integration tests for a package**: `npm run test:package:integration <package-name>`
-- **Run all tests**: `npm test` or `npm run test:unit` or `npm run test:integration`
-- **Check TypeScript in test files**: `npm run test:check`
+**IMPORTANT: Integration tests must run inside Docker** using `docker compose exec takaro`. Running tests on the host will fail due to missing access to internal Docker services (Redis, PostgreSQL, WebSocket on port 3004).
+
+- **Run a specific test file**: `docker compose exec takaro npm run test:file <path/to/test.ts>`
+- **Run test with TypeScript checking**: `docker compose exec takaro npm run test:file:check <path/to/test.ts>`
+- **Debug a test file**: `docker compose exec takaro npm run test:debug <path/to/test.ts>`
+- **Run all tests for a package**: `docker compose exec takaro npm run test:package <package-name>`
+- **Run unit tests for a package**: `docker compose exec takaro npm run test:package:unit <package-name>`
+- **Run integration tests for a package**: `docker compose exec takaro npm run test:package:integration <package-name>`
+- **Run all integration tests**: `docker compose exec takaro npm run test:integration`
+- **Check TypeScript in test files**: `npm run test:check` (this can run on host)
 
 ### Examples
 
 ```bash
-# Run a specific test file
-npm run test:file packages/lib-config/src/__tests__/config.unit.test.ts
+# Run a specific test file (inside Docker)
+docker compose exec takaro npm run test:file packages/lib-config/src/__tests__/config.unit.test.ts
 
 # Run with TypeScript checking first
-npm run test:file:check packages/app-api/src/controllers/__tests__/TrackingController.integration.test.ts
+docker compose exec takaro npm run test:file:check packages/app-api/src/controllers/__tests__/TrackingController.integration.test.ts
 
 # Debug a test (connects debugger)
-npm run test:debug packages/lib-modules/src/__tests__/ping.integration.test.ts
+docker compose exec takaro npm run test:debug packages/lib-modules/src/__tests__/ping.integration.test.ts
 
 # Test a specific package
-npm run test:package lib-config
-npm run test:package:integration app-api
+docker compose exec takaro npm run test:package lib-config
+docker compose exec takaro npm run test:package:integration app-api
 
 # Run all tests of a type
-npm run test:unit          # All unit tests
-npm run test:integration   # All integration tests
-npm test                   # All tests
+docker compose exec takaro npm run test:unit          # All unit tests
+docker compose exec takaro npm run test:integration   # All integration tests
+docker compose exec takaro npm test                   # All tests
 ```
 
 ## Package Management
