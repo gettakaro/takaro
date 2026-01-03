@@ -46,7 +46,7 @@ before(async () => {
 
     await Promise.allSettled(
       danglingDomains.data.data.map((domain) =>
-        adminClient.domain.domainControllerRemove(domain.id, { params: { hardDelete: true } }),
+        adminClient.domain.domainControllerRemove(domain.id, { hardDelete: true }),
       ),
     );
 
@@ -172,6 +172,7 @@ export class IntegrationTest<SetupData> {
         try {
           await integrationTestContext.adminClient.domain.domainControllerRemove(
             integrationTestContext.standardDomainId,
+            { hardDelete: true },
           );
         } catch (error) {
           if (!isAxiosError(error)) {
