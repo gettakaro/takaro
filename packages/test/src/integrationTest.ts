@@ -5,6 +5,7 @@ import { expect } from './test/expect.js';
 import { AdminClient, Client, AxiosResponse, isAxiosError, TakaroEventCommandExecuted } from '@takaro/apiclient';
 import { randomUUID } from 'crypto';
 import { before, it } from 'node:test';
+import { withSpan } from '@takaro/util';
 
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
@@ -113,76 +114,101 @@ export class IntegrationTest<SetupData> {
     const maxRetries = this.test.attempts || integrationConfig.get('testRunner.attempts');
 
     async function setup(): Promise<void> {
-      sandbox.restore();
+      await withSpan('test:setup', async (span) => {
+        sandbox.restore();
 
-      if (integrationTestContext.test.standardEnvironment) {
-        await integrationTestContext.setupStandardEnvironment();
-      }
+        if (integrationTestContext.test.standardEnvironment) {
+          await withSpan('test:setup:createDomain', async () => {
+            await integrationTestContext.setupStandardEnvironment();
+          });
 
-      if (integrationTestContext.test.setup) {
-        try {
-          integrationTestContext.setupData = await integrationTestContext.test.setup.bind(integrationTestContext)();
-        } catch (error) {
-          if (!isAxiosError(error)) {
-            throw error;
+          if (span && integrationTestContext.standardDomainId) {
+            span.setAttribute('domain.id', integrationTestContext.standardDomainId);
           }
-
-          console.error(error.response?.data);
-          throw new Error(
-            `Setup failed: ${error.config?.method} ${error.config?.url} ${JSON.stringify(error.response?.data)}} (Domain ID: ${integrationTestContext.standardDomainId || 'not yet created'})`,
-          );
         }
-      }
+
+        if (integrationTestContext.test.setup) {
+          try {
+            await withSpan('test:setup:custom', async () => {
+              integrationTestContext.setupData =
+                await integrationTestContext.test.setup!.bind(integrationTestContext)();
+            });
+          } catch (error) {
+            if (!isAxiosError(error)) {
+              throw error;
+            }
+
+            console.error(error.response?.data);
+            throw new Error(
+              `Setup failed: ${error.config?.method} ${error.config?.url} ${JSON.stringify(error.response?.data)}} (Domain ID: ${integrationTestContext.standardDomainId || 'not yet created'})`,
+            );
+          }
+        }
+      });
     }
 
     async function teardown(): Promise<void> {
-      if (integrationTestContext.test.teardown) {
-        await integrationTestContext.test.teardown.bind(integrationTestContext)();
-      }
+      await withSpan(
+        'test:teardown',
+        async (span) => {
+          if (span && integrationTestContext.standardDomainId) {
+            span.setAttribute('domain.id', integrationTestContext.standardDomainId);
+          }
 
-      if (
-        integrationTestContext.setupData &&
-        typeof integrationTestContext.setupData === 'object' &&
-        'mockservers' in integrationTestContext.setupData
-      ) {
-        const servers = integrationTestContext.setupData.mockservers as any[];
-        for (const mockserver of servers) {
-          await mockserver.shutdown();
-        }
-      }
+          if (integrationTestContext.test.teardown) {
+            await withSpan('test:teardown:custom', async () => {
+              await integrationTestContext.test.teardown!.bind(integrationTestContext)();
+            });
+          }
 
-      if (integrationTestContext.standardDomainId) {
-        try {
-          const failedFunctionsRes = await integrationTestContext.client.event.eventControllerGetFailedFunctions();
-
-          if (failedFunctionsRes.data.data.length > 0) {
-            console.warn(
-              `There were ${failedFunctionsRes.data.data.length} failed functions (Domain ID: ${integrationTestContext.standardDomainId})`,
-            );
-            for (const failedFn of failedFunctionsRes.data.data) {
-              const name = (failedFn.meta as TakaroEventCommandExecuted).command?.name;
-              const msgs = (failedFn.meta as TakaroEventCommandExecuted)?.result.logs.map((l) => l.msg);
-              console.log(`Function with name "${name}" failed with messages: ${msgs}`);
+          if (
+            integrationTestContext.setupData &&
+            typeof integrationTestContext.setupData === 'object' &&
+            'mockservers' in integrationTestContext.setupData
+          ) {
+            const servers = integrationTestContext.setupData.mockservers as any[];
+            for (const mockserver of servers) {
+              await mockserver.shutdown();
             }
           }
-        } catch {
-          // Ignore, just reporting
-        }
 
-        try {
-          await integrationTestContext.adminClient.domain.domainControllerRemove(
-            integrationTestContext.standardDomainId,
-            { hardDelete: true },
-          );
-        } catch (error) {
-          if (!isAxiosError(error)) {
-            throw error;
+          if (integrationTestContext.standardDomainId) {
+            try {
+              const failedFunctionsRes = await integrationTestContext.client.event.eventControllerGetFailedFunctions();
+
+              if (failedFunctionsRes.data.data.length > 0) {
+                console.warn(
+                  `There were ${failedFunctionsRes.data.data.length} failed functions (Domain ID: ${integrationTestContext.standardDomainId})`,
+                );
+                for (const failedFn of failedFunctionsRes.data.data) {
+                  const name = (failedFn.meta as TakaroEventCommandExecuted).command?.name;
+                  const msgs = (failedFn.meta as TakaroEventCommandExecuted)?.result.logs.map((l) => l.msg);
+                  console.log(`Function with name "${name}" failed with messages: ${msgs}`);
+                }
+              }
+            } catch {
+              // Ignore, just reporting
+            }
+
+            try {
+              await withSpan('test:teardown:deleteDomain', async () => {
+                await integrationTestContext.adminClient.domain.domainControllerRemove(
+                  integrationTestContext.standardDomainId!,
+                  { hardDelete: true },
+                );
+              });
+            } catch (error) {
+              if (!isAxiosError(error)) {
+                throw error;
+              }
+              if (error.response?.status !== 404) {
+                throw error;
+              }
+            }
           }
-          if (error.response?.status !== 404) {
-            throw error;
-          }
-        }
-      }
+        },
+        { 'test.phase': 'teardown' },
+      );
     }
 
     async function executeTest(): Promise<void> {
@@ -199,7 +225,9 @@ export class IntegrationTest<SetupData> {
 
           await setup();
 
-          response = await integrationTestContext.test.test.bind(integrationTestContext)();
+          response = await withSpan('test:execute', async () => {
+            return integrationTestContext.test.test.bind(integrationTestContext)();
+          });
 
           if (integrationTestContext.test.snapshot) {
             if (!response) {
@@ -267,11 +295,30 @@ export class IntegrationTest<SetupData> {
     }
 
     it(integrationTestContext.test.name, async () => {
-      try {
-        await executeTest();
-      } finally {
-        await teardown();
-      }
+      const testName = `${integrationTestContext.test.group}/${integrationTestContext.test.name}`;
+
+      await withSpan(
+        `test:${testName}`,
+        async (span) => {
+          if (span) {
+            span.setAttribute('test.group', integrationTestContext.test.group);
+            span.setAttribute('test.name', integrationTestContext.test.name);
+            span.setAttribute('test.snapshot', integrationTestContext.test.snapshot || false);
+          }
+
+          try {
+            await executeTest();
+
+            // Add domain ID to span after setup completes
+            if (span && integrationTestContext.standardDomainId) {
+              span.setAttribute('domain.id', integrationTestContext.standardDomainId);
+            }
+          } finally {
+            await teardown();
+          }
+        },
+        { 'test.framework': 'node:test' },
+      );
     });
   }
 }

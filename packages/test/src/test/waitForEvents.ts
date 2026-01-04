@@ -3,6 +3,7 @@ import type { EventTypes } from '@takaro/modules';
 import { Client } from '@takaro/apiclient';
 import { io, Socket } from 'socket.io-client';
 import { integrationConfig } from './integrationConfig.js';
+import { startSpan, endSpanSuccess, endSpanError } from '@takaro/util';
 
 export interface IDetectedEvent {
   event: EventTypes;
@@ -51,6 +52,11 @@ export class EventsAwaiter {
     const discardedEvents: IDetectedEvent[] = [];
     let hasFinished = false;
 
+    const span = startSpan('test:waitForEvents', {
+      'event.type': String(expectedEvent),
+      'event.expected_count': amount,
+    });
+
     return Promise.race([
       new Promise<IDetectedEvent[]>((resolve) => {
         this.socket.on('event', (event) => {
@@ -63,6 +69,8 @@ export class EventsAwaiter {
           if (events.length === amount) {
             hasFinished = true;
             this.disconnect();
+            span?.setAttribute('event.received_count', events.length);
+            endSpanSuccess(span);
             resolve(events);
           }
         });
@@ -73,6 +81,8 @@ export class EventsAwaiter {
           const msg = `Event ${expectedEvent} timed out - received ${events.length}/${amount} events.`;
           console.warn(msg);
           this.disconnect();
+          span?.setAttribute('event.received_count', events.length);
+          endSpanError(span, msg);
           reject(new Error(msg));
         }, integrationConfig.get('waitForEventsTimeout'));
       }),

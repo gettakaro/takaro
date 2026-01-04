@@ -228,3 +228,64 @@ npm run test:snapshot --workspace=packages/lib-components
 | "dangling domains" message | Previous test failed | Normal cleanup, ignore |
 | TypeScript errors | Type mismatch | `npm run test:check` |
 | Permission denied | Missing role | Check test setup assigns proper role |
+
+## OpenTelemetry Tracing
+
+### Enable Tracing
+
+Add to `.env` or export:
+```bash
+TRACING_ENABLED=true
+TRACING_ENDPOINT=http://your-collector:4318/v1/traces
+```
+
+Traces are sent to an external OTEL collector (not included in this repo).
+
+### Environment Variables
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `TRACING_ENABLED` | `false` | Enable OpenTelemetry tracing |
+| `TRACING_ENDPOINT` | (none) | Full OTLP HTTP URL (e.g., `http://collector:4318/v1/traces`) |
+| `TRACING_DEBUG` | `false` | Enable OTEL diagnostic logging |
+| `TRACING_SIMPLE_PROCESSOR` | `false` | Use sync export (set by test scripts) |
+| `TRACING_CONSOLE` | `false` | Log spans to stdout |
+| `TAKARO_SERVICE` | `takaro` | Service name in traces |
+
+### Tracing Patterns
+
+**Automatic tracing** - Uses `@traceableClass` decorator:
+```typescript
+@traceableClass('service:myservice')
+export class MyService extends DomainScoped {
+  // All methods automatically traced as 'service:myservice:methodName'
+}
+```
+
+**Manual spans** - For custom operations:
+```typescript
+import { withSpan, startSpan, endSpanSuccess, endSpanError } from '@takaro/util';
+
+// Async wrapper (recommended)
+await withSpan('operation:name', async (span) => {
+  span?.setAttribute('key', 'value');
+  return doWork();
+});
+
+// Manual management
+const span = startSpan('operation:name');
+try {
+  await doWork();
+  endSpanSuccess(span);
+} catch (err) {
+  endSpanError(span, err);
+  throw err;
+}
+```
+
+### Debugging with Traces
+
+Run test with console output to see spans locally:
+```bash
+TRACING_ENABLED=true TRACING_CONSOLE=true npm run test:file <path>
+```
